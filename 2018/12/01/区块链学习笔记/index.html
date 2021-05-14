@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="名词及概念 Coinbase transcation 1 BTC(比特币) &#x3D; 100 cBTC(比特分) &#x3D; 1000 mBTC(毫比特) &#x3D; 1000000 uBTC(微比特) &#x3D; 1E8(100000000)聪 Genesis block:第一个区块(有特殊hash值) mining,miner,nonce selfish mining:恶意节点挖到区块后不发布,而是等到积累一定数量的区块后">
+<meta property="og:type" content="article">
+<meta property="og:title" content="区块链学习笔记">
+<meta property="og:url" content="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="名词及概念 Coinbase transcation 1 BTC(比特币) &#x3D; 100 cBTC(比特分) &#x3D; 1000 mBTC(毫比特) &#x3D; 1000000 uBTC(微比特) &#x3D; 1E8(100000000)聪 Genesis block:第一个区块(有特殊hash值) mining,miner,nonce selfish mining:恶意节点挖到区块后不发布,而是等到积累一定数量的区块后">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Merkle%20Tree.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/全节点.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/轻节点.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/BlockHeader字段.jpeg">
+<meta property="og:image" content="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/比特币交易结构.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/比特币交易输入结构.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/比特币交易输出结构.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/比特币交易过程.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/MPT.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/MPT1.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/以太坊BlockHeader.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/以太坊Block.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Receipt数据结构.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/智能合约可以获取的区块信息.png">
+<meta property="og:image" content="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/abi.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/dapp.jpg">
+<meta property="article:published_time" content="2018-12-01T12:10:28.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.936Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="区块链">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Merkle%20Tree.png">
+
+<link rel="canonical" href="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>区块链学习笔记 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          区块链学习笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-12-01 20:10:28" itemprop="dateCreated datePublished" datetime="2018-12-01T20:10:28+08:00">2018-12-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="区块链学习笔记" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="名词及概念"><a href="#名词及概念" class="headerlink" title="名词及概念"></a>名词及概念</h1><ul>
+<li>Coinbase transcation</li>
+<li>1 BTC(比特币) = 100 cBTC(比特分) = 1000 mBTC(毫比特) = 1000000 uBTC(微比特) = 1E8(100000000)聪</li>
+<li>Genesis block:第一个区块(有特殊hash值)</li>
+<li>mining,miner,nonce</li>
+<li>selfish mining:恶意节点挖到区块后不发布,而是等到积累一定数量的区块后再一次性发布,用来防止six confirmation(需要恶意节点数超过50%)</li>
+<li>比特币 translation-based ledger</li>
+<li>以太坊 account-based ledger</li>
+<li>比特币中缺省six confirmation:防止恶意节点攻击(区块链增加一个区块后,后续要等待五个区块的添加)</li>
+<li>比特币：double spending attack(付款人)；以太坊：replay attack(收款人)</li>
+<li>bounty：赏金</li>
+<li>区块链的安全性：所有的全节点要独立验证发布的区块</li>
+<li>zhenxiao.com/</li>
+<li>最初每个区块可以产生50枚比特币奖励，在每21万个区块后(每21万个区块约4年时间)，每个区块的奖励减半（现在每个区块可以奖励12.5枚比特币）,所以比特币共有2100万个，到2140年，比特币将无法细分。</li>
+<li>安全性保证:密码学以及共识机制</li>
+<li>密码朋克（cypherpunk）：结合了电脑朋克的思想，在电脑化空间下的个体精神，使用强加密（密文）保护个人隐私。</li>
+<li>比特币水龙头网站：给访问网站的每个人分发小额比特币奖励，达到引流作用。</li>
+<li>每个钱包都是一个节点，其中拥有完整区块链账本的节点叫做全节点，只拥有根hash值和一些信息的叫轻节点。</li>
+<li>算力（也称哈希率）是比特币网络处理能力的度量单位。即为计算机（CPU）计算哈希函数输出的速度。一个挖矿机每秒钟能做多少次hash碰撞，就是其“算力”的代表，单位写成hash/s。</li>
+<li>零知识证明:证明者能够在不向验证者提供信息本身内容的情况下,使验证者相信某个论断是真实可信的一种技术.可以在不泄漏信息本身内容的情况下,证明拥有某个秘密.</li>
+<li>重放攻击:在比特币硬分叉后，新链与原链拥有相同的交易数据、地址、私钥、交易方式。在硬分叉之前的一种币，会因为分叉而变成两种,即可得到等额的新币.同时,在一种币上进行的交易,也可以广播到另一种币上.</li>
+</ul>
+<h1 id="比特币"><a href="#比特币" class="headerlink" title="比特币"></a>比特币</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>交易流程：</p>
+<ol>
+<li>有一个新的交易，要向全网公布广播。</li>
+<li>每一个节点，都要将收集到的交易信息，放入一个区块中。</li>
+<li>每一个节点都要试着在自己的区块中，找到一个足够难的工作量证明。</li>
+<li>当一个节点找到了自己的工作量证明，都要对全网进行公布广播。</li>
+<li>当且仅当这个区块中的所有交易是有效且之前从未有过，其他的节点才承认这个交易过程的有效性。</li>
+<li>其他节点表示承认这个区块，表示认可的方法就是，根据这个区块的编码，往后延长这个链接。</li>
+</ol>
+<p>UTXO可以看做是一个比特币驱动的状态机。</p>
+<h2 id="密码学原理"><a href="#密码学原理" class="headerlink" title="密码学原理"></a>密码学原理</h2><h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><h3 id="Hash-Pointer"><a href="#Hash-Pointer" class="headerlink" title="Hash Pointer"></a>Hash Pointer</h3><h3 id="Merkle-Tree"><a href="#Merkle-Tree" class="headerlink" title="Merkle Tree"></a>Merkle Tree</h3><ul>
+<li>block header：包含某个区块所包含的所有交易组成的Merkle Tree组成的根Hash值，但是没有交易的具体内容。</li>
+<li>block body：包含交易的列表和内容</li>
+<li>全节点：包含header和body</li>
+<li>轻节点：只包含header</li>
+</ul>
+<img src="Merkle Tree.png"/>
+
+<p><code>Merkle Proof</code>/<code>Proof of membership</code>/<code>Proof of inclusion</code>：</p>
+<ul>
+<li>证明数据(交易)是否归属于此merkle树。</li>
+<li>在不需要存储整个数据的情况下，就可以简明地证明数据是否属于资料组的一部分。</li>
+<li>验证某些数据组是包含在更大的数据组中，而无须显示整个数据组或其子资料组。</li>
+</ul>
+<p><code>Proof of non-membership</code></p>
+<ul>
+<li>sorted merkle tree</li>
+</ul>
+<img src="全节点.png"/>
+
+<img src="轻节点.png"/>
+
+<h2 id="共识协议"><a href="#共识协议" class="headerlink" title="共识协议"></a>共识协议</h2><p>账本的内容要取得分布式的共识.</p>
+<p>普通投票法:</p>
+<ul>
+<li>少数服从多数:恶意节点可以生成许多帐号投票,直到超过阈值(没有决定是否有投票权,简单的直接投票不行).</li>
+</ul>
+<p>最长链投票法:</p>
+<ul>
+<li>分叉攻击:选择最长链</li>
+<li>两个节点同时记账成功(等长分叉):两个区块会保留一段时间,直到其中某个区块找到下一个区块.</li>
+</ul>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><p>用户把交易发布到区块链网络上,节点把这些交易打包成区块,然后添加到区块链中.</p>
+<img src="BlockHeader字段.jpeg"/>
+
+<p>可以通过修改Coinbase交易中的Coinbase字段来修改MarkleRoot的hash值，Coinbase tx中保存有旷工的地址，BlockHeader中保存有Nonce。</p>
+<img src=""/>
+
+<h2 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h2><h2 id="挖矿"><a href="#挖矿" class="headerlink" title="挖矿"></a>挖矿</h2><p>挖矿设备:</p>
+<ul>
+<li>CPU-&gt;GPU-&gt;ASIC(Application Specific Integranted Circle)-&gt;矿池</li>
+</ul>
+<p>矿池:</p>
+<ul>
+<li>一个pool manager(打包等计算hash之外的工作)和许多miner(只负责计算hash)</li>
+<li>可以用almost valid block(不可用)来计算每个miner的工作量.</li>
+</ul>
+<h2 id="脚本"><a href="#脚本" class="headerlink" title="脚本"></a>脚本</h2><p>比特币使用的脚本语言特别简单，基于堆栈。</p>
+<img src="比特币交易结构.png"/>
+
+<img src="比特币交易输入结构.png"/>
+
+<img src="比特币交易输出结构.png"/>
+
+<img src="比特币交易过程.png"/>
+
+<h2 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h2><ul>
+<li>“区块恋”：把一个私钥分成两部分，一人持有一份，会降低安全性，破解私钥难度变低。</li>
+<li>使用多重签名(multisig)的方式让多个合伙人拥有同一个钱包。</li>
+<li>分布式共识：理论上被证明不可能(共识一旦达成就不可修改)。</li>
+</ul>
+<h1 id="以太坊"><a href="#以太坊" class="headerlink" title="以太坊"></a>以太坊</h1><h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>可以把以太坊看做一个交易驱动的状态机(transaction-driven state machine)。以太坊（Ethereum）是一个建立在区块链技术之上，去中心化应用平台，它允许任何人在平台中建立和使用通过区块链技术运行的去中心化应用。</p>
+<p>在没有以太坊之前，写区块链应用是这样的：拷贝一份比特币代码，然后去改底层代码如加密算法，共识机制，网络协议等等（很多山寨币就是这样，改改就出来一个新币）。</p>
+<p>以太坊平台对底层区块链技术进行了封装，让区块链应用开发者可以直接基于以太坊平台进行开发，开发者只要专注于应用本身的开发，从而大大降低了难度。</p>
+<h2 id="账户"><a href="#账户" class="headerlink" title="账户"></a>账户</h2><p>为防止replay attack，转账的时候转账人会携带一个nonce值来标识当前他已进行交易的总数，然后对这些信息进行签名。</p>
+<p>账户分类：</p>
+<ul>
+<li>外部账户(externally owned account)：人操作的账户。公私钥对，balance和nonce</li>
+<li>合约账户(smart contract account)：智能合约的载体。balance，nonce，code(代码)，storage()；不能自己发起交易；</li>
+</ul>
+<h2 id="状态树"><a href="#状态树" class="headerlink" title="状态树"></a>状态树</h2><p>账户：account addr(160bits)-&gt;account state(40个16bits)</p>
+<p>每次有账户记录更改都是新建新的MPT，只不过大部分节点是复用的(不直接在原MPT上修改是为了防止分叉出现时便于回滚)。</p>
+<img src="MPT.png"/>
+
+<img src="MPT1.png"/>
+
+<img src="以太坊BlockHeader.png"/>
+
+<table>
+<thead>
+<tr>
+<th align="center">名称</th>
+<th align="center">类型</th>
+<th align="center">意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">parentHash</td>
+<td align="center">common.Hash</td>
+<td align="center">父区块的哈希值</td>
+</tr>
+<tr>
+<td align="center">UncleHash</td>
+<td align="center">common.Hash</td>
+<td align="center">叔父区块列表的哈希值</td>
+</tr>
+<tr>
+<td align="center">Coinbase</td>
+<td align="center">common.Address</td>
+<td align="center">打包该区块的矿工的地址，用于接收矿工费</td>
+</tr>
+<tr>
+<td align="center">Root</td>
+<td align="center">common.Hash</td>
+<td align="center">状态树的根哈希值</td>
+</tr>
+<tr>
+<td align="center">TxHash</td>
+<td align="center">common.Hash</td>
+<td align="center">交易树的根哈希值</td>
+</tr>
+<tr>
+<td align="center">ReceiptHash</td>
+<td align="center">common.Hash</td>
+<td align="center">收据树的根哈希值</td>
+</tr>
+<tr>
+<td align="center">Bloom</td>
+<td align="center">Bloom</td>
+<td align="center">交易收据日志组成的Bloom过滤器</td>
+</tr>
+<tr>
+<td align="center">Difficulty</td>
+<td align="center">*Big.Int</td>
+<td align="center">本区块的难度</td>
+</tr>
+<tr>
+<td align="center">Number</td>
+<td align="center">*Big.Int</td>
+<td align="center">本区块块号，区块号从0号开始算起</td>
+</tr>
+<tr>
+<td align="center">GasLimit</td>
+<td align="center">uint64</td>
+<td align="center">本区块中所有交易消耗的Gas上限，这个数值不等于所有交易的中Gas limit字段的和</td>
+</tr>
+<tr>
+<td align="center">GasUsed</td>
+<td align="center">uint64</td>
+<td align="center">本区块中所有交易使用的Gas之和</td>
+</tr>
+<tr>
+<td align="center">Time</td>
+<td align="center">*big.Int</td>
+<td align="center">区块产生的unix时间戳，一般是打包区块的时间，这个字段不是出块的时间戳</td>
+</tr>
+<tr>
+<td align="center">Extra</td>
+<td align="center">[]byte</td>
+<td align="center">区块的附加数据</td>
+</tr>
+<tr>
+<td align="center">MixDigest</td>
+<td align="center">common.Hash</td>
+<td align="center">哈希值，与Nonce的组合用于工作量计算</td>
+</tr>
+<tr>
+<td align="center">Nonce</td>
+<td align="center">BlockNonce</td>
+<td align="center">区块产生时的随机值</td>
+</tr>
+</tbody></table>
+<img src="以太坊Block.png"/>
+
+<h2 id="交易树和收据树"><a href="#交易树和收据树" class="headerlink" title="交易树和收据树"></a>交易树和收据树</h2><p>交易树和收据树都属于MPT，只把当前区块包含的交易组织起来，而状态树包含了所有的账户信息，块头包含这三棵树的根hash值。</p>
+<p>bloom filter：支持查找某个元素是否包含在某个大的集合里(哈希映射)(一般来说不支持删除元素操作，因为考虑到哈希碰撞)。</p>
+<p>Merkle Proof：每个交易完成后会生成一个收据，里面包含一个bloom filter记录交易的类型，地址等。发布的区块在它的块头里也有一个总的bloom filter，是这个区块里所有的bloom filter的并集。</p>
+<img src="Receipt数据结构.png"/>
+
+<h2 id="GHOST协议"><a href="#GHOST协议" class="headerlink" title="GHOST协议"></a>GHOST协议</h2><ul>
+<li>一个区块可以包括两个uncle block(7代之内有共同的祖先，随着代数增加，奖励越来越少)。</li>
+<li>一个分叉的非主分支的区块，最多是接下来6个区块的uncle，是当前主分支区块的兄弟区块。</li>
+<li>只会接收当前分叉的第一个区块作为uncle block。</li>
+<li>主分支的区块招安两个uncle block都由多到少有一定的奖励。</li>
+<li>以太坊区块链中7代及其以内的叔父区块都能得到奖励，超过7代的叔父区块将不会得到奖励，这样是为了避免有些矿工专门在之前的链上制造分叉后坐等被后面的节点招安情况。</li>
+<li>以太坊中的出块奖励不会随着区块数量的增多而减少，以太坊中无论何时出块都会获得出块奖励，而比特币中区块的树目超过两千一百万以后就没有出块奖励，此后矿工挖矿的动力来自于交易费了。</li>
+</ul>
+<h2 id="挖矿算法"><a href="#挖矿算法" class="headerlink" title="挖矿算法"></a>挖矿算法</h2><ul>
+<li>difficult to solve but easy to verify.</li>
+<li>以太坊使用GPU挖矿(原则上的设计应该是可以让旷工使用普通电脑的CPU挖矿)</li>
+</ul>
+<p>挖矿过程(ethash算法)：</p>
+<ol>
+<li>对于每一个块，首先计算一个种子(seed)，该种子只和当前块的信息有关;然后根据种子生成一个32M的随机数据集（cache），每隔30000个块会重新生成seed(对原来的seed求hash)，并根据新的seed计算新的cache。cache的初始大小为16M，每隔30000个块大小增大。</li>
+<li>根据Cache生成一个1GB大小的数据集合DAG(有向非循环图)，它是一个完整的搜索空间，挖矿的过程就是从DAG中随机选择元素(类似于比特币挖矿中查找合适Nonce)再进行哈希运算，可以从Cache快速计算DAG指定位置的元素，进而哈希验证。每隔30000个块会重新更新，并增大容量。</li>
+</ol>
+<p>轻节点可以只保存cache，而旷工要保存整个DAG。</p>
+<h2 id="难度调整算法"><a href="#难度调整算法" class="headerlink" title="难度调整算法"></a>难度调整算法</h2><p>出块时间：15s</p>
+<h2 id="智能合约"><a href="#智能合约" class="headerlink" title="智能合约"></a>智能合约</h2><h3 id="概述-2"><a href="#概述-2" class="headerlink" title="概述"></a>概述</h3><p>智能合约是运行在区块链上的一段代码，代码的逻辑定义了合约的内容，智能合约可以理解为在区块链上可以自动执行的（由消息驱动的）、以代码形式编写的合同（特殊的交易）。Solidity是智能合约最常用的语言。智能合约的账户保存了合约当前的运行状态：</p>
+<ul>
+<li>balance：余额</li>
+<li>nonce：交易次数</li>
+<li>code：合约代码</li>
+<li>storage：存储，数据结构是一颗MPT</li>
+</ul>
+<p>EVM（Ethereum Virtual Machine）以太坊虚拟机是以太坊中智能合约的运行环境。它运行在以太坊节点上，当我们把合约部署到以太坊网络上之后，合约就可以在以太坊网络中运行了。</p>
+<p>外部账户调用智能合约：创建一个交易，接收地址为要调用的智能合约的地址，data域填写要调用的函数和参数的编码值。</p>
+<p>一个合约调用另一个合约中的函数：</p>
+<ul>
+<li>直接调用(代码中)</li>
+<li>使用address类型的call函数</li>
+<li>代理调用delegatecall()</li>
+</ul>
+<p>智能合约的创建和运行：</p>
+<ul>
+<li>以太坊虚拟机上运行的是合约的字节码形式，需要我们在部署之前先对合约进行编译，代码编写完成后，编译成bytecode</li>
+<li>创建合约：外部账户发起一个转账交易到0x0的地址<ul>
+<li>转账金额为0，但是要支付汽油费</li>
+<li>合约的代码放在data域</li>
+</ul>
+</li>
+<li>智能合约运行在EVM(Ethereum Virtual Machine)上</li>
+<li>以太坊是交易驱动的状态机<ul>
+<li>调用智能合约的交易发布到区块链上后，每个旷工都会执行这个交易，从当前状态确定性地转移到下一个状态</li>
+</ul>
+</li>
+</ul>
+<h3 id="合约部署"><a href="#合约部署" class="headerlink" title="合约部署"></a>合约部署</h3><ul>
+<li>以太坊客户端，可以理解为一个开发者工具，它提供账户管理、挖矿、转账、智能合约的部署和执行等等功能</li>
+<li>EVM是由以太坊客户端提供的</li>
+</ul>
+<p>Geth是典型的开发以太坊时使用的客户端，基于Go语言开发。 Geth提供了一个交互式命令控制台，通过命令控制台中包含了以太坊的各种功能（API）。Geth控制台和Chrome浏览器开发者工具里的面的控制台是类似的，不过Geth控制台是跑在终端里。相对于Geth，Mist则是图形化操作界面的以太坊客户端。</p>
+<p>智能合约的部署是指把合约字节码发布到区块链上，并使用一个特定的地址来标示这个合约，这个地址称为合约账户。</p>
+<p>外部账户与合约账户的区别和关系是这样的：一个外部账户可以通过创建和用自己的私钥来对交易进行签名，来发送消息给另一个外部账户或合约账户。</p>
+<p>在两个外部账户之间传送消息是价值转移的过程。但从外部账户到合约账户的消息会激活合约账户的代码，允许它执行各种动作（比如转移代币，写入内部存储，挖出一个新代币，执行一些运算，创建一个新的合约等等）。</p>
+<p>只有当外部账户发出指令时，合同账户才会执行相应的操作。</p>
+<p>合约部署就是将编译好的合约字节码通过外部账号发送交易的形式部署到以太坊区块链上（由实际矿工出块之后，才真正部署成功）。</p>
+<h3 id="合约运行"><a href="#合约运行" class="headerlink" title="合约运行"></a>合约运行</h3><p>合约部署之后，当需要调用这个智能合约的方法时只需要向这个合约账户发送消息（交易）即可，通过消息触发后智能合约的代码就会在EVM中执行了。</p>
+<h3 id="Gas"><a href="#Gas" class="headerlink" title="Gas"></a>Gas</h3><ul>
+<li>以太坊上用Gas机制来计费，Gas也可以认为是一个工作量单位，智能合约越复杂（计算步骤的数量和类型，占用的内存等），用来完成运行就需要越多Gas。</li>
+<li>任何特定的合约所需的运行合约的Gas数量是固定的，由合约的复杂度决定。</li>
+<li>而Gas价格由运行合约的人在提交运行合约请求的时候规定，以确定他愿意为这次交易愿意付出的费用：Gas价格（用以太币计价） * Gas数量。</li>
+</ul>
+<p>Gas的目的是限制执行交易所需的工作量，同时为执行支付费用。当EVM执行交易时，Gas将按照特定规则被逐渐消耗，无论执行到什么位置，一旦Gas被耗尽，将会触发异常。当前调用帧所做的所有状态修改都将被回滚， 如果执行结束还有Gas剩余，这些Gas将被返还给发送账户。如果没有这个限制，就会有人写出无法停止（如：死循环）的合约来阻塞网络。</p>
+<p>因此实际上（把前面的内容串起来），我们需要一个有以太币余额的外部账户，来发起一个交易（普通交易或部署、运行一个合约），运行时，矿工收取相应的工作量费用。</p>
+<p>汽油费(gas fee)：只有挖矿成功的那个人可以得到</p>
+<ul>
+<li>智能合约是一个Turing-complete Programming Model</li>
+<li>智能合约中的指定要收取汽油费，由交易的人来支付</li>
+<li>EVM中不同的指令消耗的汽油费不一样</li>
+</ul>
+<img src="智能合约可以获取的区块信息.png"/>
+
+<center>智能合约可以获取的区块信息</center>
+
+<p>注意：</p>
+<ul>
+<li>旷工先执行智能合约，再进行挖矿</li>
+<li>旷工要验证刚发布的区块(无偿)，才能更新状态，不然无法进行接下来的挖矿，因为发布的区块里没有三棵树的内容，只是块头里有根hash值。</li>
+<li>发布到区块链上的交易不一定是成功执行的，因为要发布后旷工才能拿到汽油费(即使是执行失败的交易也要支付汽油费)。</li>
+<li>不支持多线程，无法产生真正意义的随机数(智能合约必须有确定性)。</li>
+</ul>
+<h2 id="以太坊网络"><a href="#以太坊网络" class="headerlink" title="以太坊网络"></a>以太坊网络</h2><h3 id="以太坊官网测试网络Testnet"><a href="#以太坊官网测试网络Testnet" class="headerlink" title="以太坊官网测试网络Testnet"></a>以太坊官网测试网络Testnet</h3><p>测试网络中，我们可以很容易获得免费的以太币，缺点是需要发很长时间初始化节点。</p>
+<h3 id="私有链"><a href="#私有链" class="headerlink" title="私有链"></a>私有链</h3><p>创建自己的以太币私有测试网络，通常也称为私有链，我们可以用它来作为一个测试环境来开发、调试和测试智能合约。通过Geth很容易就可以创建一个属于自己的测试网络，以太币想挖多少挖多少，也免去了同步正式网络的整个区块链数据。</p>
+<h3 id="开发者网络-模式"><a href="#开发者网络-模式" class="headerlink" title="开发者网络(模式)"></a>开发者网络(模式)</h3><p>相比私有链，开发者网络(模式)下，会自动分配一个有大量余额的开发者账户给我们使用。</p>
+<h3 id="模拟环境"><a href="#模拟环境" class="headerlink" title="模拟环境"></a>模拟环境</h3><p>另一个创建测试网络的方法是使用testrpc，testrpc是在本地使用内存模拟的一个以太坊环境，对于开发调试来说，更方便快捷。而且testrpc可以在启动时帮我们创建10个存有资金的测试账户。进行合约开发时，可以在testrpc中测试通过后，再部署到Geth节点中去。</p>
+<p>testrpc 现在已经并入到Truffle 开发框架中，现在名字是Ganache CLI。</p>
+<h2 id="DAO"><a href="#DAO" class="headerlink" title="DAO"></a>DAO</h2><ul>
+<li>Decentralized Autonomous Organization(去中心化的自治组织)：建立在代码之上，基于共识协议来维护组织制度。</li>
+<li>The DAO：一个DAO组织</li>
+</ul>
+<h2 id="美链"><a href="#美链" class="headerlink" title="美链"></a>美链</h2><p>美链是一个部署在以太坊上的智能合约，有自己的代币BEC。</p>
+<h2 id="ABI"><a href="#ABI" class="headerlink" title="ABI"></a>ABI</h2><p>ABI 全称是 Application Binary Interface，应用程序二进制接口，简单来说就是以太坊的合约调用时的接口说明。</p>
+<p>从外部施加给以太坊的行为都称之为向以太坊网络提交了一个交易，调用合约函数其实是向合约地址（账户）提交了一个交易，这个交易有一个附加数据，这个附加的数据就是ABI的编码数据。因此要想和合约交互，就离不开ABI数据。</p>
+<p>演示调用set(1)时，这个交易附带的数据：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^<span class="number">0.4</span><span class="number">.0</span>;</span><br><span class="line"></span><br><span class="line">contract SimpleStorage &#123;</span><br><span class="line">    </span><br><span class="line">    uint storedData;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">set</span>(<span class="params">uint x</span>) <span class="title">public</span> </span>&#123;</span><br><span class="line">        storedData = x;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">get</span>(<span class="params"></span>) <span class="title">public</span> <span class="title">constant</span> <span class="title">returns</span> (<span class="params">uint</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> storedData;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>部署到以太坊网络上后，通过参数1调用set函数，打开etherscan查看实时交易数据：</p>
+<img src="abi.jpg"/>
+
+<p>这个数据就是ABI的编码数据：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0x60fe47b10000000000000000000000000000000000000000000000000000000000000001</span></span><br></pre></td></tr></table></figure>
+
+<p>这个数据可以分成两个子部分：</p>
+<ol>
+<li>函数选择器(4字节):0x60fe47b1</li>
+<li>第一个参数(32字节):00000000000000000000000000000000000000000000000000000000000000001</li>
+</ol>
+<p>函数选择器值实际是对函数签名字符串进行sha3（keccak256）哈希运算之后，取前4个字节，用代码表示就是(参数部分则是使用对应的16进制数)：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bytes4(sha3(“set(uint256)”)) == <span class="number">0x60fe47b1</span></span><br></pre></td></tr></table></figure>
+
+<p>获得函数对应的ABI有两种方法：</p>
+<p>一个是 solidity 提供了ABI的相关API，用来直接得到ABI编码信息，这些函数有：</p>
+<ul>
+<li>abi.encode(…) returns (bytes)：计算参数的ABI编码。</li>
+<li>abi.encodePacked(…) returns (bytes)：计算参数的紧密打包编码</li>
+<li>abi. encodeWithSelector(bytes4 selector, …) returns (bytes)： 计算函数选择器和参数的ABI编码</li>
+<li>abi.encodeWithSignature(string signature, …) returns (bytes): 等价于* abi.encodeWithSelector(bytes4(keccak256(signature), …)</li>
+</ul>
+<p>通过ABI编码函数可以在不用调用函数的情况下，获得ABI编码值，下面通过一段代码来看看这些方法的使用：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^<span class="number">0.4</span><span class="number">.24</span>;</span><br><span class="line"></span><br><span class="line">contract testABI &#123;</span><br><span class="line">    uint storedData;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">set</span>(<span class="params">uint x</span>) <span class="title">public</span> </span>&#123;</span><br><span class="line">        storedData = x;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">abiEncode</span>(<span class="params"></span>) <span class="title">public</span> <span class="title">constant</span> <span class="title">returns</span> (<span class="params">bytes</span>) </span>&#123;</span><br><span class="line">        abi.encode(<span class="number">1</span>);  <span class="comment">// 计算1的ABI编码</span></span><br><span class="line">        <span class="keyword">return</span> abi.encodeWithSignature(<span class="string">&quot;set(uint256)&quot;</span>, <span class="number">1</span>); <span class="comment">//计算函数set(uint256) 及参数1 的ABI 编码</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>另一个web3提供相应的API，例如使用web3计算函数选择器的方式如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">web3.eth.abi.encodeFunctionSignature(<span class="string">&#x27;myMethod(uint256,string)&#x27;</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Dapp"><a href="#Dapp" class="headerlink" title="Dapp"></a>Dapp</h2><p>以太坊社区把基于智能合约的应用称为去中心化的应用程序(Decentralized App)。如果我们把区块链理解为一个不可篡改的数据库，智能合约理解为和数据库打交道的程序，那就很容易理解Dapp了，一个Dapp不单单有智能合约，比如还需要有一个友好的用户界面和其他的东西。</p>
+<p>Truffle是Dapp开发框架，他可以帮我们处理掉大量无关紧要的小事情，让我们可以迅速开始写代码-编译-部署-测试-打包DApp这个流程。</p>
+<img src="dapp.jpg"/>
+
+<p>DAPP和传统App关键是后端部分不同，后端不再是一个中心化的服务器，而是分布式网络上任意节点，注意可以是任意一个节点，在应用中给节点发送的请求通常称为交易，交易和中心化下的请求有几个很大的不同是：交易的数据经过用户个人签名之后发送到节点，节点收到交易请求之后，会把请求广播到整个网络，交易在网络达成共识之后，才算是真正的执行。中心化下的请求大多数都是同步的（及时拿到结果），而交易大多数是异步的，这也是在开发去中心应用时需要注意的地方，从节点上获得数据状态（比如交易的结果），一般是通过事件回调来获得。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>以太坊是平台，它让我们方便的使用区块链技术开发去中心化的应用，在这个应用中，使用Solidity来编写和区块链交互的智能合约，合约编写好后之后，我们需要用以太坊客户端用一个有余额的账户去部署及运行合约（使用Truffle框架可以更好的帮助我们做这些事情了）。为了开发方便，我们可以用Geth或testrpc来搭建一个测试网络。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"># 区块链</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/11/22/%E5%B7%A5%E5%85%B7%E7%AC%94%E8%AE%B0/" rel="prev" title="工具笔记">
+      <i class="fa fa-chevron-left"></i> 工具笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/12/05/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" rel="next" title="计算机基础">
+      计算机基础 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%8D%E8%AF%8D%E5%8F%8A%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">名词及概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%AF%94%E7%89%B9%E5%B8%81"><span class="nav-number">2.</span> <span class="nav-text">比特币</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">2.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%86%E7%A0%81%E5%AD%A6%E5%8E%9F%E7%90%86"><span class="nav-number">2.2.</span> <span class="nav-text">密码学原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">2.3.</span> <span class="nav-text">数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Hash-Pointer"><span class="nav-number">2.3.1.</span> <span class="nav-text">Hash Pointer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Merkle-Tree"><span class="nav-number">2.3.2.</span> <span class="nav-text">Merkle Tree</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B1%E8%AF%86%E5%8D%8F%E8%AE%AE"><span class="nav-number">2.4.</span> <span class="nav-text">共识协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.5.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C"><span class="nav-number">2.6.</span> <span class="nav-text">网络</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%96%E7%9F%BF"><span class="nav-number">2.7.</span> <span class="nav-text">挖矿</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%84%9A%E6%9C%AC"><span class="nav-number">2.8.</span> <span class="nav-text">脚本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%9D%E8%80%83"><span class="nav-number">2.9.</span> <span class="nav-text">思考</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%A5%E5%A4%AA%E5%9D%8A"><span class="nav-number">3.</span> <span class="nav-text">以太坊</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="nav-number">3.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%A6%E6%88%B7"><span class="nav-number">3.2.</span> <span class="nav-text">账户</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E6%A0%91"><span class="nav-number">3.3.</span> <span class="nav-text">状态树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%A4%E6%98%93%E6%A0%91%E5%92%8C%E6%94%B6%E6%8D%AE%E6%A0%91"><span class="nav-number">3.4.</span> <span class="nav-text">交易树和收据树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GHOST%E5%8D%8F%E8%AE%AE"><span class="nav-number">3.5.</span> <span class="nav-text">GHOST协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8C%96%E7%9F%BF%E7%AE%97%E6%B3%95"><span class="nav-number">3.6.</span> <span class="nav-text">挖矿算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9A%BE%E5%BA%A6%E8%B0%83%E6%95%B4%E7%AE%97%E6%B3%95"><span class="nav-number">3.7.</span> <span class="nav-text">难度调整算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6"><span class="nav-number">3.8.</span> <span class="nav-text">智能合约</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-2"><span class="nav-number">3.8.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%88%E7%BA%A6%E9%83%A8%E7%BD%B2"><span class="nav-number">3.8.2.</span> <span class="nav-text">合约部署</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%88%E7%BA%A6%E8%BF%90%E8%A1%8C"><span class="nav-number">3.8.3.</span> <span class="nav-text">合约运行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Gas"><span class="nav-number">3.8.4.</span> <span class="nav-text">Gas</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A5%E5%A4%AA%E5%9D%8A%E7%BD%91%E7%BB%9C"><span class="nav-number">3.9.</span> <span class="nav-text">以太坊网络</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A5%E5%A4%AA%E5%9D%8A%E5%AE%98%E7%BD%91%E6%B5%8B%E8%AF%95%E7%BD%91%E7%BB%9CTestnet"><span class="nav-number">3.9.1.</span> <span class="nav-text">以太坊官网测试网络Testnet</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A7%81%E6%9C%89%E9%93%BE"><span class="nav-number">3.9.2.</span> <span class="nav-text">私有链</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E5%8F%91%E8%80%85%E7%BD%91%E7%BB%9C-%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.9.3.</span> <span class="nav-text">开发者网络(模式)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E6%8B%9F%E7%8E%AF%E5%A2%83"><span class="nav-number">3.9.4.</span> <span class="nav-text">模拟环境</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DAO"><span class="nav-number">3.10.</span> <span class="nav-text">DAO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BE%8E%E9%93%BE"><span class="nav-number">3.11.</span> <span class="nav-text">美链</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ABI"><span class="nav-number">3.12.</span> <span class="nav-text">ABI</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dapp"><span class="nav-number">3.13.</span> <span class="nav-text">Dapp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.14.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

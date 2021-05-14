@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="NoSQLNoSQL（Not Only SQL）：非关系型数据库。有些数据的数据类型不需要固定的模式，无需多余操作就可以横向扩展。NoSQL无需为事先为要存储的数据建立字段，随时可以存储自定义的数据格式。  KV键值对：Redis 文档型数据库：MongoDB 列存储数据库 图关系数据库  分布式数据库的CAP和BASE概述 一个Redis实例存在16个数据库，默认连接的是0号数据库，使用sele">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis学习笔记">
+<meta property="og:url" content="http://yoursite.com/2018/08/12/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="NoSQLNoSQL（Not Only SQL）：非关系型数据库。有些数据的数据类型不需要固定的模式，无需多余操作就可以横向扩展。NoSQL无需为事先为要存储的数据建立字段，随时可以存储自定义的数据格式。  KV键值对：Redis 文档型数据库：MongoDB 列存储数据库 图关系数据库  分布式数据库的CAP和BASE概述 一个Redis实例存在16个数据库，默认连接的是0号数据库，使用sele">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-08-12T12:57:19.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.911Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="Redis">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2018/08/12/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Redis学习笔记 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/08/12/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redis学习笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-12 20:57:19" itemprop="dateCreated datePublished" datetime="2018-08-12T20:57:19+08:00">2018-08-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2018/08/12/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Redis学习笔记" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/08/12/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/08/12/Redis%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="NoSQL"><a href="#NoSQL" class="headerlink" title="NoSQL"></a>NoSQL</h1><p>NoSQL（Not Only SQL）：非关系型数据库。有些数据的数据类型不需要固定的模式，无需多余操作就可以横向扩展。NoSQL无需为事先为要存储的数据建立字段，随时可以存储自定义的数据格式。</p>
+<ul>
+<li>KV键值对：Redis</li>
+<li>文档型数据库：MongoDB</li>
+<li>列存储数据库</li>
+<li>图关系数据库</li>
+</ul>
+<h1 id="分布式数据库的CAP和BASE"><a href="#分布式数据库的CAP和BASE" class="headerlink" title="分布式数据库的CAP和BASE"></a>分布式数据库的CAP和BASE</h1><h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><ul>
+<li>一个Redis实例存在16个数据库，默认连接的是0号数据库，使用select num选择连接的数据库。</li>
+<li>move key db：将某个key移动到某个数据库。</li>
+<li>ping：返回PONG则连接成功</li>
+<li>keys pattern</li>
+<li>del key [key …]</li>
+<li>exists key [key …]</li>
+<li>type key</li>
+<li>dbsize: 查看当前数据库key数量</li>
+<li>flushdb</li>
+<li>flushall</li>
+</ul>
+<h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><h2 id="string"><a href="#string" class="headerlink" title="string"></a>string</h2><ul>
+<li>set key value [EX seconds] [PX milliseconds] [NX|XX]</li>
+<li>get key</li>
+</ul>
+<h2 id="list"><a href="#list" class="headerlink" title="list"></a>list</h2><ul>
+<li>有排序的字符串集合，允许重复元素</li>
+<li>llen list</li>
+<li>lpush key value [value …]</li>
+<li>rpush key value [value …]</li>
+<li>lrange key start stop （从0开始）</li>
+<li>lpop key</li>
+<li>rpop key</li>
+</ul>
+<h2 id="set"><a href="#set" class="headerlink" title="set"></a>set</h2><ul>
+<li>无排序的字符串集合，不允许重复元素</li>
+<li>sadd key member [member …]</li>
+<li>smembers：获取所有元素</li>
+<li>scard：获取集合中元素个数</li>
+<li>spop key：随机出栈</li>
+<li>smove key1 key2 key1中某个值：将key1中某个值移到key2</li>
+<li>sismember：是否为set中的元素</li>
+</ul>
+<h2 id="hash"><a href="#hash" class="headerlink" title="hash"></a>hash</h2><ul>
+<li>hset key field value</li>
+<li>hget key field</li>
+<li>hdel key field [field …]</li>
+</ul>
+<h2 id="sorted-set（Zset）"><a href="#sorted-set（Zset）" class="headerlink" title="sorted-set（Zset）"></a>sorted-set（Zset）</h2><ul>
+<li>zadd key [NX|XX] [CH] [INCR] score member [score member …]</li>
+</ul>
+<h1 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h1><ul>
+<li>multi：开始事务</li>
+<li>discard:取消事务</li>
+<li>exec：执行事务</li>
+<li>watch key [key …]：如果事务开始前这些key被其他命令修改过，那么事务被打断</li>
+<li>unwatch</li>
+<li>正常执行</li>
+<li>放弃事务</li>
+<li>全体连坐：当某条命令不等执行EXEC便报错，则全部命令放弃执行。</li>
+<li>冤头债主：当某条命令在EXEC后才报错，则只会影响它自己的执行。</li>
+<li>Watch监控：执行了exec或unwatch后所有监控锁都会被清除。</li>
+</ul>
+<h1 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a>持久化</h1><h2 id="RDB方式（Redis-DataBase）"><a href="#RDB方式（Redis-DataBase）" class="headerlink" title="RDB方式（Redis DataBase）"></a>RDB方式（Redis DataBase）</h2><ul>
+<li>在指定的时间间隔内将内存中的数据集快照写入磁盘，恢复时直接将快照文件恢复到内存。</li>
+<li>保存在dump.rdb文件中。</li>
+<li>优势：只有一个文件，时间间隔的数据，可以归档为一个文件，方便压缩转移（就一个文件）</li>
+<li>劣势：如果宕机，数据损失比较大，因为它是没一个时间段进行持久化操作的。也就是积攒的数据比较多，一旦懵逼，就彻底懵逼了。另外，fork的时候内存中的数据被克隆了一份，大致两倍的膨胀性。</li>
+<li>默认打开。</li>
+</ul>
+<h2 id="AOF方式（Append-only-file）"><a href="#AOF方式（Append-only-file）" class="headerlink" title="AOF方式（Append only file）"></a>AOF方式（Append only file）</h2><ul>
+<li>以日志的形式来记录每个写操作，不记录读操作，只能追加文件而不能修改，redis启动之初会根据日志来恢复。</li>
+<li>保存在appendonly.aof文件中。</li>
+<li>优势：即使宕机，也不会损失数据，也不会破坏原有日志文件，保证数据的安全性。</li>
+<li>劣势：文件比rdb大，效率更低。</li>
+<li>在redis.conf文件中，默认关闭。</li>
+</ul>
+<h1 id="主从复制，读写分离"><a href="#主从复制，读写分离" class="headerlink" title="主从复制，读写分离"></a>主从复制，读写分离</h1><ul>
+<li><p>Master以写为主，Slave以读为主。</p>
+</li>
+<li><p>哨兵模式：</p>
+<ol>
+<li>6379带着6380和6381</li>
+<li>conf文件所在目录下新建sentinel.conf文件（名字不能错）。</li>
+<li>配置哨兵：在sentinel文件中填写：sentinel monitor 被监控数据库名字（自己起） 127.0.0.1 6379 1（1表示主机挂掉以后slave投票决定下一个master是谁）</li>
+<li>启动哨兵：Reids-sentinel …/sentinel.conf。</li>
+<li>若哨兵监控到master挂了，则投票使某个slave成为master（假设是6380），当6379重新启动后，它将成为6380的slave。</li>
+</ol>
+</li>
+</ul>
+<h1 id="集群"><a href="#集群" class="headerlink" title="集群"></a>集群</h1><h1 id="Jedis"><a href="#Jedis" class="headerlink" title="Jedis"></a>Jedis</h1><h2 id="连接"><a href="#连接" class="headerlink" title="连接"></a>连接</h2><p>直接连接：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Jedis jedis = <span class="keyword">new</span> Jedis(<span class="string">&quot;127.0.0.1&quot;</span>, <span class="number">6379</span>);</span><br><span class="line">jedis.set(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;刘家东&quot;</span>);</span><br><span class="line">System.out.println(jedis.get(<span class="string">&quot;name&quot;</span>));</span><br><span class="line">jedis.close();</span><br></pre></td></tr></table></figure>
+
+<p>连接池方式:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">JedisPoolConfig config = <span class="keyword">new</span> JedisPoolConfig();</span><br><span class="line">config.setMaxTotal(<span class="number">30</span>);</span><br><span class="line">JedisPool jedisPool = <span class="keyword">new</span> JedisPool(config, <span class="string">&quot;localhost&quot;</span>, <span class="number">6379</span>);</span><br><span class="line">Jedis jedis = jedisPool.getResource();</span><br><span class="line">jedis.set(<span class="string">&quot;name&quot;</span>, <span class="string">&quot;Tom&quot;</span>);</span><br><span class="line">System.out.println(jedis.get(<span class="string">&quot;name&quot;</span>));</span><br><span class="line">jedis.close();</span><br></pre></td></tr></table></figure>
+
+<h2 id="事务-1"><a href="#事务-1" class="headerlink" title="事务"></a>事务</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Transaction transaction = jedis.multi();</span><br><span class="line">transaction.set(<span class="string">&quot;k1&quot;</span>, <span class="string">&quot;11&quot;</span>);</span><br><span class="line">transaction.set(<span class="string">&quot;k2&quot;</span>, <span class="string">&quot;22&quot;</span>);</span><br><span class="line">transaction.exec();</span><br></pre></td></tr></table></figure>
+
+<h2 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Jedis jedis_M = <span class="keyword">new</span> Jedis(<span class="string">&quot;127.0.0.1&quot;</span>,<span class="number">6379</span>);</span><br><span class="line">Jedis jedis_S = <span class="keyword">new</span> Jedis(<span class="string">&quot;127.0.0.1&quot;</span>,<span class="number">6380</span>);</span><br><span class="line"></span><br><span class="line">jedis_S.slaveof(<span class="string">&quot;127.0.0.1&quot;</span>,<span class="number">6379</span>);</span><br><span class="line"></span><br><span class="line">jedis_M.set(<span class="string">&quot;class&quot;</span>,<span class="string">&quot;1122V2&quot;</span>);</span><br><span class="line">String result = jedis_S.get(<span class="string">&quot;class&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="连接池"><a href="#连接池" class="headerlink" title="连接池"></a>连接池</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JedisPoolUtil</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">volatile</span> JedisPool jedisPool = <span class="keyword">null</span>;</span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">JedisPoolUtil</span><span class="params">()</span></span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> JedisPool <span class="title">getJedisPoolInstance</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">null</span> == jedisPool) &#123;</span><br><span class="line">            <span class="keyword">synchronized</span> (JedisPoolUtil.class) &#123;</span><br><span class="line">                <span class="keyword">if</span>(<span class="keyword">null</span> == jedisPool) &#123;</span><br><span class="line">                    JedisPoolConfig poolConfig = <span class="keyword">new</span> JedisPoolConfig();</span><br><span class="line">                    <span class="comment">//配置一个pool可分配多少个jedis实例，如果复制为-1则表示不限制。</span></span><br><span class="line">                    poolConfig.setMaxActive(<span class="number">1000</span>);</span><br><span class="line">                    <span class="comment">//控制一个pool最多有多少个状态为空闲的jedis实例</span></span><br><span class="line">                    poolConfig.setMaxIdle(<span class="number">32</span>);</span><br><span class="line">                    <span class="comment">//当borrow一个jedis实例时，最大的等待时间</span></span><br><span class="line">                    poolConfig.setMaxWait(<span class="number">100</span>*<span class="number">1000</span>);</span><br><span class="line">                    <span class="comment">//获得一个jedis实例时是否检查连接可用，如果为true，则得到的所有jedis实例都是可用的</span></span><br><span class="line">                    poolConfig.setTestOnBorrow(<span class="keyword">true</span>);</span><br><span class="line">                    jedisPool = <span class="keyword">new</span> JedisPool(poolConfig,<span class="string">&quot;127.0.0.1&quot;</span>,<span class="number">6379</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> jedisPool;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">release</span><span class="params">(JedisPool jedisPool,Jedis jedis)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">null</span> != jedis) &#123;</span><br><span class="line">            jedisPool.returnResourceObject(jedis);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Redisson"><a href="#Redisson" class="headerlink" title="Redisson"></a>Redisson</h1><h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>Redisson是架设在Redis基础上的一个Java驻内存数据网格。</p>
+<h2 id="Jedis和Redisson对比"><a href="#Jedis和Redisson对比" class="headerlink" title="Jedis和Redisson对比"></a>Jedis和Redisson对比</h2><ul>
+<li>Jedis是Redis的Java实现的客户端，其API提供了比较全面的Redis命令的支持；</li>
+<li>Redisson实现了分布式和可扩展的Java数据结构，和Jedis相比，功能较为简单，不支持字符串操作，不支持排序、事务、管道、分区等Redis特性。</li>
+<li>Redisson的宗旨是促进使用者对Redis的关注分离，从而让使用者能够将精力更集中地放在处理业务逻辑上。</li>
+<li>Jedis中的方法调用是比较底层的暴露的Redis的API，也即Jedis中的Java方法基本和Redis的API保持着一致，了解Redis的API，也就能熟练的使用Jedis。</li>
+<li>Redisson中的方法则是进行比较高的抽象，每个方法调用可能进行了一个或多个Redis方法调用。</li>
+<li>在分布式开发中，Redisson可提供更便捷的方法。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
+              <a href="/tags/Redis/" rel="tag"># Redis</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/08/09/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="prev" title="数据结构学习笔记">
+      <i class="fa fa-chevron-left"></i> 数据结构学习笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/08/13/MongoDB%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="next" title="MongoDB学习笔记">
+      MongoDB学习笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#NoSQL"><span class="nav-number">1.</span> <span class="nav-text">NoSQL</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84CAP%E5%92%8CBASE"><span class="nav-number">2.</span> <span class="nav-text">分布式数据库的CAP和BASE</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">3.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">4.</span> <span class="nav-text">数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#string"><span class="nav-number">4.1.</span> <span class="nav-text">string</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#list"><span class="nav-number">4.2.</span> <span class="nav-text">list</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#set"><span class="nav-number">4.3.</span> <span class="nav-text">set</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hash"><span class="nav-number">4.4.</span> <span class="nav-text">hash</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sorted-set%EF%BC%88Zset%EF%BC%89"><span class="nav-number">4.5.</span> <span class="nav-text">sorted-set（Zset）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%8B%E5%8A%A1"><span class="nav-number">5.</span> <span class="nav-text">事务</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-number">6.</span> <span class="nav-text">持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#RDB%E6%96%B9%E5%BC%8F%EF%BC%88Redis-DataBase%EF%BC%89"><span class="nav-number">6.1.</span> <span class="nav-text">RDB方式（Redis DataBase）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOF%E6%96%B9%E5%BC%8F%EF%BC%88Append-only-file%EF%BC%89"><span class="nav-number">6.2.</span> <span class="nav-text">AOF方式（Append only file）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6%EF%BC%8C%E8%AF%BB%E5%86%99%E5%88%86%E7%A6%BB"><span class="nav-number">7.</span> <span class="nav-text">主从复制，读写分离</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%86%E7%BE%A4"><span class="nav-number">8.</span> <span class="nav-text">集群</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Jedis"><span class="nav-number">9.</span> <span class="nav-text">Jedis</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5"><span class="nav-number">9.1.</span> <span class="nav-text">连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E5%8A%A1-1"><span class="nav-number">9.2.</span> <span class="nav-text">事务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6"><span class="nav-number">9.3.</span> <span class="nav-text">主从复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9E%E6%8E%A5%E6%B1%A0"><span class="nav-number">9.4.</span> <span class="nav-text">连接池</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redisson"><span class="nav-number">10.</span> <span class="nav-text">Redisson</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="nav-number">10.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Jedis%E5%92%8CRedisson%E5%AF%B9%E6%AF%94"><span class="nav-number">10.2.</span> <span class="nav-text">Jedis和Redisson对比</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

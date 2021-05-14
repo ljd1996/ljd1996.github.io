@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述Java字节码以二进制的形式存储在.class文件中，每一个.class文件包含一个Java类或接口。Javaassist就是一个用来处理Java字节码的类库。它可以在一个已经编译好的类中添加新的方法，或者是修改已有的方法，并且不需要对字节码方面有深入的了解。同时也可以通过完全手动的方式生成一个新的类对象。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Javassist用法">
+<meta property="og:url" content="http://yoursite.com/2020/04/23/Javassist%E7%94%A8%E6%B3%95/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述Java字节码以二进制的形式存储在.class文件中，每一个.class文件包含一个Java类或接口。Javaassist就是一个用来处理Java字节码的类库。它可以在一个已经编译好的类中添加新的方法，或者是修改已有的方法，并且不需要对字节码方面有深入的了解。同时也可以通过完全手动的方式生成一个新的类对象。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-23T07:59:39.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.883Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Javassist">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/04/23/Javassist%E7%94%A8%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Javassist用法 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/23/Javassist%E7%94%A8%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Javassist用法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-23 15:59:39" itemprop="dateCreated datePublished" datetime="2020-04-23T15:59:39+08:00">2020-04-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">语言</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%AD%E8%A8%80/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/04/23/Javassist%E7%94%A8%E6%B3%95/" class="post-meta-item leancloud_visitors" data-flag-title="Javassist用法" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/04/23/Javassist%E7%94%A8%E6%B3%95/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/04/23/Javassist%E7%94%A8%E6%B3%95/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Java字节码以二进制的形式存储在.class文件中，每一个.class文件包含一个Java类或接口。Javaassist就是一个用来处理Java字节码的类库。它可以在一个已经编译好的类中添加新的方法，或者是修改已有的方法，并且不需要对字节码方面有深入的了解。同时也可以通过完全手动的方式生成一个新的类对象。</p>
+<a id="more"></a>
+
+<p>Maven依赖方式：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.javassist<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>javassist<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.27.0-GA<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>Gradle依赖方式：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation <span class="string">&#x27;org.javassist:javassist:3.27.0-GA&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="ClassPool"><a href="#ClassPool" class="headerlink" title="ClassPool"></a>ClassPool</h1><p>ClassPool是CtClass对象的容器，它按需读取类文件来构造CtClass对象，并且保存CtClass对象以便以后使用。</p>
+<p>从实现的角度来看，ClassPool 是一个存储 CtClass 的 Hash 表，类的名称作为 Hash 表的 key。ClassPool 的 get() 函数用于从 Hash 表中查找 key 对应的 CtClass 对象。如果没有找到，get() 函数会创建并返回一个新的 CtClass 对象，这个新对象会保存在 Hash 表中。</p>
+<p>需要注意的是ClassPool会在内存中维护所有被它创建过的CtClass，当CtClass数量过多时，会占用大量的内存，API中给出的解决方案是重新创建ClassPool 或 有意识的调用CtClass的detach()方法以释放内存。</p>
+<p>ClassPool需要关注的方法：</p>
+<ul>
+<li>getDefault：返回默认的ClassPool，一般通过该方法创建我们的ClassPool；</li>
+<li>appendClassPath, insertClassPath：将一个ClassPath加到类搜索路径的末尾位置 或 插入到起始位置。通常通过该方法写入额外的类搜索路径，以解决多个类加载器环境中找不到类的尴尬；</li>
+<li>toClass：将修改后的CtClass加载至当前线程的上下文类加载器中，CtClass的toClass方法是通过调用本方法实现。需要注意的是一旦调用该方法，则无法继续修改已经被加载的class；</li>
+<li>makeClass：根据类名创建新的CtClass对象；</li>
+<li>get，getCtClass：根据类路径名获取该类的CtClass对象，用于后续的编辑。</li>
+</ul>
+<p>可以使用<code>toBytecode()</code>函数来获取修改过的字节码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">byte</span>[] b = cc.toBytecode();</span><br></pre></td></tr></table></figure>
+
+<p>也可以通过<code>toClass()</code>函数直接将<code>CtClass</code>转换成<code>Class</code>对象:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Class clazz = cc.toClass();</span><br></pre></td></tr></table></figure>
+
+<p><code>toClass()</code>会请求当前线程的ClassLoader加载CtClass所代表的类文件,它返回此类文件的java.lang.Class对象。</p>
+<h1 id="CtClass"><a href="#CtClass" class="headerlink" title="CtClass"></a>CtClass</h1><p>CtClass类表示一个class文件，每个CtClass对象都必须从ClassPool中获取，CtClass需要关注的方法：</p>
+<ul>
+<li>freeze：冻结一个类，使其不可修改；</li>
+<li>isFrozen：判断一个类是否已被冻结；</li>
+<li>defrost：解冻一个类，使其可以被修改；</li>
+<li>prune：删除类不必要的属性，以减少内存占用。调用该方法后，许多方法无法将无法正常使用，慎用；</li>
+<li>detach：将该class从ClassPool中删除；</li>
+<li>writeFile：根据CtClass生成.class文件；</li>
+<li>toClass：通过类加载器加载该CtClass；</li>
+<li>addField，removeField：添加/移除一个CtField；</li>
+<li>addMethod，removeMethod：添加/移除一个CtMethod；</li>
+<li>addConstructor，removeConstructor：添加/移除一个CtConstructor。</li>
+</ul>
+<p>如果一个 CtClass 对象通过 writeFile(), toClass(), toBytecode() 被转换成一个类文件，此 CtClass 对象会被冻结起来，不允许再修改，因为一个类只能被 JVM 加载一次。</p>
+<p>但是，一个冷冻的 CtClass 也可以被解冻，例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">CtClasss cc = ...;</span><br><span class="line">cc.writeFile();</span><br><span class="line">cc.defrost();</span><br><span class="line">cc.setSuperclass(...); <span class="comment">// 因为类已经被解冻，所以这里可以调用成功</span></span><br></pre></td></tr></table></figure>
+
+<p>调用 defrost() 之后，此 CtClass 对象又可以被修改了。</p>
+<p>如果 ClassPool.doPruning 被设置为 true，Javassist 在冻结 CtClass 时，会修剪 CtClass 的数据结构。为了减少内存的消耗，修剪操作会丢弃 CtClass 对象中不必要的属性。例如，Code_attribute 结构会被丢弃。一个 CtClass 对象被修改之后，方法的字节码是不可访问的，但是方法名称、方法签名、注解信息可以被访问。修剪过的 CtClass 对象不能再次被解冻。ClassPool.doPruning 的默认值为 false。</p>
+<p>stopPruning() 可以用来驳回修剪操作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">CtClasss cc = ...;</span><br><span class="line">cc.stopPruning(<span class="keyword">true</span>);</span><br><span class="line">cc.writeFile(); <span class="comment">// 转换成一个 class 文件</span></span><br><span class="line"><span class="comment">// cc is not pruned.</span></span><br></pre></td></tr></table></figure>
+
+<p>这个 CtClass 没有被修剪，所以在 writeFile() 之后，可以被解冻。</p>
+<p>注意：调试的时候可能临时需要停止修剪和冻结，然后保存一个修改过的类文件到磁盘，debugWriteFile() 方法正是为此准备的。它停止修剪，然后写类文件，然后解冻并再次打开修剪（如果开始时修养是打开的）。</p>
+<h1 id="CtMthod"><a href="#CtMthod" class="headerlink" title="CtMthod"></a>CtMthod</h1><p>CtMthod代表类中的某个方法，可以通过CtClass提供的API获取 或者 构造方法 或者 CtNewMethod.make()方法新建，通过CtMethod对象可以实现对方法的修改。</p>
+<p>CtMethod中的一些重要方法：</p>
+<ul>
+<li>insertBefore：在方法的起始位置插入代码；</li>
+<li>insterAfter：在方法的所有 return 语句前插入代码以确保语句能够被执行，除非遇到exception；</li>
+<li>insertAt：在指定的位置插入代码；</li>
+<li>setBody：将方法的内容设置为要写入的代码，当方法被abstract修饰时，该修饰符被移除；</li>
+<li>make：创建一个新的方法。</li>
+</ul>
+<p>CtNewMethod是一个用来创建CtMethod实例的类，其一个make方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> CtMethod <span class="title">make</span><span class="params">(<span class="keyword">int</span> modifiers, CtClass returnType,</span></span></span><br><span class="line"><span class="function"><span class="params">                            String mname, CtClass[] parameters,</span></span></span><br><span class="line"><span class="function"><span class="params">                            CtClass[] exceptions,</span></span></span><br><span class="line"><span class="function"><span class="params">                            String body, CtClass declaring)</span></span></span><br><span class="line"><span class="function">    <span class="keyword">throws</span> CannotCompileException</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        CtMethod cm</span><br><span class="line">            = <span class="keyword">new</span> CtMethod(returnType, mname, parameters, declaring);</span><br><span class="line">        cm.setModifiers(modifiers);</span><br><span class="line">        cm.setExceptionTypes(exceptions);</span><br><span class="line">        cm.setBody(body);</span><br><span class="line">        <span class="keyword">return</span> cm;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (NotFoundException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> CannotCompileException(e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>也可以通过<code>CtNewMethod.setter/getter</code>方法为某个属性创建get/set方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">CtClass cc = ...;</span><br><span class="line">CtField param = ...;</span><br><span class="line">cc.addMethod(CtNewMethod.setter(<span class="string">&quot;setName&quot;</span>, param));</span><br><span class="line">cc.addMethod(CtNewMethod.getter(<span class="string">&quot;getName&quot;</span>, param));</span><br></pre></td></tr></table></figure>
+
+<h1 id="CtField"><a href="#CtField" class="headerlink" title="CtField"></a>CtField</h1><p>CtField代表类中的某个属性，可以直接通过其构造方法创建实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">CtClass cc = pool.makeClass(<span class="string">&quot;com.hearing.demo.Person&quot;</span>);</span><br><span class="line">CtField param = <span class="keyword">new</span> CtField(pool.get(<span class="string">&quot;java.lang.String&quot;</span>), <span class="string">&quot;name&quot;</span>, cc);</span><br><span class="line">param.setModifiers(Modifier.PRIVATE);</span><br><span class="line">cc.addField(param, CtField.Initializer.constant(<span class="string">&quot;hearing&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<h1 id="CtConstructor"><a href="#CtConstructor" class="headerlink" title="CtConstructor"></a>CtConstructor</h1><p>CtConstructor代表类中的一个构造器，可以通过<code>CtConstructor.make</code>方法创建：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> CtConstructor <span class="title">make</span><span class="params">(CtClass[] parameters,</span></span></span><br><span class="line"><span class="function"><span class="params">                                    CtClass[] exceptions,</span></span></span><br><span class="line"><span class="function"><span class="params">                                    String body, CtClass declaring)</span></span></span><br><span class="line"><span class="function">    <span class="keyword">throws</span> CannotCompileException</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        CtConstructor cc = <span class="keyword">new</span> CtConstructor(parameters, declaring);</span><br><span class="line">        cc.setExceptionTypes(exceptions);</span><br><span class="line">        cc.setBody(body);</span><br><span class="line">        <span class="keyword">return</span> cc;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (NotFoundException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> CannotCompileException(e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>也可以通过构造方法直接创建：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">CtConstructor cons = <span class="keyword">new</span> CtConstructor(<span class="keyword">new</span> CtClass[]&#123;pool.get(<span class="string">&quot;java.lang.String&quot;</span>)&#125;, cc);</span><br><span class="line"><span class="comment">// $0=this / $1,$2,$3... 代表方法参数</span></span><br><span class="line">cons.setBody(<span class="string">&quot;&#123;$0.name = $1;&#125;&quot;</span>);</span><br><span class="line">cc.addConstructor(cons);</span><br></pre></td></tr></table></figure>
+
+<h1 id="ClassPath"><a href="#ClassPath" class="headerlink" title="ClassPath"></a>ClassPath</h1><p>ClassPath是一个接口，代表类的搜索路径，含有具体的搜索实现。当通过其它途径无法获取要编辑的类时，可以尝试定制一个自己的ClassPath。API提供的实现中值得关注的有：</p>
+<ul>
+<li>ByteArrayClassPath：将类以字节码的形式加入到该path中，ClassPool可以从该path中生成所需的CtClass。</li>
+<li>ClassClassPath：通过某个class生成的path，通过该class的classloader来尝试加载指定的类文件。</li>
+<li>LoaderClassPath：通过某个classloader生成path，并通过该classloader搜索加载指定的类文件。需要注意的是该类加载器以弱引用的方式存在于path中，当不存在强引用时，随时可能会被清理。</li>
+</ul>
+<p>通过 ClassPool.getDefault() 获取的 ClassPool 使用 JVM 的类搜索路径。如果程序运行在 JBoss 或者 Tomcat 等 Web 服务器上，ClassPool 可能无法找到用户的类，因为 Web 服务器使用多个类加载器作为系统类加载器。在这种情况下，ClassPool 必须添加额外的类搜索路径。</p>
+<p>下面的例子中，pool 代表一个 ClassPool 对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pool.insertClassPath(<span class="keyword">new</span> ClassClassPath(<span class="keyword">this</span>.getClass()));</span><br></pre></td></tr></table></figure>
+
+<p>上面的语句将 this 指向的类添加到 pool 的类加载路径中。你可以使用任意 Class 对象来代替 this.getClass()，从而将 Class 对象添加到类加载路径中。</p>
+<p>也可以注册一个目录作为类搜索路径。下面的例子将 <code>/usr/local/javalib</code> 添加到类搜索路径中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ClassPool pool = ClassPool.getDefault();</span><br><span class="line">pool.insertClassPath(<span class="string">&quot;/usr/local/javalib&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<p>类搜索路径不但可以是目录，还可以是 URL ：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ClassPool pool = ClassPool.getDefault();</span><br><span class="line">ClassPath cp = <span class="keyword">new</span> URLClassPath(<span class="string">&quot;www.javassist.org&quot;</span>, <span class="number">80</span>, <span class="string">&quot;/java/&quot;</span>, <span class="string">&quot;org.javassist.&quot;</span>);</span><br><span class="line">pool.insertClassPath(cp);</span><br></pre></td></tr></table></figure>
+
+<p>上述代码将 <code>http://www.javassist.org:80/java/</code> 添加到类搜索路径。并且这个URL只能搜索 org.javassist 包里面的类。例如，为了加载 <code>org.javassist.test.Main</code>，它的类文件会从获取 <code>http://www.javassist.org:80/java/org/javassist/test/Main.class</code> 获取。</p>
+<p>此外，也可以直接传递一个 byte 数组给 ClassPool 来构造一个 CtClass 对象，完成这项操作，需要使用 ByteArrayPath 类。示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ClassPool cp = ClassPool.getDefault();</span><br><span class="line"><span class="keyword">byte</span>[] b = a <span class="keyword">byte</span> array;</span><br><span class="line">String name = <span class="class"><span class="keyword">class</span> <span class="title">name</span></span>;</span><br><span class="line">cp.insertClassPath(<span class="keyword">new</span> ByteArrayClassPath(name, b));</span><br><span class="line">CtClass cc = cp.get(name);</span><br></pre></td></tr></table></figure>
+
+<p>示例中的 CtClass 对象表示 b 代表的 class 文件。将对应的类名传递给 ClassPool 的 get() 方法，就可以从 ByteArrayClassPath 中读取到对应的类文件。</p>
+<p>如果你不知道类的全名，可以使用 makeClass() 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ClassPool cp = ClassPool.getDefault();</span><br><span class="line">InputStream ins = an input stream <span class="keyword">for</span> reading a <span class="class"><span class="keyword">class</span> <span class="title">file</span></span>;</span><br><span class="line">CtClass cc = cp.makeClass(ins);</span><br></pre></td></tr></table></figure>
+
+<p>makeClass() 返回从给定输入流构造的 CtClass 对象。你可以使用 makeClass() 将类文件提供给 ClassPool 对象。如果搜索路径包含大的 jar 文件，这可能会提高性能。由于 ClassPool 对象按需读取类文件，它可能会重复搜索整个 jar 文件中的每个类文件。 makeClass() 可以用于优化此搜索。由 makeClass() 构造的 CtClass 保存在 ClassPool 对象中，从而使得类文件不会再被读取。</p>
+<p>用户可以通过实现 ClassPath 接口来扩展类加载路径，然后调用 ClassPool 的 insertClassPath() 方法将路径添加进来。这种技术主要用于将非标准资源添加到类搜索路径中。</p>
+<h1 id="ClassLoader"><a href="#ClassLoader" class="headerlink" title="ClassLoader"></a>ClassLoader</h1><p>CtClass的toClass()方法请求当前线程的上下文类加载器，加载CtClass对象所表示的类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Hello</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">say</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Hello&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        ClassPool cp = ClassPool.getDefault();</span><br><span class="line">        CtClass cc = cp.get(<span class="string">&quot;Hello&quot;</span>);</span><br><span class="line">        CtMethod m = cc.getDeclaredMethod(<span class="string">&quot;say&quot;</span>);</span><br><span class="line">        m.insertBefore(<span class="string">&quot;&#123; System.out.println(\&quot;Hello.say():\&quot;); &#125;&quot;</span>);</span><br><span class="line">        Class c = cc.toClass();</span><br><span class="line">        Hello h = (Hello) c.newInstance();</span><br><span class="line">        h.say();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意：上面的程序要正常运行，Hello 类在调用 toClass() 之前不能被加载。如果 JVM 在 toClass() 调用之前加载了原始的 Hello 类，后续加载修改的 Hello 类将会失败（LinkageError 抛出）。例如，如果 Test 中的 main() 是这样的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    Hello orig = <span class="keyword">new</span> Hello();</span><br><span class="line">    ClassPool cp = ClassPool.getDefault();</span><br><span class="line">    CtClass cc = cp.get(<span class="string">&quot;Hello&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>那么，原始的 Hello 类在 main 的第一行被加载，toClass() 调用会抛出一个异常，因为类加载器不能同时加载两个不同版本的 Hello 类。</p>
+<p>如果程序在某些应用程序服务器（如JBoss和Tomcat）上运行，toClass()使用的上下文类加载器可能是不合适的。在这种情况下，你会看到一个意想不到的 ClassCastException。为了避免这个异常，必须给 toClass() 指定一个合适的类加载器。例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">CtClass cc = ...;</span><br><span class="line">Class c = cc.toClass(bean.getClass().getClassLoader());</span><br></pre></td></tr></table></figure>
+
+<p>应该给toClass()传递加载了你的程序的类加载器（上例中，bean对象的类），toClass() 是为了简便而提供的方法，如果你需要更复杂的功能，你应该编写自己的类加载器。</p>
+<p>Javassit 提供一个类加载器 javassist.Loader。它使用 javassist.ClassPool 对象来读取类文件。</p>
+<p>例如，javassist.Loader 可以用于加载用 Javassist 修改过的类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        ClassPool pool = ClassPool.getDefault();</span><br><span class="line">        Loader cl = <span class="keyword">new</span> Loader(pool);</span><br><span class="line"></span><br><span class="line">        CtClass ct = pool.get(<span class="string">&quot;test.Rectangle&quot;</span>);</span><br><span class="line">        ct.setSuperclass(pool.get(<span class="string">&quot;test.Point&quot;</span>));</span><br><span class="line"></span><br><span class="line">        Class c = cl.loadClass(<span class="string">&quot;test.Rectangle&quot;</span>);</span><br><span class="line">        Object rect = c.newInstance();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个程序将 test.Rectangle 的超类设置为 test.Point。然后再加载修改的类，并创建新的 test.Rectangle 类的实例。</p>
+<p>如果用户希望在加载时按需修改类，则可以向 javassist.Loader 添加事件监听器。当类加载器加载类时会通知监听器。事件监听器类必须实现以下接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Translator</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">(ClassPool pool)</span></span></span><br><span class="line"><span class="function">        <span class="keyword">throws</span> NotFoundException, CannotCompileException</span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onLoad</span><span class="params">(ClassPool pool, String classname)</span></span></span><br><span class="line"><span class="function">        <span class="keyword">throws</span> NotFoundException, CannotCompileException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当事件监听器通过 addTranslator() 添加到 javassist.Loader 对象时，start() 方法会被调用。在 javassist.Loader 加载类之前，会调用 onLoad() 方法。可以在 onLoad() 方法中修改被加载的类的定义。</p>
+<p>例如，下面的事件监听器在类加载之前，将所有类更改为 public 类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyTranslator</span> <span class="keyword">implements</span> <span class="title">Translator</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">start</span><span class="params">(ClassPool pool)</span> <span class="keyword">throws</span> NotFoundException, CannotCompileException </span>&#123;&#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">onLoad</span><span class="params">(ClassPool pool, String classname)</span> <span class="keyword">throws</span> NotFoundException, CannotCompileException </span>&#123;</span><br><span class="line">        CtClass cc = pool.get(classname);</span><br><span class="line">        cc.setModifiers(Modifier.PUBLIC);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意，onLoad() 不必调用 toBytecode() 或 writeFile()，因为 javassist.Loader 会调用这些方法来获取类文件。</p>
+<h1 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h1><h2 id="创建Class文件"><a href="#创建Class文件" class="headerlink" title="创建Class文件"></a>创建Class文件</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">App</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            createPerson();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">createPerson</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        ClassPool pool = ClassPool.getDefault();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 1. 创建一个空类</span></span><br><span class="line">        CtClass cc = pool.makeClass(<span class="string">&quot;com.hearing.demo.Person&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2. 新增一个字段 private String name = &quot;hearing&quot;;</span></span><br><span class="line">        CtField param = <span class="keyword">new</span> CtField(pool.get(<span class="string">&quot;java.lang.String&quot;</span>), <span class="string">&quot;name&quot;</span>, cc);</span><br><span class="line">        param.setModifiers(Modifier.PRIVATE);</span><br><span class="line">        cc.addField(param, CtField.Initializer.constant(<span class="string">&quot;hearing&quot;</span>));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 3. 生成 getter、setter 方法</span></span><br><span class="line">        cc.addMethod(CtNewMethod.setter(<span class="string">&quot;setName&quot;</span>, param));</span><br><span class="line">        cc.addMethod(CtNewMethod.getter(<span class="string">&quot;getName&quot;</span>, param));</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 4. 添加无参的构造函数</span></span><br><span class="line">        CtConstructor cons = <span class="keyword">new</span> CtConstructor(<span class="keyword">new</span> CtClass[]&#123;&#125;, cc);</span><br><span class="line">        cons.setBody(<span class="string">&quot;&#123;name = \&quot;hearing\&quot;;&#125;&quot;</span>);</span><br><span class="line">        cc.addConstructor(cons);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 5. 添加有参的构造函数</span></span><br><span class="line">        cons = <span class="keyword">new</span> CtConstructor(<span class="keyword">new</span> CtClass[]&#123;pool.get(<span class="string">&quot;java.lang.String&quot;</span>)&#125;, cc);</span><br><span class="line">        <span class="comment">// $0=this / $1,$2,$3... 代表方法参数</span></span><br><span class="line">        cons.setBody(<span class="string">&quot;&#123;$0.name = $1;&#125;&quot;</span>);</span><br><span class="line">        cc.addConstructor(cons);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 6. 创建一个名为printName方法，无参数，无返回值，输出name值</span></span><br><span class="line">        CtMethod ctMethod = <span class="keyword">new</span> CtMethod(CtClass.voidType, <span class="string">&quot;printName&quot;</span>, <span class="keyword">new</span> CtClass[]&#123;&#125;, cc);</span><br><span class="line">        ctMethod.setModifiers(Modifier.PUBLIC);</span><br><span class="line">        ctMethod.setBody(<span class="string">&quot;&#123;System.out.println(name);&#125;&quot;</span>);</span><br><span class="line">        cc.addMethod(ctMethod);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//这里会将这个创建的类对象编译为.class文件</span></span><br><span class="line">        cc.writeFile(<span class="string">&quot;/.../path/&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>创建的class文件如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Source code recreated from a .class file by IntelliJ IDEA</span></span><br><span class="line"><span class="comment">// (powered by Fernflower decompiler)</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="keyword">package</span> com.hearing.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name = <span class="string">&quot;hearing&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String var1)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = var1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = <span class="string">&quot;hearing&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Person</span><span class="params">(String var1)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = var1;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">printName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="keyword">this</span>.name);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="调用生成的类对象"><a href="#调用生成的类对象" class="headerlink" title="调用生成的类对象"></a>调用生成的类对象</h2><p><strong>1.通过反射的方式调用：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Object person = cc.toClass().newInstance();</span><br><span class="line">Method setName = person.getClass().getMethod(<span class="string">&quot;setName&quot;</span>, String.class);</span><br><span class="line">setName.invoke(person, <span class="string">&quot;hearing1&quot;</span>);</span><br><span class="line">Method execute = person.getClass().getMethod(<span class="string">&quot;printName&quot;</span>);</span><br><span class="line">execute.invoke(person);</span><br></pre></td></tr></table></figure>
+
+<p><strong>2.通过读取class文件的方式调用：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ClassPool pool = ClassPool.getDefault();</span><br><span class="line"><span class="comment">// 设置类路径</span></span><br><span class="line">pool.appendClassPath(<span class="string">&quot;/.../path/&quot;</span>);</span><br><span class="line">CtClass ctClass = pool.get(<span class="string">&quot;com.hearing.demo.Person&quot;</span>);</span><br><span class="line">Object person = ctClass.toClass().newInstance();</span><br><span class="line"><span class="comment">// 下面和通过反射的方式一样去使用</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>3.通过接口的方式：</strong></p>
+<p>上面两种其实都是通过反射的方式去调用，问题在于我们的工程中其实并没有这个类对象，所以反射的方式比较麻烦，并且开销也很大。那么如果你的类对象可以抽象为一些方法的合集，就可以考虑为该类生成一个接口类。这样在newInstance()的时候我们就可以强转为接口，可以将反射的那一套省略掉了。</p>
+<p>还拿上面的Person类来说，新建一个IPerson接口类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IPerson</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span></span>;</span><br><span class="line">    <span class="function">String <span class="title">getName</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">printName</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实现部分的代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">ClassPool pool = ClassPool.getDefault();</span><br><span class="line">pool.appendClassPath(<span class="string">&quot;/.../path/&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 获取接口</span></span><br><span class="line">CtClass codeClassI = pool.get(<span class="string">&quot;com.hearing.demo.IPerson&quot;</span>);</span><br><span class="line"><span class="comment">// 获取上面生成的类</span></span><br><span class="line">CtClass ctClass = pool.get(<span class="string">&quot;com.hearing.demo.Person&quot;</span>);</span><br><span class="line"><span class="comment">// 使代码生成的类，实现 IPerson 接口</span></span><br><span class="line">ctClass.setInterfaces(<span class="keyword">new</span> CtClass[]&#123;codeClassI&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 以下通过接口直接调用 强转</span></span><br><span class="line">IPerson person = (IPerson)ctClass.toClass().newInstance();</span><br><span class="line">System.out.println(person.getName());</span><br><span class="line">person.setName(<span class="string">&quot;hearing1&quot;</span>);</span><br><span class="line">person.printName();</span><br></pre></td></tr></table></figure>
+
+<h2 id="修改现有的类对象"><a href="#修改现有的类对象" class="headerlink" title="修改现有的类对象"></a>修改现有的类对象</h2><p>有如下类对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test1</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;I am test1&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后进行修改：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">App</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            update();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        ClassPool pool = ClassPool.getDefault();</span><br><span class="line">        CtClass cc = pool.get(<span class="string">&quot;com.hearing.demo.Test&quot;</span>);</span><br><span class="line"></span><br><span class="line">        CtMethod personFly = cc.getDeclaredMethod(<span class="string">&quot;test1&quot;</span>);</span><br><span class="line">        personFly.insertBefore(<span class="string">&quot;System.out.println(\&quot;...before...\&quot;);&quot;</span>);</span><br><span class="line">        personFly.insertAfter(<span class="string">&quot;System.out.println(\&quot;...after...\&quot;);&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//新增一个方法</span></span><br><span class="line">        CtMethod ctMethod = <span class="keyword">new</span> CtMethod(CtClass.voidType, <span class="string">&quot;test2&quot;</span>, <span class="keyword">new</span> CtClass[]&#123;&#125;, cc);</span><br><span class="line">        ctMethod.setModifiers(Modifier.PUBLIC);</span><br><span class="line">        ctMethod.setBody(<span class="string">&quot;&#123;System.out.println(\&quot;I am test2\&quot;);&#125;&quot;</span>);</span><br><span class="line">        cc.addMethod(ctMethod);</span><br><span class="line"></span><br><span class="line">        Object test = cc.toClass().newInstance();</span><br><span class="line">        Method personFlyMethod = test.getClass().getMethod(<span class="string">&quot;test1&quot;</span>);</span><br><span class="line">        personFlyMethod.invoke(test);</span><br><span class="line">        Method execute = test.getClass().getMethod(<span class="string">&quot;test2&quot;</span>);</span><br><span class="line">        execute.invoke(test);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>需要注意的是：上面的insertBefore() 和 setBody()中的语句，如果是单行语句可以直接用双引号，但是有多行语句的情况下，需要将多行语句用{}括起来。javassist只接受单个语句或用大括号括起来的语句块。</strong></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/Javassist/" rel="tag"># Javassist</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/23/Android-Gradle-Transform%E7%94%A8%E6%B3%95/" rel="prev" title="Android-Gradle-Transform用法">
+      <i class="fa fa-chevron-left"></i> Android-Gradle-Transform用法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/27/OkHttp%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" rel="next" title="OkHttp源码解析">
+      OkHttp源码解析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ClassPool"><span class="nav-number">2.</span> <span class="nav-text">ClassPool</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CtClass"><span class="nav-number">3.</span> <span class="nav-text">CtClass</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CtMthod"><span class="nav-number">4.</span> <span class="nav-text">CtMthod</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CtField"><span class="nav-number">5.</span> <span class="nav-text">CtField</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CtConstructor"><span class="nav-number">6.</span> <span class="nav-text">CtConstructor</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ClassPath"><span class="nav-number">7.</span> <span class="nav-text">ClassPath</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ClassLoader"><span class="nav-number">8.</span> <span class="nav-text">ClassLoader</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">9.</span> <span class="nav-text">示例</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAClass%E6%96%87%E4%BB%B6"><span class="nav-number">9.1.</span> <span class="nav-text">创建Class文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E7%94%A8%E7%94%9F%E6%88%90%E7%9A%84%E7%B1%BB%E5%AF%B9%E8%B1%A1"><span class="nav-number">9.2.</span> <span class="nav-text">调用生成的类对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E7%8E%B0%E6%9C%89%E7%9A%84%E7%B1%BB%E5%AF%B9%E8%B1%A1"><span class="nav-number">9.3.</span> <span class="nav-text">修改现有的类对象</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

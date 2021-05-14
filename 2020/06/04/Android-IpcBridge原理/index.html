@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述前段时间在读EventBus的源码，然后突然来了兴趣（闲的没事）就稍微修改了一下使其支持进程间订阅消息，实现原理很简单，其实就是进程内使用EventBus原生方式，进程间则通过Binder发送信息。实现比较简单，进程间Binder传递其实也可以不使用bindService，使用ContentProvider会更加灵活，后来就想着反正没事就试一试写个IPC框架（反正也不会有人用，练练手）。 大概">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android-IpcBridge原理">
+<meta property="og:url" content="http://yoursite.com/2020/06/04/Android-IpcBridge%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述前段时间在读EventBus的源码，然后突然来了兴趣（闲的没事）就稍微修改了一下使其支持进程间订阅消息，实现原理很简单，其实就是进程内使用EventBus原生方式，进程间则通过Binder发送信息。实现比较简单，进程间Binder传递其实也可以不使用bindService，使用ContentProvider会更加灵活，后来就想着反正没事就试一试写个IPC框架（反正也不会有人用，练练手）。 大概">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-06-04T03:25:25.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.748Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="框架">
+<meta property="article:tag" content="IPC">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/06/04/Android-IpcBridge%E5%8E%9F%E7%90%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android-IpcBridge原理 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/04/Android-IpcBridge%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android-IpcBridge原理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-06-04 11:25:25" itemprop="dateCreated datePublished" datetime="2020-06-04T11:25:25+08:00">2020-06-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index"><span itemprop="name">框架</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/06/04/Android-IpcBridge%E5%8E%9F%E7%90%86/" class="post-meta-item leancloud_visitors" data-flag-title="Android-IpcBridge原理" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/06/04/Android-IpcBridge%E5%8E%9F%E7%90%86/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/06/04/Android-IpcBridge%E5%8E%9F%E7%90%86/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>前段时间在读EventBus的源码，然后突然来了兴趣（闲的没事）就稍微修改了一下使其支持进程间订阅消息，实现原理很简单，其实就是进程内使用EventBus原生方式，进程间则通过Binder发送信息。实现比较简单，进程间Binder传递其实也可以不使用bindService，使用ContentProvider会更加灵活，后来就想着反正没事就试一试写个IPC框架（反正也不会有人用，练练手）。</p>
+<p>大概原理就是通过一个AIDL接口传递要调用的类和方法名，然后通过反射调用。进程间的Binder通过ContentProvider传递（<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/01/06/Android-IPC%E6%9C%BA%E5%88%B6/#ContentProvider-amp-Binder">Android-IPC机制-ContentProvider</a>），不需要bindService，然后自定义了一个Gradle插件，用来动态修改Manifest信息以及生成ContentProvider类。</p>
+<p>项目地址：<a target="_blank" rel="noopener" href="https://github.com/ljd1996/IpcBridge">IpcBridge</a>，ReadMe文档有使用方法。</p>
+<p>项目工程中包括三个模块，一个是IpcBridge的Kotlin源代码，一个是IpcBridge的Gradle插件源码，主模块是demo模块。</p>
+<a id="more"></a>
+
+<h1 id="IpcBridge"><a href="#IpcBridge" class="headerlink" title="IpcBridge"></a>IpcBridge</h1><h2 id="AIDL接口"><a href="#AIDL接口" class="headerlink" title="AIDL接口"></a>AIDL接口</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">IBridgeInterface</span> </span>&#123;</span><br><span class="line">    <span class="function">Bundle <span class="title">call</span><span class="params">(in Bundle args)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里参数和返回值都是Bundle类型，具体的参数和返回值都约定在Bundle里，毕竟Bundle现成就实现了Parcelable接口。</p>
+<h2 id="ContentProvider基础类"><a href="#ContentProvider基础类" class="headerlink" title="ContentProvider基础类"></a>ContentProvider基础类</h2><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">open</span> <span class="class"><span class="keyword">class</span> <span class="title">BaseProvider</span> : <span class="type">ContentProvider</span></span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">query</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        uri: <span class="type">Uri</span>, projection: <span class="type">Array</span>&lt;<span class="type">out</span> <span class="type">String</span>&gt;?, selection: <span class="type">String</span>?,</span></span></span><br><span class="line"><span class="function"><span class="params">        selectionArgs: <span class="type">Array</span>&lt;<span class="type">out</span> <span class="type">String</span>&gt;?, sortOrder: <span class="type">String</span>?</span></span></span><br><span class="line"><span class="function"><span class="params">    )</span></span>: Cursor? &#123;</span><br><span class="line">        <span class="keyword">return</span> BinderCursor(arrayOf(<span class="string">&quot;service&quot;</span>), BridgeBinder())</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此处返回的BinderCursor是一个继承了MatrixCursor的特殊Cursor，有关MatrixCursor的信息可以看这里<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/01/06/Android-IPC%E6%9C%BA%E5%88%B6/#MatrixCursor">MatrixCursor</a>。它的使用情景就是当我想得到一个Cursor，而此时又不需要数据库来返回一个Cursor时，可以通过MatrixCursor来返回一个伪造的Cursor，而这里的作用就是通过这个Cursor对象来携带Binder对象。然后通过后面讲到的Gradle插件中动态生成的ContentProvider，将其注册到要跨进程的进程中，那么就可以嘿嘿了。</p>
+<h2 id="IpcBridge-1"><a href="#IpcBridge-1" class="headerlink" title="IpcBridge"></a>IpcBridge</h2><p>IpcBridge是对外的接口，里面有三个集合：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 存储对应接口类的对应实现类：key-接口类；value-实现类</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> mClassMap = mutableMapOf&lt;Class&lt;*&gt;, Class&lt;*&gt;&gt;()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 存储对应接口类的对应实例：key-接口类；value-实例</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> mInstanceMap = mutableMapOf&lt;Class&lt;*&gt;, Any&gt;()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 缓存客户端需要调用的远程接口的代理</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> mProxyCache = mutableMapOf&lt;Class&lt;*&gt;, Any&gt;()</span><br></pre></td></tr></table></figure>
+
+<p>在服务端进程需要注册远程接口和实现类，注册方法如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">register</span><span class="params">(inter: <span class="type">Class</span>&lt;*&gt;, impl: <span class="type">Class</span>&lt;*&gt;)</span></span> &#123;</span><br><span class="line">    mClassMap[inter] = impl</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">register</span><span class="params">(inter: <span class="type">Class</span>&lt;<span class="type">Any</span>&gt;, instance: <span class="type">Any</span>)</span></span> &#123;</span><br><span class="line">    mInstanceMap[inter] = instance</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>客户端进程可以通过获取远程接口的代理类来调用服务器进程的接口，获取代理的方法如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">getProxy</span><span class="params">(context: <span class="type">Context</span>, inter: <span class="type">Class</span>&lt;*&gt;, authority: <span class="type">String</span>)</span></span>: Any? &#123;</span><br><span class="line">    <span class="comment">// 首先从缓存中获取</span></span><br><span class="line">    <span class="keyword">if</span> (mProxyCache.containsKey(inter)) &#123;</span><br><span class="line">        <span class="keyword">return</span> mProxyCache[inter] ?: newProxy(context, inter, authority)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> newProxy(context, inter, authority)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">newProxy</span><span class="params">(context: <span class="type">Context</span>, inter: <span class="type">Class</span>&lt;*&gt;, authority: <span class="type">String</span>)</span></span>: Any? &#123;</span><br><span class="line">    <span class="keyword">if</span> (mBridgeInterface == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="comment">// 从前面提到的ContentProvider中拿到服务端进程的binder对象</span></span><br><span class="line">        <span class="keyword">val</span> cursor = context.contentResolver?.query(</span><br><span class="line">            Uri.parse(<span class="string">&quot;content://<span class="subst">$&#123;authority&#125;</span>&quot;</span>), <span class="literal">null</span>, <span class="literal">null</span>, <span class="literal">null</span>, <span class="literal">null</span></span><br><span class="line">        )</span><br><span class="line">        cursor?.let &#123;</span><br><span class="line">            <span class="keyword">val</span> binder = BinderCursor.getBinder(it)</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                mBridgeInterface = IBridgeInterface.Stub.asInterface(binder)</span><br><span class="line">            &#125; <span class="keyword">catch</span> (e: Exception) &#123;</span><br><span class="line">                e.printStackTrace()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        cursor?.close()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 传入接口类对象和mBridgeInterface，返回接口的代理类</span></span><br><span class="line">    <span class="keyword">val</span> proxy = BridgeHandler.newProxyInstance(inter, mBridgeInterface ?: <span class="keyword">return</span> <span class="literal">null</span>)</span><br><span class="line">    mProxyCache[inter] = proxy</span><br><span class="line">    <span class="keyword">return</span> proxy</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>根据上面的注释，可以看看具体代理类的invoke逻辑。</p>
+<h2 id="代理类"><a href="#代理类" class="headerlink" title="代理类"></a>代理类</h2><p>通过jdk动态代理，当调用了代理类的方法时，会走invoke逻辑。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">invoke</span><span class="params">(proxy: <span class="type">Any</span>?, method: <span class="type">Method</span>?, args: <span class="type">Array</span>&lt;<span class="type">out</span> <span class="type">Any</span>&gt;?)</span></span>: Any? &#123;</span><br><span class="line">    <span class="keyword">val</span> methodName = method?.name</span><br><span class="line">    args?.<span class="keyword">get</span>(<span class="number">0</span>)?.let &#123;</span><br><span class="line">        <span class="keyword">if</span> (it <span class="keyword">is</span> Bundle) &#123;</span><br><span class="line">            <span class="comment">// 通过mBridgeInterface调用服务端进程的方法，这里传入了要调用接口的类名和方法名</span></span><br><span class="line">            it.putString(<span class="string">&quot;clazzName&quot;</span>, mClass.name)</span><br><span class="line">            it.putString(<span class="string">&quot;methodName&quot;</span>, methodName)</span><br><span class="line">            <span class="keyword">return</span> mBridgeInterface.call(it)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> method?.invoke(proxy, args)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来再看看服务端的Binder实现类。</p>
+<h2 id="BridgeBinder"><a href="#BridgeBinder" class="headerlink" title="BridgeBinder"></a>BridgeBinder</h2><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BridgeBinder</span> : <span class="type">IBridgeInterface.Stub</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">call</span><span class="params">(args: <span class="type">Bundle</span>?)</span></span>: Bundle? &#123;</span><br><span class="line">        args?.let &#123;</span><br><span class="line">            <span class="keyword">val</span> clazzName = it.getString(<span class="string">&quot;clazzName&quot;</span>) ?: <span class="string">&quot;&quot;</span></span><br><span class="line">            <span class="keyword">val</span> methodName = it.getString(<span class="string">&quot;methodName&quot;</span>) ?: <span class="string">&quot;&quot;</span></span><br><span class="line">            Log.i(TAG, <span class="string">&quot;clazzName = <span class="variable">$clazzName</span>, methodName = <span class="variable">$methodName</span>&quot;</span>)</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">val</span> clazz = Class.forName(clazzName)</span><br><span class="line">                <span class="keyword">val</span> method = clazz.getMethod(methodName, Bundle::<span class="keyword">class</span>.java)</span><br><span class="line">                <span class="comment">// 通过接口名查询之前注册的实例对象</span></span><br><span class="line">                <span class="keyword">val</span> instance = IpcBridge.getInstance(clazz)</span><br><span class="line">                instance?.let &#123; inst -&gt;</span><br><span class="line">                    <span class="keyword">val</span> result = method.invoke(inst, it)</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">if</span> (result <span class="keyword">is</span> Bundle) result <span class="keyword">else</span> <span class="literal">null</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (e: Exception) &#123;</span><br><span class="line">                e.printStackTrace()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里的逻辑主要就是通过接收到客户端进程传入的方法和类名，反射调用对应的方法，并返回返回值。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>IpcBridge的整体逻辑其实挺简单的，客户端进程通过获取到指定接口的代理类，然后将要调用的方法和类名传给服务端进程，服务端通过反射调用相关的实现类。</p>
+<p>中间涉及到ContentProvider如何返回对应进程的Binder对象，以及服务端对实例对象的注册和查找。</p>
+<p>这里有个问题，就是每个服务端进程都需要有一个ContentProvider与之对应，而且无法手动创建以及Manifest注册，因此就需要开发一个Gradle插件来在编译期间帮助我们完成这个任务。</p>
+<h1 id="IpcBridge-Gradle"><a href="#IpcBridge-Gradle" class="headerlink" title="IpcBridge Gradle"></a>IpcBridge Gradle</h1><h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p>在应用了IpcBridge gradle插件后，需要在Gradle脚本中进行配置，如下：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">IpcBridge &#123;</span><br><span class="line">    providerConfigs &#123;</span><br><span class="line">        BridgeProvider &#123;</span><br><span class="line">            authorities <span class="string">&quot;com.hearing.ipcbridge.provider&quot;</span></span><br><span class="line">            process <span class="string">&quot;:bridge&quot;</span></span><br><span class="line">            exported <span class="literal">false</span></span><br><span class="line">        &#125;</span><br><span class="line">        TestProvider &#123;</span><br><span class="line">            authorities <span class="string">&quot;com.hearing.ipcbridge.test&quot;</span></span><br><span class="line">            process <span class="string">&quot;:test&quot;</span></span><br><span class="line">            exported <span class="literal">false</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面配置了两个ContentProvider：BridgeProvider和TestProvider，相关参数与Manifest参数对应。</p>
+<h2 id="BridgeExtension"><a href="#BridgeExtension" class="headerlink" title="BridgeExtension"></a>BridgeExtension</h2><p>BridgeExtension是一个Gradle自定义的扩展，可以新增一个类似于<code>android &#123;&#125;</code>的命名空间：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BridgeExtension</span> &#123;</span></span><br><span class="line">    NamedDomainObjectContainer&lt;ProviderConfig&gt; providerConfigs</span><br><span class="line"></span><br><span class="line">    BridgeExtension(Project project) &#123;</span><br><span class="line">        providerConfigs = project.container(ProviderConfig)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">void</span> providerConfigs(Action&lt;NamedDomainObjectContainer&lt;ProviderConfig&gt;&gt; action) &#123;</span><br><span class="line">        action.execute(providerConfigs)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的ProviderConfig类与Gradle脚本中的配置参数对应：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ProviderConfig</span> &#123;</span></span><br><span class="line">    String name</span><br><span class="line">    String authorities</span><br><span class="line">    String process</span><br><span class="line">    <span class="keyword">boolean</span> exported = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">    ProviderConfig(String name) &#123;</span><br><span class="line">        <span class="built_in">this</span>.name = name</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">void</span> authorities(String authorities) &#123;</span><br><span class="line">        <span class="built_in">this</span>.authorities = authorities</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">void</span> process(String process) &#123;</span><br><span class="line">        <span class="built_in">this</span>.process = process</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">void</span> exported(<span class="keyword">boolean</span> exported) &#123;</span><br><span class="line">        <span class="built_in">this</span>.exported = exported</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    String toString() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;name: $name, authorities: $authorities, process: $process, exported: $exported&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后在自定义的插件中创建这个扩展：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">project.getExtensions().create(<span class="string">&quot;IpcBridge&quot;</span>, BridgeExtension, project)</span><br></pre></td></tr></table></figure>
+
+<p>要获取用户配置的扩展信息，可以这样：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">BridgeExtension extension = project.getExtensions().getByName(<span class="string">&quot;IpcBridge&quot;</span>)</span><br><span class="line">extension.providerConfigs.each &#123; ProviderConfig provider -&gt;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="创建ContentProvider"><a href="#创建ContentProvider" class="headerlink" title="创建ContentProvider"></a>创建ContentProvider</h2><p>接下来根据配置新建对应的ContentProvider类，在IpcBridge的源码中已经讲到了一个BaseProvider类，新创建的Provider只需要继承它即可，比如说：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.hearing.ipcbridge;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Automatically generated by IpcBridge.</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BridgeProvider</span> <span class="keyword">extends</span> <span class="title">BaseProvider</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>创建的Java文件很简单，因此不需要用到类似于JavaPoet的框架，这里生成的是Java源文件，而不是class字节码，因此需要在gradle编译Java代码的task执行之前创建，然后我们将生成的Java文件加入到sourceSets中，即可正常被Gralde构建系统所编译：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> init() &#123;</span><br><span class="line">    <span class="keyword">def</span> sourceSetPath = <span class="string">&quot;$&#123;project.buildDir&#125;/bridge&quot;</span></span><br><span class="line">    srcPath = <span class="string">&quot;$&#123;sourceSetPath&#125;/com/hearing/ipcbridge&quot;</span></span><br><span class="line">    project.android.sourceSets &#123;</span><br><span class="line">        main &#123;</span><br><span class="line">            java.srcDir <span class="string">&quot;$&#123;project.buildDir&#125;/bridge&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> src = <span class="keyword">new</span> File(<span class="string">&quot;$srcPath/$&#123;provider.name&#125;.java&quot;</span>)</span><br><span class="line"><span class="keyword">if</span> (src.exists()) &#123;</span><br><span class="line">    println(<span class="string">&quot;java exists.&quot;</span>)</span><br><span class="line">    src.delete()</span><br><span class="line">&#125;</span><br><span class="line">src.createNewFile()</span><br><span class="line">src.withWriter &#123; writer -&gt;</span><br><span class="line">    writer.write(<span class="string">&quot;package com.hearing.ipcbridge;\n\n&quot;</span>)</span><br><span class="line">    writer.write(<span class="string">&quot;// Automatically generated by IpcBridge.\n&quot;</span>)</span><br><span class="line">    writer.write(<span class="string">&quot;public class $&#123;provider.name&#125; extends BaseProvider &#123;\n&quot;</span>)</span><br><span class="line">    writer.write(<span class="string">&quot;&#125;&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在创建了ContentProvider源文件后，还需要在Manifest文件中注册它。</p>
+<h2 id="动态注册"><a href="#动态注册" class="headerlink" title="动态注册"></a>动态注册</h2><p>在Gralde构建过程中有一个task叫：processDebugManifest/processReleaseManifest/more flavor，可以在这个task执行后插入我们的动态注册代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">project.android.applicationVariants.all &#123; variant -&gt;</span><br><span class="line">    String variantName = variant.name.capitalize()</span><br><span class="line">    def processManifestTask = project.tasks.getByName(<span class="string">&quot;process$&#123;variantName&#125;Manifest&quot;</span>)</span><br><span class="line"></span><br><span class="line">    processManifestTask.doLast &#123; pmt -&gt;</span><br><span class="line">        pmt.manifestOutputDirectory.getAsFileTree().getFiles().each &#123; File f -&gt;</span><br><span class="line">            <span class="keyword">if</span> (f.getName().endsWith(<span class="string">&quot;AndroidManifest.xml&quot;</span>)) &#123;</span><br><span class="line">                ensurePath()</span><br><span class="line"></span><br><span class="line">                println(<span class="string">&quot;&gt;&gt;&gt;manifestPath = $&#123;f.getAbsolutePath()&#125;&quot;</span>)</span><br><span class="line"></span><br><span class="line">                def manifest = f.getText()</span><br><span class="line">                def xml = <span class="keyword">new</span> XmlParser().parseText(manifest)</span><br><span class="line">                BridgeExtension extension = project.getExtensions().getByName(<span class="string">&quot;IpcBridge&quot;</span>)</span><br><span class="line">                extension.providerConfigs.each &#123; ProviderConfig provider -&gt;</span><br><span class="line">                    println(<span class="string">&quot;&gt;&gt;----------------------------------------&lt;&lt;&quot;</span>)</span><br><span class="line">                    println(<span class="string">&quot;provider = $provider&quot;</span>)</span><br><span class="line">                    xml.application[<span class="number">0</span>].appendNode(</span><br><span class="line">                            <span class="string">&quot;provider&quot;</span>,</span><br><span class="line">                            [<span class="string">&quot;android:name&quot;</span>               : <span class="string">&quot;com.hearing.ipcbridge.$&#123;provider.name&#125;&quot;</span>,</span><br><span class="line">                                <span class="string">&quot;android:authorities&quot;</span>        : provider.authorities,</span><br><span class="line">                                <span class="string">&quot;android:grantUriPermissions&quot;</span>: <span class="keyword">true</span>,</span><br><span class="line">                                <span class="string">&quot;android:process&quot;</span>            : provider.process,</span><br><span class="line">                                <span class="string">&quot;android:exported&quot;</span>           : provider.exported]</span><br><span class="line">                    )</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                def serialize = XmlUtil.serialize(xml)</span><br><span class="line">                f.write(serialize)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>build结束后便可看到最终的Manifest文件中包含了我们插入的代码。</p>
+<h2 id="总结-1"><a href="#总结-1" class="headerlink" title="总结"></a>总结</h2><p>Gradle插件主要有两个作用：</p>
+<ol>
+<li>创建ContentProvider源文件</li>
+<li>动态注册Provider</li>
+</ol>
+<h1 id="总结-2"><a href="#总结-2" class="headerlink" title="总结"></a>总结</h1><p>IpcBridge在配置上还有些麻烦，后面有时间会考虑优化一下，争取实现最少配置，同时优化下代码。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/%E6%A1%86%E6%9E%B6/" rel="tag"># 框架</a>
+              <a href="/tags/IPC/" rel="tag"># IPC</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/05/22/AspectJ%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/" rel="prev" title="AspectJ基本用法">
+      <i class="fa fa-chevron-left"></i> AspectJ基本用法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/06/05/Android-AOP-IOC%E6%A6%82%E8%BF%B0/" rel="next" title="Android-AOP-IOC概述">
+      Android-AOP-IOC概述 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#IpcBridge"><span class="nav-number">2.</span> <span class="nav-text">IpcBridge</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#AIDL%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.1.</span> <span class="nav-text">AIDL接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ContentProvider%E5%9F%BA%E7%A1%80%E7%B1%BB"><span class="nav-number">2.2.</span> <span class="nav-text">ContentProvider基础类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IpcBridge-1"><span class="nav-number">2.3.</span> <span class="nav-text">IpcBridge</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%90%86%E7%B1%BB"><span class="nav-number">2.4.</span> <span class="nav-text">代理类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BridgeBinder"><span class="nav-number">2.5.</span> <span class="nav-text">BridgeBinder</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.6.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#IpcBridge-Gradle"><span class="nav-number">3.</span> <span class="nav-text">IpcBridge Gradle</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">3.1.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BridgeExtension"><span class="nav-number">3.2.</span> <span class="nav-text">BridgeExtension</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAContentProvider"><span class="nav-number">3.3.</span> <span class="nav-text">创建ContentProvider</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E6%B3%A8%E5%86%8C"><span class="nav-number">3.4.</span> <span class="nav-text">动态注册</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-1"><span class="nav-number">3.5.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93-2"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

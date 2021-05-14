@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述一个APK实际上就是一个压缩文件，解压后可以看到通常包含如下几种类型的文件或文件夹：  classes.dex源码； 编译生成的二进制资源文件resources.arsc； res资源文件夹； assets文件夹； lib库文件夹； AndroidManifest.xml清单文件； 依赖关系配置文件project.properties； 代码混淆配置文件proguard.cfg； 签名信息文件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android性能优化之包体积优化">
+<meta property="og:url" content="http://yoursite.com/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述一个APK实际上就是一个压缩文件，解压后可以看到通常包含如下几种类型的文件或文件夹：  classes.dex源码； 编译生成的二进制资源文件resources.arsc； res资源文件夹； assets文件夹； lib库文件夹； AndroidManifest.xml清单文件； 依赖关系配置文件project.properties； 代码混淆配置文件proguard.cfg； 签名信息文件">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/aab.gif">
+<meta property="og:image" content="http://yoursite.com/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/apk_splits_tree-2x.png">
+<meta property="og:image" content="http://yoursite.com/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/bundletool.png">
+<meta property="article:published_time" content="2020-11-27T09:41:20.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.809Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="性能优化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/aab.gif">
+
+<link rel="canonical" href="http://yoursite.com/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android性能优化之包体积优化 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android性能优化之包体积优化
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-27 17:41:20" itemprop="dateCreated datePublished" datetime="2020-11-27T17:41:20+08:00">2020-11-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">性能优化</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/" class="post-meta-item leancloud_visitors" data-flag-title="Android性能优化之包体积优化" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>一个APK实际上就是一个压缩文件，解压后可以看到通常包含如下几种类型的文件或文件夹：</p>
+<ul>
+<li>classes.dex源码；</li>
+<li>编译生成的二进制资源文件resources.arsc；</li>
+<li>res资源文件夹；</li>
+<li>assets文件夹；</li>
+<li>lib库文件夹；</li>
+<li>AndroidManifest.xml清单文件；</li>
+<li>依赖关系配置文件project.properties；</li>
+<li>代码混淆配置文件proguard.cfg；</li>
+<li>签名信息文件META-INF等。</li>
+</ul>
+<a id="more"></a>
+
+<p>除了AndroidManifest.xml、proguard.cfg、project.properties、META-INF这些本身很小没有必要做进一步压缩的文件外，其它文件或者文件夹都可以进一步优化，从而减小APK的体积。</p>
+<h1 id="classes-dex源码"><a href="#classes-dex源码" class="headerlink" title="classes.dex源码"></a>classes.dex源码</h1><ol>
+<li>代码混淆可以减小该文件的大小，因为混淆后的代码将较长的文件名、实例、变量、方法名等等做了简化，从而实现字节长度上的优化，但代码混淆会存在一些问题，比如比较耗时间，因为需要找到不能做混淆的代码并在配置文件中注明，其次是调试起来不太方便；</li>
+<li>删掉没有用到的代码，可以借助Android Studio→Inspect Code…对工程做静态代码检查，删掉无用的代码；</li>
+<li>尝试去除Android Support库等系统库；</li>
+<li>重复引用依赖；</li>
+<li>支持插件化：动态加载代码和动态加载资源；</li>
+<li>Facebook的redex优化字节码（谨慎使用）；</li>
+<li>使用compileOnly配置依赖；</li>
+<li>减少java隐藏开销，比如一些自动生成的函数等（如enum）；</li>
+</ol>
+<h1 id="resources-arsc"><a href="#resources-arsc" class="headerlink" title="resources.arsc"></a>resources.arsc</h1><p>这个文件主要涉及到资源的ID这些，优化的空间不大，可以借助Android Studio→Inspect Code…删掉不必要的资源ID；</p>
+<h1 id="res资源文件夹"><a href="#res资源文件夹" class="headerlink" title="res资源文件夹"></a>res资源文件夹</h1><p>这是APK瘦身过程中优化的大头，一个APK里面最占用空间的就是多媒体资源，图片、音频、视频主要放在res和assets文件夹下；</p>
+<ol>
+<li>通过Android Studio→Inspect Code…对工程做静态代码检查，删掉没有用到的资源；也可以在gradle中配置（谨慎）： <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    buildTypes &#123;</span><br><span class="line">        release &#123;</span><br><span class="line">            shrinkResources <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>一个APK尽量只用一套图片，从内存占用和适配的角度考虑，这一套图建议取720p的资源，放到xhdpi目录下；</li>
+<li>使用tinypng等图片压缩工具对图片进行压缩；</li>
+<li>使用不带alpha值的jpg图片以及同等质量下文件更小的webP图片格式(WebP 在 Android 端，最低只支持 4.0)；可以考虑使用 Drawable XML 来代替 PNG，如：渐变的背景图；用 Color 代替 PNG，如：纯色的背景；从性能上看，比起使用图片资源需要先将其生成 Bitmap 再传到底层交由 GPU 渲染，用 Drawable XML 和 Color 则更加高效，它是直接将 Shape 信息传到底层由 GPU 进行渲染，CPU 和 内存的占用会更少；优先使用9图；</li>
+<li>有损编码格式的音频文件代替无损格式的音频文件<ul>
+<li>无损格式：WAV，PCM，ALS，ALAC，TAK，FLAC，APE，WavPack(WV)</li>
+<li>有损格式：MP3，AAC，WMA，Ogg Vorbis</li>
+</ul>
+</li>
+<li>借助微信提供的资源文件混淆工具对资源文件做混淆，进一步压缩资源文件所占用的空间（支持7z压缩资源）；</li>
+<li>用一张图片实现按钮按下和普通效果的样式，使用selector做遮罩，原图做background</li>
+<li>有些第三库里引用了一些大图但是实际上并不会被用到，就可以考虑用1x1的透明图片覆盖（删除怕出错）。</li>
+<li>使用矢量图：矢量图是由点与线组成，和位图不一样，它再放大也能保持清晰度，而且使用矢量图比位图设计方案能节约30～40%的空间，现在谷歌一直在强调扁平化方式，矢量图可很好的契合该设计理念。<ul>
+<li>优势：(1)占用存储空间小(2) 无极拉伸不会出现锯齿，可以照顾不同尺寸的机型(3)Android Studio自带很多资源，减小UI工作量。</li>
+<li>劣势：(1) 只支持5.0及以上系统(2) 与位图相比多了一层计算，需消耗更多性能(3) 不支持.9图(4)不适合表现真实照片和复杂图形，一般使用在简单的icon和动画上。</li>
+</ul>
+</li>
+</ol>
+<h1 id="assets文件夹"><a href="#assets文件夹" class="headerlink" title="assets文件夹"></a>assets文件夹</h1><p>assets文件夹相比于res文件夹，还有可能放字体文件、预置数据和web页面等</p>
+<ol>
+<li><p>使用字体压缩工具对字体文件进行压缩；</p>
+</li>
+<li><p>如果有web页面，可以考虑使用7zip压缩工具对该文件夹进行压缩，在正式使用的时候解压；</p>
+</li>
+<li><p>尽量不要在APK中打包预置数据，做到程序和数据分离，如果是不得不，可以考虑用7zip压缩工具对该文件进行压缩，在程序运行时解压；</p>
+</li>
+<li><p>将大资源文件放到服务端，启动后自动下载使用</p>
+</li>
+<li><p>删除无用的语言资源：大部分应用其实并不需要支持几十种语言的国际化支持，比如国内应用只支持中文：</p>
+ <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">        resConfigs <span class="string">&quot;zh&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h1 id="lib库文件夹"><a href="#lib库文件夹" class="headerlink" title="lib库文件夹"></a>lib库文件夹</h1><ul>
+<li>动态加载so库</li>
+<li>只提供对主流架构的支持，比如arm，对于mips和x86架构可以考虑不支持，这样可以大大减小APK的体积；</li>
+<li>删除armeabi-v7包下的so：基本上armeabi的so也是兼容armeabi-v7的，armeabi-v7a的库会对图形渲染方面有很大的改进，如果没有这方面的要求，可以精简。</li>
+<li>这里不排除有极少数设备会Crash，可能和不同的so有一定的关系，请大家务必测试周全后再发布。</li>
+</ul>
+<p>在模块的build.gradle的defaultConfig下加入以下ndk配置：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">        ndk &#123;</span><br><span class="line">            moduleName <span class="string">&quot;myNativeLib&quot;</span></span><br><span class="line">            ldLibs <span class="string">&quot;log&quot;</span>, <span class="string">&quot;z&quot;</span>, <span class="string">&quot;m&quot;</span></span><br><span class="line">            abiFilters <span class="string">&quot;armeabi&quot;</span>, <span class="string">&quot;x86&quot;</span>, <span class="string">&quot;armeabi-v7a&quot;</span>, <span class="string">&quot;x86_64&quot;</span>, <span class="string">&quot;arm64-v8a&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>moduleName是随便写的，与在Java类中使用System.loadLobrary(“本地库名称”)以及生成的.so文件名称对应；</li>
+<li>ldLibs是要用到的jni库，一般由google提供，比如上边引入的log库可以让我们在C代码中使用LogCat日志；</li>
+<li>abiFilters指的是我们要生成哪些平台的so文件。</li>
+</ul>
+<h1 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://tinypng.com/">图片压缩神器tinypng</a></li>
+<li><a target="_blank" rel="noopener" href="http://isparta.github.io/">图片格式转换工具iSparta</a></li>
+<li>Android Studio→Inspect Code</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/cundong/SmartAppUpdates">Android应用增量更新开源项目</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/shwenzhang/AndResGuard">Android资源混淆工具</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/krschultz/android-proguard-snippets">主流开源项目的混淆规则列表</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/forJrking/FontZip">字体资源文件压缩神器FontZip</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/zxlie/apkcal">统计APK文件中class、method、field、string数量</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/hzy3774/AndroidUn7zip">AndroidUn7zip解压库</a></li>
+</ul>
+<h1 id="Android-App-Bundle"><a href="#Android-App-Bundle" class="headerlink" title="Android App Bundle"></a>Android App Bundle</h1><h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>详细文章参考官网: <a target="_blank" rel="noopener" href="https://developer.android.com/guide/app-bundle">Android App Bundles</a></p>
+<p>Android App Bundle是Google推出的Apk动态打包，动态组件化的技术，与Instant App不同，AAB是借助Split Apk完成动态加载，使用AAB动态下发方式，可以大幅度减少应用体积。只须在 Android Studio 中构建一个应用 (app bundle)，就可以将应用所需的全部内容 (适用于所有设备) 都涵盖在内：所有语言、所有设备屏幕大小、所有硬件架构。它本身并不支持动态化，只是动态化的一个载体文件，真正实现逻辑并不是它。</p>
+<p><img src="aab.gif" alt="aab"></p>
+<p>Split APK是Google为解决65536上限，以及APK安装包越来越大等问题，在Android L中引入的机制。它可以将一个庞大的APK，按屏幕密度，ABI等形式拆分成多个独立的APK，在应用程序更新时，不必下载整个APK，只需单独下载某个模块即可安装更新。Split APK将原来一个APK中多个模块共享同一份资源的模型分离成多个APK使用各自的资源，并且可以继承Base APK中的资源，多个APK有相同的data，cache目录，多个dex文件，相同的进程，在Settings.apk中只显示一个APK，并且使用相同的包名。</p>
+<h2 id="Dynamic-Delivery"><a href="#Dynamic-Delivery" class="headerlink" title="Dynamic Delivery"></a>Dynamic Delivery</h2><p>只考虑 Android 4.4 以上版本。Dynamic Delivery 的一个基本组件就是 Android 5.0（API 级别 21）及更高版本上提供的 Split APK 机制，Split APK 与常规 APK 非常相似，其中包含经过编译的 DEX 字节码、资源和 Android 清单。但是，Android 平台能够将已安装的多个Split APK 视为一个应用，我们可以安装多个共用代码和资源的Split APK，使它们在设备上看起来同属于安装的一个应用。</p>
+<p>Split APK 的好处是能够将单体式 APK 拆分为更小的独立软件包，这些软件包可“按需”安装在用户设备上。单体式 APK 是指一个 APK 中包含应用所支持的全部功能和设备配置对应的代码和资源。例如，一个Split APK 可能包含只有少数用户需要的附加功能所对应的代码和资源，而另一个Split APK 则只包含特定语言或屏幕密度所对应的资源。这些Split APK 可以根据用户的请求或设备的需要单独下载和安装。</p>
+<p>可以一起安装在设备上以形成完整应用体验的不同类型的 APK：</p>
+<ul>
+<li>基本 APK：此 APK 中包含了所有其他Split APK 都可以访问的代码和资源，并提供应用的基本功能。当用户请求下载您的应用时，会首先下载并安装该 APK。这是因为只有基本 APK 的清单才包含关于应用的服务、内容提供方、权限、平台版本要求和对系统功能的依赖性的完整声明。Google Play 会根据项目的应用模块（即基本模块）为应用生成基本 APK。如果您想减小应用的初始下载大小，请一定要注意，此模块中包含的所有代码和资源都包含在应用的基本 APK 中。</li>
+<li>配置 APK：每个配置 APK 都包含针对特定屏幕密度、CPU 架构或语言的原生库和资源。当用户下载您的应用时，他们的设备只会下载并安装该设备对应的配置 APK。每个配置 APK 都是基本 APK 或动态功能 APK 的依赖项。也就是说，配置 APK 会随它们为之提供代码和资源的 APK 一起下载和安装。与基本模块和动态功能模块不同，您不需要为配置 APK 单独创建模块。如果您在为基本模块和动态功能模块组织管理配置专用的备用资源时遵循了标准实践，Google Play 会自动为您生成配置 APK。</li>
+<li>动态功能 APK：每个动态功能 APK 都包含应用中的某项功能的代码和资源，并且使用动态功能模块对相应功能进行了模块化处理。然后可以通过 Dynamic Delivery 自定义如何及何时将该功能下载到设备上。例如，使用 Google Play 核心库，可在将基本 APK 安装到设备上之后再按需安装动态 APK，以向用户提供额外的功能。假设我们有一款聊天应用，它仅在用户想要拍摄并发送照片时才下载并安装该功能。由于动态功能在一开始安装应用时可能不可用，因此应该将所有公用代码和资源包含在基本 APK 中。也就是说，您的动态功能应假定在安装时只有基本 APK 的代码和资源可用。Google Play 会根据项目的动态功能模块为应用生成动态功能 APK。</li>
+</ul>
+<p><img src="apk_splits_tree-2x.png" alt="apk_splits_tree-2x"></p>
+<p>注意：目前，动态功能模块不能依赖于其他动态功能模块。也就是说，动态功能模块只能依赖于基本应用模块。</p>
+<h2 id="My-First-Android-App-Bundle"><a href="#My-First-Android-App-Bundle" class="headerlink" title="My First Android App Bundle"></a>My First Android App Bundle</h2><h3 id="Building-App-Bundles"><a href="#Building-App-Bundles" class="headerlink" title="Building App Bundles"></a>Building App Bundles</h3><p>在 gradle 中配置 Split 的维度：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    bundle &#123;</span><br><span class="line">        language &#123;</span><br><span class="line">            enableSplit = <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">        density &#123;</span><br><span class="line">            enableSplit = <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">        abi &#123;</span><br><span class="line">            enableSplit = <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以使用 Android Studio 构建bundle，生成 <code>.aab</code>文件。也可以使用 gradle 编译：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">./gradlew :app:bundleRelease</span><br><span class="line">./gradlew :app:bundleDebug</span><br></pre></td></tr></table></figure>
+
+<h3 id="Test-Android-App-Bundle"><a href="#Test-Android-App-Bundle" class="headerlink" title="Test Android App Bundle"></a>Test Android App Bundle</h3><p>可以通过两种方法测试aab：</p>
+<ol>
+<li>在本地使用 bundletool 命令行工具</li>
+<li>将 bundle上传到 Google Play Console，然后使用新的内部测试轨道</li>
+</ol>
+<p>这里只介绍第一种方法：</p>
+<p><strong>下载 bundletool 工具</strong></p>
+<p>在 <a target="_blank" rel="noopener" href="https://github.com/google/bundletool/releases">Github 仓库</a> 中下载 bundletool 工具。</p>
+<p><strong>从 app bundle 生成一组 APK</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar bundletool-all-0.3.3.jar build-apks --bundle=[aab file] --output=[output file name].apks</span><br></pre></td></tr></table></figure>
+
+<p>相关参数如下：</p>
+<p><img src="bundletool.png" alt="bundletool"></p>
+<p><strong>解压 .apks 文件</strong></p>
+<p>解压 <code>.apks</code> 文件：<code>unzip app.apks -d tmp</code>，输出如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><span class="line">Archive:  app.apks</span><br><span class="line">extracting: tmp/base-hdpi.apk       </span><br><span class="line">extracting: tmp/base-mdpi.apk       </span><br><span class="line">extracting: tmp/base-ldpi.apk       </span><br><span class="line">extracting: tmp/base-xhdpi.apk      </span><br><span class="line">extracting: tmp/base-xxxhdpi.apk    </span><br><span class="line">extracting: tmp/base-xxhdpi.apk     </span><br><span class="line">extracting: tmp/base-tvdpi.apk      </span><br><span class="line">extracting: tmp/base-ca.apk         </span><br><span class="line">extracting: tmp/base-da.apk         </span><br><span class="line">extracting: tmp/base-fa.apk         </span><br><span class="line">extracting: tmp/base-ja.apk         </span><br><span class="line">extracting: tmp/base-ka.apk         </span><br><span class="line">extracting: tmp/base-pa.apk         </span><br><span class="line">extracting: tmp/base-ta.apk         </span><br><span class="line">extracting: tmp/base-nb.apk         </span><br><span class="line">extracting: tmp/base-be.apk         </span><br><span class="line">extracting: tmp/base-de.apk         </span><br><span class="line">extracting: tmp/base-ne.apk         </span><br><span class="line">extracting: tmp/base-te.apk         </span><br><span class="line">extracting: tmp/base-af.apk         </span><br><span class="line">extracting: tmp/base-bg.apk         </span><br><span class="line">extracting: tmp/base-th.apk         </span><br><span class="line">extracting: tmp/base-fi.apk         </span><br><span class="line">extracting: tmp/base-si.apk         </span><br><span class="line">extracting: tmp/base-hi.apk         </span><br><span class="line">extracting: tmp/base-vi.apk         </span><br><span class="line">extracting: tmp/base-kk.apk         </span><br><span class="line">extracting: tmp/base-mk.apk         </span><br><span class="line">extracting: tmp/base-sk.apk         </span><br><span class="line">extracting: tmp/base-uk.apk         </span><br><span class="line">extracting: tmp/base-el.apk         </span><br><span class="line">extracting: tmp/base-master.apk     </span><br><span class="line">extracting: tmp/base-gl.apk         </span><br><span class="line">extracting: tmp/base-nl.apk         </span><br><span class="line">extracting: tmp/base-ml.apk         </span><br><span class="line">extracting: tmp/base-pl.apk         </span><br><span class="line">extracting: tmp/base-sl.apk         </span><br><span class="line">extracting: tmp/base-tl.apk         </span><br><span class="line">extracting: tmp/base-am.apk         </span><br><span class="line">extracting: tmp/base-km.apk         </span><br><span class="line">extracting: tmp/base-bn.apk         </span><br><span class="line">extracting: tmp/base-in.apk         </span><br><span class="line">extracting: tmp/base-kn.apk         </span><br><span class="line">extracting: tmp/base-mn.apk         </span><br><span class="line">extracting: tmp/base-ko.apk         </span><br><span class="line">extracting: tmp/base-lo.apk         </span><br><span class="line">extracting: tmp/base-ro.apk         </span><br><span class="line">extracting: tmp/base-sq.apk         </span><br><span class="line">extracting: tmp/base-ar.apk         </span><br><span class="line">extracting: tmp/base-fr.apk         </span><br><span class="line">extracting: tmp/base-hr.apk         </span><br><span class="line">extracting: tmp/base-mr.apk         </span><br><span class="line">extracting: tmp/base-or.apk         </span><br><span class="line">extracting: tmp/base-sr.apk         </span><br><span class="line">extracting: tmp/base-tr.apk         </span><br><span class="line">extracting: tmp/base-ur.apk         </span><br><span class="line">extracting: tmp/base-as.apk         </span><br><span class="line">extracting: tmp/base-bs.apk         </span><br><span class="line">extracting: tmp/base-cs.apk         </span><br><span class="line">extracting: tmp/base-es.apk         </span><br><span class="line">extracting: tmp/base-is.apk         </span><br><span class="line">extracting: tmp/base-ms.apk         </span><br><span class="line">extracting: tmp/base-et.apk         </span><br><span class="line">extracting: tmp/base-it.apk         </span><br><span class="line">extracting: tmp/base-lt.apk         </span><br><span class="line">extracting: tmp/base-pt.apk         </span><br><span class="line">extracting: tmp/base-gu.apk         </span><br><span class="line">extracting: tmp/base-eu.apk         </span><br><span class="line">extracting: tmp/base-hu.apk         </span><br><span class="line">extracting: tmp/base-ru.apk         </span><br><span class="line">extracting: tmp/base-lv.apk         </span><br><span class="line">extracting: tmp/base-zu.apk         </span><br><span class="line">extracting: tmp/base-sv.apk         </span><br><span class="line">extracting: tmp/base-iw.apk         </span><br><span class="line">extracting: tmp/base-sw.apk         </span><br><span class="line">extracting: tmp/base-hy.apk         </span><br><span class="line">extracting: tmp/base-ky.apk         </span><br><span class="line">extracting: tmp/base-my.apk         </span><br><span class="line">extracting: tmp/base-az.apk         </span><br><span class="line">extracting: tmp/base-uz.apk         </span><br><span class="line">extracting: tmp/base-en.apk         </span><br><span class="line">extracting: tmp/base-zh.apk         </span><br><span class="line">extracting: tmp/base-armeabi_v7a.apk  </span><br><span class="line">extracting: tmp/base-arm64_v8a.apk  </span><br><span class="line">extracting: tmp/standalone-arm64_v8a_mdpi.apk  </span><br><span class="line">extracting: tmp/standalone-arm64_v8a_ldpi.apk  </span><br><span class="line">extracting: tmp/standalone-arm64_v8a_hdpi.apk  </span><br><span class="line">extracting: tmp/standalone-arm64_v8a_xhdpi.apk  </span><br><span class="line">extracting: tmp/standalone-armeabi_v7a_ldpi.apk  </span><br><span class="line">extracting: tmp/standalone-arm64_v8a_xxxhdpi.apk  </span><br><span class="line">extracting: tmp/standalone-arm64_v8a_xxhdpi.apk  </span><br><span class="line">extracting: tmp/standalone-arm64_v8a_tvdpi.apk  </span><br><span class="line">extracting: tmp/standalone-armeabi_v7a_mdpi.apk  </span><br><span class="line">extracting: tmp/standalone-armeabi_v7a_xhdpi.apk  </span><br><span class="line">extracting: tmp/standalone-armeabi_v7a_xxhdpi.apk  </span><br><span class="line">extracting: tmp/standalone-armeabi_v7a_hdpi.apk  </span><br><span class="line">extracting: tmp/standalone-armeabi_v7a_xxxhdpi.apk  </span><br><span class="line">extracting: tmp/standalone-armeabi_v7a_tvdpi.apk  </span><br><span class="line">inflating: tmp/toc.pb              </span><br></pre></td></tr></table></figure>
+
+<p>这些apk含义如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">apk</th>
+<th align="center">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">base-master.apk</td>
+<td align="center">包含基本模块的代码和资源（可以安装）</td>
+</tr>
+<tr>
+<td align="center">base-armeabi_v7a.apk, base-arm64_v8a.apk, etc.</td>
+<td align="center">ABI configuration splits</td>
+</tr>
+<tr>
+<td align="center">base-xhdpi.apk, base-mdpi.apk, etc.</td>
+<td align="center">Screen density configuration splits</td>
+</tr>
+<tr>
+<td align="center">base-ko.apk, base-fr.apk, etc.</td>
+<td align="center">Language configuration splits</td>
+</tr>
+</tbody></table>
+<p>可以使用如下命令安装多个 split apks：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> adb install-multiple -r 1.apk 2.apk</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Verify-non-Google-Play-app-installs"><a href="#Verify-non-Google-Play-app-installs" class="headerlink" title="Verify non-Google Play app installs"></a>Verify non-Google Play app installs</h2><p>用户在不使用应用商店（例如Google Play）的情况下将应用手动安装到设备上，此时在将应用下载到您的设备之前，Google Play无法从安全性，兼容性等方面检查该应用。如果未正确安装应用程序，则可能导致运行时崩溃。</p>
+<p>例如，对于一个 Android App Bundle 应用程序，该应用程序使用 Split APK 优化应用程序的下载大小。用户从Google Play商店下载应用程序时，可以确保设备下载并安装在该特定设备上运行该应用程序所需的完整APK。当绕过Google Play下载应用程序时，该平台没有足够的数据来验证应用程序的安装，因此无法保证该应用程序的正常功能。</p>
+<p>可以使用Play Core API处理安装了应用的Base APK而没有安装其他必需的Split APK的情况。在这种情况下，可以向用户显示一个对话框，以解释问题并提供通过Google Play商店正确安装应用程序的功能。具体使用直接参考官方文档。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="tag"># 性能优化</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B8%83%E5%B1%80%E4%B8%8E%E7%BB%98%E5%88%B6%E4%BC%98%E5%8C%96/" rel="prev" title="Android性能优化之布局与绘制优化">
+      <i class="fa fa-chevron-left"></i> Android性能优化之布局与绘制优化
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/" rel="next" title="Android性能优化之内存优化">
+      Android性能优化之内存优化 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#classes-dex%E6%BA%90%E7%A0%81"><span class="nav-number">2.</span> <span class="nav-text">classes.dex源码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#resources-arsc"><span class="nav-number">3.</span> <span class="nav-text">resources.arsc</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#res%E8%B5%84%E6%BA%90%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">4.</span> <span class="nav-text">res资源文件夹</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#assets%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">5.</span> <span class="nav-text">assets文件夹</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#lib%E5%BA%93%E6%96%87%E4%BB%B6%E5%A4%B9"><span class="nav-number">6.</span> <span class="nav-text">lib库文件夹</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7"><span class="nav-number">7.</span> <span class="nav-text">工具</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Android-App-Bundle"><span class="nav-number">8.</span> <span class="nav-text">Android App Bundle</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="nav-number">8.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dynamic-Delivery"><span class="nav-number">8.2.</span> <span class="nav-text">Dynamic Delivery</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#My-First-Android-App-Bundle"><span class="nav-number">8.3.</span> <span class="nav-text">My First Android App Bundle</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Building-App-Bundles"><span class="nav-number">8.3.1.</span> <span class="nav-text">Building App Bundles</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Test-Android-App-Bundle"><span class="nav-number">8.3.2.</span> <span class="nav-text">Test Android App Bundle</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Verify-non-Google-Play-app-installs"><span class="nav-number">8.4.</span> <span class="nav-text">Verify non-Google Play app installs</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Android系统框架 从进程分层的角度来看，借用Android 操作系统架构开篇中的一张图如下：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android学习笔记">
+<meta property="og:url" content="http://yoursite.com/2018/07/04/Android%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="Android系统框架 从进程分层的角度来看，借用Android 操作系统架构开篇中的一张图如下：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2018/07/04/Android%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/android-frame.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/04/Android%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/android-boot.jpg">
+<meta property="og:image" content="http://yoursite.com/2018/07/04/Android%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/baseline1.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/04/Android%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/baseline2.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/04/Android%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/constraint_gone1.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/04/Android%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/constraint_gone2.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/04/Android%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/bias.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/04/Android%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/constraint_circle.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/04/Android%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/chain.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/04/Android%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/chain1.png">
+<meta property="og:image" content="http://yoursite.com/2018/07/04/Android%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/Fragment%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.png">
+<meta property="article:published_time" content="2018-07-04T03:29:23.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.801Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2018/07/04/Android%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/android-frame.png">
+
+<link rel="canonical" href="http://yoursite.com/2018/07/04/Android%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android学习笔记 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/04/Android%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android学习笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-07-04 11:29:23" itemprop="dateCreated datePublished" datetime="2018-07-04T11:29:23+08:00">2018-07-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2018/07/04/Android%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Android学习笔记" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/07/04/Android%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/07/04/Android%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Android系统框架"><a href="#Android系统框架" class="headerlink" title="Android系统框架"></a>Android系统框架</h1><p><img src="android-frame.png" alt="android-frame"></p>
+<p>从进程分层的角度来看，借用<a target="_blank" rel="noopener" href="http://gityuan.com/android/">Android 操作系统架构开篇</a>中的一张图如下：</p>
+<a id="more"></a>
+
+<p><img src="android-boot.jpg" alt="android-boot"></p>
+<p><strong>Loader层</strong></p>
+<ul>
+<li>Boot ROM: 当手机处于关机状态时，长按Power键开机，引导芯片开始从固化在ROM里的预设代码开始执行，然后加载引导程序到RAM；</li>
+<li>Boot Loader：这是启动Android系统之前的引导程序，主要是检查RAM，初始化硬件参数等功能。</li>
+</ul>
+<p><strong>Linux内核层</strong></p>
+<p>Android平台的基础是Linux内核，比如ART虚拟机最终调用底层Linux内核来执行功能。Linux内核的安全机制为Android提供相应的保障，也允许设备制造商为内核开发硬件驱动程序。</p>
+<ul>
+<li>启动Kernel的swapper进程(pid=0)：该进程又称为idle进程, 系统初始化过程Kernel由无到有开创的第一个进程, 用于初始化进程管理、内存管理，加载Display,Camera Driver，Binder Driver等相关工作；</li>
+<li>启动kthreadd进程（pid=2）：是Linux系统的内核进程，会创建内核工作线程kworkder，软中断线程ksoftirqd，thermal等内核守护进程。<strong>kthreadd进程是所有内核进程的鼻祖。</strong></li>
+</ul>
+<p><strong>硬件抽象层(HAL)</strong></p>
+<p>硬件抽象层 (HAL) 提供标准接口，HAL包含多个库模块，其中每个模块都为特定类型的硬件组件实现一组接口，比如WIFI/蓝牙模块，当框架API请求访问设备硬件时，Android系统将为该硬件加载相应的库模块。</p>
+<p><strong>Android Runtime &amp; 系统库</strong></p>
+<p>每个应用都在其自己的进程中运行，都有自己的虚拟机实例。ART通过执行DEX文件可在设备运行多个虚拟机，DEX文件是一种专为Android设计的字节码格式文件，经过优化，使用内存很少。ART主要功能包括：预先(AOT)和即时(JIT)编译，优化的垃圾回收(GC)，以及调试相关的支持。</p>
+<p>这里的Native系统库主要包括init孵化来的用户空间的守护进程、HAL层以及开机动画等。启动init进程(pid=1)，是Linux系统的用户进程，<strong>init进程是所有用户进程的鼻祖</strong>。</p>
+<ul>
+<li>init进程会孵化出ueventd、logd、healthd、installd、adbd、lmkd等用户守护进程；</li>
+<li>init进程还启动servicemanager(binder服务管家)、bootanim(开机动画)等重要服务</li>
+<li>init进程孵化出Zygote进程，Zygote进程是Android系统的第一个Java进程(即虚拟机进程)，<strong>Zygote是所有Java进程的父进程</strong>，Zygote进程本身是由init进程孵化而来的。</li>
+</ul>
+<p><strong>Framework层</strong></p>
+<ul>
+<li>Zygote进程，是由init进程通过解析init.rc文件后fork生成的，Zygote进程主要包含：<ul>
+<li>加载ZygoteInit类，注册Zygote Socket服务端套接字</li>
+<li>加载虚拟机</li>
+<li>提前加载类preloadClasses</li>
+<li>提前加载资源preloadResouces</li>
+</ul>
+</li>
+<li>System Server进程，是由Zygote进程fork而来，<strong>System Server是Zygote孵化的第一个进程</strong>，System Server负责启动和管理整个Java framework，包含ActivityManager，WindowManager，PackageManager，PowerManager等服务。</li>
+<li>Media Server进程，是由init进程fork而来，负责启动和管理整个C++ framework，包含AudioFlinger，Camera Service等服务。</li>
+</ul>
+<p><strong>App层</strong></p>
+<ul>
+<li>Zygote进程孵化出的第一个App进程是Launcher，这是用户看到的桌面App；</li>
+<li>Zygote进程还会创建Browser，Phone，Email等App进程，每个App至少运行在一个进程上。</li>
+<li>所有的App进程都是由Zygote进程fork生成的。</li>
+</ul>
+<p><strong>Syscall &amp;&amp; JNI</strong></p>
+<ul>
+<li>Native与Kernel之间有一层系统调用(SysCall)层；</li>
+<li>Java层与Native(C/C++)层之间的纽带JNI。</li>
+</ul>
+<h1 id="Android版本"><a href="#Android版本" class="headerlink" title="Android版本"></a>Android版本</h1><table>
+<thead>
+<tr>
+<th align="left">Code name</th>
+<th align="left">Version numbers</th>
+<th align="left">Initial release date</th>
+<th align="left">API level</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">No codename</td>
+<td align="left">1.0</td>
+<td align="left">September 23, 2008</td>
+<td align="left">1</td>
+</tr>
+<tr>
+<td align="left">No codename</td>
+<td align="left">1.1</td>
+<td align="left">February 9, 2009</td>
+<td align="left">2</td>
+</tr>
+<tr>
+<td align="left">Cupcake</td>
+<td align="left">1.5</td>
+<td align="left">April 27, 2009</td>
+<td align="left">3</td>
+</tr>
+<tr>
+<td align="left">Donut</td>
+<td align="left">1.6</td>
+<td align="left">September 15, 2009</td>
+<td align="left">4</td>
+</tr>
+<tr>
+<td align="left">Eclair</td>
+<td align="left">2.0 – 2.1</td>
+<td align="left">October 26, 2009</td>
+<td align="left">5 – 7</td>
+</tr>
+<tr>
+<td align="left">Froyo</td>
+<td align="left">2.2 – 2.2.3</td>
+<td align="left">May 20, 2010</td>
+<td align="left">8</td>
+</tr>
+<tr>
+<td align="left">Gingerbread</td>
+<td align="left">2.3 – 2.3.7</td>
+<td align="left">December 6, 2010</td>
+<td align="left">9 – 10</td>
+</tr>
+<tr>
+<td align="left">Honeycomb</td>
+<td align="left">3.0 – 3.2.6</td>
+<td align="left">February 22, 2011</td>
+<td align="left">11 – 13</td>
+</tr>
+<tr>
+<td align="left">Ice Cream Sandwich</td>
+<td align="left">4.0 – 4.0.4</td>
+<td align="left">October 18, 2011</td>
+<td align="left">14 – 15</td>
+</tr>
+<tr>
+<td align="left">Jelly Bean</td>
+<td align="left">4.1 – 4.3.1</td>
+<td align="left">July 9, 2012</td>
+<td align="left">16 – 18</td>
+</tr>
+<tr>
+<td align="left">KitKat</td>
+<td align="left">4.4 – 4.4.4</td>
+<td align="left">October 31, 2013</td>
+<td align="left">19 – 20</td>
+</tr>
+<tr>
+<td align="left">Lollipop</td>
+<td align="left">5.0 – 5.1.1</td>
+<td align="left">November 12, 2014</td>
+<td align="left">21 – 22</td>
+</tr>
+<tr>
+<td align="left">Marshmallow</td>
+<td align="left">6.0 – 6.0.1</td>
+<td align="left">October 5, 2015</td>
+<td align="left">23</td>
+</tr>
+<tr>
+<td align="left">Nougat</td>
+<td align="left">7.0</td>
+<td align="left">August 22, 2016</td>
+<td align="left">24</td>
+</tr>
+<tr>
+<td align="left">Nougat</td>
+<td align="left">7.1.0 – 7.1.2</td>
+<td align="left">October 4, 2016</td>
+<td align="left">25</td>
+</tr>
+<tr>
+<td align="left">Oreo</td>
+<td align="left">8.0</td>
+<td align="left">August 21, 2017</td>
+<td align="left">26</td>
+</tr>
+<tr>
+<td align="left">Oreo</td>
+<td align="left">8.1</td>
+<td align="left">December 5, 2017</td>
+<td align="left">27</td>
+</tr>
+<tr>
+<td align="left">Pie</td>
+<td align="left">9.0</td>
+<td align="left">August 6, 2018</td>
+<td align="left">28</td>
+</tr>
+<tr>
+<td align="left">Android Q(首次不用甜品来命名)</td>
+<td align="left">10.0</td>
+<td align="left">September 3, 2019</td>
+<td align="left">29</td>
+</tr>
+</tbody></table>
+<h1 id="Context"><a href="#Context" class="headerlink" title="Context"></a>Context</h1><p>Context 一般称呼其为<strong>上下文</strong>，它是对当前运行环境的一个描述，持有一些必要的资源和环境。Context是一个抽象类，部分继承关系如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Context (android.content)</span><br><span class="line">    ContextImpl (android.app)</span><br><span class="line">    ContextWrapper (android.content)</span><br><span class="line">        ContextThemeWrapper (android.view)</span><br><span class="line">            Activity (android.app)</span><br><span class="line">        Service (android.app)</span><br><span class="line">        Application (android.app)</span><br></pre></td></tr></table></figure>
+
+<p>相关组件的 Context 创建与赋值可见：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/12/16/Android-Application/">Android-Application启动原理</a></li>
+<li><a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/03/18/Android-Activity%E5%8E%9F%E7%90%86/">Android-Activity启动原理</a></li>
+<li><a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/06/12/Android-Service%E5%8E%9F%E7%90%86/">Android-Service启动原理</a></li>
+<li><a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/08/20/Android-ContentProvider%E5%8E%9F%E7%90%86/">Android-ContentProvider原理</a></li>
+<li><a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/08/18/Android-Broadcast%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86/">Android-Broadcast机制原理</a></li>
+</ul>
+<h2 id="ContextImpl"><a href="#ContextImpl" class="headerlink" title="ContextImpl"></a>ContextImpl</h2><p>ContextImpl 是 Context 的具体实现类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ContextImpl</span> <span class="keyword">extends</span> <span class="title">Context</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Resources <span class="title">getResources</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mResources;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ContentResolver <span class="title">getContentResolver</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mContentResolver;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Looper <span class="title">getMainLooper</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mMainThread.getLooper();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Context <span class="title">getApplicationContext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (mPackageInfo != <span class="keyword">null</span>) ?</span><br><span class="line">                mPackageInfo.getApplication() : mMainThread.getApplication();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="ContextWrapper"><a href="#ContextWrapper" class="headerlink" title="ContextWrapper"></a>ContextWrapper</h2><p>ContextWrapper 是一个典型的装饰器模式，也叫做修饰模式。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ContextWrapper</span> <span class="keyword">extends</span> <span class="title">Context</span> </span>&#123;</span><br><span class="line">    Context mBase;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ContextWrapper</span><span class="params">(Context base)</span> </span>&#123;</span><br><span class="line">        mBase = base;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">attachBaseContext</span><span class="params">(Context base)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (mBase != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">&quot;Base context already set&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        mBase = base;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Context <span class="title">getBaseContext</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mBase;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> AssetManager <span class="title">getAssets</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mBase.getAssets();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Resources <span class="title">getResources</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mBase.getResources();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ContextImpl 是 Context 的直接实现类，但各个组件并不是直接继承 ContextImpl，而是通过继承装饰类 ContextWrapper 或它的子类来持有 ContextImpl。正如装饰器模式的功能，这种方式通过组合和扩展装饰类，可以给不同的具体对象提供不同的功能扩展，而不需要增加 ContextImpl 的子类。</p>
+<p>Activity、Service、Application 都继承自装饰类 ContextWrapper 或其子类，ContextWrapper 类通过 attachBaseContext() 和getBaseContext() 方法来赋予或获取实际的 Context 对象。</p>
+<h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><p>当在Activity中调用如下代码时，可得到：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class MainActivity : AppCompatActivity() &#123;</span><br><span class="line">    <span class="function">override fun <span class="title">onCreate</span><span class="params">(savedInstanceState: Bundle?)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        setContentView(R.layout.activity_main)</span><br><span class="line">        Log.d(TAG, <span class="string">&quot;getApplication: &quot;</span> + application.javaClass.name)</span><br><span class="line">        Log.d(TAG, <span class="string">&quot;getApplicationContext: &quot;</span> + applicationContext.javaClass.name)</span><br><span class="line">        Log.d(TAG, <span class="string">&quot;getBaseContext: &quot;</span> + baseContext.javaClass.name)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// getApplication: com.hearing.demo.MainApplication</span></span><br><span class="line"><span class="comment">// getApplicationContext: com.hearing.demo.MainApplication</span></span><br><span class="line"><span class="comment">// getBaseContext: android.app.ContextImpl</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="ConstraintLayout"><a href="#ConstraintLayout" class="headerlink" title="ConstraintLayout"></a>ConstraintLayout</h1><p><strong>约束</strong></p>
+<p>每个相邻控件互约束并设置width=0dp可实现等分：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">androidx.constraintlayout.widget.ConstraintLayout</span> <span class="attr">xmlns:android</span>=<span class="string">&quot;http://schemas.android.com/apk/res/android&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">&quot;http://schemas.android.com/apk/res-auto&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:background</span>=<span class="string">&quot;#33225555&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">&quot;@+id/btn1&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">&quot;0dp&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">&quot;54dp&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintEnd_toStartOf</span>=<span class="string">&quot;@id/btn2&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintStart_toStartOf</span>=<span class="string">&quot;parent&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintTop_toTopOf</span>=<span class="string">&quot;parent&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">&quot;@+id/btn2&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">&quot;0dp&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">&quot;54dp&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintEnd_toEndOf</span>=<span class="string">&quot;@id/btn3&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintStart_toEndOf</span>=<span class="string">&quot;@id/btn1&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintTop_toTopOf</span>=<span class="string">&quot;parent&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">&quot;@+id/btn3&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">&quot;0dp&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">&quot;54dp&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintEnd_toEndOf</span>=<span class="string">&quot;parent&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintStart_toEndOf</span>=<span class="string">&quot;@id/btn2&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintTop_toTopOf</span>=<span class="string">&quot;parent&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">androidx.constraintlayout.widget.ConstraintLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>baseline</strong></p>
+<p><img src="baseline1.png" alt="baseline"></p>
+<p>要实现该效果代码如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:text</span>=<span class="string">&quot;Hello&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:id</span>=<span class="string">&quot;@+id/tvHello&quot;</span>/&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:text</span>=<span class="string">&quot;World&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">app:layout_constraintBaseline_toBaselineOf</span>=<span class="string">&quot;@id/tvHello&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">app:layout_constraintLeft_toRightOf</span>=<span class="string">&quot;@+id/tvHello&quot;</span>/&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>官方对于baseline的定义如下：</p>
+<p><img src="baseline2.png" alt="baseline"></p>
+<p><strong>GONE Margin</strong></p>
+<p>如果要实现效果：在World可见的时候，GitCode与World的左边距是0，当World不见时，GitCode的左边距是某个特定的值。如下：</p>
+<p><img src="constraint_gone1.png" alt="constraint_gone"><br><img src="constraint_gone2.png" alt="constraint_gone"></p>
+<p>为此，ConstraintLayout提供了特殊的goneMargin属性，在目标View隐藏时，属性生效。有如下属性：</p>
+<ul>
+<li>layout_goneMarginStart</li>
+<li>layout_goneMarginEnd</li>
+<li>layout_goneMarginLeft</li>
+<li>layout_goneMarginTop</li>
+<li>layout_goneMarginRight</li>
+<li>layout_goneMarginBottom</li>
+</ul>
+<p><strong>bias偏移</strong></p>
+<ul>
+<li>layout_constraintHorizontal_bias 水平偏移</li>
+<li>layout_constraintVertical_bias 垂直偏移</li>
+</ul>
+<p>两个属性的取值范围在0-1。在水平偏移中，0表示最左，1表示最右；在垂直偏移，0表示最上，1表示最下；0.5表示中间。例如控件已约束了左右边缘且定义了 bias 为 0.3 则意味着控件与左边缘的距离占控件左右边缘间距的30%，如图：</p>
+<p><img src="bias.png" alt="bias"></p>
+<p>代码如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">androidx.constraintlayout.widget.ConstraintLayout</span> <span class="attr">xmlns:android</span>=<span class="string">&quot;http://schemas.android.com/apk/res/android&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">&quot;http://schemas.android.com/apk/res-auto&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:background</span>=<span class="string">&quot;#33225555&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">&quot;@+id/btn1&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">&quot;48dp&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">&quot;54dp&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintEnd_toEndOf</span>=<span class="string">&quot;parent&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintHorizontal_bias</span>=<span class="string">&quot;0.3&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintStart_toStartOf</span>=<span class="string">&quot;parent&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintTop_toTopOf</span>=<span class="string">&quot;parent&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">androidx.constraintlayout.widget.ConstraintLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>宽高比</strong></p>
+<p>该属性起作用的前提是宽或高至少有一个设为 0dp，设为 0dp 的边即为随比例缩放的边。</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">app:layout_constraintDimensionRatio=&quot;1:1&quot;</span><br></pre></td></tr></table></figure>
+
+<p><strong>圆孔定位</strong></p>
+<p><img src="constraint_circle.png" alt="constraint_circle"></p>
+<p>圆形定位指的是View的中心点相对于另外View中心点的位置。涉及到三个属性：</p>
+<ul>
+<li>layout_constraintCircle : 另外一个view的id,上图的A view</li>
+<li>layout_constraintCircleRadius : 半径，上图的radius</li>
+<li>layout_constraintCircleAngle : 角度，上图angle，范围为0-360</li>
+</ul>
+<p><strong>chainStyle</strong></p>
+<p>使用该属性的前提是<code>控件之间已经形成约束关系，parent←A← →B← →C-&gt;parent</code>，此时链头头是 A, 在Chain头中配置layout_constraintHorizontal_chainStyle和layout_constraintVertical_chainStyle分别控制水平和垂直方向的链。包括三个值：</p>
+<ul>
+<li>packed: 控件间无间距，可以同时搭配 layout_constraintHorizontal_bias 属性控制与父容器的间距；</li>
+<li>spread: 默认属性，平均分布；</li>
+<li>spread_inside: 首尾无间距。</li>
+</ul>
+<p>如下图：</p>
+<p><img src="chain.png" alt="chain"></p>
+<p>实例：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">androidx.constraintlayout.widget.ConstraintLayout</span> <span class="attr">xmlns:android</span>=<span class="string">&quot;http://schemas.android.com/apk/res/android&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">&quot;http://schemas.android.com/apk/res-auto&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:background</span>=<span class="string">&quot;#33225555&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">&quot;@+id/btn1&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">&quot;wrap_content&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">&quot;54dp&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintHorizontal_chainStyle</span>=<span class="string">&quot;spread&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintEnd_toStartOf</span>=<span class="string">&quot;@id/btn2&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintStart_toStartOf</span>=<span class="string">&quot;parent&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintTop_toTopOf</span>=<span class="string">&quot;parent&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">&quot;@+id/btn2&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">&quot;wrap_content&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">&quot;54dp&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintEnd_toEndOf</span>=<span class="string">&quot;@id/btn3&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintStart_toEndOf</span>=<span class="string">&quot;@id/btn1&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintTop_toTopOf</span>=<span class="string">&quot;parent&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">Button</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">&quot;@+id/btn3&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">&quot;wrap_content&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">&quot;54dp&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintEnd_toEndOf</span>=<span class="string">&quot;parent&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintStart_toEndOf</span>=<span class="string">&quot;@id/btn2&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:layout_constraintTop_toTopOf</span>=<span class="string">&quot;parent&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">androidx.constraintlayout.widget.ConstraintLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>效果如下：</p>
+<p><img src="chain1.png" alt="chain1"></p>
+<h1 id="Fragment"><a href="#Fragment" class="headerlink" title="Fragment"></a>Fragment</h1><h2 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h2><p><img src="Fragment%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F.png" alt="Fragment生命周期"></p>
+<ul>
+<li>setUserVisibleHint()：设置Fragment可见或者不可见时会调用此方法。在该方法里面可以通过调用getUserVisibleHint()获得Fragment的状态是可见还是不可见的，如果可见则进行懒加载操作。</li>
+<li>onAttach()：执行该方法时，Fragment与Activity已经完成绑定，该方法有一个Activity类型的参数，代表绑定的Activity，这时候你可以执行诸如mActivity = activity的操作。</li>
+<li>onCreate()：初始化Fragment。可通过参数savedInstanceState获取之前保存的值。</li>
+<li>onCreateView()：初始化Fragment的布局。加载布局和findViewById的操作通常在此函数内完成，但是不建议执行耗时的操作，比如读取数据库数据列表。</li>
+<li>onActivityCreated()：执行该方法时，与Fragment绑定的Activity的onCreate方法已经执行完成并返回，在该方法内可以进行与Activity交互的UI操作，所以在该方法之前Activity的onCreate方法并未执行完成，<font color="#990000">如果提前进行交互操作，会引发空指针异常</font>。</li>
+<li>onStart()：执行该方法时，Fragment由不可见变为可见状态。</li>
+<li>onResume()：执行该方法时，Fragment处于活动状态，用户可与之交互。</li>
+<li>onPause()：执行该方法时，Fragment处于暂停状态，但依然可见，用户不能与之交互。</li>
+<li>onSaveInstanceState()：保存当前Fragment的状态。该方法会自动保存Fragment的状态，比如EditText键入的文本，即使Fragment被回收又重新创建，一样能恢复EditText之前键入的文本。</li>
+<li>onStop()：执行该方法时，Fragment完全不可见。</li>
+<li>onDestroyView()：销毁与Fragment有关的视图，但未与Activity解除绑定，依然可以通过onCreateView方法重新创建视图。通常在ViewPager+Fragment的方式下会调用此方法。</li>
+<li>onDestroy()：销毁Fragment。通常按Back键退出或者Fragment被回收时调用此方法。</li>
+<li>onDetach()：解除与Activity的绑定。在onDestroy方法之后调用。</li>
+</ul>
+<p>Fragment生命周期执行流程：</p>
+<ul>
+<li>Fragment创建：setUserVisibleHint()-&gt;onAttach()-&gt;onCreate()-&gt;onCreateView()-&gt;onActivityCreated()-&gt;onStart()-&gt;onResume()；</li>
+<li>Fragment变为不可见状态（锁屏、回到桌面、被Activity完全覆盖）：onPause()-&gt;onSaveInstanceState()-&gt;onStop()；</li>
+<li>Fragment变为部分可见状态（打开Dialog样式的Activity）：onPause()-&gt;onSaveInstanceState()；</li>
+<li>Fragment由不可见变为活动状态：onStart()-&gt;OnResume()；</li>
+<li>Fragment由部分可见变为活动状态：onResume()；</li>
+<li>退出应用：onPause()-&gt;onStop()-&gt;onDestroyView()-&gt;onDestroy()-&gt;onDetach()（注意退出不会调用onSaveInstanceState方法，因为是人为退出，没有必要再保存数据）；</li>
+<li>Fragment被回收又重新创建：被回收执行onPause()-&gt;onSaveInstanceState()-&gt;onStop()-&gt;onDestroyView()-&gt;onDestroy()-&gt;onDetach()，重新创建执行onAttach()-&gt;onCreate()-&gt;onCreateView()-&gt;onActivityCreated()-&gt;onStart()-&gt;onResume()-&gt;setUserVisibleHint()；</li>
+<li>横竖屏切换：与Fragment被回收又重新创建一样。</li>
+</ul>
+<h2 id="FragmentManager操作"><a href="#FragmentManager操作" class="headerlink" title="FragmentManager操作"></a>FragmentManager操作</h2><ul>
+<li>add: 往 Activity 里添加显示一个 Fragment 实例，不允许重复添加同一个 Fragment 实例，否则会崩溃。</li>
+<li>remove: 从 Activity 中移除一个 Fragment 实例。</li>
+<li>hide: 隐藏当前 Fragment，仅仅设为不可见，并不会销毁。</li>
+<li>show: 显示之前隐藏的 Fragment。</li>
+<li>attach: 重建 Fragment 视图，attach 到 UI 上并显示。</li>
+<li>detach: 将 Fragment 从 UI 中移除，不会销毁实例，和 remove 不同，此时 Fragment 的状态依然由 FragmentManager 维护。</li>
+<li>replace: 将容器里所有内容都替换掉。</li>
+</ul>
+<p>看一个示例(MyFragment 中生命周期以及 onHiddenChanged 都有日志打印)：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> index = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        setContentView(R.layout.activity_fragment)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">add</span><span class="params">(view: <span class="type">View</span>)</span></span> &#123;</span><br><span class="line">        supportFragmentManager.beginTransaction().add(R.id.container, MyFragment.newInstance(++index), index.toString()).commit()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">remove</span><span class="params">(view: <span class="type">View</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> fragment = supportFragmentManager.findFragmentByTag(index.toString())</span><br><span class="line">        fragment?.let &#123;</span><br><span class="line">            supportFragmentManager.beginTransaction().remove(fragment).commit()</span><br><span class="line">            index--</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">hide</span><span class="params">(view: <span class="type">View</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> fragment = supportFragmentManager.findFragmentByTag(index.toString())</span><br><span class="line">        fragment?.let &#123;</span><br><span class="line">            supportFragmentManager.beginTransaction().hide(fragment).commit()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">show</span><span class="params">(view: <span class="type">View</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> fragment = supportFragmentManager.findFragmentByTag(index.toString())</span><br><span class="line">        fragment?.let &#123;</span><br><span class="line">            supportFragmentManager.beginTransaction().show(fragment).commit()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">attach</span><span class="params">(view: <span class="type">View</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> fragment = supportFragmentManager.findFragmentByTag(index.toString())</span><br><span class="line">        fragment?.let &#123;</span><br><span class="line">            supportFragmentManager.beginTransaction().attach(fragment).commit()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">detach</span><span class="params">(view: <span class="type">View</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> fragment = supportFragmentManager.findFragmentByTag(index.toString())</span><br><span class="line">        fragment?.let &#123;</span><br><span class="line">            supportFragmentManager.beginTransaction().detach(fragment).commit()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">replace</span><span class="params">(view: <span class="type">View</span>)</span></span> &#123;</span><br><span class="line">        index = <span class="number">0</span></span><br><span class="line">        supportFragmentManager.beginTransaction().replace(R.id.container, MyFragment.newInstance(++index), index.toString()).commit()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>点击 add 添加第一个 Fragment: <code>onAttach-1 -&gt; onCreate-1 -&gt; onCreateView-1 -&gt; onActivityCreated-1 -&gt; onStart-1 -&gt; onResume-1</code>, 接着点击 remove 移除第一个 Fragment: <code>onPause-1 -&gt; onStop-1 -&gt; onDestroyView-1 -&gt; onDestroy-1 -&gt; onDetach-1</code>。</li>
+<li>点击 add 添加第一个 Fragment, 然后点击 show 和 hide 显示或隐藏该 Fragment，生命周期没变化，只有 onHiddenChanged 被回调了。</li>
+<li>点击 add 添加第一个 Fragment, 然后点击 detach: <code>onPause-1 -&gt; onStop-1 -&gt; onDestroyView-1</code>, 接着点击 attach: <code>onCreateView-1 -&gt; onActivityCreated-1 -&gt; onStart-1 -&gt; onResume-1</code>。</li>
+<li>点击 add 添加三个 Fragment, 然后点击 replace: <code>onAttach-1 -&gt; onCreate-1 -&gt; onPause-3 -&gt; ... -&gt; onDetach-3 -&gt; onPause-2 -&gt; ... -&gt; onDetach-2 -&gt; onPause-1 -&gt; ... -&gt; onDetach-1 -&gt; onCreateView-1 -&gt; ... -&gt; onResume-1</code>。</li>
+</ul>
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ul>
+<li>Fragment必须有一个无参public的构造函数，否则在数据恢复的时候，会报crash。</li>
+</ul>
+<h1 id="LayoutInflater"><a href="#LayoutInflater" class="headerlink" title="LayoutInflater"></a>LayoutInflater</h1><p>当 Activity 调用 setContentView 方法传入一个 layout id 时，也是由 LayoutInflater 来将 xml 布局解析成 View 而后展示的。LayoutInflater 中有一个 inflate 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> View <span class="title">inflate</span><span class="params">(<span class="meta">@LayoutRes</span> <span class="keyword">int</span> resource, <span class="meta">@Nullable</span> ViewGroup root, <span class="keyword">boolean</span> attachToRoot)</span></span></span><br></pre></td></tr></table></figure>
+
+<p><strong>root不为null，attachToRoot为true</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">    setContentView(R.layout.activity_main);</span><br><span class="line">    LinearLayout ll = (LinearLayout) findViewById(R.id.ll);</span><br><span class="line">    LayoutInflater inflater = LayoutInflater.from(<span class="keyword">this</span>);</span><br><span class="line">    inflater.inflate(R.layout.linearlayout, ll,<span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里没写将inflate出来的View添加到ll中的代码，但是linearlayout布局文件就已经添加进来了，因为第三个参数设置为了true，表示将第一个参数所指定的布局添加到第二个参数的View中（不需要使用addView方法，否则会报错）。</p>
+<p><strong>root不为null，attachToRoot为false</strong></p>
+<p>这里的root布局作用是帮助resource布局生成布局参数，否则其根节点的布局将会失效，但是不将resource添加到root布局中，如果还想添加，需要使用addView方法。</p>
+<p><strong>root为null</strong></p>
+<p>当root为null时，不论attachToRoot为true还是为false，显示效果都是一样的。当root为null表示我不需要将第一个参数所指定的布局添加到任何容器中，同时也表示没有任何容器来来协助第一个参数所指定布局的根节点生成布局参数。</p>
+<h1 id="Tab导航"><a href="#Tab导航" class="headerlink" title="Tab导航"></a>Tab导航</h1><h2 id="TabLayout-ViewPager-Fragment"><a href="#TabLayout-ViewPager-Fragment" class="headerlink" title="TabLayout+ViewPager+Fragment"></a>TabLayout+ViewPager+Fragment</h2><ol>
+<li>添加依赖</li>
+</ol>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation <span class="string">&#x27;com.android.support:design:29.1.1&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><p>创建Fragment及其布局</p>
+</li>
+<li><p>编写主界面layout</p>
+</li>
+</ol>
+<p>tabMode可选值：</p>
+<ul>
+<li>fixed</li>
+<li>scrollable</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span> <span class="attr">xmlns:android</span>=<span class="string">&quot;http://schemas.android.com/apk/res/android&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:app</span>=<span class="string">&quot;http://schemas.android.com/apk/res-auto&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">xmlns:tools</span>=<span class="string">&quot;http://schemas.android.com/tools&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:orientation</span>=<span class="string">&quot;vertical&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">tools:context</span>=<span class="string">&quot;.MainActivity&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">com.google.android.material.tabs.TabLayout</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">&quot;@+id/tab_layout&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">&quot;wrap_content&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">app:tabMode</span>=<span class="string">&quot;scrollable&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">com.google.android.material.tabs.TabLayout</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">androidx.viewpager.widget.ViewPager</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">&quot;@+id/view_pager&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">&quot;wrap_content&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">androidx.viewpager.widget.ViewPager</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>重写FragmentPagerAdapter</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ViewPagerAdapter</span> <span class="keyword">extends</span> <span class="title">FragmentPagerAdapter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> List&lt;Fragment&gt; mFragments;</span><br><span class="line">    <span class="keyword">private</span> List&lt;String&gt; mTitles;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ViewPagerAdapter</span><span class="params">(FragmentManager fm, List&lt;Fragment&gt; fragments, List&lt;String&gt; titles)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(fm);</span><br><span class="line">        <span class="keyword">this</span>.mFragments = fragments;</span><br><span class="line">        <span class="keyword">this</span>.mTitles = titles;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Fragment <span class="title">getItem</span><span class="params">(<span class="keyword">int</span> position)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mFragments.get(position);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mFragments.size();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> CharSequence <span class="title">getPageTitle</span><span class="params">(<span class="keyword">int</span> position)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mTitles.get(position);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>使用</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> List&lt;String&gt; mTitles;</span><br><span class="line">    <span class="keyword">private</span> List&lt;Fragment&gt; mFragments;</span><br><span class="line">    <span class="keyword">private</span> TabLayout mTabLayout;</span><br><span class="line">    <span class="keyword">private</span> ViewPager mViewPager;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line"></span><br><span class="line">        initFragment();</span><br><span class="line"></span><br><span class="line">        mTabLayout = findViewById(R.id.tab_layout);</span><br><span class="line">        mViewPager = findViewById(R.id.view_pager);</span><br><span class="line">        mViewPager.setAdapter(<span class="keyword">new</span> ViewPagerAdapter(getSupportFragmentManager(), mFragments, mTitles));</span><br><span class="line">        <span class="comment">// 设置Fragment预加载的数目，表示除去当前显示页面以外需要被预加载的页面数</span></span><br><span class="line">        mViewPager.setOffscreenPageLimit(xxx);</span><br><span class="line">        mTabLayout.setupWithViewPager(mViewPager);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">initFragment</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        mTitles = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        mFragments = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        mTitles.add(<span class="string">&quot;测试一&quot;</span>);</span><br><span class="line">        mTitles.add(<span class="string">&quot;测试二&quot;</span>);</span><br><span class="line">        mTitles.add(<span class="string">&quot;测试三&quot;</span>);</span><br><span class="line"></span><br><span class="line">        mFragments.add(<span class="keyword">new</span> AnimationFragment1());</span><br><span class="line">        mFragments.add(<span class="keyword">new</span> AnimationFragment2());</span><br><span class="line">        mFragments.add(<span class="keyword">new</span> AnimationFragment3());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="DeepLink-AppLink"><a href="#DeepLink-AppLink" class="headerlink" title="DeepLink/AppLink"></a>DeepLink/AppLink</h1><p>DeepLink 和 AppLink 本质上都是基于 Intent 使 App 能够识别并处理某些特定的 URL，在 App 之间相互跳转。DeepLink 有时不能直接唤起目标 App，而是会出现多选项弹窗，需要用户进一步操作(手机里存在多个处理同一个 URL 的应用)；AppLink 需要 App 与 Web 协作完成系统验证，但可以直接唤起目标App，无需用户二次选择。AppLink 是一种特殊的 DeepLink，参考: <a target="_blank" rel="noopener" href="https://developer.android.com/training/app-links">AppLink</a>。</p>
+<table>
+<thead>
+<tr>
+<th align="left">区别</th>
+<th align="left">DeepLink</th>
+<th align="left">AppLink</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Intent scheme</td>
+<td align="left">任意</td>
+<td align="left">http/https</td>
+</tr>
+<tr>
+<td align="left">Intent action</td>
+<td align="left">任意</td>
+<td align="left">andorid.intent.action.VIEW</td>
+</tr>
+<tr>
+<td align="left">Intent category</td>
+<td align="left">android.intent.category.DEFAULT</td>
+<td align="left">android.intent.category.BROWSABLE, android.intent.category.DEFAULT</td>
+</tr>
+<tr>
+<td align="left">认证</td>
+<td align="left">无需验证</td>
+<td align="left">Digital Asset Links</td>
+</tr>
+<tr>
+<td align="left">跳转</td>
+<td align="left">可能展示一个多选项弹窗</td>
+<td align="left">直接跳转App</td>
+</tr>
+<tr>
+<td align="left">版本</td>
+<td align="left">所有版本</td>
+<td align="left">Android 6.0(API 23)及以上</td>
+</tr>
+</tbody></table>
+<p>示例：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- DeepLink --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:name</span>=<span class="string">&quot;.DemoActivity&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">intent-filter</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">&quot;com.hearing&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">&quot;android.intent.category.DEFAULT&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">data</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:host</span>=<span class="string">&quot;hearing.com&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:pathPattern</span>=<span class="string">&quot;.*&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:scheme</span>=<span class="string">&quot;demo&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- AppLink --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">activity</span> <span class="attr">android:name</span>=<span class="string">&quot;.DemoActivity&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">intent-filter</span> <span class="attr">android:autoVerify</span>=<span class="string">&quot;true&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">action</span> <span class="attr">android:name</span>=<span class="string">&quot;android.intent.action.VIEW&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">&quot;android.intent.category.DEFAULT&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">category</span> <span class="attr">android:name</span>=<span class="string">&quot;android.intent.category.BROWSABLE&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">data</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:host</span>=<span class="string">&quot;hearing.com&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:scheme</span>=<span class="string">&quot;http&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">data</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:host</span>=<span class="string">&quot;hearing.com&quot;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">android:scheme</span>=<span class="string">&quot;https&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">intent-filter</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">activity</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="序列化"><a href="#序列化" class="headerlink" title="序列化"></a>序列化</h1><ul>
+<li>把对象转换为字节序列的过程称为对象的序列化。</li>
+<li>把字节序列恢复为对象的过程称为对象的反序列化。</li>
+</ul>
+<p>对象的序列化用途：</p>
+<ol>
+<li>把对象的字节序列永久地保存到硬盘上，通常存放在一个文件中；</li>
+<li>在网络上传送对象的字节序列；</li>
+<li>跨进程传输；</li>
+</ol>
+<p><strong>Serializable</strong></p>
+<p>相关API：</p>
+<ul>
+<li>java.io.ObjectOutputStream代表对象输出流，它的writeObject(Object obj)方法可对参数指定的obj对象进行序列化，把得到的字节序列写到一个目标输出流中。</li>
+<li>java.io.ObjectInputStream代表对象输入流，它的readObject()方法从一个源输入流中读取字节序列，再把它们反序列化为一个对象，并将其返回。</li>
+<li>只有实现了Serializable和Externalizable接口的类的对象才能被序列化。Externalizable接口继承自 Serializable接口，实现Externalizable接口的类完全由自身来控制序列化的行为，而仅实现Serializable接口的类可以 采用默认的序列化方式 。</li>
+</ul>
+<p>对象序列化包括如下步骤：</p>
+<ol>
+<li>创建一个对象输出流，它可以包装一个其他类型的目标输出流，如文件输出流；</li>
+<li>通过对象输出流的writeObject()方法写对象。</li>
+</ol>
+<p>对象反序列化的步骤如下：</p>
+<ol>
+<li>创建一个对象输入流，它可以包装一个其他类型的源输入流，如文件输入流；</li>
+<li>通过对象输入流的readObject()方法读取对象。</li>
+</ol>
+<p>serialVersionUID 是序列化的版本号，强烈建议显示定义该值，因为如果没有定义它，那其取值是 Java 运行时环境根据类的内部细节自动生成的。</p>
+<p><strong>Parcelable</strong></p>
+<p>实现了 Parcelable 接口的类在序列化和反序列化时会被转换为 Parcel 类型的数据，Parcel 是一个载体，它可以包含数据或者对象引用，然后通过 IBinder 在进程间传递。</p>
+<p><strong>区别</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">区别</th>
+<th align="left">Serializable</th>
+<th align="left">Parcelable</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">API</td>
+<td align="left">Java</td>
+<td align="left">Android</td>
+</tr>
+<tr>
+<td align="left">原理</td>
+<td align="left">使用IO读写存储在硬盘上，大量IO操作，且使用反射技术</td>
+<td align="left">内存中读写，转换为Parcel数据</td>
+</tr>
+<tr>
+<td align="left">开销与效率</td>
+<td align="left">开销大，效率低，但定义简单</td>
+<td align="left">开销小，效率高，但定义复杂</td>
+</tr>
+<tr>
+<td align="left">使用场景</td>
+<td align="left">序列化到本地或网络传输</td>
+<td align="left">内存中序列化，比如在Bundle或Binder中传输，Android底层做了优化。</td>
+</tr>
+</tbody></table>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/06/29/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="prev" title="计算机网络学习笔记">
+      <i class="fa fa-chevron-left"></i> 计算机网络学习笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/07/26/shell%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="next" title="shell学习笔记">
+      shell学习笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Android%E7%B3%BB%E7%BB%9F%E6%A1%86%E6%9E%B6"><span class="nav-number">1.</span> <span class="nav-text">Android系统框架</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Android%E7%89%88%E6%9C%AC"><span class="nav-number">2.</span> <span class="nav-text">Android版本</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Context"><span class="nav-number">3.</span> <span class="nav-text">Context</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ContextImpl"><span class="nav-number">3.1.</span> <span class="nav-text">ContextImpl</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ContextWrapper"><span class="nav-number">3.2.</span> <span class="nav-text">ContextWrapper</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E4%BE%8B"><span class="nav-number">3.3.</span> <span class="nav-text">实例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ConstraintLayout"><span class="nav-number">4.</span> <span class="nav-text">ConstraintLayout</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Fragment"><span class="nav-number">5.</span> <span class="nav-text">Fragment</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">5.1.</span> <span class="nav-text">生命周期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FragmentManager%E6%93%8D%E4%BD%9C"><span class="nav-number">5.2.</span> <span class="nav-text">FragmentManager操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">5.3.</span> <span class="nav-text">注意事项</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#LayoutInflater"><span class="nav-number">6.</span> <span class="nav-text">LayoutInflater</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Tab%E5%AF%BC%E8%88%AA"><span class="nav-number">7.</span> <span class="nav-text">Tab导航</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TabLayout-ViewPager-Fragment"><span class="nav-number">7.1.</span> <span class="nav-text">TabLayout+ViewPager+Fragment</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DeepLink-AppLink"><span class="nav-number">8.</span> <span class="nav-text">DeepLink&#x2F;AppLink</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-number">9.</span> <span class="nav-text">序列化</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

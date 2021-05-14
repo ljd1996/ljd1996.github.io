@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述注：本文基于Android 10源码，为了文章的简洁性，引用源码的地方可能有所删减。 今天在掘金上看到一篇解析为什么不能使用 Application Context 显示 Dialog的文章，看完之后感觉作者忽略了一个很重要的对象–parentWindow，因此讲解的时候无法完整地把源码逻辑串起来。在参考了之前对Android-Window机制原理的解析，重新阅读了源码，决定借助这个问题记录一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android-Window机制原理之Token验证">
+<meta property="og:url" content="http://yoursite.com/2020/09/17/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86%E4%B9%8BToken%E9%AA%8C%E8%AF%81/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述注：本文基于Android 10源码，为了文章的简洁性，引用源码的地方可能有所删减。 今天在掘金上看到一篇解析为什么不能使用 Application Context 显示 Dialog的文章，看完之后感觉作者忽略了一个很重要的对象–parentWindow，因此讲解的时候无法完整地把源码逻辑串起来。在参考了之前对Android-Window机制原理的解析，重新阅读了源码，决定借助这个问题记录一">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2020/09/17/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86%E4%B9%8BToken%E9%AA%8C%E8%AF%81/Window-Token%E9%AA%8C%E8%AF%81.jpg">
+<meta property="article:published_time" content="2020-09-17T09:57:54.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.781Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="图形系统">
+<meta property="article:tag" content="Window">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/09/17/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86%E4%B9%8BToken%E9%AA%8C%E8%AF%81/Window-Token%E9%AA%8C%E8%AF%81.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2020/09/17/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86%E4%B9%8BToken%E9%AA%8C%E8%AF%81/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android-Window机制原理之Token验证 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/17/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86%E4%B9%8BToken%E9%AA%8C%E8%AF%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android-Window机制原理之Token验证
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-09-17 17:57:54" itemprop="dateCreated datePublished" datetime="2020-09-17T17:57:54+08:00">2020-09-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E5%9B%BE%E5%BD%A2%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">图形系统</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/09/17/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86%E4%B9%8BToken%E9%AA%8C%E8%AF%81/" class="post-meta-item leancloud_visitors" data-flag-title="Android-Window机制原理之Token验证" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/09/17/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86%E4%B9%8BToken%E9%AA%8C%E8%AF%81/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/09/17/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86%E4%B9%8BToken%E9%AA%8C%E8%AF%81/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>注：本文基于Android 10源码，为了文章的简洁性，引用源码的地方可能有所删减。</p>
+<p>今天在掘金上看到一篇解析<code>为什么不能使用 Application Context 显示 Dialog</code>的文章，看完之后感觉作者忽略了一个很重要的对象–parentWindow，因此讲解的时候无法完整地把源码逻辑串起来。在参考了之前对<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/08/27/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86/">Android-Window机制原理</a>的解析，重新阅读了源码，决定借助这个问题记录一下关于 Android WMS 在 addWindow 的时候Token验证的逻辑，借此也可以说明为什么不能使用 Application Context 显示 Dialog。</p>
+<a id="more"></a>
+
+<p>Android 不允许使用 Activity 之外的 Context 来显示普通的 Dialog(非 System Dialog 等)。当运行如下代码的时候，会报错：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> dialog = Dialog(applicationContext)</span><br><span class="line">dialog.show()</span><br><span class="line"></span><br><span class="line"><span class="comment">// ------- error -------</span></span><br><span class="line">android.view.WindowManager$BadTokenException: Unable to add window -- token <span class="literal">null</span> <span class="keyword">is</span> not valid; <span class="keyword">is</span> your activity running?</span><br><span class="line">    at android.view.ViewRootImpl.setView(ViewRootImpl.java:<span class="number">840</span>)</span><br><span class="line">    at android.view.WindowManagerGlobal.addView(WindowManagerGlobal.java:<span class="number">356</span>)</span><br><span class="line">    at android.view.WindowManagerImpl.addView(WindowManagerImpl.java:<span class="number">94</span>)</span><br><span class="line">    at android.app.Dialog.show(Dialog.java:<span class="number">329</span>)</span><br><span class="line">    <span class="comment">// ...</span></span><br></pre></td></tr></table></figure>
+
+<p>如果添加一行代码，发现可以show成功(注意要在<code>window?.attributes?.token</code>被赋值后调用，可以使用延时或者View.post调用dialog.show)：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> dialog = Dialog(applicationContext)</span><br><span class="line">dialog.window?.attributes?.token = window?.attributes?.token</span><br><span class="line">dialog.show()</span><br></pre></td></tr></table></figure>
+
+<p>接下来从源码角度来解析Token验证相关的逻辑。在开始这部分的内容之前，最好对 startActivity 启动源码和 Window 机制的原理有一定的理解，这里先将相关的流程做个梳理。从<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/03/18/Android-Activity%E5%8E%9F%E7%90%86/">Android-Activity启动流程</a>中可知，startActivity 的流程中与 Token 相关的步骤简要描述如下：</p>
+<p>App进程调用 Context.startActivity 方法，然后交由 AMS(system_server进程) 做一些处理，下面的 Token 创建便是在这里完成的，此外，如果需要启动的 Activity 是一个新的进程，那么 system_server 会向 zygote 发起创建新进程的请求，在目标进程创建成功后，逻辑就由AMS转到了目标Activity进程，目标进程的 ActivityThread 会调用 performLaunchActivity 方法来创建目标 Activity 实例，然后调用 Activity.attach 方法，下面的 WindowManager 对象便是在这里创建的，后面会陆续回调 Activity 的生命周期方法，其中在 onCreate 的 setContentView 中创建了一个 DecorView 对象，然后在 onResume 回调完成后，会通过 WindowManager.addView 添加 DecorView 对象（见<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/08/27/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86/">Android-Window机制原理</a>，通过Binder调用，借助WMS完成）。</p>
+<p>在大致了解了这个流程后(上面的流程是简化的，如果不想阅读 startActivity 相关源码的话可以先记住上面的流程，接下来的解析会用到)，接下来看看Token是怎么在各个阶段去工作的。关于Binder相关的可以参考这里：<a target="_blank" rel="noopener" href="https://ljd1996.github.io/categories/Android/Binder/">Android-Binder原理系列</a>，简言之就是 Binder IPC 方式是一个 C/S 架构，服务端和客户端进程分别持有 Binder 的引用与代理，二者之间可以跨进程调用。</p>
+<p>最后的总结部分会将这个流程输出为一个流程图，如有问题，欢迎留言指正！</p>
+<h1 id="Token创建"><a href="#Token创建" class="headerlink" title="Token创建"></a>Token创建</h1><p>根据上面的流程，我们先从AMS开始看一看Token是怎么创建的，如果阅读过 Activity 启动的源码的话，可以知道在 ActivityStarter.startActivity 方法中有如下代码(此时处于system_server进程的AMS线程，与WMS同进程不同线程，可以参考<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/10/21/Android-init-zygote/">Android-init-zygote</a>)：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ActivityStarter</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">startActivity</span><span class="params">(<span class="comment">/*...*/</span>)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    ActivityRecord r = <span class="keyword">new</span> ActivityRecord(mService, callerApp, callingPid, callingUid,</span><br><span class="line">            callingPackage, intent, resolvedType, aInfo, mService.getGlobalConfiguration(),</span><br><span class="line">            resultRecord, resultWho, requestCode, componentSpecified, voiceSession != <span class="keyword">null</span>,</span><br><span class="line">            mSupervisor, checkedOptions, sourceRecord);</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后我们看看 ActivityRecord 类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">ActivityRecord</span> <span class="keyword">extends</span> <span class="title">ConfigurationContainer</span> <span class="keyword">implements</span> <span class="title">AppWindowContainerListener</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Binder 服务端对象</span></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Token</span> <span class="keyword">extends</span> <span class="title">IApplicationToken</span>.<span class="title">Stub</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 持有外部 ActivityRecord 的弱引用</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> WeakReference&lt;ActivityRecord&gt; weakActivity;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> String name;</span><br><span class="line"></span><br><span class="line">        Token(ActivityRecord activity, Intent intent) &#123;</span><br><span class="line">            weakActivity = <span class="keyword">new</span> WeakReference&lt;&gt;(activity);</span><br><span class="line">            name = intent.getComponent().flattenToShortString();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ActivityRecord(<span class="comment">/*...*/</span>) &#123;</span><br><span class="line">        appToken = <span class="keyword">new</span> Token(<span class="keyword">this</span>, _intent);</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因此在 startActivity 过程中，ActivityRecord 对象中的 appToken 被实例化了。接着再往下走，来到了 ActivityStack.startActivityLocked 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">startActivityLocked</span><span class="params">(ActivityRecord r, ActivityRecord focusedTopActivity,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">boolean</span> newTask, <span class="keyword">boolean</span> keepCurTransition, ActivityOptions options)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    r.createWindowContainer();</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ActivityRecord</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">createWindowContainer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    mWindowContainerController = <span class="keyword">new</span> AppWindowContainerController(taskController, appToken, <span class="comment">/*...*/</span>);</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// AppWindowContainerController</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">AppWindowContainerController</span><span class="params">(TaskWindowContainerController taskController, IApplicationToken token, <span class="comment">/*...*/</span>)</span> </span>&#123;</span><br><span class="line">    atoken = createAppWindow(mService, token, <span class="comment">/*...*/</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">AppWindowToken <span class="title">createAppWindow</span><span class="params">(WindowManagerService service, IApplicationToken token, <span class="comment">/*...*/</span>)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> AppWindowToken(service, token,  <span class="comment">/*...*/</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// AppWindowToken --&gt; WindowToken</span></span><br><span class="line">AppWindowToken(WindowManagerService service, IApplicationToken token,  <span class="comment">/*...*/</span>) &#123;</span><br><span class="line">    <span class="keyword">super</span>(service, token != <span class="keyword">null</span> ? token.asBinder() : <span class="keyword">null</span>, TYPE_APPLICATION, <span class="comment">/*...*/</span>);</span><br><span class="line">    appToken = token;</span><br><span class="line">    mVoiceInteraction = voiceInteraction;</span><br><span class="line">    mFillsParent = fillsParent;</span><br><span class="line">    mInputApplicationHandle = <span class="keyword">new</span> InputApplicationHandle(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// WindowToken</span></span><br><span class="line">WindowToken(WindowManagerService service, IBinder _token, <span class="keyword">int</span> type, <span class="comment">/*...*/</span>) &#123;</span><br><span class="line">    <span class="keyword">super</span>(service);</span><br><span class="line">    token = _token;</span><br><span class="line">    windowType = type;</span><br><span class="line">    mPersistOnEmpty = persistOnEmpty;</span><br><span class="line">    mOwnerCanManageAppTokens = ownerCanManageAppTokens;</span><br><span class="line">    mRoundedCornerOverlay = roundedCornerOverlay;</span><br><span class="line">    onDisplayChanged(dc);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">onDisplayChanged</span><span class="params">(DisplayContent dc)</span> </span>&#123;</span><br><span class="line">    dc.reParentWindowToken(<span class="keyword">this</span>);</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// DisplayContent</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">reParentWindowToken</span><span class="params">(WindowToken token)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    addWindowToken(token.token, token);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">addWindowToken</span><span class="params">(IBinder binder, WindowToken token)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// HashMap&lt;IBinder, WindowToken&gt; mTokenMap</span></span><br><span class="line">    <span class="comment">// key--ActivityRecord.Token(IApplicationToken.Stub); value--WindowToken</span></span><br><span class="line">    mTokenMap.put(binder, token);</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码只给出了关键的步骤，可以清楚地看到，客户端进程调用 startActivity 去启动一个 Activity，然后在AMS(system_server进程的AMS线程)的处理流程中，创建了一个 IApplicationToken.Stub 的对象，这是一个 Binder 服务端，然后又创建了一个 AppWindowToken 对象，并将其存入 DisplayContent.mTokenMap 中。这里 AMS 和 WMS 都处于 system_server 进程中，后续 WMS.addWindow 中会使用到 mTokenMap 来检验 Token(此处关于 mTokenMap 是否存在线程安全问题，有兴趣可以深入看看细节)。</p>
+<h1 id="WindowManager对象获取"><a href="#WindowManager对象获取" class="headerlink" title="WindowManager对象获取"></a>WindowManager对象获取</h1><p>然后看一下使用 Activity 的 Context 调用 getSystemService 方法和使用 Application 的 Context 调用 getSystemService 方法的区别(只针对WMS服务)：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Activity</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">getSystemService</span><span class="params">(<span class="meta">@ServiceName</span> <span class="meta">@NonNull</span> String name)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (WINDOW_SERVICE.equals(name)) &#123;</span><br><span class="line">        <span class="keyword">return</span> mWindowManager;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Application 调用的是父类 ContextImpl 的方法</span></span><br><span class="line"><span class="comment">// ContextImpl</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">getSystemService</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> SystemServiceRegistry.getSystemService(<span class="keyword">this</span>, name);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// SystemServiceRegistry</span></span><br><span class="line">registerService(Context.WINDOW_SERVICE, WindowManager.class, <span class="keyword">new</span> CachedServiceFetcher&lt;WindowManager&gt;() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> WindowManager <span class="title">createService</span><span class="params">(ContextImpl ctx)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> WindowManagerImpl(ctx);</span><br><span class="line">    &#125;&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>Activity 中获取的是 mWindowManager 对象，它在 Activity.attach 方法中赋值，从<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/03/18/Android-Activity%E5%8E%9F%E7%90%86/">Android-Activity启动原理</a>可知该方法是在 startActivity 过程中回调的（AMS处理后，通过Binder调用目标Activity的方法）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Activity</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">attach</span><span class="params">(<span class="comment">/*...*/</span>)</span> </span>&#123;</span><br><span class="line">    attachBaseContext(context);</span><br><span class="line">    mWindow = <span class="keyword">new</span> PhoneWindow(<span class="keyword">this</span>, window, activityConfigCallback);</span><br><span class="line">    mWindow.setWindowManager((WindowManager)context.getSystemService(Context.WINDOW_SERVICE),</span><br><span class="line">        mToken, mComponent.flattenToString(), (info.flags &amp; ActivityInfo.FLAG_HARDWARE_ACCELERATED) != <span class="number">0</span>);</span><br><span class="line">    mWindowManager = mWindow.getWindowManager();</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Window</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setWindowManager</span><span class="params">(WindowManager wm, IBinder appToken, String appName,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">boolean</span> hardwareAccelerated)</span> </span>&#123;</span><br><span class="line">    mAppToken = appToken;</span><br><span class="line">    mAppName = appName;</span><br><span class="line">    <span class="keyword">if</span> (wm == <span class="keyword">null</span>) &#123;</span><br><span class="line">        wm = (WindowManager)mContext.getSystemService(Context.WINDOW_SERVICE);</span><br><span class="line">    &#125;</span><br><span class="line">    mWindowManager = ((WindowManagerImpl)wm).createLocalWindowManager(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// WindowManagerImpl</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> WindowManagerImpl <span class="title">createLocalWindowManager</span><span class="params">(Window parentWindow)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> WindowManagerImpl(mContext, parentWindow);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">WindowManagerImpl</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>(context, <span class="keyword">null</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="title">WindowManagerImpl</span><span class="params">(Context context, Window parentWindow)</span> </span>&#123;</span><br><span class="line">    mContext = context;</span><br><span class="line">    mParentWindow = parentWindow;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从上面的源码可以看出使用 Activity 的 Context 调用 getSystemService 方法和使用 Application 的 Context 调用 getSystemService 方法的区别在于: Activity 中的 WindowManager 对象中 parentWindow 为 Activity 中的 PhoneWindow 对象，而 Application 中的 WindowManager 对象中 parentWindow 为 null。</p>
+<p>至于上面的 mToken 对象(这是客户端进程的mToken，与上面AMS端创建的Token对象不一样！)从何而来，可以看看 Activity.attach 的调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ActivityThread</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> Activity <span class="title">performLaunchActivity</span><span class="params">(ActivityClientRecord r, Intent customIntent)</span> </span>&#123;</span><br><span class="line">    activity.attach(appContext, <span class="keyword">this</span>, getInstrumentation(), r.token, <span class="comment">/*...*/</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 mToken 对象是 ActivityClientRecord.token，注意到这时我们所处的是目标Activity所在的进程，直接从<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/03/18/Android-Activity%E5%8E%9F%E7%90%86/">Activity启动源码解析</a>可以知道，这个 ActivityClientRecord.token 是 AMS 中 ActivityRecord.token 的 Binder 代理，具体的对象传递代码不贴了，贴多了代码看着无聊，这里想看的可以直接参考之前的博客。</p>
+<p><strong>总而言之就是，目标Activity进程中的 mAppToken 是一个 Binder 代理对象，其Binder服务端是 AMS 的 ActivityRecord 中的 Token 对象(IApplicationToken.Stub)。</strong></p>
+<h1 id="WindowManager-addView"><a href="#WindowManager-addView" class="headerlink" title="WindowManager.addView"></a>WindowManager.addView</h1><p>接着我们就到了 WindowManager.addView 添加 DecorView 的流程了，此时 Activity 才刚启动，界面还没有可见。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// WindowManagerImpl</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> WindowManagerGlobal mGlobal = WindowManagerGlobal.getInstance();</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addView</span><span class="params">(<span class="meta">@NonNull</span> View view, <span class="meta">@NonNull</span> ViewGroup.LayoutParams params)</span> </span>&#123;</span><br><span class="line">    mGlobal.addView(view, params, mContext.getDisplay(), mParentWindow);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// WindowManagerGlobal.java</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addView</span><span class="params">(View view, ViewGroup.LayoutParams params, Display display, Window parentWindow)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> WindowManager.LayoutParams wparams = (WindowManager.LayoutParams) params;</span><br><span class="line">    <span class="keyword">if</span> (parentWindow != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// 由上面可知在Activity中的WindowManager里，parentWindow是PhoneWindow对象</span></span><br><span class="line">        parentWindow.adjustLayoutParamsForSubWindow(wparams);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    ViewRootImpl root = <span class="keyword">new</span> ViewRootImpl(view.getContext(), display);</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    root.setView(view, wparams, panelParentView);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码处于Activity所在的客户端进程，由于 parentWindow 不为空，是PhoneWindow对象，因此看看 Window.adjustLayoutParamsForSubWindow 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Window</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">adjustLayoutParamsForSubWindow</span><span class="params">(WindowManager.LayoutParams wp)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (wp.type &gt;= WindowManager.LayoutParams.FIRST_SUB_WINDOW &amp;&amp;</span><br><span class="line">        wp.type &lt;= WindowManager.LayoutParams.LAST_SUB_WINDOW) &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (wp.type &gt;= WindowManager.LayoutParams.FIRST_SYSTEM_WINDOW &amp;&amp;</span><br><span class="line">        wp.type &lt;= WindowManager.LayoutParams.LAST_SYSTEM_WINDOW) &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 由于这是Application级别的window，因此走这个流程</span></span><br><span class="line">        <span class="keyword">if</span> (wp.token == <span class="keyword">null</span>) &#123;</span><br><span class="line">            wp.token = mContainer == <span class="keyword">null</span> ? mAppToken : mContainer.mAppToken;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>可以看到 LayoutParams.token 取的是上面 Token 对象在客户端的 Binder 代理！</strong>记住这里，下面要用的。接下来看一下 ViewRootImpl.setView 的相关逻辑：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ViewRootImpl</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ViewRootImpl</span><span class="params">(Context context, Display display)</span> </span>&#123;</span><br><span class="line">    mContext = context;</span><br><span class="line">    <span class="comment">// 继承于IWindow.Stub的W对象</span></span><br><span class="line">    mWindow = <span class="keyword">new</span> W(<span class="keyword">this</span>);</span><br><span class="line">    mAttachInfo = <span class="keyword">new</span> View.AttachInfo(mWindowSession, mWindow, display, <span class="keyword">this</span>, mHandler, <span class="keyword">this</span>, context);</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// View.AttachInfo</span></span><br><span class="line">AttachInfo(IWindowSession session, IWindow window, Display display,</span><br><span class="line">        ViewRootImpl viewRootImpl, Handler handler, Callbacks effectPlayer,</span><br><span class="line">        Context context) &#123;</span><br><span class="line">    mWindow = window;</span><br><span class="line">    mWindowToken = window.asBinder();</span><br><span class="line">    mViewRootImpl = viewRootImpl;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setView</span><span class="params">(View view, WindowManager.LayoutParams attrs, View panelParentView)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (mView == <span class="keyword">null</span>) &#123;</span><br><span class="line">            mView = view;</span><br><span class="line">            mWindowAttributes.copyFrom(attrs);</span><br><span class="line">            <span class="comment">// 通过mWindowSession会调用到WMS.addWindow</span></span><br><span class="line">            res = mWindowSession.addToDisplay(mWindow, mSeq, mWindowAttributes,</span><br><span class="line">                    getHostVisibility(), mDisplay.getDisplayId(), mWinFrame,</span><br><span class="line">                    mAttachInfo.mContentInsets, mAttachInfo.mStableInsets,</span><br><span class="line">                    mAttachInfo.mOutsets, mAttachInfo.mDisplayCutout, mInputChannel);</span><br><span class="line">            <span class="comment">// ...</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面 View.AttachInfo 构造方法可以注意一下，下面也要用，这个类表示 View 的 attach 信息。接下来就到了 WMS 的逻辑：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">addWindow</span><span class="params">(Session session, IWindow client, <span class="keyword">int</span> seq, LayoutParams attrs, <span class="comment">/*...*/</span>)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">synchronized</span>(mWindowMap) &#123;</span><br><span class="line">        AppWindowToken atoken = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">boolean</span> hasParent = parentWindow != <span class="keyword">null</span>;</span><br><span class="line">        <span class="comment">// 这个逻辑先不看，在后面Dialog添加再说</span></span><br><span class="line">        WindowToken token = displayContent.getWindowToken(hasParent ? parentWindow.mAttrs.token : attrs.token);</span><br><span class="line">        <span class="comment">// 创建WindowState实例</span></span><br><span class="line">        <span class="keyword">final</span> WindowState win = <span class="keyword">new</span> WindowState(<span class="keyword">this</span>, session, client, token, parentWindow,</span><br><span class="line">            appOp[<span class="number">0</span>], seq, attrs, viewVisibility, session.mUid, session.mCanAddInternalSystemWindow);</span><br><span class="line">        mWindowMap.put(client.asBinder(), win);</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里的client是上面 ViewRootImpl 中的 Binder 服务端–mWindow。上述代码只贴了相关的逻辑，startActivity 流程中添加 Window 的过程可以只看到这里。WMS.addWindow方法中的<code>WindowToken token</code>对象便是用来做检验的，后面要讲的 Dialog 崩溃便是在这里！</p>
+<h1 id="Dialog-show"><a href="#Dialog-show" class="headerlink" title="Dialog.show"></a>Dialog.show</h1><p>在上面大致讲了一下 Activity 启动后，添加 DecorView 的过程。接着我们可以开始研究 Dialog 调用 show 方法后发生了什么，以及它与 Token 和 Activity/Application 的关系。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Dialog(<span class="meta">@NonNull</span> Context context, <span class="meta">@StyleRes</span> <span class="keyword">int</span> themeResId, <span class="keyword">boolean</span> createContextThemeWrapper) &#123;</span><br><span class="line">    mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);</span><br><span class="line">    <span class="keyword">final</span> Window w = <span class="keyword">new</span> PhoneWindow(mContext);</span><br><span class="line">    mWindow = w;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">show</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    onStart();</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    mDecor = mWindow.getDecorView();</span><br><span class="line">    mWindowManager.addView(mDecor, l);</span><br><span class="line">    mShowing = <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可知也是调用的 WM.addView 方法。于是可以接着看上面给出的 WindowManagerGlobal.addView 方法，这里分两种情况：</p>
+<ul>
+<li>传给 Dialog 的是 Activity 上下文，则 WindowManager 的 parentWindow 不为空</li>
+<li>传给 Dialog 的是 Application 上下文，则 WindowManager 的 parentWindow 为空</li>
+</ul>
+<p>我们已经知道，根据 parentWindow 是否为空，会选择是否调用其 <code>parentWindow.adjustLayoutParamsForSubWindow(wparams)</code> 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Window</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">adjustLayoutParamsForSubWindow</span><span class="params">(WindowManager.LayoutParams wp)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (wp.type &gt;= WindowManager.LayoutParams.FIRST_SUB_WINDOW &amp;&amp;</span><br><span class="line">            wp.type &lt;= WindowManager.LayoutParams.LAST_SUB_WINDOW) &#123;</span><br><span class="line">        <span class="comment">// 这里是普通对话框，因此走这个流程</span></span><br><span class="line">        <span class="keyword">if</span> (wp.token == <span class="keyword">null</span>) &#123;</span><br><span class="line">            View decor = peekDecorView(); <span class="comment">// 通过PhoneWindow拿到DecorView对象</span></span><br><span class="line">            <span class="keyword">if</span> (decor != <span class="keyword">null</span>) &#123;</span><br><span class="line">                wp.token = decor.getWindowToken();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// View</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> IBinder <span class="title">getWindowToken</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> mAttachInfo != <span class="keyword">null</span> ? mAttachInfo.mWindowToken : <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的 getWindowToken 方法返回的就是我们前面看到的 mAttachInfo.mWindowToken 对象！也就是之前 ViewRootImpl 中创建的 mWindow 对象（一个Binder服务端）。而如果这个 Context 是 Application，那么 <code>wp.token</code> 将会是 null。</p>
+<h1 id="WMS-addView"><a href="#WMS-addView" class="headerlink" title="WMS.addView"></a>WMS.addView</h1><p>于是我们接着看展示 Dialog 过程中，WMS 的表演：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">addWindow</span><span class="params">(Session session, IWindow client, <span class="keyword">int</span> seq, LayoutParams attrs, <span class="comment">/*...*/</span>)</span> </span>&#123;</span><br><span class="line">    WindowState parentWindow = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (type &gt;= FIRST_SUB_WINDOW &amp;&amp; type &lt;= LAST_SUB_WINDOW) &#123;</span><br><span class="line">        <span class="comment">// 普通Dialog会走这个流程，获取parentWindow对象</span></span><br><span class="line">        parentWindow = windowForClientLocked(<span class="keyword">null</span>, attrs.token, <span class="keyword">false</span>);</span><br><span class="line">        <span class="keyword">if</span> (parentWindow == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// parentWindow为null，返回bad</span></span><br><span class="line">            <span class="keyword">return</span> WindowManagerGlobal.ADD_BAD_SUBWINDOW_TOKEN;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (parentWindow.mAttrs.type &gt;= FIRST_SUB_WINDOW &amp;&amp; parentWindow.mAttrs.type &lt;= LAST_SUB_WINDOW) &#123;</span><br><span class="line">            <span class="comment">// parentWindow为普通window，返回bad</span></span><br><span class="line">            <span class="keyword">return</span> WindowManagerGlobal.ADD_BAD_SUBWINDOW_TOKEN;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">final</span> WindowState <span class="title">windowForClientLocked</span><span class="params">(Session session, IBinder client, <span class="keyword">boolean</span> throwOnError)</span> </span>&#123;</span><br><span class="line">    WindowState win = mWindowMap.get(client);</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">return</span> win;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们先看看 parentWindow 的逻辑，windowForClientLocked 方法中 client 参数即是上一节讲的 <code>wp.token</code>：</p>
+<ul>
+<li>Context是Application的情况，它为null，则WMS中返回的parentWindow也是null，那么添加 Window 失败，返回 bad code。</li>
+<li>Context是Activity的情况，它是 ViewRootImpl 中 mWindow 对象的 Binder 代理，在上面解析 startActivity 添加 DecorView 的过程中我们看到，我们为 mWindowMap 添加了一个 key 为 mWindow 对象代理，value 为当时创建的 WindowState 对象，也将作为这次的 parentWindow 返回。</li>
+</ul>
+<p>我们接着往下看：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">addWindow</span><span class="params">(Session session, IWindow client, <span class="keyword">int</span> seq, LayoutParams attrs, <span class="comment">/*...*/</span>)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    AppWindowToken atoken = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">boolean</span> hasParent = parentWindow != <span class="keyword">null</span>;</span><br><span class="line">    <span class="comment">// 取parentWindow.mAttrs.token</span></span><br><span class="line">    WindowToken token = displayContent.getWindowToken(hasParent ? parentWindow.mAttrs.token : attrs.token);</span><br><span class="line">    <span class="keyword">if</span> (token == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (rootType &gt;= FIRST_APPLICATION_WINDOW &amp;&amp; rootType &lt;= LAST_APPLICATION_WINDOW) &#123;</span><br><span class="line">            <span class="keyword">return</span> WindowManagerGlobal.ADD_BAD_APP_TOKEN;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (rootType == TYPE_INPUT_METHOD) &#123;</span><br><span class="line">            <span class="keyword">return</span> WindowManagerGlobal.ADD_BAD_APP_TOKEN;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// DisplayContent</span></span><br><span class="line"><span class="function">WindowToken <span class="title">getWindowToken</span><span class="params">(IBinder binder)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// key--ActivityRecord.Token(IApplicationToken.Stub); value--WindowToken</span></span><br><span class="line">    <span class="keyword">return</span> mTokenMap.get(binder);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对于传入是 Activity 的情况，因为 parentWindow 不为空，可知 hasParent = true，从上面可以知道，<strong>parentWindow 的 LayoutParams.token 取的是 AMS创建的 Token 对象在客户端的 Binder 代理，而 mTokenMap 中早就添加过这个 key 的元素了！</strong>因此这里如果是 Activity 的话，则返回的 token 是有值的，其值为 AMS 创建的 AppWindowToken 对象。</p>
+<p>现在应该知道，为啥在最开始我们加了这行代码 <code>dialog.window?.attributes?.token = window?.attributes?.token</code> 后，Dialog就可以正常展示了！因为我们手动给 Dialog 自己设置了 token，token 值就是启动 Activity 时创建的 mAppToken(代理)。</p>
+<h1 id="异常抛出"><a href="#异常抛出" class="headerlink" title="异常抛出"></a>异常抛出</h1><p>上面WMS返回后，回到 ViewRootImpl.setView 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setView</span><span class="params">(View view, WindowManager.LayoutParams attrs, View panelParentView)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (mView == <span class="keyword">null</span>) &#123;</span><br><span class="line">            res = mWindowSession.addToDisplay(<span class="comment">/*...*/</span>)</span><br><span class="line">            <span class="keyword">if</span> (res &lt; WindowManagerGlobal.ADD_OKAY) &#123;</span><br><span class="line">                <span class="keyword">switch</span> (res) &#123;</span><br><span class="line">                    <span class="keyword">case</span> WindowManagerGlobal.ADD_BAD_APP_TOKEN:</span><br><span class="line">                    <span class="keyword">case</span> WindowManagerGlobal.ADD_BAD_SUBWINDOW_TOKEN:</span><br><span class="line">                        <span class="keyword">throw</span> <span class="keyword">new</span> WindowManager.BadTokenException(</span><br><span class="line">                            <span class="string">&quot;Unable to add window -- token &quot;</span> + attrs.token</span><br><span class="line">                            + <span class="string">&quot; is not valid; is your activity running?&quot;</span>);</span><br><span class="line">                    <span class="comment">// ...</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// ...</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>看到这里，我们也终于找到最开始看到的崩溃日志是怎么回事了。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>用一张图来总结一下 Token 验证的流程(手里来了个新需求，时间仓促，如果流程图有问题欢迎指正，之前的解析如有问题也请指出改正！)：</p>
+<p><img src="Window-Token%E9%AA%8C%E8%AF%81.jpg" alt="Window-Token验证"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/%E5%9B%BE%E5%BD%A2%E7%B3%BB%E7%BB%9F/" rel="tag"># 图形系统</a>
+              <a href="/tags/Window/" rel="tag"># Window</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/09/16/Android-SPI%E7%AC%94%E8%AE%B0/" rel="prev" title="Android-SPI笔记">
+      <i class="fa fa-chevron-left"></i> Android-SPI笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/09/22/Flutter%E5%85%A5%E9%97%A8%E7%AC%94%E8%AE%B0/" rel="next" title="Flutter入门笔记">
+      Flutter入门笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Token%E5%88%9B%E5%BB%BA"><span class="nav-number">2.</span> <span class="nav-text">Token创建</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#WindowManager%E5%AF%B9%E8%B1%A1%E8%8E%B7%E5%8F%96"><span class="nav-number">3.</span> <span class="nav-text">WindowManager对象获取</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#WindowManager-addView"><span class="nav-number">4.</span> <span class="nav-text">WindowManager.addView</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Dialog-show"><span class="nav-number">5.</span> <span class="nav-text">Dialog.show</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#WMS-addView"><span class="nav-number">6.</span> <span class="nav-text">WMS.addView</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E6%8A%9B%E5%87%BA"><span class="nav-number">7.</span> <span class="nav-text">异常抛出</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

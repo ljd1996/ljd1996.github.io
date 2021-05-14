@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述Termux-app是一个Android上的Linux虚拟机工具，它拥有自己的包管理工具和软件源，可以实现很多Linux上的功能。源码地址：https:&#x2F;&#x2F;github.com&#x2F;termux&#x2F;termux-app。 Termux在初始化安装时会从远端下载一个对应系统架构的bootstraps-arch.zip文件，它是一个Linux的基本环境，其目录结构如下： 12345678910boots">
+<meta property="og:type" content="article">
+<meta property="og:title" content="termux-app修改包名">
+<meta property="og:url" content="http://yoursite.com/2019/08/08/termux-app%E4%BF%AE%E6%94%B9%E5%8C%85%E5%90%8D/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述Termux-app是一个Android上的Linux虚拟机工具，它拥有自己的包管理工具和软件源，可以实现很多Linux上的功能。源码地址：https:&#x2F;&#x2F;github.com&#x2F;termux&#x2F;termux-app。 Termux在初始化安装时会从远端下载一个对应系统架构的bootstraps-arch.zip文件，它是一个Linux的基本环境，其目录结构如下： 12345678910boots">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-08-08T01:43:44.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.928Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="Termux">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2019/08/08/termux-app%E4%BF%AE%E6%94%B9%E5%8C%85%E5%90%8D/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>termux-app修改包名 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/08/termux-app%E4%BF%AE%E6%94%B9%E5%8C%85%E5%90%8D/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          termux-app修改包名
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-08-08 09:43:44" itemprop="dateCreated datePublished" datetime="2019-08-08T09:43:44+08:00">2019-08-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index"><span itemprop="name">框架</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/08/08/termux-app%E4%BF%AE%E6%94%B9%E5%8C%85%E5%90%8D/" class="post-meta-item leancloud_visitors" data-flag-title="termux-app修改包名" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/08/08/termux-app%E4%BF%AE%E6%94%B9%E5%8C%85%E5%90%8D/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/08/08/termux-app%E4%BF%AE%E6%94%B9%E5%8C%85%E5%90%8D/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Termux-app是一个Android上的Linux虚拟机工具，它拥有自己的包管理工具和软件源，可以实现很多Linux上的功能。源码地址：<code>https://github.com/termux/termux-app</code>。</p>
+<p>Termux在初始化安装时会从远端下载一个对应系统架构的bootstraps-arch.zip文件，它是一个Linux的基本环境，其目录结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">bootstraps-arch&#x2F;</span><br><span class="line">├── bin</span><br><span class="line">├── etc</span><br><span class="line">├── include</span><br><span class="line">├── lib</span><br><span class="line">├── libexec</span><br><span class="line">├── share</span><br><span class="line">├── SYMLINKS.txt</span><br><span class="line">├── tmp</span><br><span class="line">└── var</span><br></pre></td></tr></table></figure>
+
+<p>bootstraps文件跟app的包名所绑定，如果需要将该功能集成到自己的Android项目中，则需要修改包名参数为自己的app包名，指定自定义的软件仓库，然后重新编译bootstraps.zip文件，在Termux-app项目中替换引入。</p>
+<h1 id="Compiling-packages-termux-packages"><a href="#Compiling-packages-termux-packages" class="headerlink" title="Compiling packages(termux-packages)"></a>Compiling packages(termux-packages)</h1><p>需要在机器上安装docker环境，由于编译termux-packages需要一些系统环境，因此使用docker来完成这个编译过程无疑是一个比较省时间的做法。docker的镜像名为：<code>termux/package-builder</code>。</p>
+<ol>
+<li><p>获取<code>https://github.com/termux/termux-packages</code>仓库</p>
+</li>
+<li><p>修改<code>termux-packages/scripts/build/termux_step_setup_variables.sh</code>(最好修改所有的package_name):</p>
+ <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&quot;$&#123;TERMUX_PREFIX:=&quot;/data/data/$package_name/files/usr&quot;&#125;&quot;</span><br><span class="line">&quot;$&#123;TERMUX_ANDROID_HOME:=&quot;/data/data/$package_name/files/home&quot;&#125;&quot;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>运行docker脚本进入docker容器:<code>./scripts/run-docker.sh</code></p>
+</li>
+<li><p>在容器中开始编译过程：<code>./build-package.sh -a arch $lib_name</code>，会在debs目录下生成对应的deb包。</p>
+<p> 我在编译时使用的是<code>-a</code>参数值是<code>all</code>，必需的package可以在编译脚本中看到(下文会提到)。在build的过程中可能会出现依赖包下载失败的问题，可以在网上查找对应的依赖包下载之后放置到某个地方，然后修改对应packages的build.sh脚本参数，使之从自己定义的url出下载依赖包，build.sh的位置在：<code>termux-packages/packages/$package/build.sh</code>。</p>
+</li>
+</ol>
+<h1 id="Create-apt-repository"><a href="#Create-apt-repository" class="headerlink" title="Create apt repository"></a>Create apt repository</h1><h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>由于termux软件源中的deb包是与包名绑定的，因此如果需要使用软件源则需要自己修改包名后重新编译对应的package包，然后将生成的deb包上传到自己的软件仓库上，本节主要介绍如何搭建一个<code>apt repository</code>。具体的指引可以参考<code>https://wiki.debian.org/DebianRepository/Setup</code>中的文档。</p>
+<p>以下是我搭建的软件源目录结构：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">hearing&#x2F;</span><br><span class="line">├── bootstraps</span><br><span class="line">│   ├── bootstrap-aarch64</span><br><span class="line">│   ├── bootstrap-aarch64.zip</span><br><span class="line">│   ├── bootstrap-arm.zip</span><br><span class="line">│   ├── bootstrap-i686.zip</span><br><span class="line">│   └── bootstrap-x86_64.zip</span><br><span class="line">├── repository</span><br><span class="line">│   ├── dists</span><br><span class="line">│   |    └── stable</span><br><span class="line">│   |       ├── InRelease</span><br><span class="line">│   |       ├── main</span><br><span class="line">│   |       │   ├── binary-aarch64</span><br><span class="line">│   |       │   │   └── Packages</span><br><span class="line">│   |       │   ├── binary-all</span><br><span class="line">│   |       │   │   └── Packages</span><br><span class="line">│   |       │   ├── binary-arm</span><br><span class="line">│   |       │   │   └── Packages</span><br><span class="line">│   |       │   ├── binary-i686</span><br><span class="line">│   |       │   │   └── Packages</span><br><span class="line">│   |       │   └── binary-x86_64</span><br><span class="line">│   |       │       └── Packages</span><br><span class="line">│   |       ├── Release</span><br><span class="line">|   |       ├── Release.gpg</span><br><span class="line">|   |       └── repo.asc</span><br><span class="line">│   └── pool</span><br><span class="line">│       ├── aarch64</span><br><span class="line">│       |   ├── xxx.deb</span><br><span class="line">│       ├── all</span><br><span class="line">│       |   ├── xxx.deb</span><br><span class="line">│       ├── arm</span><br><span class="line">│       |   ├── xxx.deb</span><br><span class="line">│       ├── i686</span><br><span class="line">│       |   ├── xxx.deb</span><br><span class="line">│       └── x86_64</span><br><span class="line">│           ├── xxx.deb</span><br><span class="line">└── tmp</span><br><span class="line">    ├── xxx.tar.gz</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>bootstraps目录下放的是最终编译成功的zip文件</li>
+<li>repository是自己制作的软件仓库</li>
+<li>tmp放置的是上一步编译中下载失败的一些依赖</li>
+</ul>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><p>根据<code>https://wiki.debian.org/DebianRepository/Setup</code>中的说法，仓库分为两种，一种比较简单的是trivial archive，而另外一种复杂的仓库称为official archive。在一个official archive中，典型特征是顶层有个 dists 目录和 pool 目录。这样的好处是:</p>
+<ul>
+<li>将所有类型CPU的包列表(Packages或者Packages.gz文件)放在一个文件里面，这样每个机器要获取的包列表就比较小。</li>
+<li>不同套件/不同CPU可共用的deb包（主要是那些 _all.deb）和源代码包，也只在 pool/all目录下存放一份。</li>
+<li>源代码包(.dsc，orig.tar.xz)有路径存放，这样 dget / apt source 可以取到源代码包。</li>
+</ul>
+<p>对应的<code>/etc/apt/sources.list</code>配置如下:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">deb http://192.168.56.47:80/hearing/repository stable main</span><br></pre></td></tr></table></figure>
+
+<p>配置软件源的格式为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">deb|deb-src uri distribution [component1] [component2] [...]</span><br></pre></td></tr></table></figure>
+
+<h2 id="生成Packages"><a href="#生成Packages" class="headerlink" title="生成Packages"></a>生成Packages</h2><p>Packages文件包括每个deb包的位置，描述，版本等信息，生成命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">dpkg-scanpackages all/ /dev/null| gzip -9c &gt; dists/stable/main/binary-all/Packages.gz</span><br><span class="line">dpkg-scanpackages all/ /dev/null| &gt; dists/stable/main/binary-all/Packages</span><br></pre></td></tr></table></figure>
+
+<h2 id="生成Release"><a href="#生成Release" class="headerlink" title="生成Release"></a>生成Release</h2><p>Release文件里面包含了 Packages 等文件的大小和校验和(包含MD5/SHA1/SHA256/SHA512 多种值)，如果这个文件里面所描述的 Packages 大小与校验和与实际读取到的文件不一致，apt 会拒绝这个仓库。生成命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-ftparchive release $dir &gt; Release</span><br></pre></td></tr></table></figure>
+
+<h2 id="生成Release-gpg-和-InRelease-文件"><a href="#生成Release-gpg-和-InRelease-文件" class="headerlink" title="生成Release.gpg 和 InRelease 文件"></a>生成Release.gpg 和 InRelease 文件</h2><p>Release.gpg 是一个签名文件，随同 Release 一起出现的，比较老的客户端只认这两个文件，而 InRelease 是内嵌签名的（也就是说，将原来 Release 的内容和 Release.gpg 的内容揉到一起了，注意这里不是简单地拼到一起），新的客户端才支持这个这个文件，观察一下 Debian 和 Ubuntu 的仓库 ( <a target="_blank" rel="noopener" href="http://mirrors.ustc.edu.cn/debian/dists/jessie/">http://mirrors.ustc.edu.cn/debian/dists/jessie/</a>, <a target="_blank" rel="noopener" href="http://mirrors.ustc.edu.cn/ubuntu/dists/xenial/">http://mirrors.ustc.edu.cn/ubuntu/dists/xenial/</a> ) ，可以看到 Debian 的仓库只有 Release 和 Release.gpg 这两个文件，而 Ubuntu 仓库里面这三个文件都有。</p>
+<p>如何生成这两个文件：</p>
+<ul>
+<li>生成自己的gpg key: <code>gpg --list-keys || gpg --gen-key</code></li>
+<li>生成Release.gpg: <code>gpg --armor --detach-sign --sign -o Release.gpg Release</code></li>
+<li>生成InRelease: <code>gpg --clearsign -o InRelease Release</code></li>
+</ul>
+<h2 id="导入公钥"><a href="#导入公钥" class="headerlink" title="导入公钥"></a>导入公钥</h2><p>当运行<code>apt update</code>的时候，会出现警告：<code>The following signatures couldn&#39;t be verified because the public key is not available: NO_PUBKEY 722D2AFAD8BAD548</code>。</p>
+<p>也就是说 InRelease / Release.gpg 虽然签名了，但由于这个签名所用的公钥没有被接受，因此还是不能正常使用，有三种解决方法：</p>
+<ol>
+<li><p>服务端将公钥导出，然后提供给客户端导入：</p>
+ <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 导出</span></span><br><span class="line">gpg --export --armor 722D2AFAD8BAD548 -o my-repo.gpg-key.asc</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 导入</span></span><br><span class="line">sudo apt-key add my-repo.gpg-key.asc</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>客户端在执行<code>apt update</code>的时候，添加<code>--allow-insecure-repositories</code>选项；在执行<code>apt install pkg</code>的时候，添加<code>--allow-unauthenticated</code>选项。</p>
+</li>
+<li><p>用户修改仓库的配置，改为<code>deb [trusted=yes] http://192.168.56.47:80/hearing/repository stable main</code></p>
+</li>
+</ol>
+<h1 id="Getting-bootstraps-termux-packaging"><a href="#Getting-bootstraps-termux-packaging" class="headerlink" title="Getting bootstraps(termux-packaging)"></a>Getting bootstraps(termux-packaging)</h1><ol>
+<li>将获得的deb文件上传到一个<code>apt repository</code></li>
+<li>获取<code>https://github.com/termux/termux-packaging</code>仓库</li>
+<li>在scripts目录下运行:<code>./generate-bootstraps.sh -p /data/data/$package_name/files/usr -r http://localhost/hearing/repository</code></li>
+<li>上传得到的bootstraps.zip文件(可能需要修改bootstraps.zip中的source.list中的软件源)</li>
+</ol>
+<p>generate-bootstraps.sh脚本中可以看到需要的依赖包：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> Package manager.</span></span><br><span class="line">pull_package apt</span><br><span class="line">pull_package game-repo</span><br><span class="line">pull_package science-repo</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Core utilities.</span></span><br><span class="line">pull_package bash</span><br><span class="line">pull_package bzip2</span><br><span class="line">pull_package command-not-found</span><br><span class="line">pull_package coreutils</span><br><span class="line">pull_package curl</span><br><span class="line">pull_package dash</span><br><span class="line">pull_package diffutils</span><br><span class="line">pull_package findutils</span><br><span class="line">pull_package gawk</span><br><span class="line">pull_package grep</span><br><span class="line">pull_package gzip</span><br><span class="line">pull_package less</span><br><span class="line">pull_package procps</span><br><span class="line">pull_package psmisc</span><br><span class="line">pull_package sed</span><br><span class="line">pull_package tar</span><br><span class="line">pull_package termux-exec</span><br><span class="line">pull_package termux-tools</span><br><span class="line">pull_package xz-utils</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Additional.</span></span><br><span class="line">pull_package busybox</span><br><span class="line">pull_package ed</span><br><span class="line">pull_package dos2unix</span><br><span class="line">pull_package inetutils</span><br><span class="line">pull_package net-tools</span><br><span class="line">pull_package patch</span><br><span class="line">pull_package unzip</span><br><span class="line">pull_package util-linux</span><br></pre></td></tr></table></figure>
+
+<h1 id="Termux-app"><a href="#Termux-app" class="headerlink" title="Termux-app"></a>Termux-app</h1><p>将Termux-app源码中的bootstraps.zip的url替换成我们自己的url。</p>
+<h1 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h1><h2 id="Java自动将deb文件分目录"><a href="#Java自动将deb文件分目录" class="headerlink" title="Java自动将deb文件分目录"></a>Java自动将deb文件分目录</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">&quot;dir/debs&quot;</span>);</span><br><span class="line">        File[] debs = file.listFiles();</span><br><span class="line">        <span class="keyword">for</span> (File f : debs) &#123;</span><br><span class="line">            <span class="keyword">if</span> (f.getName().endsWith(<span class="string">&quot;aarch64.deb&quot;</span>)) &#123;</span><br><span class="line">                Runtime.getRuntime().exec(<span class="string">&quot;cp &quot;</span>+f.getPath() + <span class="string">&quot; diraarch64&quot;</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (f.getName().endsWith(<span class="string">&quot;all.deb&quot;</span>)) &#123;</span><br><span class="line">                Runtime.getRuntime().exec(<span class="string">&quot;cp &quot;</span>+f.getPath() + <span class="string">&quot; dirall&quot;</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (f.getName().endsWith(<span class="string">&quot;arm.deb&quot;</span>)) &#123;</span><br><span class="line">                Runtime.getRuntime().exec(<span class="string">&quot;cp &quot;</span>+f.getPath() + <span class="string">&quot; dirarm&quot;</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (f.getName().endsWith(<span class="string">&quot;i686.deb&quot;</span>)) &#123;</span><br><span class="line">                Runtime.getRuntime().exec(<span class="string">&quot;cp &quot;</span>+f.getPath() + <span class="string">&quot; diri686&quot;</span>);</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (f.getName().endsWith(<span class="string">&quot;x86_64.deb&quot;</span>)) &#123;</span><br><span class="line">                Runtime.getRuntime().exec(<span class="string">&quot;cp &quot;</span>+f.getPath() + <span class="string">&quot; dirx86_64&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/Termux/" rel="tag"># Termux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/07/23/Java%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3%E7%AC%94%E8%AE%B0/" rel="prev" title="Java编程思想笔记">
+      <i class="fa fa-chevron-left"></i> Java编程思想笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/08/16/Groovy%E7%AC%94%E8%AE%B0/" rel="next" title="Groovy笔记">
+      Groovy笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Compiling-packages-termux-packages"><span class="nav-number">2.</span> <span class="nav-text">Compiling packages(termux-packages)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Create-apt-repository"><span class="nav-number">3.</span> <span class="nav-text">Create apt repository</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="nav-number">3.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E7%94%A8"><span class="nav-number">3.2.</span> <span class="nav-text">引用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90Packages"><span class="nav-number">3.3.</span> <span class="nav-text">生成Packages</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90Release"><span class="nav-number">3.4.</span> <span class="nav-text">生成Release</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%94%9F%E6%88%90Release-gpg-%E5%92%8C-InRelease-%E6%96%87%E4%BB%B6"><span class="nav-number">3.5.</span> <span class="nav-text">生成Release.gpg 和 InRelease 文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%BC%E5%85%A5%E5%85%AC%E9%92%A5"><span class="nav-number">3.6.</span> <span class="nav-text">导入公钥</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Getting-bootstraps-termux-packaging"><span class="nav-number">4.</span> <span class="nav-text">Getting bootstraps(termux-packaging)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Termux-app"><span class="nav-number">5.</span> <span class="nav-text">Termux-app</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-number">6.</span> <span class="nav-text">附录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Java%E8%87%AA%E5%8A%A8%E5%B0%86deb%E6%96%87%E4%BB%B6%E5%88%86%E7%9B%AE%E5%BD%95"><span class="nav-number">6.1.</span> <span class="nav-text">Java自动将deb文件分目录</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述最近在做一个在 Android 工程编译期间动态插入一些随机代码的需求，我选择的是 Gradle Transform 技术，想起好久没有写过博客了，就记录一下这方面的一些基本使用。 一般来说，在 Android 工程的编译期间可以通过一些技术来动态插入一些代码逻辑甚至生成一些新的 Class 类，具体技术有：  APT(Annotation Processing Tool): 编译期注解处理技">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android-Gradle-Transform用法">
+<meta property="og:url" content="http://yoursite.com/2020/04/23/Android-Gradle-Transform%E7%94%A8%E6%B3%95/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述最近在做一个在 Android 工程编译期间动态插入一些随机代码的需求，我选择的是 Gradle Transform 技术，想起好久没有写过博客了，就记录一下这方面的一些基本使用。 一般来说，在 Android 工程的编译期间可以通过一些技术来动态插入一些代码逻辑甚至生成一些新的 Class 类，具体技术有：  APT(Annotation Processing Tool): 编译期注解处理技">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2020/04/23/Android-Gradle-Transform%E7%94%A8%E6%B3%95/Transform%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B.webp">
+<meta property="article:published_time" content="2020-04-23T07:10:51.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.730Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="Gradle">
+<meta property="article:tag" content="Transform">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/04/23/Android-Gradle-Transform%E7%94%A8%E6%B3%95/Transform%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B.webp">
+
+<link rel="canonical" href="http://yoursite.com/2020/04/23/Android-Gradle-Transform%E7%94%A8%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android-Gradle-Transform用法 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/23/Android-Gradle-Transform%E7%94%A8%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android-Gradle-Transform用法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-23 15:10:51" itemprop="dateCreated datePublished" datetime="2020-04-23T15:10:51+08:00">2020-04-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/Gradle/" itemprop="url" rel="index"><span itemprop="name">Gradle</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/04/23/Android-Gradle-Transform%E7%94%A8%E6%B3%95/" class="post-meta-item leancloud_visitors" data-flag-title="Android-Gradle-Transform用法" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/04/23/Android-Gradle-Transform%E7%94%A8%E6%B3%95/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/04/23/Android-Gradle-Transform%E7%94%A8%E6%B3%95/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>最近在做一个在 Android 工程编译期间动态插入一些随机代码的需求，我选择的是 Gradle Transform 技术，想起好久没有写过博客了，就记录一下这方面的一些基本使用。</p>
+<p>一般来说，在 Android 工程的编译期间可以通过一些技术来动态插入一些代码逻辑甚至生成一些新的 Class 类，具体技术有：</p>
+<ul>
+<li>APT(Annotation Processing Tool): 编译期注解处理技术，通过自定义注解和注解处理器来实现编译期生成代码的功能，并且将生成的代码和源代码一起编译成 class 文件。</li>
+<li>AspectJ: 是一种编译器，在编译期间，将开发者编写的 Aspect 程序织入到目标程序中，扩展目标程序的功能。</li>
+<li>Transform&amp;Javassist: Transform 是 Android Gradle 提供的操作字节码的一种方式。它在 class 编译成 dex 之前通过一系列 Transform 处理来实现代码注入。Javassist 可以方便地修改 .class 文件，关于 Javassist 的用法可以参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/04/23/Javassist%E7%94%A8%E6%B3%95/">Javassist用法</a>。</li>
+</ul>
+<p>这里还可以看看 AOP 和 IOC 的一些概念，参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/06/05/Android-AOP-IOC%E6%A6%82%E8%BF%B0/">AOP-IOC概述</a>。</p>
+<p>Android Gradle 工具从 1.5.0-beta1 版本开始提供了 Transform API 工具，它可以在将 .class 文件转换为 dex 文件之前对其进行操作。可以通过自定义 Gradle 插件来注册自定义的 Transform，注册后 Transform 会包装成一个 Gradle Task 任务，这个 Task 在 compile task 执行完毕后运行。</p>
+<a id="more"></a>
+
+<p>依赖如下：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation <span class="string">&#x27;com.android.tools.build:gradle:4.1.1&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>当在buildSrc中开发插件时，其build.gradle脚本内容如下：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">apply <span class="attr">plugin:</span> <span class="string">&#x27;groovy&#x27;</span></span><br><span class="line">apply <span class="attr">plugin:</span> <span class="string">&#x27;maven&#x27;</span></span><br><span class="line"></span><br><span class="line">repositories &#123;</span><br><span class="line">    google()</span><br><span class="line">    jcenter()</span><br><span class="line">    mavenCentral()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    implementation gradleApi()</span><br><span class="line">    implementation localGroovy()</span><br><span class="line">    implementation <span class="string">&#x27;com.android.tools.build:gradle:4.1.1&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Transform处理流程如下图(图片来于网络)：</p>
+<p><img src="Transform%E5%A4%84%E7%90%86%E6%B5%81%E7%A8%8B.webp" alt="Transform处理流程"></p>
+<h1 id="Transform"><a href="#Transform" class="headerlink" title="Transform"></a>Transform</h1><p>先看看Transform类，这是一个abstract类，实现自定义 Transform task 需要重写它，一般需要重写的方法有：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">InjectTransform</span> <span class="keyword">extends</span> <span class="title">Transform</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function">String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    Set&lt;QualifiedContent.ContentType&gt; getInputTypes() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    Set&lt;? <span class="keyword">super</span> QualifiedContent.Scope&gt; getScopes() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isIncremental</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">transform</span><span class="params">(TransformInvocation transformInvocation)</span> <span class="keyword">throws</span> TransformException, InterruptedException, IOException </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.transform(transformInvocation)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>getName</strong></p>
+<p>指明 Transform 的名字，也对应了该 Transform 所代表的 Task 名称，例如当返回值为 <code>InjectTransform</code> 时，编译后可以看到名为transformClassesWithInjectTransformForxxx 的 task。</p>
+<p><strong>getInputTypes</strong></p>
+<p>指明 Transform 处理的输入类型，在 TransformManager 中定义了很多类型：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Set&lt;ScopeType&gt; EMPTY_SCOPES = ImmutableSet.of();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 代表 javac 编译成的 class 文件，常用</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Set&lt;ContentType&gt; CONTENT_CLASS = ImmutableSet.of(CLASSES);</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Set&lt;ContentType&gt; CONTENT_JARS = ImmutableSet.of(CLASSES, RESOURCES);</span><br><span class="line"><span class="comment">// 这里的 resources 单指 java 的资源</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Set&lt;ContentType&gt; CONTENT_RESOURCES = ImmutableSet.of(RESOURCES);</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Set&lt;ContentType&gt; CONTENT_NATIVE_LIBS = ImmutableSet.of(NATIVE_LIBS);</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Set&lt;ContentType&gt; CONTENT_DEX = ImmutableSet.of(ExtendedContentType.DEX);</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Set&lt;ContentType&gt; CONTENT_DEX_WITH_RESOURCES = ImmutableSet.of(ExtendedContentType.DEX, RESOURCES);</span><br></pre></td></tr></table></figure>
+
+<p>其中，很多类型是不允许自定义 Transform 来处理的，我们常使用 CONTENT_CLASS 来操作 Class 文件。</p>
+<p><strong>getScopes</strong></p>
+<p>指明 Transform 输入文件所属的范围, 因为 gradle 是支持多工程编译的。总共有以下几种:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">enum</span> <span class="title">Scope</span> <span class="keyword">implements</span> <span class="title">ScopeType</span> </span>&#123;</span><br><span class="line">    <span class="comment">/** Only the project (module) content */</span></span><br><span class="line">    PROJECT(<span class="number">0x01</span>),</span><br><span class="line">    <span class="comment">/** Only the sub-projects (other modules) */</span></span><br><span class="line">    SUB_PROJECTS(<span class="number">0x04</span>),</span><br><span class="line">    <span class="comment">/** Only the external libraries */</span></span><br><span class="line">    EXTERNAL_LIBRARIES(<span class="number">0x10</span>),</span><br><span class="line">    <span class="comment">/** Code that is being tested by the current variant, including dependencies */</span></span><br><span class="line">    TESTED_CODE(<span class="number">0x20</span>),</span><br><span class="line">    <span class="comment">/** Local or remote dependencies that are provided-only */</span></span><br><span class="line">    PROVIDED_ONLY(<span class="number">0x40</span>),</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Deprecated</span></span><br><span class="line">    PROJECT_LOCAL_DEPS(<span class="number">0x02</span>),</span><br><span class="line">    <span class="meta">@Deprecated</span></span><br><span class="line">    SUB_PROJECTS_LOCAL_DEPS(<span class="number">0x08</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> value;</span><br><span class="line"></span><br><span class="line">    Scope(<span class="keyword">int</span> value) &#123;</span><br><span class="line">        <span class="keyword">this</span>.value = value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getValue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> value;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 TransformManager 类中定义了几种范围：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Set&lt;ScopeType&gt; PROJECT_ONLY = ImmutableSet.of(Scope.PROJECT);</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Set&lt;ScopeType&gt; SCOPE_FULL_PROJECT = ImmutableSet.of(Scope.PROJECT, Scope.SUB_PROJECTS, Scope.EXTERNAL_LIBRARIES);</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Set&lt;ScopeType&gt; SCOPE_FULL_WITH_FEATURES = <span class="keyword">new</span> ImmutableSet.Builder&lt;ScopeType&gt;().addAll(SCOPE_FULL_PROJECT).add(InternalScope.FEATURES).build();</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Set&lt;ScopeType&gt; SCOPE_FEATURES = ImmutableSet.of(InternalScope.FEATURES);</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Set&lt;ScopeType&gt; SCOPE_FULL_LIBRARY_WITH_LOCAL_JARS = ImmutableSet.of(Scope.PROJECT, InternalScope.LOCAL_DEPS);</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> Set&lt;ScopeType&gt; SCOPE_FULL_PROJECT_WITH_LOCAL_JARS = <span class="keyword">new</span> ImmutableSet.Builder&lt;ScopeType&gt;().addAll(SCOPE_FULL_PROJECT).add(InternalScope.LOCAL_DEPS).build();</span><br></pre></td></tr></table></figure>
+
+<p>常用的是SCOPE_FULL_PROJECT，代表所有Project。</p>
+<p>确定了ContentType和Scope后就确定了该自定义Transform需要处理的资源流。比如CONTENT_CLASS和SCOPE_FULL_PROJECT表示了所有项目中java编译成的class组成的资源流。</p>
+<p><strong>isIncremental</strong></p>
+<p>指明该 Transform 是否支持增量编译。有时即使返回 true, 在某些情况下它还是会当作 false 返回。</p>
+<p><strong>transform</strong></p>
+<p>transform是一个空实现，input的内容将会打包成一个 TransformInvocation 对象。</p>
+<h1 id="TransformInvocation"><a href="#TransformInvocation" class="headerlink" title="TransformInvocation"></a>TransformInvocation</h1><p>看一下这个接口的定义：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">TransformInvocation</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 上下文</span></span><br><span class="line">    <span class="meta">@NonNull</span></span><br><span class="line">    <span class="function">Context <span class="title">getContext</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// transform 的输入/输出</span></span><br><span class="line">    <span class="meta">@NonNull</span></span><br><span class="line">    <span class="function">Collection&lt;TransformInput&gt; <span class="title">getInputs</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">     <span class="comment">// 返回不被这个 transformation 消费的 input</span></span><br><span class="line">    <span class="meta">@NonNull</span> <span class="function">Collection&lt;TransformInput&gt; <span class="title">getReferencedInputs</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Returns the list of secondary file changes since last. Only secondary files that this</span></span><br><span class="line"><span class="comment">     * transform can handle incrementally will be part of this change set.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@NonNull</span> <span class="function">Collection&lt;SecondaryInput&gt; <span class="title">getSecondaryInputs</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 返回允许创建内容的 output provider</span></span><br><span class="line">    <span class="meta">@Nullable</span></span><br><span class="line">    <span class="function">TransformOutputProvider <span class="title">getOutputProvider</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isIncremental</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="TransformInput"><a href="#TransformInput" class="headerlink" title="TransformInput"></a>TransformInput</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">TransformInput</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 表示 Jar 包</span></span><br><span class="line">    <span class="meta">@NonNull</span></span><br><span class="line">    <span class="function">Collection&lt;JarInput&gt; <span class="title">getJarInputs</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 表示目录，包含 class 文件</span></span><br><span class="line">    <span class="meta">@NonNull</span></span><br><span class="line">    <span class="function">Collection&lt;DirectoryInput&gt; <span class="title">getDirectoryInputs</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="TransformOutputProvider"><a href="#TransformOutputProvider" class="headerlink" title="TransformOutputProvider"></a>TransformOutputProvider</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">TransformOutputProvider</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">deleteAll</span><span class="params">()</span> <span class="keyword">throws</span> IOException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 根据 name、ContentType、QualifiedContent.Scope 返回对应的文件(jar / directory)</span></span><br><span class="line">    <span class="meta">@NonNull</span></span><br><span class="line">    <span class="function">File <span class="title">getContentLocation</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="meta">@NonNull</span> String name,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="meta">@NonNull</span> Set&lt;QualifiedContent.ContentType&gt; types,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="meta">@NonNull</span> Set&lt;? <span class="keyword">super</span> QualifiedContent.Scope&gt; scopes,</span></span></span><br><span class="line"><span class="function"><span class="params">            <span class="meta">@NonNull</span> Format format)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="示例：注入代码"><a href="#示例：注入代码" class="headerlink" title="示例：注入代码"></a>示例：注入代码</h1><p><strong>1.首先创建一个普通的Android工程。</strong></p>
+<p><strong>2.自定义Gradle插件，示例采用buildSrc方式。</strong></p>
+<p>关于自定义 Gradle 插件的三种方式可以参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/08/16/Gradle%E7%AC%94%E8%AE%B0/#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8F%92%E4%BB%B6">自定义gradle插件</a>。</p>
+<ul>
+<li><p>build.gradle内容：</p>
+  <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">apply <span class="attr">plugin:</span> <span class="string">&#x27;groovy&#x27;</span></span><br><span class="line">apply <span class="attr">plugin:</span> <span class="string">&#x27;maven&#x27;</span></span><br><span class="line"></span><br><span class="line">repositories &#123;</span><br><span class="line">    google()</span><br><span class="line">    jcenter()</span><br><span class="line">    mavenCentral()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    implementation gradleApi()</span><br><span class="line">    implementation localGroovy()</span><br><span class="line">    implementation <span class="string">&#x27;com.android.tools.build:gradle:4.1.1&#x27;</span></span><br><span class="line">    implementation <span class="string">&#x27;org.javassist:javassist:3.27.0-GA&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Transform代码：</p>
+  <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">InjectTransform</span> <span class="keyword">extends</span> <span class="title">Transform</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Project mProject</span><br><span class="line"></span><br><span class="line">    InjectTransform(Project project) &#123;</span><br><span class="line">        <span class="built_in">this</span>.mProject = project</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    String getName() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;InjectTransform&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    Set&lt;QualifiedContent.ContentType&gt; getInputTypes() &#123;</span><br><span class="line">        <span class="keyword">return</span> TransformManager.CONTENT_CLASS</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    Set&lt;? super QualifiedContent.Scope&gt; getScopes() &#123;</span><br><span class="line">        return TransformManager.SCOPE_FULL_PROJECT</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    boolean isIncremental() &#123;</span><br><span class="line">        return false</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException &#123;</span><br><span class="line">        transformInvocation.inputs.each &#123; input -&gt;</span><br><span class="line">            <span class="comment">// 包含我们手写的 Class 类及 R.class、BuildConfig.class 等</span></span><br><span class="line">            input.directoryInputs.each &#123; directoryInput -&gt;</span><br><span class="line">                String path = directoryInput.file.absolutePath</span><br><span class="line">                println(<span class="string">&quot;[InjectTransform] Begin to inject: $path&quot;</span>)</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 执行注入逻辑</span></span><br><span class="line">                InjectByJavassit.inject(path, mProject)</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 获取输出目录</span></span><br><span class="line">                def dest = transformInvocation.outputProvider.getContentLocation(directoryInput.name,</span><br><span class="line">                        directoryInput.contentTypes, directoryInput.scopes, Format.DIRECTORY)</span><br><span class="line">                println(<span class="string">&quot;[InjectTransform] Directory output dest: $dest.absolutePath&quot;</span>)</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 将input的目录复制到output指定目录</span></span><br><span class="line">                FileUtils.copyDirectory(directoryInput.file, dest)</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// jar文件，如第三方依赖</span></span><br><span class="line">            input.jarInputs.each &#123; jarInput -&gt;</span><br><span class="line">                def dest = transformInvocation.outputProvider.getContentLocation(jarInput.name,</span><br><span class="line">                    jarInput.contentTypes, jarInput.scopes, Format.JAR)</span><br><span class="line">                FileUtils.copyFile(jarInput.file, dest)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Javassit代码：</p>
+  <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">InjectByJavassit</span> &#123;</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">void</span> inject(String path, Project project) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            File dir = <span class="keyword">new</span> File(path)</span><br><span class="line">            <span class="keyword">if</span> (dir.isDirectory()) &#123;</span><br><span class="line">                dir.eachFileRecurse &#123; File file -&gt;</span><br><span class="line">                    <span class="keyword">if</span> (file.name.endsWith(<span class="string">&#x27;Activity.class&#x27;</span>)) &#123;</span><br><span class="line">                        doInject(project, file, path)</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> doInject(Project project, File clsFile, String originPath) &#123;</span><br><span class="line">        println(<span class="string">&quot;[Inject] DoInject: $clsFile.absolutePath&quot;</span>)</span><br><span class="line">        String cls = <span class="keyword">new</span> File(originPath).relativePath(clsFile).replace(<span class="string">&#x27;/&#x27;</span>, <span class="string">&#x27;.&#x27;</span>)</span><br><span class="line">        cls = cls.substring(<span class="number">0</span>, cls.lastIndexOf(<span class="string">&#x27;.class&#x27;</span>))</span><br><span class="line">        println(<span class="string">&quot;[Inject] Cls: $cls&quot;</span>)</span><br><span class="line"></span><br><span class="line">        ClassPool pool = ClassPool.getDefault()</span><br><span class="line">        <span class="comment">// 加入当前路径</span></span><br><span class="line">        pool.appendClassPath(originPath)</span><br><span class="line">        <span class="comment">// project.android.bootClasspath 加入android.jar，不然找不到android相关的所有类</span></span><br><span class="line">        pool.appendClassPath(project.android.bootClasspath[<span class="number">0</span>].toString())</span><br><span class="line">        <span class="comment">// 引入android.os.Bundle包，因为onCreate方法参数有Bundle</span></span><br><span class="line">        pool.importPackage(<span class="string">&#x27;android.os.Bundle&#x27;</span>)</span><br><span class="line"></span><br><span class="line">        CtClass ctClass = pool.getCtClass(cls)</span><br><span class="line">        <span class="comment">// 解冻</span></span><br><span class="line">        <span class="keyword">if</span> (ctClass.isFrozen()) &#123;</span><br><span class="line">            ctClass.defrost()</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 获取方法</span></span><br><span class="line">        CtMethod ctMethod = ctClass.getDeclaredMethod(<span class="string">&#x27;onCreate&#x27;</span>)</span><br><span class="line"></span><br><span class="line">        String toastStr = <span class="string">&#x27;android.widget.Toast.makeText(this, &quot;I am the injected code&quot;, android.widget.Toast.LENGTH_SHORT).show();&#x27;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// 方法尾插入</span></span><br><span class="line">        ctMethod.insertAfter(toastStr)</span><br><span class="line">        ctClass.writeFile(originPath)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 释放</span></span><br><span class="line">        ctClass.detach()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>注册Transform：</p>
+  <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TransformPlugin</span> <span class="keyword">implements</span> <span class="title">Plugin</span>&lt;<span class="title">Project</span>&gt; &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">void</span> apply(Project target) &#123;</span><br><span class="line">        target.android.registerTransform(<span class="keyword">new</span> InjectTransform(target))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<p><strong>3.引用插件。</strong></p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apply <span class="attr">plugin:</span> com.hearing.plugin.TransformPlugin</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/Gradle/" rel="tag"># Gradle</a>
+              <a href="/tags/Transform/" rel="tag"># Transform</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/09/Android%E8%99%9A%E6%8B%9F%E6%9C%BA/" rel="prev" title="Android虚拟机">
+      <i class="fa fa-chevron-left"></i> Android虚拟机
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/23/Javassist%E7%94%A8%E6%B3%95/" rel="next" title="Javassist用法">
+      Javassist用法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Transform"><span class="nav-number">2.</span> <span class="nav-text">Transform</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TransformInvocation"><span class="nav-number">3.</span> <span class="nav-text">TransformInvocation</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TransformInput"><span class="nav-number">4.</span> <span class="nav-text">TransformInput</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TransformOutputProvider"><span class="nav-number">5.</span> <span class="nav-text">TransformOutputProvider</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B%EF%BC%9A%E6%B3%A8%E5%85%A5%E4%BB%A3%E7%A0%81"><span class="nav-number">6.</span> <span class="nav-text">示例：注入代码</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

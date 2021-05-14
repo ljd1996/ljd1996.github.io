@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="文件格式apkAPK(Android package)：android安装包，由aapt（Android Assert Packaging Tool）把AndroidManifest.xml、资源文件、dex（二进制字节码）文件组合而成。 dexdex（Dalvik VM Excutors）：Dalvik虚拟机执行程序，执行前需要优化。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android虚拟机">
+<meta property="og:url" content="http://yoursite.com/2020/04/09/Android%E8%99%9A%E6%8B%9F%E6%9C%BA/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="文件格式apkAPK(Android package)：android安装包，由aapt（Android Assert Packaging Tool）把AndroidManifest.xml、资源文件、dex（二进制字节码）文件组合而成。 dexdex（Dalvik VM Excutors）：Dalvik虚拟机执行程序，执行前需要优化。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2020/04/09/Android%E8%99%9A%E6%8B%9F%E6%9C%BA/art_vs_dalvik.png">
+<meta property="article:published_time" content="2020-04-09T02:38:10.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.830Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/04/09/Android%E8%99%9A%E6%8B%9F%E6%9C%BA/art_vs_dalvik.png">
+
+<link rel="canonical" href="http://yoursite.com/2020/04/09/Android%E8%99%9A%E6%8B%9F%E6%9C%BA/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android虚拟机 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/09/Android%E8%99%9A%E6%8B%9F%E6%9C%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android虚拟机
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-09 10:38:10" itemprop="dateCreated datePublished" datetime="2020-04-09T10:38:10+08:00">2020-04-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">系统</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/04/09/Android%E8%99%9A%E6%8B%9F%E6%9C%BA/" class="post-meta-item leancloud_visitors" data-flag-title="Android虚拟机" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/04/09/Android%E8%99%9A%E6%8B%9F%E6%9C%BA/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/04/09/Android%E8%99%9A%E6%8B%9F%E6%9C%BA/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="文件格式"><a href="#文件格式" class="headerlink" title="文件格式"></a>文件格式</h1><h2 id="apk"><a href="#apk" class="headerlink" title="apk"></a>apk</h2><p>APK(Android package)：android安装包，由aapt（Android Assert Packaging Tool）把AndroidManifest.xml、资源文件、dex（二进制字节码）文件组合而成。</p>
+<h2 id="dex"><a href="#dex" class="headerlink" title="dex"></a>dex</h2><p>dex（Dalvik VM Excutors）：Dalvik虚拟机执行程序，执行前需要优化。</p>
+<a id="more"></a>
+
+<h2 id="vdex"><a href="#vdex" class="headerlink" title="vdex"></a>vdex</h2><p>android O 新增的格式包，dex代码直接转化的可执行二进制码文件：</p>
+<ol>
+<li>第一次开机就会生成在 <code>/system/app/&lt;packagename&gt;/oat/</code> 下；</li>
+<li>在系统运行过程中，虚拟机将其 从 <code>/system/app</code> 下 copy 到 <code>/data/davilk-cache/</code> 下</li>
+</ol>
+<p>目的是为了降低dex2oat时间，进行dex2oat时，如果有vdex的话，就可以省去重新校验apk里dex文件合法性的过程，从而优化了开机速度。</p>
+<h2 id="odex"><a href="#odex" class="headerlink" title="odex"></a>odex</h2><p>在Android N 之前，Dalvik虚拟机执行程序dex文件前，系统会对dex文件做优化，生成可执行文件odex，保存到<code>/data/dalvik-cache</code>目录，最后把apk文件中的dex文件删除。其优点是：</p>
+<ol>
+<li>减少了启动时间（省去了系统第一次启动应用时从apk文件中读取dex文件，并对dex文件做优化的过程）和对RAM的占用（apk文件中的dex如果不删除，同一个应用就会存在两个dex文件：apk中和/data/dalvik-cache目录下）。</li>
+<li>防止第三方用户反编译系统的软件（odex文件是跟随系统环境变化的，改变环境会无法运行；而apk文件中又不包含dex文件，无法独立运行）。</li>
+</ol>
+<p>在Android O 之后，odex 是从vdex 这个文件中提取了部分模块生成的一个新的可执行二进制码文件，odex 从vdex 中提取后，vdex 的大小就减少了。</p>
+<ol>
+<li>第一次开机就会生成在<code>/system/app/&lt;packagename&gt;/oat/</code> 下；</li>
+<li>在系统运行过程中，虚拟机将其 从 <code>/system/app</code> 下 copy 到 <code>/data/davilk-cache/</code> 下；</li>
+<li>odex + vdex = apk 的全部源码 （vdex 并不是独立于odex 的文件 odex + vdex 才代表一个apk）。</li>
+</ol>
+<h2 id="oat"><a href="#oat" class="headerlink" title="oat"></a>oat</h2><p>ART虚拟机使用的是oat文件，oat文件是一种Android私有ELF文件格式，它遵循ELF格式，ELF是Unix系统上可执行文件，目标文件，共享库和Core dump文件的标准格式，全称是Executable and Linkable Format。</p>
+<p>oat文件不仅包含有从DEX文件翻译而来的本地机器指令，还包含有原来的DEX文件内容。APK在安装的过程中，会通过dex2oat工具生成一个OAT文件。</p>
+<h2 id="art"><a href="#art" class="headerlink" title="art"></a>art</h2><p>可选文件，包含APK中列出的一些字符串和类的ART内部表示，用于加速应用程序的启动。</p>
+<h2 id="QA"><a href="#QA" class="headerlink" title="QA"></a>QA</h2><p>Android 5.0开始，默认已经使用ART，弃用Dalvik了，app会在安装时被编译成OAT文件，（ART上运行的格式）ODEX还有什么用呢？ Google权威的回答：</p>
+<ul>
+<li>DEX转换成OAT的这个过程是5.0以上系统用户在安装程序或是刷入ROM、增量更新后首次启动时必然执行的。按照Google的说法，相比做过ODEX优化，未做过优化的DEX转换成OAT要花费更长的时间，比如2-3倍。比如安装一个odex优化过的程序假设需要1秒钟，未做过优化的程序就需要2~3秒。由此可见，虽然dalvik被弃用了，但ODEX优化在Android 5.0系统以上依旧起着作用。ODEX优化事实上是由一个叫做WITH_DEXPREOPT的参数控制的，开启该参数后，会对APK、JAR以及内核镜像进行优化。其中，针对APK和JAR的最直观的优化体现就是，程序的dex被转换成odex。</li>
+</ul>
+<h1 id="DVM-vs-ART"><a href="#DVM-vs-ART" class="headerlink" title="DVM vs ART"></a>DVM vs ART</h1><p>Dalvik虚拟机是2008年跟随Android系统一起发布的。当时的移动设备的系统内存只有64M左右，CPU频率在250~500MHz之间。这个硬件水平早已发生了巨大变化。随着智能设备的兴起，这些年移动芯片的性能每年都有大幅提升，如今的智能手机内存已经有8G甚至更多，CPU也已经步入了64位的时代，频率高达2.0 GHz甚至更高。硬件的更新，常常也伴随着软件的换代。因此，Dalvik虚拟机被淘汰也是情理之中的事情。</p>
+<p>Dalvik之所以要被ART替代包含下面几个原因：</p>
+<ul>
+<li>Dalvik是为32位设计的，不适用于64位CPU。</li>
+<li>单纯的字节码解释加JIT编译的执行方式，性能要弱于本地机器码的执行。</li>
+<li>无论是解释执行还是JIT编译都是单次运行过程中发生，每运行一次都可能需要重新做这些工作，这样做太浪费资源。</li>
+<li>原先的垃圾回收机制不够好，会导致卡顿。</li>
+</ul>
+<p>很显然，ART虚拟机对上面提到的这些地方做了改进。除了支持64位不必说，最主要的是下面两项改进：</p>
+<ul>
+<li>AOT编译</li>
+<li>垃圾回收的改进：GC（Garbage Collection）是虚拟机非常重要的一个特性，因为它的实现好坏会影响所有在虚拟机上运行的应用。GC实现得不好可能会导致画面跳跃，掉帧，UI响应过慢等问题。ART的垃圾回收机制相较于Dalvik虚拟机有如下改进：<ul>
+<li>将GC的停顿由2次改成1次</li>
+<li>在仅有一次的GC停顿中进行并行处理</li>
+<li>在特殊场景下，对于近期创建的具有较短生命的对象消耗更少的时间进行垃圾回收</li>
+<li>改进垃圾收集的工效，更频繁的执行并行垃圾收集</li>
+<li>对于后台进程的内存在垃圾回收过程进行压缩以解决碎片化的问题</li>
+<li>AOT编译是在应用程序安装时就进行的工作，下图描述了Dalvik虚拟机与（Android 5.0上的）ART虚拟机在安装APK时的区别：</li>
+</ul>
+</li>
+</ul>
+<p><img src="art_vs_dalvik.png" alt="art_vs_dalvik"></p>
+<p>从这幅图中我们看到：</p>
+<ul>
+<li>在Dalvik虚拟机上，APK中的Dex文件在安装时会被优化成odex文件，在运行时，会被JIT编译器编译成native代码。</li>
+<li>而在ART虚拟机上安装时，Dex文件会直接由dex2oat工具翻译成oat格式的文件，oat文件中既包含了dex文件中原先的内容，也包含了已经编译好的native代码。</li>
+</ul>
+<p>dex2oat生成的oat文件在设备上位于/data/dalvik-cache/目录下。同时，由于32位和64位的机器码有所区别，因此这个目录下还会通过子文件夹对oat文件进行分类。例如，手机上通常会有下面两个目录：</p>
+<ul>
+<li>/data/dalvik-cache/arm/</li>
+<li>/data/dalvik-cache/arm64/</li>
+</ul>
+<h1 id="AOT和JIT"><a href="#AOT和JIT" class="headerlink" title="AOT和JIT"></a>AOT和JIT</h1><p>Ahead-of-time（AOT）是相对于Just-in-time（JIT）而言的。</p>
+<ul>
+<li>JIT：在运行时进行字节码到本地机器码的编译，这也是为什么Java普遍被认为效率比C++差的原因。无论是解释器的解释还是运行过程中即时编译，都比C++编译出的本地机器码执行多了一个耗费时间的过程。</li>
+<li>AOT：向C++编译过程靠拢的一项技术，当APK在安装的时候，系统会通过一个名称为dex2oat的工具将APK中的dex文件编译成包含本地机器码的oat文件存放下来。这样做之后，在程序执行的时候，就可以直接使用已经编译好的机器码以加快效率。</li>
+</ul>
+<p>在Android 5.0上，系统在安装APK时会直接将dex文件中的代码编译成机器码，编译的过程比较耗时，因此，用过Android 5.0的用户应该都会感觉到，在这个版本上安装应用程序明显比之前要慢了很多。编译一个应用程序已经比较耗时，如果系统中所有的应用都要重新编译一遍，那等待时间将是难以忍受的。之所以发生这个问题，是因为：</p>
+<ul>
+<li>应用程序编译生成的OAT文件会引用Framework中的代码。一旦系统发生升级，Framework中的实现发生变化，就需要重新修正所有应用程序的OAT文件，使得它们的引用是正确的，这就需要重新编译所有的应用。</li>
+<li>出于系统的安全性考虑，自2015年8月开始，Nexus设备每个月都会收到一次安全更新。</li>
+</ul>
+<p>编译生成的Oat文件中，既包含了原先的Dex文件，又包含了编译后的机器代码。而实际上，对于用户来说，并非会用到应用程序中的所有功能，因此很多时候编译生成的机器码是一直用不到的。一份数据存在两份结果（尽管它们的格式是不一样的）显然是一种存储空间的浪费。</p>
+<p>因此，为了解决上面提到的这些问题，在 Android 7.0 中，Google又为Android添加了即时 (JIT) 编译器。在APK安装时，并不是一次性将所有代码全部编译成机器码。而是在实际运行过程中，对代码进行分析，将热点代码编译成机器码，让它可以在应用运行时持续提升 Android 应用的性能。</p>
+<p>JIT编译器补充了ART当前的预先(AOT)编译器的功能，有助于提高运行时性能，节省存储空间，以及加快应用及系统更新速度。相较于AOT编译器，JIT编译器的优势也更为明显，因为它不会在应用自动更新期间或重新编译应用（在无线下载 (OTA) 更新期间）时拖慢系统速度。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/%E7%B3%BB%E7%BB%9F/" rel="tag"># 系统</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/01/Android-AMS%E5%90%AF%E5%8A%A8%E5%8E%9F%E7%90%86/" rel="prev" title="Android-AMS启动原理">
+      <i class="fa fa-chevron-left"></i> Android-AMS启动原理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/23/Android-Gradle-Transform%E7%94%A8%E6%B3%95/" rel="next" title="Android-Gradle-Transform用法">
+      Android-Gradle-Transform用法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E6%A0%BC%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">文件格式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#apk"><span class="nav-number">1.1.</span> <span class="nav-text">apk</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dex"><span class="nav-number">1.2.</span> <span class="nav-text">dex</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#vdex"><span class="nav-number">1.3.</span> <span class="nav-text">vdex</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#odex"><span class="nav-number">1.4.</span> <span class="nav-text">odex</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#oat"><span class="nav-number">1.5.</span> <span class="nav-text">oat</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#art"><span class="nav-number">1.6.</span> <span class="nav-text">art</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QA"><span class="nav-number">1.7.</span> <span class="nav-text">QA</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DVM-vs-ART"><span class="nav-number">2.</span> <span class="nav-text">DVM vs ART</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AOT%E5%92%8CJIT"><span class="nav-number">3.</span> <span class="nav-text">AOT和JIT</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

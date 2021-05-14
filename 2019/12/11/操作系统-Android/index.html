@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述Android基于Linux内核，它将开源代码和闭源第三方应用程序结合在一起。Android的开源部分称为Android开源项目（Android Open Source Project，AOSP）,它是完全开放的，任何人都可以免费使用和修改。 如同传统的Linux系统一样，Android的第一个用户空间进程是init，它是所有其他进程的根。与Android相关的内容可以看这里。 Linux扩展">
+<meta property="og:type" content="article">
+<meta property="og:title" content="操作系统-Android">
+<meta property="og:url" content="http://yoursite.com/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Android/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述Android基于Linux内核，它将开源代码和闭源第三方应用程序结合在一起。Android的开源部分称为Android开源项目（Android Open Source Project，AOSP）,它是完全开放的，任何人都可以免费使用和修改。 如同传统的Linux系统一样，Android的第一个用户空间进程是init，它是所有其他进程的根。与Android相关的内容可以看这里。 Linux扩展">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Android/Binder%E6%9C%BA%E5%88%B6.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Android/%E5%9F%BA%E6%9C%AC%E7%9A%84Binder-IPC%E4%BA%8B%E5%8A%A1.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Android/Binder%E8%B7%A8%E8%BF%9B%E7%A8%8B%E5%AF%B9%E8%B1%A1%E6%98%A0%E5%B0%84.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Android/%E5%9C%A8%E8%BF%9B%E7%A8%8B%E4%B8%AD%E4%BC%A0%E8%BE%93Binder%E5%AF%B9%E8%B1%A1.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Android/Binder%E7%94%A8%E6%88%B7%E7%A9%BA%E9%97%B4API.jpg">
+<meta property="article:published_time" content="2019-12-11T10:07:05.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.983Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="OS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Android/Binder%E6%9C%BA%E5%88%B6.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Android/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>操作系统-Android | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Android/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          操作系统-Android
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-12-11 18:07:05" itemprop="dateCreated datePublished" datetime="2019-12-11T18:07:05+08:00">2019-12-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/OS/" itemprop="url" rel="index"><span itemprop="name">OS</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Android/" class="post-meta-item leancloud_visitors" data-flag-title="操作系统-Android" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Android/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Android/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Android基于Linux内核，它将开源代码和闭源第三方应用程序结合在一起。Android的开源部分称为Android开源项目（Android Open Source Project，AOSP）,它是完全开放的，任何人都可以免费使用和修改。</p>
+<p>如同传统的Linux系统一样，Android的第一个用户空间进程是init，它是所有其他进程的根。与Android相关的内容可以看<a target="_blank" rel="noopener" href="https://ljd1996.github.io/categories/Android/">这里</a>。</p>
+<h1 id="Linux扩展"><a href="#Linux扩展" class="headerlink" title="Linux扩展"></a>Linux扩展</h1><h2 id="唤醒锁"><a href="#唤醒锁" class="headerlink" title="唤醒锁"></a>唤醒锁</h2><p>移动设备上的电源管理不同于传统的计算机系统，所以，为了管理系统如何进入睡眠，Android为Linux添加了一个新的功能，称为唤醒锁（wake lock），也称为悬停阻止器（suspend blocker）。</p>
+<p>在传统的计算机系统上，系统可以处于两种电源状态之一：运行并且准备好处理用户输人：或者深度睡眠，并且如果没有诸如按下电源键一类的外部中断就不能继续执行。在运行的时候，次要的硬件设备可以按需要通电或者断电，但是CPU本身以及核心硬件部件必须保持通电状态以处理到来的网络通信以及其他类似的事件。进人低能耗睡眠状态是发生得比较少的事情：或者通过用户明确地让系统睡眠，或者由于比较长的时间间隔没有用户活动，从而系统自身进入睡眠。从这样的睡眠状态醒来需要来自外部源的硬件中断，例如按下键盘上的一个按键，在此刻设备将醒来并且点亮屏幕。</p>
+<p>移动设备的用户具有不同的期望。尽管用户可以关闭屏幕，在这样的情况下看起来好像是让设备睡眠了，但是传统的睡眠状态实际上并不是用户想得到的。当设备的屏幕关闭之时，设备仍然需要工作：它需要能够接听电话呼叫，接收并处理到来的聊天消息数据，以及许多其他事情。对于移动设备，关干打开和关闭设备屏幕的期望同样比传统的计算机具有更髙的要求。在这类典型的移动应用中，恢复设备直到它能够使用的任何延迟都会对用户体验造成严重的负面影响。</p>
+<p>给定了这样的需求，一种解决方案或许仅仅是当设备的屏幕关闭之时不让CPU睡眠，这样它就总是准备好再次重新打开。归根到底，内核了解什么时候线程无需工作调度，并且Linux（以及大多数操作系统）将会自动地让CPU空闲，在这样的情况下使用较低的电能。</p>
+<p>然而，空闲的CPU与真正的睡眠是不同的。</p>
+<p>1）在许多芯片组上，空闲状态使用的电能比真正的睡眠状态要多得多。<br>2）空闲的CPU可以在任何时刻唤醒，只要某些工作赶巧变得可用，即使该工作是不重要的。<br>3）只是让CPU空闲并不意味着可以关闭其他硬件，而这样的硬件在真正的睡眠中是不需要的。</p>
+<p>Android上的唤醒锁允许系统进入深度睡眠模式，而不必与一个明确的用户活动（例如关闭屏幕）绑在一起。具有唤醒锁的系统的默认状态是睡眠状态。当设备在运行时，为了保持它不回到睡眠，则需要持有一个唤醒锁。</p>
+<p>当屏幕打开时，系统总是持有一个唤醒锁，这样就阻止了设备进入睡眠，所以它将保持运行。</p>
+<p>然而，在屏幕关闭时，系统本身一般并不持有唤醒锁，所以只有在某些其他实体持有唤醒锁的条件下才能保持系统不进入睡眠。当没有唤醒锁被持有时，系统进入睡眠，并且只能由干硬件中断才能将其从睡眠中唤醒。</p>
+<p>一旦系统已经进入睡眠，硬件中断可以将其再次唤醒，如同在传统操作系统中那样。这样的中断源有基于时间的鳖报、来自蜂窝无线电的事件（例如呼入的呼叫）、到来的网络通信以及按下特定的硬件按钮（例如电源按钮）。针对这些事件的中断处理程序要求对标准Linux做出一个改变：在处理完中断之后，它们需要获得一个初始的唤醒锁从而使系统保持运行。</p>
+<p>中断处理程序获得的唤醒锁必须持有足够长的时间，以便能够沿着栈向上将控制传递给内核中的驱动程序，由其继续对事件进行处理。然后，内核驱动程序负责获得自己的唤醒锁，在此之后，中断唤醒锁可以安全地得到释放而不存在系统进入睡眠的风险。</p>
+<p>如果在这之后驱动程序将该事件向上传送到用户空间，则需要类似的握手。驱动程序必须确保继续持有唤醒锁直到它将事件传递给等待的用户进程，并且要确保存在使用户进程获得自己的唤醒锁的条件。这一流程可能还会在用户空间的子系统之间继续，只要某个实体持有唤醒锁，我们就继续执行想要的处理以便响应事件。然而，一旦没有唤醒锁被持有，整个系统将返回睡眠并且所有进程停止。</p>
+<h2 id="内存不足杀手"><a href="#内存不足杀手" class="headerlink" title="内存不足杀手"></a>内存不足杀手</h2><p>Linux中的“内存不足杀手”（out-of-memory Killer）试图在内存极低时进行恢复，在现代操作系统上内存不足的情况是模糊的事情。由于有分页和交换，应用程序本身很难看到内存不足的错误。然而，内核仍然可能进入这样一种情形，当需要的时候找不到可用的RAM页面，不但对新的分配会这样，而且在换入或者分页入某些正在使用的地址范围时也可能如此。</p>
+<p>在这样的低内存情形中，标准的Linux内存不足杀手是最后的应急手段，它试图找到RAM，使得内核能够继续处理它正在做的事情。做法是为每个进程分配一个“坏度” (badness)水平，并且简单地杀死最坏的进程。进程的坏度基于进程正在使用的RAM数量、它已经运行了多长时间以及其他因素，目标是杀死大量但愿不太重要的进程。</p>
+<p>Android为内存不足杀手施加了特别的压力。它没有交换空间，所以它处于内存不足情形会更为常见：除非通过放弃从最近使用的存储器映射的干净的RAM页面，否则没有办法缓解内存压力。即便如此，Android还是使用标准Linux的配置，过度提交(over-commit)内存，也就是说，允许在RAM中分配地址空间而无需保证有可用的RAM对其提供后备。过度提交对于优化内存使用是一个极其重要的工具，这是因为mmap大文件(例如可执行文件)是很常见的，此处你只需要将该文件中全部数据的一小部分装入RAM。</p>
+<p>考虑到这样的情形，常备的Linux内存不足杀手工作得不太好，因为它更多地被预定为最后的应急手段，并且很难正确地识别合理的进程来杀死。事实上，正如我们在后面要讨论的，Android广泛地依赖定期运行内存不足杀手以收割(reap)进程，并且对于选择哪个进程的问题做出好的选择。</p>
+<p>为解决这一问题，Android为内核引入了自己的内存不足杀手，具有不同的语义和设计目标。Android的内存不足杀手运行得更加积极进取：只要RAM变“低”则运行。低的RAM是由一个可调整的参数标识的，该参数指示在内核中有多少空闲的和缓存的RAM是可接受的。当系统变得低于这个极限时，内存不足杀手便运行以便从别处释放RAM。目标是确保系统绝不会进入坏的分页状态，当前台应用程序竞争RAM时坏的分页状态会对用户体验造成负面影响，因为页面不断地换入换出会导致应用程序的执行变得非常缓慢。</p>
+<p>与试图猜测哪个进程应该被杀死不同，Android的内存不足杀手非常严格地依赖由用户空间提供给它的信息。传统的Linux内存不足杀手具有每个进程的oom_adj参数，通过修改进程的总体坏度得分，该参数可用来指导选择最佳的进程并将其杀死。Android的内存不足杀手使用这个相同的参数，但是具有严格的顺序：具有较髙oom.adj的进程总是在那些具有较低oom_adj的进程之前被杀死。</p>
+<h1 id="Binder"><a href="#Binder" class="headerlink" title="Binder"></a>Binder</h1><h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>Binder机制如下图：</p>
+<p><img src="Binder%E6%9C%BA%E5%88%B6.jpg" alt="Binder机制"></p>
+<p>在栈的最底层是一个内核模块，实现了实际的跨进程交互，并且通过内核的ioctl函数将其展露（ioctl是一个通用的内核调用，用来发送定制的命令给内核驱动程序和模块。）在内核模块之上，是一个基本的面向对象的用户空间API，允许应用程序通过IBinder和Binder类创建并且与IPC端点进行交互。在顶部是一个基于接口的编程模型，应用程序在其中声明它们的IPC接口，并且不再需要关心IPC在底层是如何发生的细节问题。</p>
+<h2 id="Binder内核模块"><a href="#Binder内核模块" class="headerlink" title="Binder内核模块"></a>Binder内核模块</h2><p>Binder没有使用像管道这样的现有Linux IPC设施，Binder IPC模型与传统的Linux机制差别之大，使得它无法纯粹在用户空间及Linux机制之上来实现。此外，Android不支持大部分System V原语（信号量、共享内存段、消息队列）进行跨进程的交互，因为它们不能提供健壮的语义以清除来自有问题的或恶意的应用程序的资源。</p>
+<p>Binder使用的基本IPC模型是远程过程调用（Remote Procedure Call, RPC）。也就是说，发送的进程向内核提交一个完整的IPC操作，该操作在接收的进程中被执行，当接收者执行时，发送者可以有选择地设定它们不阻塞，从而继续执行，与接收者并行。因此，Binder IPC是基于消息的，类似System V消息队列，而不是基于流的（如Linux管道）。Binder中的消息称为事务（transaction），在更高层可以被看作跨进程的函数调用。</p>
+<p>用户空间提交给内核的每个事务是一个完整的操作：它标识操作的目标和发送者的标识符，以及交付的完整数据。内核决定适当的进程来接收该事务，将其交付给进程中等待的线程。</p>
+<p>下图显示了事务的基本流程。发送的进程中任何线程都可能创建标识其目标的事务，并且将该事务提交给内核。内核制作事务的副本，将发送者的标识符添加到其中。内核确定由哪个进程负责事务的目标，并且唤醒接收事务的进程中的一个线程。一旦接收的进程执行起来，它要确定适当的事务目标并且交付。</p>
+<p><img src="%E5%9F%BA%E6%9C%AC%E7%9A%84Binder-IPC%E4%BA%8B%E5%8A%A1.jpg" alt="基本的Binder-IPC事务"></p>
+<p>发送给内核的事务标识了一个目标对象，然而，内核必须确定接收进程。为实现这一点，内核跟踪每个进程中可用的对象，并将它们映射到其他进程，如下图所示。我们在这里看到的对象只是该进程地址空间中的地址。内核只是跟踪这些对象地址，并没有附着在它们之上的意义；它们可以是C数据结构的地址或者位于该进程地址空间中的任何其他东西。</p>
+<p><img src="Binder%E8%B7%A8%E8%BF%9B%E7%A8%8B%E5%AF%B9%E8%B1%A1%E6%98%A0%E5%B0%84.jpg" alt="Binder跨进程对象映射"></p>
+<p>远程进程中对干对象的引用由一个整数句柄（handle）来标识，这很像是Linux的文件描述符。</p>
+<p><img src="%E5%9C%A8%E8%BF%9B%E7%A8%8B%E4%B8%AD%E4%BC%A0%E8%BE%93Binder%E5%AF%B9%E8%B1%A1.jpg" alt="在进程中传输Binder对象"></p>
+<p>上图中的主要步骤如下：</p>
+<p>1）进程1创建一个初始的事务结构，其中包含对象lb的本地地址。<br>2）进程1提交事务到内核。<br>3）内核査看事务中的数据，找到地址对象lb，并且创建一个针对它的新条目，因为它以前并不知道该地址。<br>4）内核利用事务的目标句柄2来确定它意在进程2中的对象2。<br>5）内核现在将事务头重写，使其适合进程2,改变其目标为地址对象2a。<br>6）内核同样为目标进程重写事务数据；此处它发现对象lb还不被进程2所知，所以为它创建一个新的句柄3。<br>7）重写的事务被交付给进程2来执行。<br>8）—旦接收到事务，进程会发现新的句柄3，并将其添加到可用句柄表中。</p>
+<p>如果事务内部的一个对象已经由接收进程知晓，则流程是类似的，差别在于现在内核只需要重写事务，使得事务包含此前已分配的句柄或者接收进程的本地对象指针。这意味着，发送相同的对象到一个进程很多次，总是会得到相同的标识，这与Linux文件描述符不同，在Linux中打开相同的文件多次，每次会分配不同的文件描述符。当对象在进程之间传递时，Binder IPC系统将维护唯一的对象标识。</p>
+<p>Binder体系结构本质上为Linux引入了一个基于能力的安全模型。每一个Binder对象是一个能力。发送一个对象到另一个进程就是将能力授予该进程。于是，接收进程可以使用对象提供的一切功能。进程可以送出一个对象到另一个进程，然后从任何进程接收一个对象，并且识别接收到的对象是否正是它最初送出的那个对象。</p>
+<h2 id="Binder用户空间API"><a href="#Binder用户空间API" class="headerlink" title="Binder用户空间API"></a>Binder用户空间API</h2><p>大多数用户空间代码不直接与Binder内核模块交互，存在一个用户空间的面向对象的库，它提供了更加简单的API。这些用户空间API的第一层相当直接地映射到之前讨论过的内核概念，采用如下三个类的形式。</p>
+<p>1）IBinder是Binder对象的抽象接口。其关键方法是transact，它将一个事务提交给对象。接收事务的实现可能是本地进程中的一个对象，或者是另一个进程中的对象；如果它在另一个进程中，则将会通过如前面讨论的Binder内核模块交付给它。<br>2）Binder是一个具体的Binder对象。实现一个Binder子类将给你一个可以从其他进程调用的类。其关键方法是onTransact，它接收发送给它的一个事务。Binder子类的主要责任是查看它接收的事务数据，并且执行适当的操作。<br>3）Parcel是一个容器，用于读和写Binder事务中的数据。</p>
+<p><img src="Binder%E7%94%A8%E6%88%B7%E7%A9%BA%E9%97%B4API.jpg" alt="Binder用户空间API"></p>
+<p>从上图可以看到Binderlb和Binder2a是具体Binder子类的实例。为了执行一个IPC，进程现在要创建一个包含期望数据的Parcel，并且通过BinderProxy将其发送。只要一个新的句柄出现在进程之中，此类就将被创建，因此提供了IBinder的实现，它的transact方法将为调用创建适当的事务并将其提交到内核。因此，我们在前面讨论过的内核事务结构在用户空间API中拆开了：目标由BinderProxy代表，并且其数据保存在一个Parcel之中：事务如我们前面看过的那样流过内核，一旦出现在接收进程的用户空间中，它的目标将用来确定适当的接收Binder对象，而一个Parcel将从其数据构造出来并且交付给对象的onTransact方法。</p>
+<h2 id="Binder接口和AIDL"><a href="#Binder接口和AIDL" class="headerlink" title="Binder接口和AIDL"></a>Binder接口和AIDL</h2><p>这一层主要的部分是一个命令行工具，称为AIDL(Android Interface Definition Language, Android接口定义语言)。该工具是一个接口编译器，它以接口的抽象描述为输入，生成定义接口所必需的源代码，并且实现适当的编组和解组代码，这样的代码是进行远程调用所需要的。</p>
+<h1 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h1><p>Android的应用程序安全性围绕着UID展开。在Linux中，每个进程在运行时拥有一个独特的UID，Android使用UID来识别与保护安全屏障。进程进行交互的唯一手段是利用跨进程通信（IPC）机制，携带足以使它识别调用者的信息。binder IPC在毎个跨进程的事务中明确包含了这些信息，确保IPC的接收者能简单地请求调用者的UID。</p>
+<p>Android为系统底层预先定义了一系列标准UID，但大多数应用程序是在其第一次运行或安装时，从“应用程序UID”范围中获得动态分配的UID的。下表是一些常用的UID：</p>
+<table>
+<thead>
+<tr>
+<th align="center">UID值</th>
+<th align="center">用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">0</td>
+<td align="center">根</td>
+</tr>
+<tr>
+<td align="center">1000</td>
+<td align="center">核心系统（system server进程）</td>
+</tr>
+<tr>
+<td align="center">1001</td>
+<td align="center">电话服务</td>
+</tr>
+<tr>
+<td align="center">1013</td>
+<td align="center">底层媒体进程</td>
+</tr>
+<tr>
+<td align="center">2000</td>
+<td align="center">命令行界面访问</td>
+</tr>
+<tr>
+<td align="center">10000-19999</td>
+<td align="center">动态分配应用程序U1D</td>
+</tr>
+<tr>
+<td align="center">100000</td>
+<td align="center">多用户由此开始</td>
+</tr>
+</tbody></table>
+<p>当一个应用程序首次被分配一个UID时，随之将创造一个新的存储目录，用来存储这个UID拥有的文件。应用程序可以自由访问该目录中它的私有文件，但不能访问其他应用程序的文件。反过来，其他应用程序也不能访问它的文件。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/OS/" rel="tag"># OS</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Linux/" rel="prev" title="操作系统-Linux">
+      <i class="fa fa-chevron-left"></i> 操作系统-Linux
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/12/16/Android-Application/" rel="next" title="Android-Application">
+      Android-Application <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux%E6%89%A9%E5%B1%95"><span class="nav-number">2.</span> <span class="nav-text">Linux扩展</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%94%A4%E9%86%92%E9%94%81"><span class="nav-number">2.1.</span> <span class="nav-text">唤醒锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E4%B8%8D%E8%B6%B3%E6%9D%80%E6%89%8B"><span class="nav-number">2.2.</span> <span class="nav-text">内存不足杀手</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Binder"><span class="nav-number">3.</span> <span class="nav-text">Binder</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="nav-number">3.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Binder%E5%86%85%E6%A0%B8%E6%A8%A1%E5%9D%97"><span class="nav-number">3.2.</span> <span class="nav-text">Binder内核模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Binder%E7%94%A8%E6%88%B7%E7%A9%BA%E9%97%B4API"><span class="nav-number">3.3.</span> <span class="nav-text">Binder用户空间API</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Binder%E6%8E%A5%E5%8F%A3%E5%92%8CAIDL"><span class="nav-number">3.4.</span> <span class="nav-text">Binder接口和AIDL</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E6%80%A7"><span class="nav-number">4.</span> <span class="nav-text">安全性</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

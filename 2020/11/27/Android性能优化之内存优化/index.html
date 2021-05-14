@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述Android 内存优化是性能优化中最重要的一个优化点之一，在进行内存优化之前，需要对 Android 和 Java 的内存分配和管理机制有一定的理解，这样在平时的工作中才能时刻注意到内存优化这个点，内存优化涉及到开发中的方方面面，如避免内存泄漏，合理使用数据结构，合理使用 Bitmap 位图等等，本文只列举出部分优化场景。关于分析内存的工具可以参考 Android性能优化之工具篇。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android性能优化之内存优化">
+<meta property="og:url" content="http://yoursite.com/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述Android 内存优化是性能优化中最重要的一个优化点之一，在进行内存优化之前，需要对 Android 和 Java 的内存分配和管理机制有一定的理解，这样在平时的工作中才能时刻注意到内存优化这个点，内存优化涉及到开发中的方方面面，如避免内存泄漏，合理使用数据结构，合理使用 Bitmap 位图等等，本文只列举出部分优化场景。关于分析内存的工具可以参考 Android性能优化之工具篇。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-11-27T11:31:33.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.809Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="性能优化">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android性能优化之内存优化 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android性能优化之内存优化
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-27 19:31:33" itemprop="dateCreated datePublished" datetime="2020-11-27T19:31:33+08:00">2020-11-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">性能优化</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/" class="post-meta-item leancloud_visitors" data-flag-title="Android性能优化之内存优化" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Android 内存优化是性能优化中最重要的一个优化点之一，在进行内存优化之前，需要对 Android 和 Java 的内存分配和管理机制有一定的理解，这样在平时的工作中才能时刻注意到内存优化这个点，内存优化涉及到开发中的方方面面，如避免内存泄漏，合理使用数据结构，合理使用 Bitmap 位图等等，本文只列举出部分优化场景。关于分析内存的工具可以参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/11/26/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B7%A5%E5%85%B7%E7%AF%87/">Android性能优化之工具篇</a>。</p>
+<a id="more"></a>
+
+<h1 id="内存泄漏"><a href="#内存泄漏" class="headerlink" title="内存泄漏"></a>内存泄漏</h1><p><strong>内存泄漏定义</strong></p>
+<p>内存泄漏：当某个对象不再需要使用时，应该完整地执行其最后的生命周期，但由于某些原因，对象虽然已经不再使用，但是在内存中并没有结束其生命周期。</p>
+<p><strong>避免内存泄漏</strong></p>
+<ul>
+<li>资源型对象使用完毕要关闭，如 Cursor 等</li>
+<li>注册对象需要解注册，如广播等</li>
+<li>类的静态变量尽量不要持有大数据对象</li>
+<li>容器中的对象未清理</li>
+<li>WebView 新版本基本不会内存泄漏了，参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/12/01/Android-WebView%E7%AC%94%E8%AE%B0/#%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F">Android-WebView内存泄漏</a></li>
+<li>非业务需要尽量避免把 Activity 等组件的 Context 上下文作为参数传递，如传给单例等(使用弱引用)</li>
+<li>非静态内部类和匿名内部类会持有外部 Activity 等的引用(使用静态内部类或独立类)</li>
+<li><code>handler.postDelayed()</code> 问题：1. 如果开启的线程需要传入参数，则可以使用弱引用；2. 销毁时记得清除队列 – <code>removeCallbacksAndMessages()</code></li>
+</ul>
+<h1 id="内存抖动"><a href="#内存抖动" class="headerlink" title="内存抖动"></a>内存抖动</h1><p>内存抖动一般指的是在很短的时间内发生了多次的内存分配与释放，系统在垃圾回收上花费过多的时间和性能。内存抖动可以说明在给定时间内出现的已分配临时对象的数量过多，从而迫使垃圾回收事件发生。</p>
+<h1 id="内存优化整理"><a href="#内存优化整理" class="headerlink" title="内存优化整理"></a>内存优化整理</h1><ul>
+<li>尽量少用 <code>+</code> 来拼接字符串</li>
+<li>能使用基础类型的(int)避免使用装箱类型(Integer)</li>
+<li>内存复用：对象池等</li>
+<li>使用合适的数据结构: HashMap vs ArrayMap vs SparseArray 等</li>
+<li>使用 Dagger 2 实现依赖注入</li>
+<li>谨慎使用外部库</li>
+<li>针对序列化数据使用精简版 Protobuf，它是 Google 设计的一种无关乎语言和平台，并且可扩展的机制，用于对结构化数据进行序列化。该机制与 XML 类似，但更小、更快也更简单。</li>
+<li>枚举会比静态常量多占用内存，也可以使用注解替代枚举：  <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Retention(RetentionPolicy.SOURCE)</span></span><br><span class="line"><span class="meta">@Target(&#123;ElementType.FIELD, ElementType.PARAMETER&#125;)</span></span><br><span class="line"><span class="meta">@IntDef(&#123;Status.STATUS_1, Status.STATUS_2&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Status &#123;</span><br><span class="line">    <span class="keyword">int</span> STATUS_1 = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">int</span> STATUS_2 = <span class="number">2</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h1 id="Bitmap"><a href="#Bitmap" class="headerlink" title="Bitmap"></a>Bitmap</h1><h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>Android 中的图片是以 Bitmap 形式存在的，Bitmap 所占用内存的多少对性能的影响很重要。如果直接加载一张 Bitmap，那其所占的内存公式是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Memory = width * height * 一个像素点占用的字节数</span><br></pre></td></tr></table></figure>
+
+<p>而如果从资源目录中加载，同一张图片放进不同的目录里会被压缩，见如下代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// frameworks/base/core/jni/android/graphics/BitmapFactory.cpp</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> jobject <span class="title">doDecode</span><span class="params">(...)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (options != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (env-&gt;GetBooleanField(options, gOptions_scaledFieldID)) &#123;</span><br><span class="line">            <span class="keyword">const</span> <span class="keyword">int</span> density = env-&gt;GetIntField(options, gOptions_densityFieldID);</span><br><span class="line">            <span class="keyword">const</span> <span class="keyword">int</span> targetDensity = env-&gt;GetIntField(options, gOptions_targetDensityFieldID);</span><br><span class="line">            <span class="keyword">const</span> <span class="keyword">int</span> screenDensity = env-&gt;GetIntField(options, gOptions_screenDensityFieldID);</span><br><span class="line">            <span class="keyword">if</span> (density != <span class="number">0</span> &amp;&amp; targetDensity != <span class="number">0</span> &amp;&amp; density != screenDensity) &#123;</span><br><span class="line">                scale = (<span class="keyword">float</span>) targetDensity / density;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> scaledWidth = size.width();</span><br><span class="line">    <span class="keyword">int</span> scaledHeight = size.height();</span><br><span class="line">    <span class="keyword">if</span> (scale != <span class="number">1.0f</span>) &#123;</span><br><span class="line">        willScale = <span class="literal">true</span>;</span><br><span class="line">        scaledWidth = <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(scaledWidth * scale + <span class="number">0.5f</span>);</span><br><span class="line">        scaledHeight = <span class="keyword">static_cast</span>&lt;<span class="keyword">int</span>&gt;(scaledHeight * scale + <span class="number">0.5f</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中 targetDensity 是设备屏幕像素密度，density 是图片所在目录对应的像素密度。如下表：</p>
+<p>density|0.75|1|1.5|2|3|4<br>:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:<br>dpi|120|160|240|320|480|560<br>folder|ldpi|mdpi|hdpi|xhdpi|xxhdpi|xxxhdpi</p>
+<p>因此计算公式为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Memory = width * height * 一个像素点占用的字节数 * (设备像素密度/图片目录对应的密度)^<span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p>Android Bitmap 类中提供了一个方法获取 Bitmap 分配内存大小：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">getBitmapSize</span><span class="params">(bitmap: <span class="type">Bitmap</span>)</span></span>: <span class="built_in">Float</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> bitmap.allocationByteCount / <span class="number">1024f</span> <span class="comment">// Kb</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="存储位置"><a href="#存储位置" class="headerlink" title="存储位置"></a>存储位置</h2><table>
+<thead>
+<tr>
+<th align="left">-</th>
+<th align="left">2.3(API 10)之前</th>
+<th align="left">3.0-7.1(API 11-25)</th>
+<th align="left">8.0(API 26)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">Bitmap对象</td>
+<td align="left">Java Heap</td>
+<td align="left">Java Heap</td>
+<td align="left">Java Heap</td>
+</tr>
+<tr>
+<td align="left">像素数据</td>
+<td align="left">Native Heap</td>
+<td align="left">Java Heap</td>
+<td align="left">Native Heap</td>
+</tr>
+<tr>
+<td align="left">迁移原因</td>
+<td align="left">-</td>
+<td align="left">Bitmap生命周期不太可控，可能会内存泄漏</td>
+<td align="left">优化了Bitmap生命周期管理，减轻 Java Heap 的压力，且只要 RAM 有剩余空间，则可以一直在Native heap上申请空间，当然如果 RAM 快耗尽了，系统就会杀进程释放RAM。</td>
+</tr>
+</tbody></table>
+<h2 id="编码"><a href="#编码" class="headerlink" title="编码"></a>编码</h2><p>可以通过改变编码格式来改变 Bitmap 占用的内存，Android 在 <a target="_blank" rel="noopener" href="https://developer.android.com/reference/android/graphics/Bitmap.Config">Bitmap.Config</a> 中提供了几种编码方式：</p>
+<table>
+<thead>
+<tr>
+<th align="left">Bitmap.Config</th>
+<th align="left">Note</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">ALPHA_8</td>
+<td align="left">A = 8, 一个像素点占用 1 个字节，没有颜色，只有透明度</td>
+</tr>
+<tr>
+<td align="left">ARGB_4444</td>
+<td align="left">A=4, R=4, G=4, B=4, 每个像素占 2 个字节，在 API 29 中弃用，画质太差，建议使用 ARGB_8888 替代</td>
+</tr>
+<tr>
+<td align="left">ARGB_8888</td>
+<td align="left">A=8, R=8, G=8, B=8, 每个像素占 4 个字节，默认选项</td>
+</tr>
+<tr>
+<td align="left">HARDWARE</td>
+<td align="left">Special configuration, when bitmap is stored only in graphic memory.</td>
+</tr>
+<tr>
+<td align="left">RGBA_F16</td>
+<td align="left">A=16, R=16, G=16, B=16, 每个像素占 8 个字节</td>
+</tr>
+<tr>
+<td align="left">RGB_565</td>
+<td align="left">R=5, G=6, B=5, 没有透明度，每个像素占 2 个字节</td>
+</tr>
+</tbody></table>
+<p>举例如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">click</span><span class="params">(view: <span class="type">View</span>)</span></span> &#123;</span><br><span class="line">    loadByConfig(<span class="string">&quot;/sdcard/head.png&quot;</span>, Bitmap.Config.RGB_565)</span><br><span class="line">    loadByConfig(<span class="string">&quot;/sdcard/head.png&quot;</span>, Bitmap.Config.ARGB_8888)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">loadByConfig</span><span class="params">(path: <span class="type">String</span>, config: <span class="type">Bitmap</span>.<span class="type">Config</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> options = BitmapFactory.Options()</span><br><span class="line">    <span class="comment">// 不加载到内存中，只返回图片属性</span></span><br><span class="line">    options.inJustDecodeBounds = <span class="literal">true</span></span><br><span class="line">    BitmapFactory.decodeFile(path, options)</span><br><span class="line">    <span class="keyword">val</span> outHeight = options.outHeight</span><br><span class="line">    <span class="keyword">val</span> outWidth = options.outWidth</span><br><span class="line">    Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;width = <span class="variable">$outWidth</span>, height = <span class="variable">$outHeight</span>&quot;</span>)</span><br><span class="line">    options.inPreferredConfig = config</span><br><span class="line">    options.inJustDecodeBounds = <span class="literal">false</span></span><br><span class="line">    <span class="keyword">val</span> bitmap = BitmapFactory.decodeFile(path, options)</span><br><span class="line">    <span class="keyword">val</span> size = getBitmapSize(bitmap)</span><br><span class="line">    Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;size = <span class="subst">$&#123;size&#125;</span>Kb, width = <span class="subst">$&#123;bitmap.width&#125;</span>, height = <span class="subst">$&#123;bitmap.height&#125;</span>&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出</span></span><br><span class="line">D/LLL: width = <span class="number">291</span>, height = <span class="number">290</span></span><br><span class="line">D/LLL: size = <span class="number">329.64844</span>Kb, width = <span class="number">291</span>, height = <span class="number">290</span></span><br><span class="line">D/LLL: width = <span class="number">291</span>, height = <span class="number">290</span></span><br><span class="line">D/LLL: size = <span class="number">164.82422</span>Kb, width = <span class="number">291</span>, height = <span class="number">290</span></span><br></pre></td></tr></table></figure>
+
+<p>可以看出宽高没变，但是占用内存变化了。</p>
+<h2 id="采样"><a href="#采样" class="headerlink" title="采样"></a>采样</h2><p>按照 Bitmap 占用内存的计算方式，可以减小其宽高达到减少内存占用的目的：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">click</span><span class="params">(view: <span class="type">View</span>)</span></span> &#123;</span><br><span class="line">    loadBySample(<span class="string">&quot;/sdcard/head.png&quot;</span>, <span class="number">1</span>)</span><br><span class="line">    loadBySample(<span class="string">&quot;/sdcard/head.png&quot;</span>, <span class="number">2</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">loadBySample</span><span class="params">(path: <span class="type">String</span>, sample:<span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> options = BitmapFactory.Options()</span><br><span class="line">    <span class="comment">// 不加载到内存中，只返回图片属性</span></span><br><span class="line">    options.inJustDecodeBounds = <span class="literal">true</span></span><br><span class="line">    BitmapFactory.decodeFile(path, options)</span><br><span class="line">    <span class="keyword">val</span> outHeight = options.outHeight</span><br><span class="line">    <span class="keyword">val</span> outWidth = options.outWidth</span><br><span class="line">    Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;width = <span class="variable">$outWidth</span>, height = <span class="variable">$outHeight</span>&quot;</span>)</span><br><span class="line">    <span class="comment">// 任何小于等于1的值都会置为1</span></span><br><span class="line">    options.inSampleSize = sample</span><br><span class="line">    options.inJustDecodeBounds = <span class="literal">false</span></span><br><span class="line">    <span class="keyword">val</span> bitmap = BitmapFactory.decodeFile(path, options)</span><br><span class="line">    <span class="keyword">val</span> size = getBitmapSize(bitmap)</span><br><span class="line">    Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;size = <span class="subst">$&#123;size&#125;</span>Kb, width = <span class="subst">$&#123;bitmap.width&#125;</span>, height = <span class="subst">$&#123;bitmap.height&#125;</span>&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出</span></span><br><span class="line">D/LLL: width = <span class="number">291</span>, height = <span class="number">290</span></span><br><span class="line">D/LLL: size = <span class="number">329.64844</span>Kb, width = <span class="number">291</span>, height = <span class="number">290</span></span><br><span class="line">D/LLL: width = <span class="number">291</span>, height = <span class="number">290</span></span><br><span class="line">D/LLL: size = <span class="number">82.12891</span>Kb, width = <span class="number">145</span>, height = <span class="number">145</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="复用"><a href="#复用" class="headerlink" title="复用"></a>复用</h2><ul>
+<li>可以使用 inBitmap 复用 Bitmap 内存: <code>BitmapFactory.Options.inBitmap = Bitmap</code>。图像解码时，会尝试复用该设置的 inBitmap 内存，在 Android 4.4 版本以上，只要被解码后的 Bitmap 对象字节大小小于等于 inBitmap 的字节大小就可以复用成功，编码不必相同，被复用的图像的像素格式 Config 会覆盖设置的 BitmapFactory.Options.inPreferredConfig 参数。</li>
+<li>可以使用 Lru 管理 Bitmap 池。</li>
+</ul>
+<h1 id="Android内存管理"><a href="#Android内存管理" class="headerlink" title="Android内存管理"></a>Android内存管理</h1><h2 id="进程分类"><a href="#进程分类" class="headerlink" title="进程分类"></a>进程分类</h2><p>按照重要性排序：</p>
+<ol>
+<li>前台进程：用户目前执行操作所需的进程，系统中只有少数此类进程，而且除非内存过低，导致连这些进程都无法继续运行，才会在最后一步终止这些进程。如果以下任一条件成立，则进程会被认为位于前台：<ul>
+<li>它正在用户的互动屏幕上运行一个 Activity（其 onResume() 方法已被调用）。</li>
+<li>它有一个 BroadcastReceiver 目前正在运行（其 BroadcastReceiver.onReceive() 方法正在执行）。</li>
+<li>它有一个 Service 目前正在执行其某个回调（Service.onCreate()、Service.onStart() 或 Service.onDestroy()）中的代码。</li>
+</ul>
+</li>
+<li>可见进程：正在进行用户当前知晓的任务，因此终止该进程会对用户体验造成明显的负面影响。相比前台进程，系统中运行的这些进程数量较不受限制，但仍相对受控。这些进程被认为非常重要，除非系统为了使所有前台进程保持运行而需要终止它们，否则不会这么做。在以下条件下，进程将被视为可见：<ul>
+<li>它正在运行的 Activity 在屏幕上对用户可见，但不在前台（其 onPause() 方法已被调用）。举例来说，如果前台 Activity 显示为一个对话框，而这个对话框允许在其后面看到上一个 Activity，则可能会出现这种情况。</li>
+<li>它有一个 Service 正在通过 Service.startForeground()（要求系统将该服务视为用户知晓或基本上对用户可见的服务）作为前台服务运行。</li>
+<li>系统正在使用其托管的服务实现用户知晓的特定功能，例如动态壁纸、输入法服务等。</li>
+</ul>
+</li>
+<li>服务进程：包含一个已使用 startService() 方法启动的 Service。虽然用户无法直接看到这些进程，但它们通常正在执行用户关心的任务（例如后台网络数据上传或下载），因此系统会始终使此类进程保持运行，除非没有足够的内存来保留所有前台和可见进程。已经运行了很长时间（例如 30 分钟或更长时间）的服务的重要性可能会降位，以使其进程降至缓存 LRU 列表。这有助于避免超长时间运行的服务因内存泄露或其他问题占用大量内存，进而妨碍系统有效利用缓存进程。</li>
+<li>缓存进程：目前不需要的进程，因此，如果其他地方需要内存，系统可以根据需要自由地终止该进程。运行良好的系统将始终有多个缓存进程可用（为了更高效地切换应用），并根据需要定期终止最早的进程。只有在非常危急（且具有不良影响）的情况下，系统中的所有缓存进程才会被终止，此时系统必须开始终止服务进程。这些进程通常包含用户当前不可见的一个或多个 Activity 实例（onStop() 方法已被调用并返回）。只要它们正确实现其 Activity 生命周期，那么当系统终止此类流程时，就不会影响用户返回该应用时的体验，因为当关联的 Activity 在新的进程中重新创建时，它可以恢复之前保存的状态。</li>
+</ol>
+<p>缓存进程保存在伪 LRU 列表中，列表中的最后一个进程是为了回收内存而终止的第一个进程。此列表的确切排序政策是平台的实现细节，但它通常会先尝试保留更多有用的进程（比如托管用户的主屏幕应用、用户最后看到的 Activity 的进程等），再保留其他类型的进程。还可以针对终止进程应用其他政策：比如对允许的进程数量的硬限制，对进程可持续保持缓存状态的时间长短的限制等。</p>
+<p>在 <code>com.android.server.am.ProcessList</code> 类中可以看到进程的 adj 值，用来表示进程的优先级，adj值越小，进程的优先级越高，越不容易被 kill 掉。</p>
+<h2 id="保活方案"><a href="#保活方案" class="headerlink" title="保活方案"></a>保活方案</h2><p>进程保活有两个方面的内容:</p>
+<ol>
+<li>使应用在后台的时候，提升其优先级而不致被系统杀死;</li>
+<li>应用被系统杀死后，也可以被拉起。</li>
+</ol>
+<p><strong>进程存活时间</strong></p>
+<p>提高进程的存活时间可以参考上述进程优先级相关的思想，具体做法网上已经有许多方案，有的有效有的由于Android版本的升级而失效。</p>
+<p><strong>拉起app</strong></p>
+<ul>
+<li>当app被强制杀死后，Android系统会杀掉其进程组，因此开启一个运行在子进程的service来重启主进程的方式，随着Android版本的升级已经失效了。</li>
+<li>可以采取app进程互相拉起的方式，这种的话需要有一个存活的app来拉取。</li>
+<li>一个有效的保活方案可以参考<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/12/20/Android%E6%9D%A5%E7%94%B5%E7%A7%80%E5%AE%9E%E8%B7%B5/">Android来电秀实践</a>，该方案可以在用户强制杀掉进程后重启app。</li>
+<li>与手机厂商合作，将应用加入白名单。</li>
+</ul>
+<h2 id="onTrimMemory"><a href="#onTrimMemory" class="headerlink" title="onTrimMemory"></a>onTrimMemory</h2><p>Android 4.0(API 14) 中添加了 onTrimMemory() 回调，在早期版本有 onLowMemory() 回调，此回调大致相当于 TRIM_MEMORY_COMPLETE 事件，可以在 Application 中实现 <code>onTrimMemory(level: Int)</code> 回调以响应不同的与内存相关的事件，其中 level 表示事件等级。</p>
+<p>TRIM_MEMORY_UI_HIDDEN 比较常用，与其它等级独立开：</p>
+<ul>
+<li>TRIM_MEMORY_UI_HIDDEN: 表示应用的 UI 不可见了，此时应该释放一些资源。</li>
+</ul>
+<p>下面三个等级是应用真正运行时的回调：</p>
+<ul>
+<li>TRIM_MEMORY_RUNNING_MODERATE: 表示应用正常运行且不会被杀掉。但是目前设备内存已经有点低了，系统可能会开始根据 LRU 规则来杀死进程。开发者应该释放一些不必要的资源。</li>
+<li>TRIM_MEMORY_RUNNING_LOW: 表示应用正常运行且不会被杀掉。但是目前设备内存已经非常低了。</li>
+<li>TRIM_MEMORY_RUNNING_CRITICAL: 表示应用仍然正常运行，但是系统已经根据 LRU 规则杀掉了大部分缓存的进程了。开发者应当尽可能释放所有不必要的资源，否则系统可能会继续杀掉所有缓存中的进程，并且开始杀掉一些本来应当保持运行的进程，比如说后台运行的服务。</li>
+</ul>
+<p>当应用是缓存状态的，则会收到以下几种类型的回调：</p>
+<ul>
+<li>TRIM_MEMORY_BACKGROUND: 表示目前设备内存已经很低了，系统准备开始根据 LRU 缓存来清理进程。此时我们的程序在 LRU 缓存列表的最近位置，不太可能被清理，但这时去释放掉一些比较容易恢复的资源能够让手机的内存变得比较充足。</li>
+<li>TRIM_MEMORY_MODERATE: 表示目前设备内存已经很低了，且我们的程序处于 LRU 缓存列表的中间位置，如果手机内存还得不到进一步释放的话，那么我们的程序就有被系统杀掉的风险了。</li>
+<li>TRIM_MEMORY_COMPLETE: 表示目前设备内存已经很低了，且我们的程序处于 LRU 缓存列表的最边缘位置，系统会最优先考虑杀掉我们的程序，在这个时候应当尽可能地把一切可以释放的东西都进行释放。</li>
+</ul>
+<h2 id="查看内存状态"><a href="#查看内存状态" class="headerlink" title="查看内存状态"></a>查看内存状态</h2><ul>
+<li>使用 ActivityManager.getMemoryInfo(MemoryInfo) 方法获取系统内存的一些通用状态。</li>
+<li>使用 ActivityManager.getMemoryClass() 方法获取单个进程最大可用内存，单位为兆字节。</li>
+</ul>
+<p>MemoryInfo 中有几个可用的参数：</p>
+<ul>
+<li>availMem: 系统可用内存，由于内核的性质，该部分内存实际上可能正在使用中。</li>
+<li>totalMem: 内核可访问的总内存。</li>
+<li>threshold: 内存不足的阈值。</li>
+<li>lowMemory: 是否处于低内存状态。</li>
+</ul>
+<p>使用方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">fun getAvailableMemory(context: Context): ActivityManager.MemoryInfo &#123;</span><br><span class="line">    val activityManager &#x3D; context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager</span><br><span class="line">    return ActivityManager.MemoryInfo().also &#123; memoryInfo -&gt;</span><br><span class="line">        activityManager.getMemoryInfo(memoryInfo)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">fun getMemoryClass(context: Context): Int &#123;</span><br><span class="line">    val activityManager &#x3D; context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager</span><br><span class="line">    return activityManager.memoryClass</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="应用限制"><a href="#应用限制" class="headerlink" title="应用限制"></a>应用限制</h2><p>Android 对每个应用程序(进程)的堆(Dalvik heap)大小设置了限制，所以理论上可以将一些耗内存的操作放入一个单独的进程中，减小主进程的压力。</p>
+<p>这个限制不针对 Native heap，只要 RAM 有剩余空间，则可以一直在 Native heap 上申请空间，当然如果 RAM 快耗尽了，系统就会杀进程释放RAM。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>内存优化在于平时点点滴滴的开发习惯，不过通常情况下不一定非要追求某些优化，比如说枚举，如果用枚举时可读性和可扩展性更好，那么没必要避免使用它，它占用的内存相对于整个程序而言就是沧海一粟而言。高级语言诞生本身就是在硬件提升的背景之下的，牺牲某些性能来降低开发门槛，提高了开发效率也是可取的。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="tag"># 性能优化</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/" rel="prev" title="Android性能优化之包体积优化">
+      <i class="fa fa-chevron-left"></i> Android性能优化之包体积优化
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/01/Android-WebView%E7%AC%94%E8%AE%B0/" rel="next" title="Android-WebView笔记">
+      Android-WebView笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">内存泄漏</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%8A%96%E5%8A%A8"><span class="nav-number">3.</span> <span class="nav-text">内存抖动</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96%E6%95%B4%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">内存优化整理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Bitmap"><span class="nav-number">5.</span> <span class="nav-text">Bitmap</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="nav-number">5.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%98%E5%82%A8%E4%BD%8D%E7%BD%AE"><span class="nav-number">5.2.</span> <span class="nav-text">存储位置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%96%E7%A0%81"><span class="nav-number">5.3.</span> <span class="nav-text">编码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%87%E6%A0%B7"><span class="nav-number">5.4.</span> <span class="nav-text">采样</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%8D%E7%94%A8"><span class="nav-number">5.5.</span> <span class="nav-text">复用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Android%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">6.</span> <span class="nav-text">Android内存管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E5%88%86%E7%B1%BB"><span class="nav-number">6.1.</span> <span class="nav-text">进程分类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%9D%E6%B4%BB%E6%96%B9%E6%A1%88"><span class="nav-number">6.2.</span> <span class="nav-text">保活方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#onTrimMemory"><span class="nav-number">6.3.</span> <span class="nav-text">onTrimMemory</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9F%A5%E7%9C%8B%E5%86%85%E5%AD%98%E7%8A%B6%E6%80%81"><span class="nav-number">6.4.</span> <span class="nav-text">查看内存状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E9%99%90%E5%88%B6"><span class="nav-number">6.5.</span> <span class="nav-text">应用限制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="数据结构  Block1234567891011121314151617&#x2F;&#x2F; &#x2F;eos&#x2F;libraries&#x2F;chain&#x2F;include&#x2F;eosio&#x2F;chain&#x2F;block.hppstruct signed_block : public signed_block_header &amp;#123;private:	signed_block( const signed_block&amp; ) &#x3D; defau">
+<meta property="og:type" content="article">
+<meta property="og:title" content="EOS源码解读">
+<meta property="og:url" content="http://yoursite.com/2019/03/04/EOS%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="数据结构  Block1234567891011121314151617&#x2F;&#x2F; &#x2F;eos&#x2F;libraries&#x2F;chain&#x2F;include&#x2F;eosio&#x2F;chain&#x2F;block.hppstruct signed_block : public signed_block_header &amp;#123;private:	signed_block( const signed_block&amp; ) &#x3D; defau">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2019/03/04/EOS%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/eos_block_structure.png">
+<meta property="article:published_time" content="2019-03-04T07:11:27.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.849Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="EOS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2019/03/04/EOS%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/eos_block_structure.png">
+
+<link rel="canonical" href="http://yoursite.com/2019/03/04/EOS%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>EOS源码解读 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/04/EOS%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          EOS源码解读
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-03-04 15:11:27" itemprop="dateCreated datePublished" datetime="2019-03-04T15:11:27+08:00">2019-03-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/" itemprop="url" rel="index"><span itemprop="name">区块链</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/EOS/" itemprop="url" rel="index"><span itemprop="name">EOS</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/03/04/EOS%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/" class="post-meta-item leancloud_visitors" data-flag-title="EOS源码解读" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/03/04/EOS%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/03/04/EOS%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><img src="eos_block_structure.png"/>
+
+<h2 id="Block"><a href="#Block" class="headerlink" title="Block"></a>Block</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// /eos/libraries/chain/include/eosio/chain/block.hpp</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">signed_block</span> :</span> <span class="keyword">public</span> signed_block_header &#123;</span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">	signed_block( <span class="keyword">const</span> signed_block&amp; ) = <span class="keyword">default</span>;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	signed_block() = <span class="keyword">default</span>;</span><br><span class="line">	<span class="function"><span class="keyword">explicit</span> <span class="title">signed_block</span><span class="params">( <span class="keyword">const</span> signed_block_header&amp; h )</span>:<span class="title">signed_block_header</span><span class="params">(h)</span></span>&#123;&#125;</span><br><span class="line">	signed_block( signed_block&amp;&amp; ) = <span class="keyword">default</span>;</span><br><span class="line">	signed_block&amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> signed_block&amp;) = <span class="keyword">delete</span>;</span><br><span class="line">	<span class="function">signed_block <span class="title">clone</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> *<span class="keyword">this</span>; &#125;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">vector</span>&lt;transaction_receipt&gt;   transactions; <span class="comment">/// new or generated transactions</span></span><br><span class="line">	extensions_type               block_extensions;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// /eos/libraries/chain/include/eosio/chain/types.hpp</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="built_in">vector</span>&lt;<span class="built_in">std</span>::<span class="built_in">pair</span>&lt;<span class="keyword">uint16_t</span>,<span class="built_in">vector</span>&lt;<span class="keyword">char</span>&gt;&gt;&gt; extensions_type;</span><br></pre></td></tr></table></figure>
+
+<p>signed_block结构体是从signed_block_header继承而来的，这个signed_block_header结构体只是包含了一条数据，那就是producer的签名。signed_block_header结构体又是从block_header继承而来的，这个结构体就包含了一个block中很多重要的数据，包括时间戳，producer的名字，所有交易的merkle root，所有action的root等信息。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// /eos/libraries/chain/include/eosio/chain/block_header.hpp</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">block_header</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	 block_timestamp_type             timestamp;</span><br><span class="line">	 account_name                     producer;</span><br><span class="line">	 <span class="keyword">uint16_t</span>                         confirmed = <span class="number">1</span>;  </span><br><span class="line"></span><br><span class="line">	 block_id_type                    previous;</span><br><span class="line"></span><br><span class="line">	 checksum256_type                 transaction_mroot;</span><br><span class="line">	 checksum256_type                 action_mroot;</span><br><span class="line"></span><br><span class="line">	 <span class="keyword">uint32_t</span>                          schedule_version = <span class="number">0</span>;</span><br><span class="line">	 optional&lt;producer_schedule_type&gt;  new_producers;</span><br><span class="line">	 extensions_type                   header_extensions;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">signed_block_header</span> :</span> <span class="keyword">public</span> block_header</span><br><span class="line">&#123;</span><br><span class="line">	 signature_type    producer_signature;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Transaction"><a href="#Transaction" class="headerlink" title="Transaction"></a>Transaction</h2><p>signed_block中定义了transaction_receipt类型的vector，表示区块是由按顺序组织的交易来构成的集合。block_extensions则定义了一系列的扩展信息，这些信息都由一个整数类型的code来定义，需要的时候，都可以根据这个整数code来解析相应的信息。下面看看transaction_receipt的定义：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// /eos/libraries/chain/include/eosio/chain/block.hpp</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">transaction_receipt_header</span> &#123;</span></span><br><span class="line">   <span class="keyword">enum</span> status_enum &#123;</span><br><span class="line">      executed  = <span class="number">0</span>, <span class="comment">///&lt; succeed, no error handler executed</span></span><br><span class="line">      soft_fail = <span class="number">1</span>, <span class="comment">///&lt; objectively failed (not executed), error handler executed</span></span><br><span class="line">      hard_fail = <span class="number">2</span>, <span class="comment">///&lt; objectively failed and error handler objectively failed thus no state change</span></span><br><span class="line">      delayed   = <span class="number">3</span>, <span class="comment">///&lt; transaction delayed/deferred/scheduled for future execution</span></span><br><span class="line">      expired   = <span class="number">4</span>  <span class="comment">///&lt; transaction expired and storage space refuned to user</span></span><br><span class="line">   &#125;;</span><br><span class="line"></span><br><span class="line">   transaction_receipt_header():status(hard_fail)&#123;&#125;</span><br><span class="line">   <span class="function"><span class="keyword">explicit</span> <span class="title">transaction_receipt_header</span><span class="params">( status_enum s )</span>:<span class="title">status</span><span class="params">(s)</span></span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">friend</span> <span class="keyword">inline</span> <span class="keyword">bool</span> <span class="keyword">operator</span> ==( <span class="keyword">const</span> transaction_receipt_header&amp; lhs, <span class="keyword">const</span> transaction_receipt_header&amp; rhs ) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="built_in">std</span>::tie(lhs.status, lhs.cpu_usage_us, lhs.net_usage_words) == <span class="built_in">std</span>::tie(rhs.status, rhs.cpu_usage_us, rhs.net_usage_words);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   fc::enum_type&lt;<span class="keyword">uint8_t</span>,status_enum&gt;   status;</span><br><span class="line">   <span class="keyword">uint32_t</span>                             cpu_usage_us = <span class="number">0</span>; <span class="comment">///&lt; total billed CPU usage (microseconds)</span></span><br><span class="line">   fc::unsigned_int                     net_usage_words; <span class="comment">///&lt;  total billed NET usage, so we can reconstruct resource state when skipping context free data... hard failures...</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">transaction_receipt</span> :</span> <span class="keyword">public</span> transaction_receipt_header &#123;</span><br><span class="line"></span><br><span class="line">   transaction_receipt():transaction_receipt_header()&#123;&#125;</span><br><span class="line">   explicit transaction_receipt( const transaction_id_type&amp; tid ):transaction_receipt_header(executed),trx(tid)&#123;&#125;</span><br><span class="line">   explicit transaction_receipt( const packed_transaction&amp; ptrx ):transaction_receipt_header(executed),trx(ptrx)&#123;&#125;</span><br><span class="line"></span><br><span class="line">   fc::static_variant&lt;transaction_id_type, packed_transaction&gt; trx;</span><br><span class="line"></span><br><span class="line">   <span class="function">digest_type <span class="title">digest</span><span class="params">()</span><span class="keyword">const</span> </span>&#123;</span><br><span class="line">      digest_type::encoder enc;</span><br><span class="line">      fc::raw::pack( enc, status );</span><br><span class="line">      fc::raw::pack( enc, cpu_usage_us );</span><br><span class="line">      fc::raw::pack( enc, net_usage_words );</span><br><span class="line">      <span class="keyword">if</span>( trx.contains&lt;transaction_id_type&gt;() )</span><br><span class="line">         fc::raw::pack( enc, trx.get&lt;transaction_id_type&gt;() );</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">         fc::raw::pack( enc, trx.get&lt;packed_transaction&gt;().packed_digest() );</span><br><span class="line">      <span class="keyword">return</span> enc.result();</span><br><span class="line">   &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// /eos/libraries/chain/include/eosio/chain/types.hpp</span></span><br><span class="line"><span class="keyword">using</span> checksum_type       = fc::sha256;</span><br><span class="line"><span class="keyword">using</span> transaction_id_type = checksum_type;</span><br><span class="line"></span><br><span class="line"><span class="comment">// /eos/libraries/chain/include/eosio/chain/transaction.hpp</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">packed_transaction</span> &#123;</span></span><br><span class="line">   <span class="comment">// 定义打包数据是否压缩的枚举类型</span></span><br><span class="line">   <span class="keyword">enum</span> compression_type &#123;</span><br><span class="line">      <span class="comment">// 没有压缩</span></span><br><span class="line">      none = <span class="number">0</span>,</span><br><span class="line">      <span class="comment">// 使用zlib压缩</span></span><br><span class="line">      zlib = <span class="number">1</span>,</span><br><span class="line">   &#125;;</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 签名信息</span></span><br><span class="line">   <span class="built_in">vector</span>&lt;signature_type&gt;                  signatures;</span><br><span class="line">   <span class="comment">// 是否压缩的标识信息</span></span><br><span class="line">   fc::enum_type&lt;<span class="keyword">uint8_t</span>,compression_type&gt; compression;</span><br><span class="line">   <span class="comment">// 上下文无关的信息</span></span><br><span class="line">   bytes                                   packed_context_free_data;</span><br><span class="line">   <span class="comment">// 打包后的交易数据</span></span><br><span class="line">   bytes                                   packed_trx;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>transaction_receipt_header主要是记录了这个交易的状态信息，以及CPU和网络的使用情况。当一笔交易被某个区块引用时，区块生产者针对这笔交易会做出相应的操作，而操作的不同结果会导致这笔交易的不同状态.而transaction_receipt结构体主要包含了一个打包过的交易以及其对应的交易类型。</p>
+<p>packed_transaction中打包的数据来自于signed_transaction结构体，这个结构体的主要作用就是对交易做签名。signed_transaction又是从transaction结构体继承而来，一个transaction结构体的实例包含一系列的action，这些action要么全部成功，要么全部失败。</p>
+<p>交易ID是通过对交易内容本身经过Hash运算得出，所以每个交易的ID是与其内容一一对应的。交易的主体是由操作构成的。一个交易在纳入区块之前必须含有签名，用以验证交易的合法性。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// /eos/libraries/chain/include/eosio/chain/transaction.hpp</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">signed_transaction</span> :</span> <span class="keyword">public</span> transaction</span><br><span class="line">&#123;</span><br><span class="line">	<span class="comment">// 签名信息</span></span><br><span class="line">	 <span class="built_in">vector</span>&lt;signature_type&gt;    signatures;</span><br><span class="line">	 <span class="comment">// 上下文无关的数据</span></span><br><span class="line">	 <span class="built_in">vector</span>&lt;bytes&gt;             context_free_data;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">transaction</span> :</span> <span class="keyword">public</span> transaction_header &#123;</span><br><span class="line">	 <span class="comment">// 上下文无关的action</span></span><br><span class="line">	 <span class="built_in">vector</span>&lt;action&gt;         context_free_actions;</span><br><span class="line">	 <span class="comment">// 交易操作</span></span><br><span class="line">	 <span class="built_in">vector</span>&lt;action&gt;         actions;</span><br><span class="line">	 <span class="comment">// 交易扩展类型</span></span><br><span class="line">	 extensions_type        transaction_extensions;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// /eos/libraries/chain/include/eosio/chain/transaction.hpp</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">transaction_header</span> &#123;</span></span><br><span class="line">	 <span class="comment">// 这个交易的过期时间</span></span><br><span class="line">	 time_point_sec         expiration;</span><br><span class="line">	 <span class="comment">// 在最后的2^16 blocks中指定一个具体的block number</span></span><br><span class="line">	 <span class="keyword">uint16_t</span>               ref_block_num       = <span class="number">0U</span>;</span><br><span class="line">	 <span class="comment">// 在指定的get_ref_blocknum的blockid中取低位的32bit</span></span><br><span class="line">	 <span class="keyword">uint32_t</span>               ref_block_prefix    = <span class="number">0U</span>L;</span><br><span class="line">	 <span class="comment">// 最大的网络带块</span></span><br><span class="line">	 fc::unsigned_int       max_net_usage_words = <span class="number">0U</span>L;</span><br><span class="line">	 <span class="comment">// 最大的CPU使用</span></span><br><span class="line">	 <span class="keyword">uint8_t</span>                max_cpu_usage_ms    = <span class="number">0</span>;</span><br><span class="line">	 <span class="comment">// 这个交易的延期时间</span></span><br><span class="line">	 fc::unsigned_int       delay_sec           = <span class="number">0U</span>L;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>交易分为两种类型：一种是账户发起的普通交易，一种是由代码生成的自动交易，自动交易可以设置一个延迟时间，这样的交易叫延迟型交易，这种交易不会立即被执行，而是等到设定时间到时才会被执行。</p>
+<p>transaction_header结构体包含了与每一个交易相关联的固定大小的数据，这些数据从具体的交易数据中分离出来，可以在需要的时候，帮助解析交易数据，而不再需要更多的动态内存分配。</p>
+<p>所有的交易都有一个期限，这个期限限定了一个交易必须在规定时间内被纳入区块链，如果我们发现一个交易的时限已经过去，就可以放心的放弃这个交易，因为所有生产者都不会将它纳入任何区块。</p>
+<h2 id="Action"><a href="#Action" class="headerlink" title="Action"></a>Action</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// /eos/contracts/eosiolib/action.hpp</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">action</span> &#123;</span></span><br><span class="line">   <span class="comment">// 账户：操作的来源</span></span><br><span class="line">   account_name               account;</span><br><span class="line">   <span class="comment">// 名称：操作的标识</span></span><br><span class="line">   action_name                name;</span><br><span class="line">   <span class="comment">// 授权：执行操作的许可列表</span></span><br><span class="line">   <span class="built_in">vector</span>&lt;permission_level&gt;   authorization;</span><br><span class="line">   <span class="comment">// 数据：执行操作需要用到的信息</span></span><br><span class="line">   bytes                      data;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>EOS区块链中的交易是由一个个action组成的，操作可以理解成一个能够更改区块链全局状态的方法，操作的顺序是确定的，一个交易内的操作要么全部执行成功，要么都不执行，这与交易的本意是一致的。操作是区块链的最底层逻辑，相当于区块链这个大脑的神经元，区块链的智能最终也是通过一个个操作的组合来实现的。</p>
+<p>操作的设计原则：</p>
+<ul>
+<li>独立原则 操作本身须包含足以解释操作含义的信息，而不需要依赖区块链提供的上下文信息来帮助解释。所以，即便一个操作的当前状态可以通过区块链上的数据推导得出，我们也需要将状态信息纳入操作数据中，以便每个操作是容易理解的。这个原则体现的是区块的可解释性，这一点非常重要，这个底层的设计原则将影响整个区块链的使用效率</li>
+<li>余额可计算原则 一个账户当前的余额计算，仅仅依赖于与这个账户相关的信息便可得出，而不需要解析整个区块链才能获得。这个原则针对的是比特币的设计，由于比特币的余额计算需要扫描区块链中的所有交易才能精准的计算出一个账户的余额，这使得一个非常基础的计算落地起来都变得相当繁琐，EOS的这个设计目的在于提升运算效率。</li>
+<li>明确费用原则 区块链的交易费用随时间变化而变化，所以，一个签名过的交易须明确的认同这个交易所需要支付的费用，这个费用是在交易形成之前就已经设定并且明确好了的，这一点也非常重要，因为明确的费用协议才能保证余额的正确计算。</li>
+<li>明确授权原则 每个操作须包含足够的授权信息以标明是哪一个账户拥有授权这个操作的权力，这种明确授权的设计思路带来几个好处：</li>
+<li>便于集中管理</li>
+<li>可以优化授权管理</li>
+<li>便于并行处理</li>
+<li>关联账户原则 每个操作须包含足够的关联账户信息，以保证这个操作能够遍历所有相关联的账户，也就是这个操作能够影响的所有账户，这个原则的目的同样是为了确保账户的余额能够得到及时和准确的运算</li>
+</ul>
+<p>操作的来源：</p>
+<ul>
+<li>由一个账号产生，通过签名来授权，即显性方式。</li>
+<li>由代码生成，即隐形方式。</li>
+</ul>
+<h2 id="区块日志"><a href="#区块日志" class="headerlink" title="区块日志"></a>区块日志</h2><p>区块日志是存储区块的二进制文件，区块日志的特性是只能从末尾追加(append only)，区块日志包含两类文件：</p>
+<p>区块文件，结构如下：</p>
+<p>+———+—————-+———+—————-+—–+————+——————-+</p>
+<p>| Block 1 | Pos of Block 1 | Block 2 | Pos of Block 2 | … | Head Block | Pos of Head Block |</p>
+<p>+———+—————-+———+—————-+—–+————+——————-+</p>
+<p>区块文件包含区块的内容以及每个区块的位置信息。区块位置信息是固定的8字节宽度，这样便于在连续读取区块的时候，按照读一个区块，向后跳跃8个字节，读一个区块，向后跳跃8个字节的模式快速加载区块内容。</p>
+<p>索引文件，结构如下：</p>
+<p>+—————-+—————-+—–+——————-+</p>
+<p>| Pos of Block 1 | Pos of Block 2 | … | Pos of Head Block |</p>
+<p>+—————-+—————-+—–+——————-+</p>
+<p>区块索引的目的在于提供一个基于区块序号的快速随机搜索方法，使用索引文件可以快速定位目标区块在区块文件中的具体位置。索引文件不是必须的，没有索引文件区块链仍然可以运行，索引文件的主要作用是通过少量空间换取速度提升。索引文件可以通过顺序读取区块文件来重新构建。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/" rel="tag"># 区块链</a>
+              <a href="/tags/EOS/" rel="tag"># EOS</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/02/27/EOS%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="prev" title="EOS学习笔记">
+      <i class="fa fa-chevron-left"></i> EOS学习笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/03/12/Git%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" rel="next" title="Git学习笔记">
+      Git学习笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">1.</span> <span class="nav-text">数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Block"><span class="nav-number">1.1.</span> <span class="nav-text">Block</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Transaction"><span class="nav-number">1.2.</span> <span class="nav-text">Transaction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Action"><span class="nav-number">1.3.</span> <span class="nav-text">Action</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%BA%E5%9D%97%E6%97%A5%E5%BF%97"><span class="nav-number">1.4.</span> <span class="nav-text">区块日志</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

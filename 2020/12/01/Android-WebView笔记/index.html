@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述WebView是一个基于webkit引擎、展现web页面的控件。Android WebView 在低版本和高版本采用了不同的 webkit 版本内核，在 4.4 版本后使用 Chrome 内核。参考 WebView for Android。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android-WebView笔记">
+<meta property="og:url" content="http://yoursite.com/2020/12/01/Android-WebView%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述WebView是一个基于webkit引擎、展现web页面的控件。Android WebView 在低版本和高版本采用了不同的 webkit 版本内核，在 4.4 版本后使用 Chrome 内核。参考 WebView for Android。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-12-01T11:36:50.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.779Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="Framework">
+<meta property="article:tag" content="WebView">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/12/01/Android-WebView%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android-WebView笔记 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/01/Android-WebView%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android-WebView笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-01 19:36:50" itemprop="dateCreated datePublished" datetime="2020-12-01T19:36:50+08:00">2020-12-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/Framework/" itemprop="url" rel="index"><span itemprop="name">Framework</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/12/01/Android-WebView%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Android-WebView笔记" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/12/01/Android-WebView%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/12/01/Android-WebView%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>WebView是一个基于webkit引擎、展现web页面的控件。Android WebView 在低版本和高版本采用了不同的 webkit 版本内核，在 4.4 版本后使用 Chrome 内核。参考 <a target="_blank" rel="noopener" href="https://developer.chrome.com/multidevice/webview/overview">WebView for Android</a>。</p>
+<a id="more"></a>
+
+<h1 id="WebView"><a href="#WebView" class="headerlink" title="WebView"></a>WebView</h1><p>参考官方说明：<a target="_blank" rel="noopener" href="https://developer.android.com/reference/android/webkit/WebView">WebView</a></p>
+<p><strong>WebView的状态</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 激活WebView为活跃状态，能正常执行网页的响应</span></span><br><span class="line">webView.onResume() ；</span><br><span class="line"><span class="comment">// 当页面被失去焦点被切换到后台不可见状态，需要执行onPause</span></span><br><span class="line"><span class="comment">// 通过onPause动作通知内核暂停所有的动作，比如DOM的解析、plugin的执行、JavaScript执行。</span></span><br><span class="line">webView.onPause()；</span><br><span class="line"></span><br><span class="line"><span class="comment">// 当应用程序(存在webview)被切换到后台时，这个方法不仅仅针对当前的webview而是全局的全应用程序的webview</span></span><br><span class="line"><span class="comment">// 它会暂停所有webview的layout，parsing，javascripttimer。降低CPU功耗。</span></span><br><span class="line">webView.pauseTimers()</span><br><span class="line"><span class="comment">// 恢复pauseTimers状态</span></span><br><span class="line">webView.resumeTimers()；</span><br><span class="line"></span><br><span class="line"><span class="comment">// webview调用destory时，webview仍绑定在Activity上</span></span><br><span class="line"><span class="comment">// 需要先从父容器中移除webview，然后再销毁webview</span></span><br><span class="line">rootLayout.removeView(webView); </span><br><span class="line">webView.destroy();</span><br></pre></td></tr></table></figure>
+
+<p><strong>前进/后退网页</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 是否可以后退</span></span><br><span class="line">Webview.canGoBack() </span><br><span class="line"><span class="comment">// 后退网页</span></span><br><span class="line">Webview.goBack()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 是否可以前进                     </span></span><br><span class="line">Webview.canGoForward()</span><br><span class="line"><span class="comment">// 前进网页</span></span><br><span class="line">Webview.goForward()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 以当前的index为起始点前进或者后退到历史记录中指定的steps</span></span><br><span class="line"><span class="comment">// 如果steps为负数则为后退，正数则为前进</span></span><br><span class="line">Webview.goBackOrForward(intsteps) </span><br></pre></td></tr></table></figure>
+
+<p>在不做任何处理前提下，浏览网页时点击系统的“Back”键时，整个 Browser 会调用 finish()而结束自身，因此需要在当前Activity中处理并消费掉该 Back 事件，当按下返回键时，调用goBack方法。</p>
+<p><strong>清除缓存数据</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 清除网页访问留下的缓存</span></span><br><span class="line"><span class="comment">// 由于内核缓存是全局的因此这个方法不仅仅针对webview而是针对整个应用程序.</span></span><br><span class="line">Webview.clearCache(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 清除当前webview访问的历史记录</span></span><br><span class="line">Webview.clearHistory()；</span><br><span class="line"></span><br><span class="line"><span class="comment">// 这个api仅仅清除自动完成填充的表单数据，并不会清除WebView存储到本地的数据</span></span><br><span class="line">Webview.clearFormData()；</span><br></pre></td></tr></table></figure>
+
+<h1 id="WebSettings"><a href="#WebSettings" class="headerlink" title="WebSettings"></a>WebSettings</h1><p>作用：对WebView进行配置和管理。可以参考官方说明：<a target="_blank" rel="noopener" href="https://developer.android.com/reference/android/webkit/WebSettings">WebSettings</a></p>
+<p><strong>添加访问网络权限: android.permission.INTERNET</strong></p>
+<p><strong>注意</strong>：从Android 9.0（API级别28）开始，默认情况下禁用明文支持，会显示 <code>ERR_CLEARTEXT_NOT_PERMITTED</code>。因此http的url均无法在webview中加载，可以在manifest中application节点添加<code>android:usesCleartextTraffic=&quot;true&quot;</code>。</p>
+<p><strong>配置 WebSettings 子类</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 声明WebSettings子类</span></span><br><span class="line">WebSettings webSettings = webView.getSettings();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 如果访问的页面中要与Javascript交互，则webview必须设置支持Javascript</span></span><br><span class="line">webSettings.setJavaScriptEnabled(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置自适应屏幕，两者合用</span></span><br><span class="line">webSettings.setUseWideViewPort(<span class="keyword">true</span>); <span class="comment">//将图片调整到适合webview的大小</span></span><br><span class="line">webSettings.setLoadWithOverviewMode(<span class="keyword">true</span>); <span class="comment">// 缩放至屏幕的大小</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 缩放操作</span></span><br><span class="line">webSettings.setSupportZoom(<span class="keyword">true</span>); <span class="comment">//支持缩放，默认为true。是下面那个的前提。</span></span><br><span class="line">webSettings.setBuiltInZoomControls(<span class="keyword">true</span>); <span class="comment">//设置内置的缩放控件。若为false，则该WebView不可缩放</span></span><br><span class="line">webSettings.setDisplayZoomControls(<span class="keyword">false</span>); <span class="comment">//隐藏原生的缩放控件</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 其他细节操作</span></span><br><span class="line">webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK); <span class="comment">//关闭webview中缓存 </span></span><br><span class="line">webSettings.setAllowFileAccess(<span class="keyword">true</span>); <span class="comment">//设置可以访问文件 </span></span><br><span class="line">webSettings.setJavaScriptCanOpenWindowsAutomatically(<span class="keyword">true</span>); <span class="comment">//支持通过JS打开新窗口 </span></span><br><span class="line">webSettings.setLoadsImagesAutomatically(<span class="keyword">true</span>); <span class="comment">//支持自动加载图片</span></span><br><span class="line">webSettings.setDefaultTextEncodingName(<span class="string">&quot;utf-8&quot;</span>);<span class="comment">//设置编码格式</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="WebViewClient"><a href="#WebViewClient" class="headerlink" title="WebViewClient"></a>WebViewClient</h1><p>用来处理各种通知 &amp; 请求事件，具体使用参考 <a target="_blank" rel="noopener" href="https://developer.android.com/reference/android/webkit/WebViewClient">官方文档</a>。</p>
+<p><strong>shouldOverrideUrlLoading</strong></p>
+<p>在网页上的所有加载都会经过这个方法，因此可以使打开网页时不调用系统浏览器，而是在本 WebView 展示。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">webView.setWebViewClient(<span class="keyword">new</span> WebViewClient()&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">shouldOverrideUrlLoading</span><span class="params">(WebView view, WebResourceRequest request)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            mWebView.loadUrl(URLDecoder.decode(request.getUrl().toString(), <span class="string">&quot;UTF-8&quot;</span>));</span><br><span class="line">        &#125; <span class="keyword">catch</span> (UnsupportedEncodingException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p><strong>onPageStarted</strong></p>
+<p>开始载入页面时调用，可以在这里显示 loading 页面。</p>
+<p><strong>onPageFinished</strong></p>
+<p>在页面加载结束时调用，可以关闭 loading 条等。</p>
+<p><strong>onLoadResource</strong></p>
+<p>在加载页面资源时调用，每一个资源(如图片)的加载都会调用一次。</p>
+<p><strong>onReceivedError</strong></p>
+<p>加载出现错误时(如404)调用，可以展示错误页面。</p>
+<p><strong>onReceivedHttpError</strong></p>
+<p>加载资源时从服务器收到HTTP错误时调用。</p>
+<p><strong>onReceivedSslError</strong></p>
+<p>加载资源时发生 SSL 错误，需要调用 SslErrorHandler#cancel(默认) 或 SslErrorHandler#proceed 处理。</p>
+<h1 id="WebChromeClient"><a href="#WebChromeClient" class="headerlink" title="WebChromeClient"></a>WebChromeClient</h1><p>辅助 WebView 处理 Javascript 的对话框，网站图标，网站标题等等，具体使用参考 <a target="_blank" rel="noopener" href="https://developer.android.com/reference/android/webkit/WebChromeClient">官方文档</a>。</p>
+<p><strong>onProgressChanged</strong></p>
+<p>获取网页的加载进度。</p>
+<p><strong>onReceivedTitle</strong></p>
+<p>获取网页标题。</p>
+<p><strong>对话框</strong></p>
+<p>处理网页中的对话框弹出。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">mWebView.setWebChromeClient(<span class="keyword">new</span> WebChromeClient() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onJsAlert</span><span class="params">(WebView view, String url, String message, JsResult result)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.onJsAlert(view, url, message, result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onJsConfirm</span><span class="params">(WebView view, String url, String message, JsResult result)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.onJsConfirm(view, url, message, result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onJsPrompt</span><span class="params">(WebView view, String url, String message, String defaultValue, JsPromptResult result)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.onJsPrompt(view, url, message, defaultValue, result);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h1 id="客户端调用JS"><a href="#客户端调用JS" class="headerlink" title="客户端调用JS"></a>客户端调用JS</h1><h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>注意：JS代码要在onPageFinished回调之后才能调用，可以直接使用基础类型传递参数，也可以使用JSONObject。</p>
+<h2 id="WebView-loadUrl"><a href="#WebView-loadUrl" class="headerlink" title="WebView.loadUrl()"></a>WebView.loadUrl()</h2><ol>
+<li><p>准备html文件，放到assets中。</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;utf-8&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>测试<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">        <span class="function"><span class="keyword">function</span> <span class="title">callJS</span>(<span class="params"></span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">            alert(<span class="string">&quot;Android调用了JS的callJS方法&quot;</span>);</span></span><br><span class="line">        &#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span>&gt;</span>标题<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>加载调用。</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mWebView.loadUrl(<span class="string">&quot;file:///android_asset/index.html&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// after onPageFinished</span></span><br><span class="line">mWebView.loadUrl(<span class="string">&quot;javascript:callJS()&quot;</span>);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>由于设置了alert，所以需要支持js对话框，内容的渲染需要使用webviewChromClient类去实现。</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">mWebView.setWebChromeClient(<span class="keyword">new</span> WebChromeClient() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">onJsAlert</span><span class="params">(WebView view, String url, String message, <span class="keyword">final</span> JsResult result)</span> </span>&#123;</span><br><span class="line">        AlertDialog.Builder b = <span class="keyword">new</span> AlertDialog.Builder(MainActivity.<span class="keyword">this</span>);</span><br><span class="line">        b.setTitle(<span class="string">&quot;Alert&quot;</span>);</span><br><span class="line">        b.setMessage(message);</span><br><span class="line">        b.setPositiveButton(android.R.string.ok, <span class="keyword">new</span> DialogInterface.OnClickListener() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onClick</span><span class="params">(DialogInterface dialog, <span class="keyword">int</span> which)</span> </span>&#123;</span><br><span class="line">                result.confirm();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        b.setCancelable(<span class="keyword">false</span>);</span><br><span class="line">        b.create().show();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h2 id="WebView-evaluateJavascript"><a href="#WebView-evaluateJavascript" class="headerlink" title="WebView.evaluateJavascript()"></a>WebView.evaluateJavascript()</h2><p>优点：该方法比第一种方法效率更高、使用更简洁。</p>
+<ul>
+<li>因为该方法的执行不会使页面刷新，而第一种方法（loadUrl）的执行则会。</li>
+<li>Android 4.4 后才可使用。</li>
+</ul>
+<p>具体使用:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 只需要将第一种方法的loadUrl()换成下面该方法即可</span></span><br><span class="line">mWebView.evaluateJavascript(<span class="string">&quot;javascript:callJS()&quot;</span>, <span class="keyword">new</span> ValueCallback&lt;String&gt;() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onReceiveValue</span><span class="params">(String value)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//此处为 js 返回的结果</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h1 id="JS调用客户端"><a href="#JS调用客户端" class="headerlink" title="JS调用客户端"></a>JS调用客户端</h1><h2 id="概述-2"><a href="#概述-2" class="headerlink" title="概述"></a>概述</h2><p>可以直接使用基础类型传递参数，也可以使用JSONObject。</p>
+<h2 id="WebView-addJavascriptInterface"><a href="#WebView-addJavascriptInterface" class="headerlink" title="WebView.addJavascriptInterface()"></a>WebView.addJavascriptInterface()</h2><ul>
+<li>优点：使用简单，仅将Android对象和JS对象映射即可。</li>
+</ul>
+<p>使用步骤：</p>
+<ol>
+<li><p>定义一个与JS对象映射关系的Android类：AndroidtoJs。</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AndroidtoJs</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 被JS调用的方法必须加入@JavascriptInterface注解</span></span><br><span class="line">    <span class="meta">@JavascriptInterface</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">hello</span><span class="params">(String msg)</span> </span>&#123;</span><br><span class="line">        Log.d(TAG, msg);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>准备html文件，放到assets中。</p>
+ <figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;utf-8&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Carson<span class="tag">&lt;/<span class="name">title</span>&gt;</span>  </span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">        <span class="function"><span class="keyword">function</span> <span class="title">callAndroid</span>(<span class="params"></span>)</span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="comment">// 由于对象映射，所以调用test对象等于调用Android映射的对象</span></span></span><br><span class="line"><span class="javascript">            test.hello(<span class="string">&quot;js调用了android中的hello方法&quot;</span>);</span></span><br><span class="line">        &#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    //点击按钮则调用callAndroid函数</span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">type</span>=<span class="string">&quot;button&quot;</span> <span class="attr">onclick</span>=<span class="string">&quot;callAndroid()&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>定义映射，调用方法。</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mWebView.addJavascriptInterface(<span class="keyword">new</span> AndroidtoJs(), <span class="string">&quot;test&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h2 id="WebViewClient-shouldOverrideUrlLoading"><a href="#WebViewClient-shouldOverrideUrlLoading" class="headerlink" title="WebViewClient.shouldOverrideUrlLoading()"></a>WebViewClient.shouldOverrideUrlLoading()</h2><ul>
+<li>优点：不存在方式1的漏洞。</li>
+<li>缺点：JS获取Android方法的返回值复杂。如果JS想要得到Android方法的返回值，只能通过 WebView 的 loadUrl() 去执行 JS 方法把返回值传递回去。</li>
+</ul>
+<p>使用步骤：</p>
+<ol>
+<li>Android通过 WebViewClient 的回调方法shouldOverrideUrlLoading ()拦截 url；</li>
+<li>解析该 url 的协议；</li>
+<li>如果检测到是预先约定好的协议，就调用相应方法，即JS需要调用Android的方法。</li>
+</ol>
+<h1 id="缓存机制"><a href="#缓存机制" class="headerlink" title="缓存机制"></a>缓存机制</h1><p>到目前为止，H5的缓存机制一共有六种，分别是：</p>
+<ol>
+<li>浏览器缓存机制</li>
+<li>Dom Storgage（Web Storage）存储机制</li>
+<li>Web SQL Database存储机制</li>
+<li>Indexed Database（IndexedDB）</li>
+<li>Application Cache（AppCache）机制</li>
+<li>File System API</li>
+</ol>
+<p>参考: <a target="_blank" rel="noopener" href="https://juejin.cn/post/6844903934004297736">https://juejin.cn/post/6844903934004297736</a></p>
+<h2 id="WebView设置缓存"><a href="#WebView设置缓存" class="headerlink" title="WebView设置缓存"></a>WebView设置缓存</h2><p>常见用法：设置WebView缓存，缓存模式如下：</p>
+<ul>
+<li>LOAD_CACHE_ONLY: 不使用网络，只读取本地缓存数据</li>
+<li>LOAD_DEFAULT: （默认）根据cache-control决定是否从网络上取数据。</li>
+<li>LOAD_NO_CACHE: 不使用缓存，只从网络获取数据.</li>
+<li>LOAD_CACHE_ELSE_NETWORK，只要本地有，无论是否过期，或者no-cache，都使用缓存中的数据。</li>
+</ul>
+<p>当加载 html 页面时，WebView会在/data/data/包名目录下生成 database 与 cache 两个文件夹。请求的 URL记录保存在 WebViewCache.db，而 URL的内容是保存在 WebViewCache 文件夹下。设置是否启用缓存：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//优先使用缓存: </span></span><br><span class="line">WebView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK); </span><br><span class="line"><span class="comment">//不使用缓存: </span></span><br><span class="line">WebView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);</span><br></pre></td></tr></table></figure>
+
+<p>离线加载用法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (NetStatusUtil.isConnected(getApplicationContext())) &#123;</span><br><span class="line">    webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);<span class="comment">// 根据cache-control决定是否从网络上取数据。</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    webSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);<span class="comment">// 没网，则从本地获取，即离线加载</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">webSettings.setDomStorageEnabled(<span class="keyword">true</span>); <span class="comment">// 开启 DOM storage API 功能</span></span><br><span class="line">webSettings.setDatabaseEnabled(<span class="keyword">true</span>);   <span class="comment">// 开启 database storage API 功能</span></span><br><span class="line">webSettings.setAppCacheEnabled(<span class="keyword">true</span>);   <span class="comment">// 开启 Application Caches 功能</span></span><br><span class="line"></span><br><span class="line">String cacheDirPath = getFilesDir().getAbsolutePath() + APP_CACAHE_DIRNAME;</span><br><span class="line">webSettings.setAppCachePath(cacheDirPath); <span class="comment">// 设置  Application Caches 缓存目录</span></span><br></pre></td></tr></table></figure>
+
+<p>注意： 每个 Application 只调用一次 WebSettings.setAppCachePath()，WebSettings.setAppCacheMaxSize()</p>
+<h2 id="浏览器缓存机制"><a href="#浏览器缓存机制" class="headerlink" title="浏览器缓存机制"></a>浏览器缓存机制</h2><p>浏览器缓存机制主要是根据HTTP协议头里的<code>Cache-Control</code>、<code>Expires</code>、<code>Last-Modified</code>以及<code>Etag</code>请求头控制缓存。浏览器缓存主要用于静态资源文件的存储，Webview会将访问的文件记录及文件内容存在当前app的data目录中。WebView内置自动实现，使用默认的CacheMode就可以实现。</p>
+<p>浏览器缓存的优势在于支持Http协议层。不足之处有：</p>
+<ul>
+<li>需要首次加载之后才能产生缓存文件；</li>
+<li>终端设备缓存的空间有限，缓存有可能会被清除；</li>
+<li>缓存使用缺乏校验，有可能被篡改；</li>
+</ul>
+<h2 id="Application-Cache缓存机制"><a href="#Application-Cache缓存机制" class="headerlink" title="Application Cache缓存机制"></a>Application Cache缓存机制</h2><p>AppCache的缓存机制类似于浏览器的缓存（Cache-Control和Last-Modified）机制，都是以文件为单位进行缓存，且文件有一定更新机制。但AppCache是对浏览器缓存机制的补充，不是替代。</p>
+<p>AppCache有两个关键点：manifest属性和manifest文件。在头中通过manifest属性引用manifest文件。</p>
+<p>浏览器在首次加载时，会解析manifest属性，并读取manifest文件，获取Section:CACHE MANIFEST下要缓存的文件列表，再对文件缓存。AppCache也有更新机制。被缓存的文件如果要更新，需要更新manifest文件。发现有修改，就会重新获取manifest文件，manifest文件与缓存文件的检查更新也遵守浏览器缓存机制。用于存储静态文件（如JS、CSS、字体文件）。</p>
+<p>AppCache已经不推荐使用了，标准也不会再支持。</p>
+<p>使用方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">String path = getApplicationContext().getDir(<span class="string">&quot;cache&quot;</span>, Context.MODE_PRIVATE).getPath();</span><br><span class="line"><span class="comment">//设置缓存路径</span></span><br><span class="line">webSettings.setAppCachePath(path);</span><br><span class="line"><span class="comment">//设置缓存大小</span></span><br><span class="line">webSettings.setAppCacheMaxSize(<span class="number">10</span>*<span class="number">1024</span>*<span class="number">1024</span>);</span><br><span class="line"><span class="comment">//开启缓存</span></span><br><span class="line">webSettings.setAppCacheEnabled(<span class="keyword">true</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Dom-Storage存储机制"><a href="#Dom-Storage存储机制" class="headerlink" title="Dom Storage存储机制"></a>Dom Storage存储机制</h2><p>DOM Storage 是一套在 Web Applications 1.0 规范中首次引入的与存储相关的特性的总称，现在已经分离出来，单独发展成为独立的 W3C Web 存储规范。DOM存储被设计为用来提供一个更大存储量、更安全、更便捷的存储方法，从而可以代替掉将一些不需要让服务器知道的信息存储到 cookies里的这种传统方法。</p>
+<p>Dom Storage机制类似Cookies，但有一些优势。Dom Storage是通过存储字符串的Key-Value对来提供的，Dom Storage存储的数据在本地，不像Cookies，每次请求一次页面，Cookies都会发送给服务器。</p>
+<p>DOM Storage分为sessionStorage和localStorage，二者使用方法基本相同，区别在于作用范围不同：前者具有临时性，用来存储与页面相关的数据，它在页面关闭后无法使用，后者具备持久性，即保存的数据在页面关闭后也可以使用。</p>
+<ul>
+<li>sessionStorage是个全局对象，它维护着在页面会话(page session)期间有效的存储空间。只要浏览器开着，页面会话周期就会一直持续。当页面重新载入(reload)或者被恢复(restores)时，页面会话也是一直存在的。每在新标签或者新窗口中打开一个新页面，都会初始化一个新的会话。</li>
+<li>localStorage保存的数据是持久性的。当前PAGE关闭（Page Session结束后），保存的数据依然存在。重新打开PAGE，上次保存的数据可以获取到。另外，Local Storage 是全局性的，同时打开两个 PAGE 会共享一份存数据，在一个PAGE中修改数据，另一个 PAGE 中是可以感知到的。</li>
+</ul>
+<p>Dom Storage的优势在于：存储空间（5M）大，远远大于Cookies（4KB），而且数据存储在本地无需经常和服务器进行交互，存储安全、便捷。可用于存储临时的简单数据。作用机制类似于SharedPreference。但是，如果要存储结构化的数据，可能要借助JSON了，将要存储的对象转为JSON 串。不太适合存储比较复杂或存储空间要求比较大的数据，也不适合存储静态的文件。</p>
+<p>使用方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">webSettings.setDomStorageEnabled(<span class="keyword">true</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Web-SQL-Database存储机制"><a href="#Web-SQL-Database存储机制" class="headerlink" title="Web SQL Database存储机制"></a>Web SQL Database存储机制</h2><p>Web SQL Database基于SQL的数据库存储机制，用于存储适合数据库的结构化数据，充分利用数据库的优势，存储适合数据库的结构化数据，Web SQL Database存储机制提供了一组可方便对数据进行增加、删除、修改、查询。</p>
+<p>Web SQL Database存储机制就是通过提供一组API，借助浏览器的实现，将Native支持的数据库功能提供给了Web。</p>
+<p>实现方法为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">String cacheDirPath = context.getFilesDir().getAbsolutePath()+<span class="string">&quot;cache/&quot;</span>;</span><br><span class="line"><span class="comment">// 设置缓存路径</span></span><br><span class="line">webSettings.setDatabasePath(cacheDirPath);</span><br><span class="line">webSettings.setDatabaseEnabled(<span class="keyword">true</span>);</span><br></pre></td></tr></table></figure>
+
+<p>Web SQL Database存储机制官方已不再推荐使用，也已经停止了维护，取而代之的是IndexedDB缓存机制。</p>
+<h2 id="Indexed-Database缓存机制"><a href="#Indexed-Database缓存机制" class="headerlink" title="Indexed Database缓存机制"></a>Indexed Database缓存机制</h2><p>Indexed DB也是一种数据库的存储机制，但不同于已经不再支持 Web SQL Database缓存机制。IndexedDB不是传统的关系数据库，而是属于NoSQL数据库，通过存储字符串的Key-Value对来提供存储（类似于Dom Storage，但功能更强大，且存储空间更大）。其中Key是必需的，且唯一的，Key可以自己定义，也可由系统自动生成。Value也是必需的，但Value非常灵活，可以是任何类型的对象。一般Value通过Key来存取的。</p>
+<p>IndexedDB提供了一组异步的API，可以进行数据存、取以及遍历。IndexedDB有个非常强大的功能：index（索引），它可对Value对象中任何属性生成索引，然后可以基于索引进行Value对象的快速查询。</p>
+<p>IndexedDB集合了Dom Storage和Web SQL Database的优点，用于存储大块或复杂结构的数据，提供更大的存储空间，使用起来也比较简单。可以作为 Web SQL Database的替代。但是不太适合静态文件的缓存。</p>
+<p>Android在4.4开始支持IndexedDB，只需要打开允许JS执行的开关就好了，开启方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">webSettings.setJavaScriptEnabled(<span class="keyword">true</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="File-System"><a href="#File-System" class="headerlink" title="File System"></a>File System</h2><p>File System是H5新加入的存储机制。它为Web App提供了一个运行在沙盒中的虚拟的文件系统。不同WebApp的虚拟文件系统是互相隔离的，虚拟文件系统与本地文件系统也是互相隔离的。Web App在虚拟的文件系统中，通过File System API提供的一组文件与文件夹的操作接口进行文件（夹）的创建、读、写、删除、遍历等操作。</p>
+<p>浏览器给虚拟文件系统提供了两种类型的存储空间：临时的和持久性的：</p>
+<ul>
+<li>临时的存储空间是由浏览器自动分配的，但可能被浏览器回收；</li>
+<li>持久性的存储空间需要显示的申请，申请时浏览器会给用户一提示，需要用户进行确认。持久性的存储空间是 WebApp 自己管理，浏览器不会回收，也不会清除内容。存储空间大小通过配额管理，首次申请时会一个初始的配额，配额用完需要再次申请。</li>
+</ul>
+<p>File System的优势在于：</p>
+<ul>
+<li>可存储数据体积较大的二进制数据</li>
+<li>可预加载资源文件</li>
+<li>可直接编辑文件</li>
+</ul>
+<p>遗憾的是：由于File System是H5新加入的缓存机制，目前Android WebView暂时还不支持。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><table>
+<thead>
+<tr>
+<th align="left">名称</th>
+<th align="left">原理</th>
+<th align="left">优点</th>
+<th align="left">适用对象</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">浏览器缓存</td>
+<td align="left">使用HTTP协议头部字段进行缓存控制</td>
+<td align="left">支持HTTP协议层</td>
+<td align="left">存储静态资源</td>
+<td align="left">Android默认实现</td>
+</tr>
+<tr>
+<td align="left">AppCache</td>
+<td align="left">类似浏览器缓存，以文件为单位进行缓存</td>
+<td align="left">构建方便</td>
+<td align="left">离线缓存，存储静态资源</td>
+<td align="left">对浏览器缓存的补充</td>
+</tr>
+<tr>
+<td align="left">Dom Storage</td>
+<td align="left">通过存储键值对实现</td>
+<td align="left">存储空间大，数据在本地，安全便捷</td>
+<td align="left">类似Cookies，存储临时的简单数据</td>
+<td align="left">类似Android中的SP</td>
+</tr>
+<tr>
+<td align="left">Web SQL DataBase</td>
+<td align="left">基于SQL</td>
+<td align="left">利用数据库优势，增删改查方便</td>
+<td align="left">存储复杂、数据量大的结构化数据</td>
+<td align="left">不推荐使用，用IndexedDB替代</td>
+</tr>
+<tr>
+<td align="left">IndexedDB</td>
+<td align="left">通过存储键值对实现（NoSQL）</td>
+<td align="left">存储空间大、使用简单灵活</td>
+<td align="left">存储复杂、数据量大的结构化数据</td>
+<td align="left">集合Dom Storage和Web SQL DataBase的优点</td>
+</tr>
+<tr>
+<td align="left">File System</td>
+<td align="left">提供一个虚拟的文件系统</td>
+<td align="left">可存储二进制数据、预加载资源和之间编辑文件</td>
+<td align="left">通过文件系统管理数据</td>
+<td align="left">目前Android不支持</td>
+</tr>
+</tbody></table>
+<h1 id="域控制不严格漏洞"><a href="#域控制不严格漏洞" class="headerlink" title="域控制不严格漏洞"></a>域控制不严格漏洞</h1><p><strong>setAllowFileAccess</strong></p>
+<p>设置是否允许 WebView 使用 File 协议。使用 file 域加载的 js代码能够使用进行<strong>同源策略跨域访问</strong>(对私有目录文件进行访问)，从而导致隐私信息泄露。</p>
+<p>对于不需要使用 file 协议的应用，禁用 file 协议；</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setAllowFileAccess(<span class="keyword">false</span>); </span><br></pre></td></tr></table></figure>
+
+<p>对于需要使用 file 协议的应用，禁止 file 协议加载 JavaScript。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (url.startsWith(<span class="string">&quot;file://&quot;</span>) &#123;</span><br><span class="line">    setJavaScriptEnabled(<span class="keyword">false</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    setJavaScriptEnabled(<span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>setAllowFileAccessFromFileURLs</strong></p>
+<p>设置是否允许通过 file url 加载的 Js代码读取其他的本地文件。</p>
+<ul>
+<li>在Android 4.1前默认允许</li>
+<li>在Android 4.1后默认禁止</li>
+</ul>
+<p><strong>setAllowUniversalAccessFromFileURLs</strong></p>
+<p>设置是否允许通过 file url 加载的 Javascript 可以访问其他的源(包括http、https等源)。</p>
+<ul>
+<li>在Android 4.1前默认允许</li>
+<li>在Android 4.1后默认禁止</li>
+</ul>
+<p><strong>setJavaScriptEnabled</strong></p>
+<p>通过此 API 可以设置是否允许 WebView 使用 JavaScript，默认是不允许，但很多应用，包括移动浏览器为了让 WebView 执行 http 协议中的 JavaScript，都会主动设置允许 WebView 执行 JavaScript，而又不会对不同的协议区别对待，比较安全的实现是如果加载的 url 是 http 或 https 协议，则启用 JavaScript，如果是其它危险协议，比如是 file 协议，则禁用 JavaScript。如果是 file 协议，禁用 javascript 可以很大程度上减小跨源漏洞对 WebView 的威胁，但是此时禁用 JavaScript 的执行并不能完全杜绝跨源文件泄露。</p>
+<p><strong>最终解决方案</strong></p>
+<p>对于不需要使用 file 协议的应用，禁用 file 协议；</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 禁用 file 协议；</span></span><br><span class="line">setAllowFileAccess(<span class="keyword">false</span>); </span><br><span class="line">setAllowFileAccessFromFileURLs(<span class="keyword">false</span>);</span><br><span class="line">setAllowUniversalAccessFromFileURLs(<span class="keyword">false</span>);</span><br></pre></td></tr></table></figure>
+
+<p>对于需要使用 file 协议的应用，禁止 file 协议加载 JavaScript。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 需要使用 file 协议</span></span><br><span class="line">setAllowFileAccess(<span class="keyword">true</span>); </span><br><span class="line">setAllowFileAccessFromFileURLs(<span class="keyword">false</span>);</span><br><span class="line">setAllowUniversalAccessFromFileURLs(<span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 禁止 file 协议加载 JavaScript</span></span><br><span class="line"><span class="keyword">if</span> (url.startsWith(<span class="string">&quot;file://&quot;</span>) &#123;</span><br><span class="line">    setJavaScriptEnabled(<span class="keyword">false</span>);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    setJavaScriptEnabled(<span class="keyword">true</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="内存泄漏"><a href="#内存泄漏" class="headerlink" title="内存泄漏"></a>内存泄漏</h1><h2 id="概述-3"><a href="#概述-3" class="headerlink" title="概述"></a>概述</h2><p>一直听说 WebView 使用不当容易造成内存泄漏，网上有很多针对内存泄漏的解决方案，比较多的是在 Activity.onDestroy 的时候将 WebView 从 View 树中移除，然后再调用 WebView.destroy 方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDestroy</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> parent = webView?.parent</span><br><span class="line">    <span class="keyword">if</span> (parent <span class="keyword">is</span> ViewGroup) &#123;</span><br><span class="line">        parent.removeView(webView)</span><br><span class="line">    &#125;</span><br><span class="line">    webView?.destroy()</span><br><span class="line">    <span class="keyword">super</span>.onDestroy()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>于是我写了一个简单的包含一个 WebView 的 Activity，然后在 Activity.onDestroy 中分别尝试 <strong>啥也不干</strong> 和 <strong>只调用 WebView.destroy</strong> 方法，接着项目里面集成了 leakcanary 用来检测内存泄漏，启动 App 后，反复横屏竖屏，发现 Activity.onDestroy 有被正常调用，但是 leakcanary 并没有提示有内存泄漏，因此猜想 WebView 高版本应该把这个问题修复了。我用的测试机是 Android 9 版本的，于是想着换个低版本的机型试试，就弄了个 Android 6 的手机一跑，发现还是没有发生内存泄漏，看了下网上这些讲 WebView 内存泄漏的文章，有的还是 2019 年的，既然都 2019 年了还在谈 WebView 会造成内存泄漏，那感觉 Android 6 的机型不应该表现正常呀，一脸懵逼。。。秉着不弄明白不罢休的原则，遇到这种问题好办，<code>Read The Fucking Source Code</code> 就完事了。</p>
+<h2 id="WebView销毁时做了什么"><a href="#WebView销毁时做了什么" class="headerlink" title="WebView销毁时做了什么"></a>WebView销毁时做了什么</h2><p>既然网上的解决方案说先调用 removeView 移除 WebView，然后再调用 WebView.destroy 方法，那想着内存泄漏应该可以从 onDetachedFromWindow(从 Window 中 detach) 和 destroy(销毁) 这两个逻辑里找原因，看一下 WebView 中的这两个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">destroy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    checkThread();</span><br><span class="line">    mProvider.destroy();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDetachedFromWindowInternal</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    mProvider.getViewDelegate().onDetachedFromWindow();</span><br><span class="line">    <span class="keyword">super</span>.onDetachedFromWindowInternal();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>一般而言 destroy 方法应该在 Activity.onDestroy 时手动调用，而 onDetachedFromWindowInternal 方法在 View detach 的时候会由系统回调。注意 onDestroy 的调用时机早于 onDetachedFromWindow，相关的源码可以参考 <a target="_blank" rel="noopener" href="https://juejin.cn/post/6898525503960186887">Android图形系统综述</a> 中 View 系列的文章自行跟踪。</p>
+<p>上面这两个方法都出现了一个叫 mProvider 的对象，这个对象是啥呢？在 WebView.java 中搜索了一下 <code>mProvider = </code> 发现只有一处赋值：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> WebViewProvider mProvider;</span><br><span class="line"></span><br><span class="line">mProvider = getFactory().createWebView(<span class="keyword">this</span>, <span class="keyword">new</span> PrivateAccess());</span><br></pre></td></tr></table></figure>
+
+<p>它是一个 WebViewProvider 类型的实例，接着看它是怎么被赋值的，首先看一看 getFactory 返回的工厂对象是什么：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> WebViewFactoryProvider <span class="title">getFactory</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> WebViewFactory.getProvider();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// WebViewFactory</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> WebViewFactoryProvider <span class="title">getProvider</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (sProviderInstance != <span class="keyword">null</span>) <span class="keyword">return</span> sProviderInstance;</span><br><span class="line">    Class&lt;WebViewFactoryProvider&gt; providerClass = getProviderClass();</span><br><span class="line">    <span class="comment">// CHROMIUM_WEBVIEW_FACTORY_METHOD = &quot;create&quot;</span></span><br><span class="line">    staticFactory = providerClass.getMethod(CHROMIUM_WEBVIEW_FACTORY_METHOD, WebViewDelegate.class);</span><br><span class="line">    sProviderInstance = (WebViewFactoryProvider) staticFactory.invoke(<span class="keyword">null</span>, <span class="keyword">new</span> WebViewDelegate());</span><br><span class="line">    <span class="keyword">return</span> sProviderInstance;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的 WebViewFactory.getProvider() 方法看上去是通过调用 providerClass 中的 create 方法拿到了 sProviderInstance 实例，于是得继续看 getProviderClass 方法到底是返回了一个什么类型的类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> Class&lt;WebViewFactoryProvider&gt; <span class="title">getProviderClass</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">return</span> getWebViewProviderClass(clazzLoader);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Class&lt;WebViewFactoryProvider&gt; <span class="title">getWebViewProviderClass</span><span class="params">(ClassLoader clazzLoader)</span> <span class="keyword">throws</span> ClassNotFoundException </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (Class&lt;WebViewFactoryProvider&gt;) Class.forName(CHROMIUM_WEBVIEW_FACTORY, <span class="keyword">true</span>, clazzLoader);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查看源码，可以发现 CHROMIUM_WEBVIEW_FACTORY 取值为 <code>com.android.webview.chromium.WebViewChromiumFactoryProviderForP</code>，我查看的源码版本是 Android P 的，所以这里是 WebViewChromiumFactoryProviderForP，看了一下其它 Android 版本的源码，发现都有一个对应的 WebViewChromiumFactoryProviderForX 值。这个 WebViewChromiumFactoryProviderForP 类在 AOSP 中是没有的，那应该去哪里找呢？</p>
+<p>参考 Chrome developer 的文档: <a target="_blank" rel="noopener" href="https://developer.chrome.com/multidevice/webview/overview">WebView for Android</a>，可以看到从 Android 4.4 开始，WebView 组件基于 Chromium open source project 项目，新的 Webview 与 Android 端的 Chrome 浏览器共享同样的渲染引擎，因此 WebView 和 Chrome 之间的渲染应该会更加一致。而从 Android 5.0(Lollipop) 版本开始将 WebView 迁移到了一个独立的 APK — <strong>Android System WebView</strong>，因此可以单独在 Android 平台更新。这个 APP 可以在应用管理中看到，看到这里我大概明白了之前为啥用 Android 6 的机器也没有测试出内存泄漏，猜想应该是它的 <code>Android System WebView</code> 应用版本已经把内存泄漏的问题解决了吧，看了一下其应用版本是 <code>86.0.4240.198</code>(可以在应用管理中查看 <code>Android System WebView</code> 应用的版本，另外也可以在浏览器中打开这个 <a target="_blank" rel="noopener" href="https://liulanmi.com/labs/core.html">网址</a> 也会显示版本)。于是我们验证一下这个猜想。</p>
+<p>关于 Chromium open source project 的源码可以在这里查看: <a target="_blank" rel="noopener" href="https://chromium.googlesource.com/chromium/src.git/+refs">Chromium open source project Ref</a>，在这里可以查看目标版本的源码，我选择 <code>86.0.4240.198</code> 版本的源码进行解析。接着上面的 <a target="_blank" rel="noopener" href="https://chromium.googlesource.com/chromium/src.git/+/refs/tags/86.0.4240.198/android_webview/glue/java/src/com/android/webview/chromium/WebViewChromiumFactoryProviderForP.java">WebViewChromiumFactoryProviderForP</a> 开始：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WebViewChromiumFactoryProviderForP</span> <span class="keyword">extends</span> <span class="title">WebViewChromiumFactoryProvider</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> WebViewChromiumFactoryProvider <span class="title">create</span><span class="params">(android.webkit.WebViewDelegate delegate)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> WebViewChromiumFactoryProviderForP(delegate);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="title">WebViewChromiumFactoryProviderForP</span><span class="params">(android.webkit.WebViewDelegate delegate)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(delegate);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到返回了一个 WebViewChromiumFactoryProviderForP 实例，其 createWebView 方法在父类 <a target="_blank" rel="noopener" href="https://chromium.googlesource.com/chromium/src.git/+/refs/tags/86.0.4240.198/android_webview/glue/java/src/com/android/webview/chromium/WebViewChromiumFactoryProvider.java">WebViewChromiumFactoryProvider</a> 中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> WebViewProvider <span class="title">createWebView</span><span class="params">(WebView webView, WebView.PrivateAccess privateAccess)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> WebViewChromium(<span class="keyword">this</span>, webView, privateAccess, mShouldDisableThreadChecking);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因此上面的 mProvider 是 <a target="_blank" rel="noopener" href="https://chromium.googlesource.com/chromium/src.git/+/refs/tags/86.0.4240.198/android_webview/glue/java/src/com/android/webview/chromium/WebViewChromium.java">WebViewChromium</a> 实例，来看一下它的 onDetachedFromWindow 和 destroy 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> WebViewProvider.<span class="function">ViewDelegate <span class="title">getViewDelegate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDetachedFromWindow</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    mAwContents.onDetachedFromWindow();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">destroy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    mAwContents.destroy();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这俩都会调用到 AwContents 中对应的方法，所以上面 WebView 销毁的时候，其 destroy 和 onDetachedFromWindowInternal 方法最后会调用到 AwContents 中对应的方法，低版本的内存泄漏就发生在这里。</p>
+<h2 id="AwContents中的内存泄漏"><a href="#AwContents中的内存泄漏" class="headerlink" title="AwContents中的内存泄漏"></a>AwContents中的内存泄漏</h2><p>我们先看一下 mAwContents 的创建：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mAwContents = <span class="keyword">new</span> AwContents(mFactory.getBrowserContextOnUiThread(), mWebView, mContext, ...);</span><br></pre></td></tr></table></figure>
+
+<h3 id="86-0-4240-198版本"><a href="#86-0-4240-198版本" class="headerlink" title="86.0.4240.198版本"></a>86.0.4240.198版本</h3><p>首先看看 <code>86.0.4240.198</code> 版本中的 <a target="_blank" rel="noopener" href="https://chromium.googlesource.com/chromium/src.git/+/refs/tags/86.0.4240.198/android_webview/java/src/org/chromium/android_webview/AwContents.java">AwContents</a> 类中的几个相关方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">destroy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (isDestroyed(NO_WARN)) <span class="keyword">return</span>;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="comment">// Remove pending messages</span></span><br><span class="line">    mContentsClient.getCallbackHelper().removeCallbacksAndMessages();</span><br><span class="line">    <span class="keyword">if</span> (mIsAttachedToWindow) &#123;</span><br><span class="line">        <span class="comment">// 如果此时没有 detach 则先调用 onDetachedFromWindow 方法，然后才将 mIsDestroyed 置为 true</span></span><br><span class="line">        Log.w(TAG, <span class="string">&quot;WebView.destroy() called while WebView is still attached to window.&quot;</span>);</span><br><span class="line">        onDetachedFromWindow();</span><br><span class="line">    &#125;</span><br><span class="line">    mIsDestroyed = <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// onAttachedToWindow 时会调用</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAttachedToWindow</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (isDestroyed(NO_WARN)) <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">if</span> (mIsAttachedToWindow) &#123;</span><br><span class="line">        Log.w(TAG, <span class="string">&quot;onAttachedToWindow called when already attached. Ignoring&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    mIsAttachedToWindow = <span class="keyword">true</span>;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">if</span> (mComponentCallbacks != <span class="keyword">null</span>) <span class="keyword">return</span>;</span><br><span class="line">    mComponentCallbacks = <span class="keyword">new</span> AwComponentCallbacks();</span><br><span class="line">    <span class="comment">// 注册 ComponentCallbacks</span></span><br><span class="line">    mContext.registerComponentCallbacks(mComponentCallbacks);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// onDetachedFromWindow 时会调用</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDetachedFromWindow</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (isDestroyed(NO_WARN)) <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">if</span> (!mIsAttachedToWindow) &#123;</span><br><span class="line">        Log.w(TAG, <span class="string">&quot;onDetachedFromWindow called when already detached. Ignoring&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    mIsAttachedToWindow = <span class="keyword">false</span>;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">if</span> (mComponentCallbacks != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// 将 ComponentCallbacks 解注册</span></span><br><span class="line">        mContext.unregisterComponentCallbacks(mComponentCallbacks);</span><br><span class="line">        mComponentCallbacks = <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 View attach 到 Window 中的时候会调用上面的 onAttachedToWindow 方法，在 View detach 的时候会调用到 onDetachedFromWindow 方法，这两个方法中调用了一个 registerComponentCallbacks 和 unregisterComponentCallbacks 函数分别注册和解注册了一个 Callback，低版本会发生内存泄漏的原因就在此！</p>
+<p>所以我们再来看一下 ComponentCallbacks 相关的逻辑：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Context</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">registerComponentCallbacks</span><span class="params">(ComponentCallbacks callback)</span> </span>&#123;</span><br><span class="line">    getApplicationContext().registerComponentCallbacks(callback);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Application</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">registerComponentCallbacks</span><span class="params">(ComponentCallbacks callback)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (mComponentCallbacks) &#123;</span><br><span class="line">        mComponentCallbacks.add(callback);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以假设在 AwContents 中只调用了 registerComponentCallbacks 注册方法而没有调用 unregisterComponentCallbacks 方法来解注册，那么会出现什么情况呢？<strong>我们看一下这个 AwComponentCallbacks 类的实现，发现它是 AwContents 中的一个非静态内部类，因此它会持有外部 AwContents 实例的引用，而 AwContents 持有 WebView 的 Context 上下文，对于 xml 中的 WebView 布局而言，这个上下文就是其所在的 Activity，因此如果在 Activity 生命周期结束后没有调用 unregisterComponentCallbacks 方法解注册的话，便可能会发生内存泄漏</strong>。</p>
+<p>在 <code>86.0.4240.198</code> 版本中，如果在 Activity.onDestroy 方法中啥也不干，那么在 View detach 的时候依旧会调用 unregisterComponentCallbacks 方法解注册；而如果在 Activity.onDestroy 方法中只手动调用了 WebView.destroy 方法，那么还是会先通过调用 onDetachedFromWindow 来解注册，此时的 <code>if (isDestroyed(NO_WARN)) return;</code> 判断是 false，可以正常执行到解注册的逻辑，然后才会标记为已销毁。</p>
+<h3 id="54-0-2805-1版本"><a href="#54-0-2805-1版本" class="headerlink" title="54.0.2805.1版本"></a>54.0.2805.1版本</h3><p>接着我们再看一个旧版本 <code>54.0.2805.1</code> 中的 <a target="_blank" rel="noopener" href="https://chromium.googlesource.com/chromium/src.git/+/refs/tags/54.0.2805.1/android_webview/java/src/org/chromium/android_webview/AwContents.java">AwContents</a> 这几个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">destroy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (isDestroyed(NO_WARN)) <span class="keyword">return</span>;</span><br><span class="line">    <span class="comment">// Remove pending messages</span></span><br><span class="line">    mContentsClient.getCallbackHelper().removeCallbacksAndMessages();</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">if</span> (mIsAttachedToWindow) &#123;</span><br><span class="line">        Log.w(TAG, <span class="string">&quot;WebView.destroy() called while WebView is still attached to window.&quot;</span>);</span><br><span class="line">        nativeOnDetachedFromWindow(mNativeAwContents);</span><br><span class="line">    &#125;</span><br><span class="line">    mIsDestroyed = <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAttachedToWindow</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (isDestroyed(NO_WARN)) <span class="keyword">return</span>;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">if</span> (mComponentCallbacks != <span class="keyword">null</span>) <span class="keyword">return</span>;</span><br><span class="line">    mComponentCallbacks = <span class="keyword">new</span> AwComponentCallbacks();</span><br><span class="line">    mContext.registerComponentCallbacks(mComponentCallbacks);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDetachedFromWindow</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (isDestroyed(NO_WARN)) <span class="keyword">return</span>;</span><br><span class="line">    nativeOnDetachedFromWindow(mNativeAwContents);</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">if</span> (mComponentCallbacks != <span class="keyword">null</span>) &#123;</span><br><span class="line">        mContext.unregisterComponentCallbacks(mComponentCallbacks);</span><br><span class="line">        mComponentCallbacks = <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到如果在 Activity.onDestroy 中只调用了 WebView.destroy 方法的话，那么此时还没有调用到 onDetachedFromWindow 方法去解注册，却已经将 mIsDestroyed 置为了 true，于是当 detach 的时候，onDetachedFromWindow 判断到 isDestroyed 为 true 则不会走接下来解注册的逻辑了，于是内存泄漏也随之而来。</p>
+<p>而如果在 Activity.onDestroy 中不手动调用 WebView.destroy 的话，理论上在 WebView detach 的时候能调用 onDetachedFromWindow 方法解注册 Callback，那么这个内存泄漏问题应该不会发生，但是没有调用 WebView.destroy 方法的话，很可能会发生其它问题，比如说不会调用 <code>mContentsClient.getCallbackHelper().removeCallbacksAndMessages()</code> 去移除 pending 的消息，说不定又有新的内存泄漏之类的。。。</p>
+<p>要测试低版本 Chromium 的内存泄漏，可以找一个低版本的 Android 手机，然后将其 <code>Android System WebView</code> 应用卸载到装机版本，然后查看对应版本的 AwContents 类源码，如果源码中有内存泄漏的可能的话就可以测试了。另外如果手里头有 Root 的手机，可以尝试将 <code>Android System WebView</code> 最新版卸载，然后在 <a target="_blank" rel="noopener" href="https://www.apkmirror.com/apk/google-inc/android-system-webview/">apkmirror(要翻墙)</a> 中下载一个低版本的  <code>Android System WebView</code> APK 安装到手机上；或者直接从源码中编译出一个指定版本的 <code>Android System WebView</code> 应用，源码编译时间有限我也没试过，可以参考 <a target="_blank" rel="noopener" href="https://chromium.googlesource.com/chromium/src/+/HEAD/android_webview/docs/build-instructions.md">build-instructions</a>。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>WebView 中的内存泄漏其实与 Chromium 内核版本有关，在新版本的 Chromium 内核中内存泄漏问题已经被解决了，而且从 Android 5.0(Lollipop) 版本开始将 Chromium WebView 迁移到了一个独立的 APP – <code>Android System WebView</code>，随着 <code>Android System WebView</code> 的独立发布，低版本 Android 系统(Android 5以上)上搭载的 Chromium 内核一般来说也不会太旧，所以出现内存泄漏的概率应该是比较小的。如果仍需要兼容这很小的一部分机型，可以通过文章开头的方式销毁 WebView，即先移除 WebView 组件，确保先调用到 onDetachedFromWindow 方法解注册，然后再通过 WebView.destroy 方法处理其它销毁逻辑。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/Framework/" rel="tag"># Framework</a>
+              <a href="/tags/WebView/" rel="tag"># WebView</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/" rel="prev" title="Android性能优化之内存优化">
+      <i class="fa fa-chevron-left"></i> Android性能优化之内存优化
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/12/03/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/" rel="next" title="Android性能优化之启动优化">
+      Android性能优化之启动优化 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#WebView"><span class="nav-number">2.</span> <span class="nav-text">WebView</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#WebSettings"><span class="nav-number">3.</span> <span class="nav-text">WebSettings</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#WebViewClient"><span class="nav-number">4.</span> <span class="nav-text">WebViewClient</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#WebChromeClient"><span class="nav-number">5.</span> <span class="nav-text">WebChromeClient</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%A2%E6%88%B7%E7%AB%AF%E8%B0%83%E7%94%A8JS"><span class="nav-number">6.</span> <span class="nav-text">客户端调用JS</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="nav-number">6.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WebView-loadUrl"><span class="nav-number">6.2.</span> <span class="nav-text">WebView.loadUrl()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WebView-evaluateJavascript"><span class="nav-number">6.3.</span> <span class="nav-text">WebView.evaluateJavascript()</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JS%E8%B0%83%E7%94%A8%E5%AE%A2%E6%88%B7%E7%AB%AF"><span class="nav-number">7.</span> <span class="nav-text">JS调用客户端</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-2"><span class="nav-number">7.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WebView-addJavascriptInterface"><span class="nav-number">7.2.</span> <span class="nav-text">WebView.addJavascriptInterface()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WebViewClient-shouldOverrideUrlLoading"><span class="nav-number">7.3.</span> <span class="nav-text">WebViewClient.shouldOverrideUrlLoading()</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E6%9C%BA%E5%88%B6"><span class="nav-number">8.</span> <span class="nav-text">缓存机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#WebView%E8%AE%BE%E7%BD%AE%E7%BC%93%E5%AD%98"><span class="nav-number">8.1.</span> <span class="nav-text">WebView设置缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8F%E8%A7%88%E5%99%A8%E7%BC%93%E5%AD%98%E6%9C%BA%E5%88%B6"><span class="nav-number">8.2.</span> <span class="nav-text">浏览器缓存机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Application-Cache%E7%BC%93%E5%AD%98%E6%9C%BA%E5%88%B6"><span class="nav-number">8.3.</span> <span class="nav-text">Application Cache缓存机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dom-Storage%E5%AD%98%E5%82%A8%E6%9C%BA%E5%88%B6"><span class="nav-number">8.4.</span> <span class="nav-text">Dom Storage存储机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Web-SQL-Database%E5%AD%98%E5%82%A8%E6%9C%BA%E5%88%B6"><span class="nav-number">8.5.</span> <span class="nav-text">Web SQL Database存储机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Indexed-Database%E7%BC%93%E5%AD%98%E6%9C%BA%E5%88%B6"><span class="nav-number">8.6.</span> <span class="nav-text">Indexed Database缓存机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#File-System"><span class="nav-number">8.7.</span> <span class="nav-text">File System</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">8.8.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%9F%E6%8E%A7%E5%88%B6%E4%B8%8D%E4%B8%A5%E6%A0%BC%E6%BC%8F%E6%B4%9E"><span class="nav-number">9.</span> <span class="nav-text">域控制不严格漏洞</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="nav-number">10.</span> <span class="nav-text">内存泄漏</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-3"><span class="nav-number">10.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WebView%E9%94%80%E6%AF%81%E6%97%B6%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88"><span class="nav-number">10.2.</span> <span class="nav-text">WebView销毁时做了什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AwContents%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F"><span class="nav-number">10.3.</span> <span class="nav-text">AwContents中的内存泄漏</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#86-0-4240-198%E7%89%88%E6%9C%AC"><span class="nav-number">10.3.1.</span> <span class="nav-text">86.0.4240.198版本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#54-0-2805-1%E7%89%88%E6%9C%AC"><span class="nav-number">10.3.2.</span> <span class="nav-text">54.0.2805.1版本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">10.4.</span> <span class="nav-text">小结</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

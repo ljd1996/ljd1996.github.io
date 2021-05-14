@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述本文参考官网文档，记录一些可以用来做性能优化的工具，主要给出了一些工具的介绍，具体的使用还是需要参考官方文档，以及在实践项目中实际地加以应用，这样才能对工具的使用和性能优化有融会贯通的理解。本文会持续更新，参考官网文档的日期: 2020-11-26。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android性能优化之工具篇">
+<meta property="og:url" content="http://yoursite.com/2020/11/26/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B7%A5%E5%85%B7%E7%AF%87/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述本文参考官网文档，记录一些可以用来做性能优化的工具，主要给出了一些工具的介绍，具体的使用还是需要参考官方文档，以及在实践项目中实际地加以应用，这样才能对工具的使用和性能优化有融会贯通的理解。本文会持续更新，参考官网文档的日期: 2020-11-26。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-11-26T11:40:02.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.820Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="性能优化">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/11/26/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B7%A5%E5%85%B7%E7%AF%87/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android性能优化之工具篇 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/26/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B7%A5%E5%85%B7%E7%AF%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android性能优化之工具篇
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-26 19:40:02" itemprop="dateCreated datePublished" datetime="2020-11-26T19:40:02+08:00">2020-11-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">性能优化</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/11/26/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B7%A5%E5%85%B7%E7%AF%87/" class="post-meta-item leancloud_visitors" data-flag-title="Android性能优化之工具篇" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/11/26/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B7%A5%E5%85%B7%E7%AF%87/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/26/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B7%A5%E5%85%B7%E7%AF%87/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>本文参考官网文档，记录一些可以用来做性能优化的工具，主要给出了一些工具的介绍，具体的使用还是需要参考官方文档，以及在实践项目中实际地加以应用，这样才能对工具的使用和性能优化有融会贯通的理解。本文会持续更新，参考官网文档的日期: 2020-11-26。</p>
+<a id="more"></a>
+
+<h1 id="System-Trace"><a href="#System-Trace" class="headerlink" title="System Trace"></a>System Trace</h1><ul>
+<li>Systrace: 平台提供的旧版命令行工具，可记录短时间内的设备活动，并保存在 html 文件中。该工具会生成一份报告，其中汇总了 Android 内核中的数据，例如 CPU 调度程序、磁盘活动和应用线程等。</li>
+<li>Perfetto: Android 10 中引入的全新平台级跟踪工具。它是一个适用于 Android、Linux 和 Chrome 的更加通用和复杂的开源跟踪项目。与 Systrace 不同，它提供数据源超集，可让您以 protobuf 编码的二进制流形式记录任意长度的跟踪记录。</li>
+</ul>
+<p>可以使用 <code>android-sdk/platform-tools/systrace/systrace.py</code> 命令行来生成 Systrace 报告(需要安装 Python 环境，目前只支持 Python2 版本)：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> python systrace.py -o mynewtrace.html <span class="built_in">sched</span> freq idle am wm gfx view binder_driver hal dalvik camera input res</span></span><br></pre></td></tr></table></figure>
+
+<p>该命令会生成一个 html 文件，可以使用 Chrome 打开。更多选项可以参考 <code>python systrace.py -h</code> 或 <a target="_blank" rel="noopener" href="https://developer.android.com/topic/performance/tracing/command-line">systrace 命令行跟踪记录</a>。</p>
+<p>在 Android 9 及以上的设备内置了一个名为 System Tracing 的系统级应用，可以通过它来生成系统报告而无需借助 systrace 命令行也无需使用 ADB 连接电脑，位于 <strong>开发者选项</strong> 中 <strong>调试</strong> 部分，具体使用参考 <a target="_blank" rel="noopener" href="https://developer.android.com/topic/performance/tracing/on-device">录制 System Trace 记录</a>。生成的报告位于 <code>/data/local/traces/</code> 路径下，后缀为 <code>.perfetto-trace(Android 10 及以上)</code> 或 <code>.ctrace(Android 10 以下)</code>。生成的文件可以在 <a target="_blank" rel="noopener" href="https://perfetto.dev/#/running.md">Perfetto</a> 网站中打开分析。</p>
+<p>关于 Systrace 报告的浏览与分析方式参考 <a target="_blank" rel="noopener" href="https://developer.android.com/topic/performance/tracing/navigate-report">浏览 Systrace 报告</a>。</p>
+<p>Systrace 仅在系统级别显示进程的相关信息，因此有时很难知道应用的哪些方法是在给定时间针对系统事件执行的，因此可以使用 Android 平台提供的 Trace API 为特定的代码段添加标签。需要在 systrace.py 命令行中添加 <code>-a pkg_name</code> 参数，具体使用参考 <a target="_blank" rel="noopener" href="https://developer.android.com/topic/performance/tracing/custom-events">Trace API</a>，使用示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    Trace.beginSection(<span class="string">&quot;function&quot;</span>)</span><br><span class="line">    f()</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    Trace.endSection()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Trace 与 Debug 类不同，后者可通过生成 <code>.trace</code> 文件来检查应用 CPU 的详细使用情况，<code>.trace</code> 文件可以使用 <code>CPU Profiler</code> 查看。</p>
+<h1 id="CPU-Profiler"><a href="#CPU-Profiler" class="headerlink" title="CPU Profiler"></a>CPU Profiler</h1><p>详细使用参考 <a target="_blank" rel="noopener" href="https://developer.android.com/studio/profile/cpu-profiler">CPU Profiler</a>。</p>
+<p>可以使用 CPU Profiler 在与应用交互时实时检查应用的 CPU 使用率和线程活动，也可以检查记录的方法跟踪数据、函数跟踪数据和系统跟踪数据的详细信息。</p>
+<ul>
+<li>系统跟踪数据：捕获精细的详细信息，以便检查应用与系统资源的交互情况。</li>
+<li>方法和函数跟踪数据：对于应用进程中的每个线程，可以了解一段时间内执行了哪些方法 (Java) 或函数 (C/C++)，以及每个方法或函数在其执行期间消耗的 CPU 资源。还可以使用方法和函数跟踪数据来识别调用方和被调用方，可以使用此信息来确定哪些方法或函数调用会消耗大量资源，并优化相关的代码。</li>
+</ul>
+<p>可以使用 <a target="_blank" rel="noopener" href="https://developer.android.com/reference/android/os/Debug">Debug</a> 类来检测应用，通过这种方式，可更精确地控制设备何时开始和停止记录跟踪信息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在 getExternalFilesDir() 目录下生成 sample.trace 文件</span></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    Debug.startMethodTracing(<span class="string">&quot;sample&quot;</span>)</span><br><span class="line">    f()</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    Debug.stopMethodTracing()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Memory-Profiler"><a href="#Memory-Profiler" class="headerlink" title="Memory Profiler"></a>Memory Profiler</h1><p>详细使用参考 <a target="_blank" rel="noopener" href="https://developer.android.com/studio/profile/memory-profiler">Memory Profiler</a>。</p>
+<p>Memory Profiler 可以帮助开发者识别出可能会导致应用卡顿、甚至崩溃的内存泄露和内存抖动。它显示一个应用内存使用量的实时图表，让我们可以捕获内存使用、强制执行垃圾回收以及跟踪内存分配。</p>
+<p>还可以使用 Memory Profiler 检测内存泄漏，具体使用方法参考官方文档。</p>
+<h1 id="Network-Profiler"><a href="#Network-Profiler" class="headerlink" title="Network Profiler"></a>Network Profiler</h1><p>详细使用参考 <a target="_blank" rel="noopener" href="https://developer.android.com/studio/profile/network-profiler">Network Profiler</a>。</p>
+<p>Network Profiler 会在时间轴上显示实时网络活动，包括发送和接收的数据以及当前的连接数，便于开发者检查应用传输数据的方式和时间，并适当优化底层代码。</p>
+<p>目前，Network Profiler 仅支持 HttpURLConnection 和 OkHttp 网络连接库。</p>
+<h1 id="Energy-Profiler"><a href="#Energy-Profiler" class="headerlink" title="Energy Profiler"></a>Energy Profiler</h1><p>详细使用参考 <a target="_blank" rel="noopener" href="https://developer.android.com/studio/profile/energy-profiler">Energy Profiler</a>。</p>
+<p>Energy Profiler 可帮助开发者了解应用在哪里耗用了不必要的电量，它会监控 CPU、网络无线装置和 GPS 传感器的使用情况，并直观地显示其中每个组件消耗的电量，Energy Profiler 还会显示可能会影响耗电量的系统事件（唤醒锁定、闹钟、作业和位置信息请求）的发生次数。</p>
+<p>Energy Profiler 并不会直接测量耗电量，而是使用一种模型来估算设备上每项资源的耗电量。</p>
+<h1 id="Layout-Inspector"><a href="#Layout-Inspector" class="headerlink" title="Layout Inspector"></a>Layout Inspector</h1><p>详细使用参考 <a target="_blank" rel="noopener" href="https://developer.android.com/studio/debug/layout-inspector">Layout Inspector</a>。</p>
+<p>Layout Inspector 可以用来检查应用的视图层次结构，它可以替代 Hierarchy Viewer(已废弃) 的功能。</p>
+<h1 id="Leakcanary"><a href="#Leakcanary" class="headerlink" title="Leakcanary"></a>Leakcanary</h1><p>Leakcanary 是 Square 公司为检测 Android 内存泄漏而开发的一个框架。Github 地址: <a target="_blank" rel="noopener" href="https://github.com/square/leakcanary">Leakcanary</a>。</p>
+<p>最新版的 LeakCanary 不需要做任何初始化操作，只需要在项目的 gradle 脚本中添加依赖即可：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">dependencies &#123;</span><br><span class="line">    <span class="comment">// debugImplementation because LeakCanary should only run in debug builds.</span></span><br><span class="line">    debugImplementation <span class="string">&#x27;com.squareup.leakcanary:leakcanary-android:2.5&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Leakcanary 工作原理：借助 ReferenceQueue。</p>
+<ol>
+<li>监听 Activity 的生命周期。</li>
+<li>在 onDestory 的时候，创建对应的 Actitity 的 Refrence 和相应的 ReferenceQueue，启动后台进程去检测。</li>
+<li>一段时间后，从 ReferenceQueue 中读取，如果有这个 Actitity 的 Refrence，那么说明这个 Activity 的 Refrence 已经被回收，但是如果 ReferenceQueue 没有这个 Actitity 的 Refrence 那就说明出现了内存泄漏。</li>
+<li>dump 出 hprof 文件，找到泄漏路径。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="tag"># 性能优化</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/23/Android-requestLayout%E4%B8%8Einvalidate%E6%96%B9%E6%B3%95%E8%A7%A3%E6%9E%90/" rel="prev" title="Android-requestLayout与invalidate方法解析">
+      <i class="fa fa-chevron-left"></i> Android-requestLayout与invalidate方法解析
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B8%83%E5%B1%80%E4%B8%8E%E7%BB%98%E5%88%B6%E4%BC%98%E5%8C%96/" rel="next" title="Android性能优化之布局与绘制优化">
+      Android性能优化之布局与绘制优化 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#System-Trace"><span class="nav-number">2.</span> <span class="nav-text">System Trace</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CPU-Profiler"><span class="nav-number">3.</span> <span class="nav-text">CPU Profiler</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Memory-Profiler"><span class="nav-number">4.</span> <span class="nav-text">Memory Profiler</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Network-Profiler"><span class="nav-number">5.</span> <span class="nav-text">Network Profiler</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Energy-Profiler"><span class="nav-number">6.</span> <span class="nav-text">Energy Profiler</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Layout-Inspector"><span class="nav-number">7.</span> <span class="nav-text">Layout Inspector</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Leakcanary"><span class="nav-number">8.</span> <span class="nav-text">Leakcanary</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

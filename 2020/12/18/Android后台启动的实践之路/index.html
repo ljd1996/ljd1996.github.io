@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述前几天产品提了一个需求，想在后台的时候启动我们 APP 的一个 Activity，随着 Android 版本的更新，以及各家 ROM 厂商的无限改造，这种影响用户体验的功能许多都受到了限制，没办法，虽然是比较流氓的功能，但拿人钱财替人消灾，于是开启了哼哧哼哧的调研之路。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android后台启动的实践之路">
+<meta property="og:url" content="http://yoursite.com/2020/12/18/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述前几天产品提了一个需求，想在后台的时候启动我们 APP 的一个 Activity，随着 Android 版本的更新，以及各家 ROM 厂商的无限改造，这种影响用户体验的功能许多都受到了限制，没办法，虽然是比较流氓的功能，但拿人钱财替人消灾，于是开启了哼哧哼哧的调研之路。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-12-18T07:59:23.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.790Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="实战">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/12/18/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android后台启动的实践之路 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/18/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android后台启动的实践之路
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-18 15:59:23" itemprop="dateCreated datePublished" datetime="2020-12-18T15:59:23+08:00">2020-12-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E5%AE%9E%E6%88%98/" itemprop="url" rel="index"><span itemprop="name">实战</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/12/18/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF/" class="post-meta-item leancloud_visitors" data-flag-title="Android后台启动的实践之路" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/12/18/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/12/18/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>前几天产品提了一个需求，想在后台的时候启动我们 APP 的一个 Activity，随着 Android 版本的更新，以及各家 ROM 厂商的无限改造，这种影响用户体验的功能许多都受到了限制，没办法，虽然是比较流氓的功能，但拿人钱财替人消灾，于是开启了哼哧哼哧的调研之路。</p>
+<a id="more"></a>
+
+<h1 id="原生Android-ROM"><a href="#原生Android-ROM" class="headerlink" title="原生Android ROM"></a>原生Android ROM</h1><p>首先从 Android 的原生 ROM 开始，根据官方的介绍，后台启动 Activity 的限制是从 Android 10(API 29) 才开始的，在此之前原生 ROM 是没有这个限制的，于是我分别启动了一个 Android 9(API 28) 和 10(API 29) 版本的模拟器，发现在 API 28 上可以直接从后台启动 Activity，而在 API 29 上则受到了限制无法直接启动。参照官方 <a target="_blank" rel="noopener" href="https://developer.android.com/guide/components/activities/background-starts">从后台启动 Activity 的限制</a> 的说明，给出了一些不受限制的例外情况，此外官方的推荐是对于后台启动的需求，先向用户展示一个 Notification 而不是直接启动 Activity，然后在用户点击 Notification 后才处理对应的逻辑。还可以在设置 Notification 时通过 setFullScreenIntent 添加一个全屏 Intent 对象，该方法经过测试，可以在 Android 10 的模拟器上从后台启动一个 Activity 界面(需要 android.permission.USE_FULL_SCREEN_INTENT 权限)。代码如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span> NotificationUtils &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">const</span> <span class="keyword">val</span> ID = <span class="string">&quot;channel_1&quot;</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">const</span> <span class="keyword">val</span> NAME = <span class="string">&quot;notification&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> manager: NotificationManager? = <span class="literal">null</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">getNotificationManagerManager</span><span class="params">(context: <span class="type">Context</span>)</span></span>: NotificationManager? &#123;</span><br><span class="line">        <span class="keyword">if</span> (manager == <span class="literal">null</span>) &#123;</span><br><span class="line">            manager = context.getSystemService(Context.NOTIFICATION_SERVICE) <span class="keyword">as</span>? NotificationManager</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> manager</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">sendNotificationFullScreen</span><span class="params">(context: <span class="type">Context</span>, title: <span class="type">String</span>?, content: <span class="type">String</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (Build.VERSION.SDK_INT &gt;= <span class="number">26</span>) &#123;</span><br><span class="line">            clearAllNotification(context)</span><br><span class="line">            <span class="keyword">val</span> channel = NotificationChannel(ID, NAME, NotificationManager.IMPORTANCE_HIGH)</span><br><span class="line">            channel.setSound(<span class="literal">null</span>, <span class="literal">null</span>)</span><br><span class="line">            getNotificationManagerManager(context)?.createNotificationChannel(channel)</span><br><span class="line">            <span class="keyword">val</span> notification = getChannelNotificationQ(context, title, content)</span><br><span class="line">            getNotificationManagerManager(context)?.notify(<span class="number">1</span>, notification)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">clearAllNotification</span><span class="params">(context: <span class="type">Context</span>)</span></span> &#123;</span><br><span class="line">        getNotificationManagerManager(context)?.cancelAll()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">getChannelNotificationQ</span><span class="params">(context: <span class="type">Context</span>, title: <span class="type">String</span>?, content: <span class="type">String</span>?)</span></span>: Notification &#123;</span><br><span class="line">        <span class="keyword">val</span> fullScreenPendingIntent = PendingIntent.getActivity(</span><br><span class="line">            context,</span><br><span class="line">            <span class="number">0</span>,</span><br><span class="line">            DemoActivity.genIntent(context),</span><br><span class="line">            PendingIntent.FLAG_UPDATE_CURRENT</span><br><span class="line">        )</span><br><span class="line">        <span class="keyword">val</span> notificationBuilder = NotificationCompat.Builder(context, ID)</span><br><span class="line">            .setSmallIcon(R.drawable.ic_launcher_foreground)</span><br><span class="line">            .setContentTitle(title)</span><br><span class="line">            .setContentText(content)</span><br><span class="line">            .setSound(<span class="literal">null</span>)</span><br><span class="line">            .setPriority(NotificationCompat.PRIORITY_MAX)</span><br><span class="line">            .setCategory(Notification.CATEGORY_CALL)</span><br><span class="line">            .setOngoing(<span class="literal">true</span>)</span><br><span class="line">            .setFullScreenIntent(fullScreenPendingIntent, <span class="literal">true</span>)</span><br><span class="line">        <span class="keyword">return</span> notificationBuilder.build()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>到现在，整体上感觉还是不错的，现阶段的 Android 原生 ROM 都能正常地从后台启动 Activity 界面，无论是 Android 9 还是 10 版本，都美滋滋。</p>
+<h1 id="定制化ROM"><a href="#定制化ROM" class="headerlink" title="定制化ROM"></a>定制化ROM</h1><p>问题开始浮出水面，由于各大厂商对 Android 的定制化各有不一，而 Android 并没有继承 GPL 协议，它使用的是 Apache 开源许可协议，即第三方厂商在修改代码后可以闭源，因此也无法得知厂商 ROM 的源码到底做了哪些修改。有的机型增加了一项权限——<code>后台弹出界面</code>，比如说在 MIUI 上便新增了这项权限且默认是关闭的，除非加入了它们的白名单，<a target="_blank" rel="noopener" href="https://dev.mi.com/console/doc/detail?pId=1735">小米开放平台的文档</a> 里有说明：<code>该权限默认为拒绝的，既为应用默认不允许在后台弹出页面，针对特殊应用会提供白名单，例如音乐（歌词显示）、运动、VOIP（来电）等；白名单应用一旦出现推广等恶意行为，将永久取消白名单。</code></p>
+<h2 id="检测后台弹出界面权限"><a href="#检测后台弹出界面权限" class="headerlink" title="检测后台弹出界面权限"></a>检测后台弹出界面权限</h2><p>在小米机型上，新增的这个 <code>后台弹出界面</code> 的权限是在 AppOpsService 里扩展了新的权限，查看 AppOpsManager 源代码，可以在里面看到许多熟悉的常量：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SystemService(Context.APP_OPS_SERVICE)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AppOpsManager</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> OP_GPS = <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> OP_READ_CONTACTS = <span class="number">4</span>;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因此可以通过 AppOpsService 来检测是否具有 <code>后台弹出界面</code> 的权限，那么这个权限对应的 OpCode 是啥呢？网上有知情人士透露这个权限的 Code 是 10021，因此可以使用 AppOpsManager.checkOpNoThrow 或 AppOpsManager.noteOpNoThrow 等系列的方法检测该权限是否存在，不过这些方法都是 <code>@hide</code> 标识的，需要使用反射：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">checkOpNoThrow</span><span class="params">(context: <span class="type">Context</span>, op: <span class="type">Int</span>)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">    <span class="keyword">val</span> ops = context.getSystemService(Context.APP_OPS_SERVICE) <span class="keyword">as</span> AppOpsManager</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">val</span> method: Method = ops.javaClass.getMethod(</span><br><span class="line">            <span class="string">&quot;checkOpNoThrow&quot;</span>, <span class="built_in">Int</span>::<span class="keyword">class</span>.javaPrimitiveType, <span class="built_in">Int</span>::<span class="keyword">class</span>.javaPrimitiveType, String::<span class="keyword">class</span>.java</span><br><span class="line">        )</span><br><span class="line">        <span class="keyword">val</span> result = method.invoke(ops, op, myUid(), context.packageName) <span class="keyword">as</span> <span class="built_in">Int</span></span><br><span class="line">        <span class="keyword">return</span> result == AppOpsManager.MODE_ALLOWED</span><br><span class="line">    &#125; <span class="keyword">catch</span> (e: Exception) &#123;</span><br><span class="line">        e.printStackTrace()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">noteOpNoThrow</span><span class="params">(context: <span class="type">Context</span>, op: <span class="type">Int</span>)</span></span>: <span class="built_in">Int</span> &#123;</span><br><span class="line">    <span class="keyword">val</span> ops = context.getSystemService(Context.APP_OPS_SERVICE) <span class="keyword">as</span> AppOpsManager</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">val</span> method: Method = ops.javaClass.getMethod(</span><br><span class="line">            <span class="string">&quot;noteOpNoThrow&quot;</span>, <span class="built_in">Int</span>::<span class="keyword">class</span>.javaPrimitiveType, <span class="built_in">Int</span>::<span class="keyword">class</span>.javaPrimitiveType, String::<span class="keyword">class</span>.java</span><br><span class="line">        )</span><br><span class="line">        <span class="keyword">return</span> method.invoke(ops, op, myUid(), context.packageName) <span class="keyword">as</span> <span class="built_in">Int</span></span><br><span class="line">    &#125; <span class="keyword">catch</span> (e: Exception) &#123;</span><br><span class="line">        e.printStackTrace()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> -<span class="number">100</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>另外如果想知道其它新增权限的 code, 可以通过上面的方法去遍历某个范围(如10000~10100)内的 code 的权限，然后手机操作去开关想要查询的权限，根据遍历的结果，就大致可以得到对应权限的 code 了。</p>
+<h2 id="Android-P后台启动权限"><a href="#Android-P后台启动权限" class="headerlink" title="Android P后台启动权限"></a>Android P后台启动权限</h2><p>在小米 Max3 上测试发现了两种方式可以实现从后台启动 Activity 界面，其系统是基于 Android 9 的 MIUI 系统。</p>
+<p><strong>方式一：moveTaskToFront</strong></p>
+<p>这种方式不算是直接从后台启动 Activity，而是换了一个思路，在后台启动目标 Activity 之前先将应用切换到前台，然后再启动目标 Activity，如果有必要的话，还可以通过 Activity.moveTaskToBack 方法将之前切换到前台的 Activity 重新移入后台，经过测试，在 Android 10 上这个方法已经失效了…但是 10 以下的版本还是可以抢救一下的(需要声明 android.permission.REORDER_TASKS 权限)。</p>
+<p>启动目标 Activity 之前先判断一下应用是否在后台，判断方法可以借助 ActivityManager.getRunningAppProcesses 方法或者 Application.ActivityLifecycleCallbacks 来监听前后台，这两种方法网上都有文章讲解，就不赘述了。直接贴出后台切换到前台的代码：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">moveToFront</span><span class="params">(context: <span class="type">Context</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> activityManager = context.getSystemService(Context.ACTIVITY_SERVICE) <span class="keyword">as</span>? ActivityManager</span><br><span class="line">    activityManager?.getRunningTasks(<span class="number">100</span>)?.forEach &#123; taskInfo -&gt;</span><br><span class="line">        <span class="keyword">if</span> (taskInfo.topActivity?.packageName == context.packageName) &#123;</span><br><span class="line">            Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;Try to move to front&quot;</span>)</span><br><span class="line">            activityManager.moveTaskToFront(taskInfo.id, <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">startActivity</span><span class="params">(activity: <span class="type">Activity</span>, intent: <span class="type">Intent</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!isRunningForeground(activity)) &#123;</span><br><span class="line">        Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;Now is in background&quot;</span>)</span><br><span class="line">        <span class="keyword">if</span> (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.Q) &#123;</span><br><span class="line">            <span class="comment">// TODO 防止 moveToFront 失败，可以多尝试调用几次</span></span><br><span class="line">            moveToFront(activity)</span><br><span class="line">            activity.startActivity(intent)</span><br><span class="line">            activity.moveTaskToBack(<span class="literal">true</span>)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            NotificationUtils.sendNotificationFullScreen(activity, <span class="string">&quot;&quot;</span>, <span class="string">&quot;&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;Now is in foreground&quot;</span>)</span><br><span class="line">        activity.startActivity(intent)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>方式二：Hook</strong></p>
+<p>由于 MIUI 系统不开源，因此尝试再研究研究 AOSP 源码，死马当活马医看能不能找到什么蛛丝马迹。首先从 Activity.startActivity 方法开始追，如果阅读过 Activity 启动源码流程的话可以知道 Activity.startActivity 或调用到 Instrumentation.execStartActivity 中，然后通过 Binder 调用到 AMS 相关的方法，权限认证就在 AMS 中完成，如果权限不满足自然启动就失败了(Android 10)。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// APP 进程</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ActivityResult <span class="title">execStartActivity</span><span class="params">(Context who, IBinder contextThread, ...)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="comment">// 这里会通过 Binder 调用到 AMS 相关的代码</span></span><br><span class="line">    <span class="keyword">int</span> result = ActivityManager.getService().startActivity(whoThread, who.getBasePackageName(),</span><br><span class="line">            intent, intent.resolveTypeIfNeeded(who.getContentResolver()),</span><br><span class="line">            token, target != <span class="keyword">null</span> ? target.mEmbeddedID : <span class="keyword">null</span>, requestCode, <span class="number">0</span>, <span class="keyword">null</span>, options);</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// system_server进程</span></span><br><span class="line"><span class="comment">// AMS</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">startActivity</span><span class="params">(IApplicationThread caller, String callingPackage, Intent intent,</span></span></span><br><span class="line"><span class="function"><span class="params">    String resolvedType, IBinder resultTo, String resultWho, <span class="keyword">int</span> requestCode,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">int</span> startFlags, ProfilerInfo profilerInfo, Bundle bOptions)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里如果对 system_server, zygote 进程这些感兴趣的话可以参考 <a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904135666434062">Android系统启动源码解读-init-zygote-system_server</a>。看一下这几个参数：</p>
+<ul>
+<li>caller: AMS 在完成相关任务后会通过它来 Binder 调用到客户端 APP 进程来实例化 Activity 对象并回调其生命周期方法，caller 的 Binder 服务端位于 APP 进程。</li>
+<li>callingPackage: 这个参数标识调用者包名。</li>
+<li>…</li>
+</ul>
+<p>看上去在 APP 进程这一侧只有一个 callingPackage 参数在 Hook 后有突破的可能，碰碰运气，可以看到 callingPackage 是由 <code>who.getBasePackageName()</code> 赋值的，其实现在 ContextImpl 类中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ContextImpl</span> <span class="keyword">extends</span> <span class="title">Context</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String mBasePackageName;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** <span class="doctag">@hide</span> */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getBasePackageName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mBasePackageName != <span class="keyword">null</span> ? mBasePackageName : getPackageName();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/12/16/Android-Application">Android-Application启动流程</a> 可以知道这个 ContextImpl 对象是作为 Application 中的 mBase 上下文传入的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">attachBaseContext</span><span class="params">(Context base)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mBase != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">&quot;Base context already set&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    mBase = base;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因此可以尝试 Hook Application 中的 baseContext 将 mBasePackageName 改成白名单应用的包名：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">startActivityMIUIBelowQ</span><span class="params">(baseContext: <span class="type">Context</span>, intent: <span class="type">Intent</span>)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">    <span class="keyword">val</span> newPkgName = <span class="string">&quot;com.android.contacts&quot;</span></span><br><span class="line">    <span class="keyword">val</span> backPkgName = baseContext.packageName <span class="comment">// 备份原包名</span></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Reflect.on(baseContext).<span class="keyword">set</span>(<span class="string">&quot;mBasePackageName&quot;</span>, newPkgName)  <span class="comment">// 反射</span></span><br><span class="line">        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)</span><br><span class="line">        baseContext.startActivity(intent) <span class="comment">// 启动 Activity</span></span><br><span class="line">        Reflect.on(baseContext).<span class="keyword">set</span>(<span class="string">&quot;mBasePackageName&quot;</span>, backPkgName) <span class="comment">// 还原变量</span></span><br><span class="line">        Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;Hook完成&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125; <span class="keyword">catch</span> (e: Throwable) &#123;</span><br><span class="line">        e.printStackTrace()</span><br><span class="line">        Log.e(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;Hook失败&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意上面的 baseContext 参数需要传入 application.baseContext</strong>，然后使用上面的 startActivityMIUIBelowQ 方法在 Android 9 上的小米 Max3 上一跑，发现真的从后台启动起来了。。。就硬猜呗，运气不错。然后我将 newPkgName 参数随便改了个字符串，发现还是可以后台启动成功，这。。鬼知道 MIUI 到底改了啥。</p>
+<p>虽然有碰运气的成分，但是好歹在 Android 10 下通过这个方法可以直接从后台启动 Activity 了(限于小米手机，且不保证所有小米手机都兼容，其它手机的兼容性没测过)。</p>
+<h2 id="Android-Q后台启动权限"><a href="#Android-Q后台启动权限" class="headerlink" title="Android Q后台启动权限"></a>Android Q后台启动权限</h2><p>在上面介绍过 Android Q 版本开始原生系统也加入了后台启动的限制，通过通知设置 fullScreenIntent 可以在原生 Android 10 系统上从后台启动 Activity。查看 AOSP 源码，可以在 AMS 找到这部分后台权限限制的代码，上面讲到 startActivity 的流程，在 APP 进程发起请求后，会通过 Binder 跨进程调用到 system_server 进程中的 AMS，然后调用到 ActivityStarter.startActivity 方法，关于后台启动的限制就这这里：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 好家伙，整整二十多个参数，嘿嘿，嘿嘿</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">startActivity</span><span class="params">(IApplicationThread caller, Intent intent, Intent ephemeralIntent,</span></span></span><br><span class="line"><span class="function"><span class="params">        String resolvedType, ActivityInfo aInfo, ResolveInfo rInfo,</span></span></span><br><span class="line"><span class="function"><span class="params">        IVoiceInteractionSession voiceSession, IVoiceInteractor voiceInteractor,</span></span></span><br><span class="line"><span class="function"><span class="params">        IBinder resultTo, String resultWho, <span class="keyword">int</span> requestCode, <span class="keyword">int</span> callingPid, <span class="keyword">int</span> callingUid,</span></span></span><br><span class="line"><span class="function"><span class="params">        String callingPackage, <span class="keyword">int</span> realCallingPid, <span class="keyword">int</span> realCallingUid, <span class="keyword">int</span> startFlags,</span></span></span><br><span class="line"><span class="function"><span class="params">        SafeActivityOptions options,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">boolean</span> ignoreTargetSecurity, <span class="keyword">boolean</span> componentSpecified, ActivityRecord[] outActivity,</span></span></span><br><span class="line"><span class="function"><span class="params">        TaskRecord inTask, <span class="keyword">boolean</span> allowPendingRemoteAnimationRegistryLookup,</span></span></span><br><span class="line"><span class="function"><span class="params">        PendingIntentRecord originatingPendingIntent, <span class="keyword">boolean</span> allowBackgroundActivityStart)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">boolean</span> abort = !mSupervisor.checkStartAnyActivityPermission(intent, aInfo, resultWho,</span><br><span class="line">        requestCode, callingPid, callingUid, callingPackage, ignoreTargetSecurity,</span><br><span class="line">        inTask != <span class="keyword">null</span>, callerApp, resultRecord, resultStack);</span><br><span class="line">    abort |= !mService.mIntentFirewall.checkStartActivity(intent, callingUid,</span><br><span class="line">            callingPid, resolvedType, aInfo.applicationInfo);</span><br><span class="line">    abort |= !mService.getPermissionPolicyInternal().checkStartActivity(intent, callingUid,</span><br><span class="line">            callingPackage);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">boolean</span> restrictedBgActivity = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">if</span> (!abort) &#123;</span><br><span class="line">        restrictedBgActivity = shouldAbortBackgroundActivityStart(callingUid,</span><br><span class="line">                callingPid, callingPackage, realCallingUid, realCallingPid, callerApp,</span><br><span class="line">                originatingPendingIntent, allowBackgroundActivityStart, intent);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里的 shouldAbortBackgroundActivityStart 调用是在 Android Q 中新增的，看方法名就能菜刀这是针对后台启动的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">shouldAbortBackgroundActivityStart</span><span class="params">(...)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> callingAppId = UserHandle.getAppId(callingUid);</span><br><span class="line">    <span class="keyword">if</span> (callingUid == Process.ROOT_UID || callingAppId == Process.SYSTEM_UID</span><br><span class="line">            || callingAppId == Process.NFC_UID) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (callingUidHasAnyVisibleWindow || isCallingUidPersistentSystemProcess) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// don&#x27;t abort if the callingUid has START_ACTIVITIES_FROM_BACKGROUND permission</span></span><br><span class="line">    <span class="keyword">if</span> (mService.checkPermission(START_ACTIVITIES_FROM_BACKGROUND, callingPid, callingUid)</span><br><span class="line">            == PERMISSION_GRANTED) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// don&#x27;t abort if the caller has the same uid as the recents component</span></span><br><span class="line">    <span class="keyword">if</span> (mSupervisor.mRecentTasks.isCallerRecents(callingUid)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// don&#x27;t abort if the callingUid is the device owner</span></span><br><span class="line">    <span class="keyword">if</span> (mService.isDeviceOwner(callingUid)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// don&#x27;t abort if the callingUid has SYSTEM_ALERT_WINDOW permission</span></span><br><span class="line">    <span class="keyword">if</span> (mService.hasSystemAlertWindowPermission(callingUid, callingPid, callingPackage)) &#123;</span><br><span class="line">        Slog.w(TAG, <span class="string">&quot;Background activity start for &quot;</span> + callingPackage</span><br><span class="line">                + <span class="string">&quot; allowed because SYSTEM_ALERT_WINDOW permission is granted.&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从这个方法可以看到后台启动的限制和官方文档 <a target="_blank" rel="noopener" href="https://developer.android.com/guide/components/activities/background-starts">从后台启动 Activity 的限制</a> 中的说明是可以对应上的，这里面都是针对 uid 去做权限判断的，且是在系统进程 system_server 中完成，单纯更改包名已经没用了。。。</p>
+<p>在一些没有针对后台启动单独做限制的 ROM 上通过 <strong>全屏通知</strong> 可以成功弹出后台 Activity 页面，比如说小米 A3，另外还有一台 vivo 和一台三星手机，具体机型忘记了；在做了限制的设备上则弹不出来，比如说红米 Note 8 Pro。</p>
+<p>对于红米 Note 8 Pro 这块硬骨头，不停尝试了好多方法，但其实都是碰运气的，因为拿不到 MIUI 的源码，后来想转变思路，是否可以尝试从这台手机上 pull 出相关的 framework.jar 包然后反编译呢？说不定就有收获！不过需要 Root 手机，这个好办，小米自己是有提供可以 Root 的开发版系统的，于是就去 MIUI 官网找了一下，发现这台红米 Note 8 Pro 机型没有提供开发版系统(笑哭)，想起来好像之前是说过低端机小米不再提供开发版了。。。好吧，手里头没有其它可以尝试的手机了。</p>
+<p>再转念一想，是否可以直接下载稳定版的 ROM 包，解压后有没有工具能够得到一些源码相关的痕迹呢？于是下载了一个 ROM.zip 后，解压看到里面只有一些系统映像 img 文件和 .dat.br 文件，这一块我还不太懂，猜想就算能得到我想要的东西，整套流程花费的时间成本估计也超出预期了，所以暂时只能先放下这个想法了。后续有足够的时间再深入研究研究吧。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p><strong>原生Android ROM</strong></p>
+<p>Android 原生 ROM 都能正常地从后台启动 Activity 界面，无论是 Android 9(直接启动) 还是 10 版本(借助全屏通知)。</p>
+<p><strong>定制化ROM</strong></p>
+<p>检测后台弹出界面权限：</p>
+<ul>
+<li>通过反射 AppOpsManager 相关方法检测对应 opCode 的权限；</li>
+<li>opCode = 10021(小米机型)；</li>
+<li>其它机型可以尝试遍历得到 opCode；</li>
+</ul>
+<p>Android P版本的小米：</p>
+<ul>
+<li>通过反射修改 mBasePackageName 参数来后台启动Activity；</li>
+<li>只测试过小米机型，其它机型不一定可用；</li>
+<li>理论上 P 版本以下的小米应该也支持；</li>
+</ul>
+<p>Android P版本的机型：</p>
+<ul>
+<li>通过 moveTaskToFront 方法将应用切换到前台；</li>
+<li>这种方法毕竟是官方 API，因此兼容性可能更好一些；</li>
+<li>如果切换失败的话可以多尝试几次调用 moveTaskToFront 方法；</li>
+<li>理论上 P 版本以下的机型应该也支持；</li>
+</ul>
+<p>Android Q版本的机型：</p>
+<ul>
+<li>通过系统全屏通知的方式调起后台 Activity；</li>
+<li>在一些另作了限制的 ROM 上可能调起失败；</li>
+</ul>
+<p>至于反编译 MIUI 代码的方式只是一个猜想，时间原因未能付诸行动。看样子产品哥哥的需求暂时不能完全实现了，不知道有没有做过相关研究(或者知道内情)的小伙伴能不能提供一些参考思路，虽然是一个比较流氓的功能，但是代码是无罪的嘿嘿，朝着一个需求目标，为此思考解决方法，并从各个方向去调研，我觉得本身是一件有意思也有提升的事情！欢迎有过相关研究的同学在评论区提出建议，做好需求奥里给。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/%E5%AE%9E%E6%88%98/" rel="tag"># 实战</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/12/03/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/" rel="prev" title="Android性能优化之启动优化">
+      <i class="fa fa-chevron-left"></i> Android性能优化之启动优化
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/01/21/Android%E6%8B%A6%E6%88%AAAMS%E8%AF%B7%E6%B1%82%E5%AE%9E%E6%88%98/" rel="next" title="Android拦截AMS请求实战">
+      Android拦截AMS请求实战 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8E%9F%E7%94%9FAndroid-ROM"><span class="nav-number">2.</span> <span class="nav-text">原生Android ROM</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9A%E5%88%B6%E5%8C%96ROM"><span class="nav-number">3.</span> <span class="nav-text">定制化ROM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A3%80%E6%B5%8B%E5%90%8E%E5%8F%B0%E5%BC%B9%E5%87%BA%E7%95%8C%E9%9D%A2%E6%9D%83%E9%99%90"><span class="nav-number">3.1.</span> <span class="nav-text">检测后台弹出界面权限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Android-P%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E6%9D%83%E9%99%90"><span class="nav-number">3.2.</span> <span class="nav-text">Android P后台启动权限</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Android-Q%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E6%9D%83%E9%99%90"><span class="nav-number">3.3.</span> <span class="nav-text">Android Q后台启动权限</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

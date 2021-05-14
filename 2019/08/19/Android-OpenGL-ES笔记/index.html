@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述 OpenGL(Open Graphics Library)是一个用于渲染2D、3D矢量图形的跨语言、跨平台的应用程序编程接口（API）。 OpenGl一般用于在图形工作站，PC端使用，由于性能各方面原因，在移动端基本带不动OpenGl。为此，KhronosGroup 为 OpenGl 提供了一个子集，OpenGl ES(OpenGl for Embedded System)。 OpenGl">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android-OpenGL-ES笔记">
+<meta property="og:url" content="http://yoursite.com/2019/08/19/Android-OpenGL-ES%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述 OpenGL(Open Graphics Library)是一个用于渲染2D、3D矢量图形的跨语言、跨平台的应用程序编程接口（API）。 OpenGl一般用于在图形工作站，PC端使用，由于性能各方面原因，在移动端基本带不动OpenGl。为此，KhronosGroup 为 OpenGl 提供了一个子集，OpenGl ES(OpenGl for Embedded System)。 OpenGl">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2019/08/19/Android-OpenGL-ES%E7%AC%94%E8%AE%B0/%E5%AE%9A%E4%B9%89%E6%96%B9%E5%BD%A2.png">
+<meta property="og:image" content="http://yoursite.com/2019/08/19/Android-OpenGL-ES%E7%AC%94%E8%AE%B0/%E4%B8%89%E8%A7%92%E5%BD%A2-%E6%97%A0%E8%BD%AC%E6%8D%A2.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/08/19/Android-OpenGL-ES%E7%AC%94%E8%AE%B0/OpenGL-Android%E5%9D%90%E6%A0%87%E7%B3%BB.png">
+<meta property="article:published_time" content="2019-08-19T02:12:24.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.762Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="Framework">
+<meta property="article:tag" content="OpenGL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2019/08/19/Android-OpenGL-ES%E7%AC%94%E8%AE%B0/%E5%AE%9A%E4%B9%89%E6%96%B9%E5%BD%A2.png">
+
+<link rel="canonical" href="http://yoursite.com/2019/08/19/Android-OpenGL-ES%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android-OpenGL-ES笔记 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/19/Android-OpenGL-ES%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android-OpenGL-ES笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-08-19 10:12:24" itemprop="dateCreated datePublished" datetime="2019-08-19T10:12:24+08:00">2019-08-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/Framework/" itemprop="url" rel="index"><span itemprop="name">Framework</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/08/19/Android-OpenGL-ES%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Android-OpenGL-ES笔记" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/08/19/Android-OpenGL-ES%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/08/19/Android-OpenGL-ES%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><ul>
+<li>OpenGL(Open Graphics Library)是一个用于渲染2D、3D矢量图形的跨语言、跨平台的应用程序编程接口（API）。</li>
+<li>OpenGl一般用于在图形工作站，PC端使用，由于性能各方面原因，在移动端基本带不动OpenGl。为此，KhronosGroup 为 OpenGl 提供了一个子集，OpenGl ES(OpenGl for Embedded System)。</li>
+<li>OpenGl ES是免费的跨平台的功能完善的2D/3D图形库接口的API，是OpenGL的一个子集。</li>
+<li>移动端使用到的基本上都是OpenGl ES，当然Android开发下还专门为OpenGl提供了android.opengl包，并且提供了GlSurfaceView, GLU, GlUtils等工具类。</li>
+</ul>
+<p>Android 支持多版 OpenGL ES API：</p>
+<ul>
+<li>OpenGL ES 1.0 和 1.1 - 此 API 规范受 Android 1.0 及更高版本的支持。</li>
+<li>OpenGL ES 2.0 - 此 API 规范受 Android 2.2（API 级别 8）及更高版本的支持。</li>
+<li>OpenGL ES 3.0 - 此 API 规范受 Android 4.3（API 级别 18）及更高版本的支持。</li>
+<li>OpenGL ES 3.1 - 此 API 规范受 Android 5.0（API 级别 21）及更高版本的支持。</li>
+</ul>
+<p>Android 通过其 Framework API 和 Native开发套件(NDK) 来支持 OpenGL，本文主要讲解 Framework API。Android Framework 中有两个基本类，用于通过 OpenGL ES API 来创建和操控图形：GLSurfaceView 和 GLSurfaceView.Renderer。</p>
+<p>参考：<a target="_blank" rel="noopener" href="https://developer.android.com/guide/topics/graphics/opengl">Android-OpenGl-ES官方文档</a>。</p>
+<h1 id="GlSurfaceView"><a href="#GlSurfaceView" class="headerlink" title="GlSurfaceView"></a>GlSurfaceView</h1><p>GlSurfaceView是一个 View，它继承自SurfaceView，并增加了Renderer，它的作用就是专门为OpenGl显示渲染使用的。使用方法：</p>
+<p><strong>1.创建一个GlSurfaceView</strong><br><strong>2.为这个GlSurfaceView设置Renderer</strong><br><strong>3.在GlSurfaceView.renderer中绘制处理显示数据</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">    GLSurfaceView glSurfaceView = <span class="keyword">new</span> GLSurfaceView(<span class="keyword">this</span>);</span><br><span class="line">    glSurfaceView.setRenderer(<span class="keyword">new</span> GLSurfaceView.Renderer() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onSurfaceCreated</span><span class="params">(GL10 gl, EGLConfig config)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onSurfaceChanged</span><span class="params">(GL10 gl, <span class="keyword">int</span> width, <span class="keyword">int</span> height)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onDrawFrame</span><span class="params">(GL10 gl)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    setContentView(glSurfaceView);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="GlSurfaceView-Renderer"><a href="#GlSurfaceView-Renderer" class="headerlink" title="GlSurfaceView.Renderer"></a>GlSurfaceView.Renderer</h1><ul>
+<li>onSurfaceCreated(): 系统会在创建 GLSurfaceView 时调用一次此方法。使用此方法可执行仅需发生一次的操作，例如设置 OpenGL 环境参数或初始化 OpenGL 图形对象。</li>
+<li>onDrawFrame(): 系统会在每次重新绘制 GLSurfaceView 时调用此方法。请将此方法作为绘制（和重新绘制）图形对象的主要执行点。</li>
+<li>onSurfaceChanged(): 系统会在 GLSurfaceView 几何图形发生变化（包括 GLSurfaceView 大小发生变化或设备屏幕方向发生变化）时调用此方法。使用此方法可响应 GLSurfaceView 容器中的更改。</li>
+</ul>
+<h1 id="声明OpenGL"><a href="#声明OpenGL" class="headerlink" title="声明OpenGL"></a>声明OpenGL</h1><p>如果应用使用的 OpenGL 功能不一定在所有设备上可用，则必须在 AndroidManifest.xml 文件中包含这些要求。以下是最常见的 OpenGL 清单声明：</p>
+<ul>
+<li><p>OpenGL ES 版本要求 - 如果应用需要特定版本的 OpenGL ES，则必须通过将以下设置添加到 Manifest 中来声明该要求，如下所示。</p>
+  <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Tell the system this app requires OpenGL ES 2.0. --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">uses-feature</span> <span class="attr">android:glEsVersion</span>=<span class="string">&quot;0x00020000&quot;</span> <span class="attr">android:required</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- Tell the system this app requires OpenGL ES 3.0. --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">uses-feature</span> <span class="attr">android:glEsVersion</span>=<span class="string">&quot;0x00030000&quot;</span> <span class="attr">android:required</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br><span class="line"><span class="comment">&lt;!-- Tell the system this app requires OpenGL ES 3.1. --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">uses-feature</span> <span class="attr">android:glEsVersion</span>=<span class="string">&quot;0x00030001&quot;</span> <span class="attr">android:required</span>=<span class="string">&quot;true&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>纹理压缩要求 - 如果应用使用了纹理压缩格式，则必须使用 <code>&lt;supports-gl-texture&gt;</code> 在 Manifest 文件中声明应用支持的格式，如需详细了解可用的纹理<br>压缩格式，可参阅<a target="_blank" rel="noopener" href="https://developer.android.com/guide/topics/graphics/opengl?hl=zh-cn#textures">纹理压缩支持</a>。</p>
+</li>
+</ul>
+<h1 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h1><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 GLSurfaceView 作为主要视图的 Activity 的最少实现</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">OpenGLES20Activity</span> : <span class="type">Activity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> gLView: GLSurfaceView</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        gLView = MyGLSurfaceView(<span class="keyword">this</span>)</span><br><span class="line">        setContentView(gLView)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">MyGLSurfaceView</span></span>(context: Context) : GLSurfaceView(context) &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">val</span> renderer: MyGLRenderer</span><br><span class="line"></span><br><span class="line">        <span class="keyword">init</span> &#123;</span><br><span class="line">            <span class="comment">// Create an OpenGL ES 2.0 context</span></span><br><span class="line">            setEGLContextClientVersion(<span class="number">2</span>)</span><br><span class="line">            renderer = MyGLRenderer()</span><br><span class="line">            setRenderer(renderer)</span><br><span class="line">            <span class="comment">// 该设置可防止系统在调用 requestRender() 之前重新绘制 GLSurfaceView 帧，更为高效。</span></span><br><span class="line">            <span class="comment">// Render the view only when there is a change in the drawing data</span></span><br><span class="line">            renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">MyGLRenderer</span> : <span class="type">GLSurfaceView.Renderer &#123;</span></span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onSurfaceCreated</span><span class="params">(unused: <span class="type">GL10</span>, config: <span class="type">EGLConfig</span>)</span></span> &#123;</span><br><span class="line">            <span class="comment">// Set the background frame color</span></span><br><span class="line">            GLES20.glClearColor(<span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">0.0f</span>, <span class="number">1.0f</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDrawFrame</span><span class="params">(unused: <span class="type">GL10</span>)</span></span> &#123;</span><br><span class="line">            <span class="comment">// Redraw background color</span></span><br><span class="line">            GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onSurfaceChanged</span><span class="params">(unused: <span class="type">GL10</span>, width: <span class="type">Int</span>, height: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">            GLES20.glViewport(<span class="number">0</span>, <span class="number">0</span>, width, height)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="定义形状"><a href="#定义形状" class="headerlink" title="定义形状"></a>定义形状</h1><p>默认情况下，OpenGL ES 会假定一个坐标系，其中 [0,0,0] (X,Y,Z) 指定 GLSurfaceView 帧的中心，[1,1,0] 指定帧的右上角，而 [-1,-1,0] 指定帧的左下角，此形状的坐标是按照逆时针顺序定义的。</p>
+<h2 id="定义三角形"><a href="#定义三角形" class="headerlink" title="定义三角形"></a>定义三角形</h2><p>通过 OpenGL ES 可以使用三维空间中的坐标定义绘制的对象，在 OpenGL 中，执行此操作的典型方式是为坐标定义浮点数的顶点数组。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// number of coordinates per vertex in this array</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">val</span> COORDS_PER_VERTEX = <span class="number">3</span></span><br><span class="line"><span class="keyword">var</span> triangleCoords = floatArrayOf(     <span class="comment">// in counterclockwise order:</span></span><br><span class="line">        <span class="number">0.0f</span>, <span class="number">0.622008459f</span>, <span class="number">0.0f</span>,      <span class="comment">// top</span></span><br><span class="line">        -<span class="number">0.5f</span>, -<span class="number">0.311004243f</span>, <span class="number">0.0f</span>,    <span class="comment">// bottom left</span></span><br><span class="line">        <span class="number">0.5f</span>, -<span class="number">0.311004243f</span>, <span class="number">0.0f</span>      <span class="comment">// bottom right</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Triangle</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Set color with red, green, blue and alpha (opacity) values</span></span><br><span class="line">    <span class="keyword">val</span> color = floatArrayOf(<span class="number">0.63671875f</span>, <span class="number">0.76953125f</span>, <span class="number">0.22265625f</span>, <span class="number">1.0f</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// (number of coordinate values * 4 bytes per float)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> vertexBuffer: FloatBuffer = ByteBuffer.allocateDirect(triangleCoords.size * <span class="number">4</span>).run &#123;</span><br><span class="line">        <span class="comment">// use the device hardware&#x27;s native byte order</span></span><br><span class="line">        order(ByteOrder.nativeOrder())</span><br><span class="line"></span><br><span class="line">        <span class="comment">// create a floating point buffer from the ByteBuffer</span></span><br><span class="line">        asFloatBuffer().apply &#123;</span><br><span class="line">            <span class="comment">// add the coordinates to the FloatBuffer</span></span><br><span class="line">            put(triangleCoords)</span><br><span class="line">            <span class="comment">// set the buffer to read the first coordinate</span></span><br><span class="line">            position(<span class="number">0</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="定义方形"><a href="#定义方形" class="headerlink" title="定义方形"></a>定义方形</h2><p>有多种方式可以定义方形，但在 OpenGL ES 中绘制此类形状的典型方式是使用两个绘制在一起的三角形：</p>
+<p><img src="%E5%AE%9A%E4%B9%89%E6%96%B9%E5%BD%A2.png" alt="定义方形"></p>
+<p>对于表示该形状的两个三角形，应按逆时针顺序定义顶点，并将这些值放入 ByteBuffer 中。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// number of coordinates per vertex in this array</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">val</span> COORDS_PER_VERTEX = <span class="number">3</span></span><br><span class="line"><span class="keyword">var</span> squareCoords = floatArrayOf(</span><br><span class="line">        -<span class="number">0.5f</span>,  <span class="number">0.5f</span>, <span class="number">0.0f</span>,      <span class="comment">// top left</span></span><br><span class="line">        -<span class="number">0.5f</span>, -<span class="number">0.5f</span>, <span class="number">0.0f</span>,      <span class="comment">// bottom left</span></span><br><span class="line">        <span class="number">0.5f</span>, -<span class="number">0.5f</span>, <span class="number">0.0f</span>,      <span class="comment">// bottom right</span></span><br><span class="line">        <span class="number">0.5f</span>,  <span class="number">0.5f</span>, <span class="number">0.0f</span>       <span class="comment">// top right</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Square2</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> drawOrder = shortArrayOf(<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">0</span>, <span class="number">2</span>, <span class="number">3</span>) <span class="comment">// order to draw vertices</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// initialize vertex byte buffer for shape coordinates</span></span><br><span class="line">    <span class="comment">// (# of coordinate values * 4 bytes per float)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> vertexBuffer: FloatBuffer = ByteBuffer.allocateDirect(squareCoords.size * <span class="number">4</span>).run &#123;</span><br><span class="line">        order(ByteOrder.nativeOrder())</span><br><span class="line">        asFloatBuffer().apply &#123;</span><br><span class="line">            put(squareCoords)</span><br><span class="line">            position(<span class="number">0</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// initialize byte buffer for the draw list</span></span><br><span class="line">    <span class="comment">// (# of coordinate values * 2 bytes per short)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> drawListBuffer: ShortBuffer = ByteBuffer.allocateDirect(drawOrder.size * <span class="number">2</span>).run &#123;</span><br><span class="line">        order(ByteOrder.nativeOrder())</span><br><span class="line">        asShortBuffer().apply &#123;</span><br><span class="line">            put(drawOrder)</span><br><span class="line">            position(<span class="number">0</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="绘制形状"><a href="#绘制形状" class="headerlink" title="绘制形状"></a>绘制形状</h1><h2 id="初始化形状"><a href="#初始化形状" class="headerlink" title="初始化形状"></a>初始化形状</h2><p>在进行任何绘制之前必须初始化并加载打算绘制的形状，除非在程序中使用的形状结构（原始坐标）在执行过程中发生变化，否则应该在渲染程序的 onSurfaceCreated() 方法中对它们进行初始化，以提高内存和处理效率。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyGLRenderer</span> : <span class="type">GLSurfaceView.Renderer &#123;</span></span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> mTriangle: Triangle</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">lateinit</span> <span class="keyword">var</span> mSquare: Square</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onSurfaceCreated</span><span class="params">(unused: <span class="type">GL10</span>, config: <span class="type">EGLConfig</span>)</span></span> &#123;</span><br><span class="line">        <span class="comment">// initialize a triangle</span></span><br><span class="line">        mTriangle = Triangle()</span><br><span class="line">        <span class="comment">// initialize a square</span></span><br><span class="line">        mSquare = Square()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="绘制形状-1"><a href="#绘制形状-1" class="headerlink" title="绘制形状"></a>绘制形状</h2><p>使用 OpenGL ES 2.0 绘制定义的形状需要大量代码，因为必须向图形渲染管道提供大量信息，具体来说需要定义以下内容：</p>
+<ul>
+<li>顶点(Vertex)着色程序 - 用于渲染形状的顶点的 OpenGL ES 图形代码。</li>
+<li>片段(Fragment)着色程序 - 用于使用颜色或纹理渲染形状面的 OpenGL ES 代码。</li>
+<li>程序 - 包含希望用于绘制一个或多个形状的着色程序的 OpenGL ES 对象。</li>
+</ul>
+<p>至少需要一个顶点着色程序绘制形状，以及一个 Fragment 着色程序为该形状着色，还必须对这些着色程序进行编译，然后将其添加到之后用于绘制形状的 OpenGL ES 程序中。以下示例展示了如何定义可用于绘制 Triangle 类中的形状的基本着色程序：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Triangle</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> vertexShaderCode =</span><br><span class="line">            <span class="string">&quot;attribute vec4 vPosition;&quot;</span> +</span><br><span class="line">            <span class="string">&quot;void main() &#123;&quot;</span> +</span><br><span class="line">            <span class="string">&quot;  gl_Position = vPosition;&quot;</span> +</span><br><span class="line">            <span class="string">&quot;&#125;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> fragmentShaderCode =</span><br><span class="line">            <span class="string">&quot;precision mediump float;&quot;</span> +</span><br><span class="line">            <span class="string">&quot;uniform vec4 vColor;&quot;</span> +</span><br><span class="line">            <span class="string">&quot;void main() &#123;&quot;</span> +</span><br><span class="line">            <span class="string">&quot;  gl_FragColor = vColor;&quot;</span> +</span><br><span class="line">            <span class="string">&quot;&#125;&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>着色程序包含 OpenGL 着色语言 (GLSL) 代码，必须先对其进行编译，然后才能在 OpenGL ES 环境中使用。要编译此代码，可以在渲染程序类中创建一个实用程序方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">loadShader</span><span class="params">(type: <span class="type">Int</span>, shaderCode: <span class="type">String</span>)</span></span>: <span class="built_in">Int</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// create a vertex shader type (GLES20.GL_VERTEX_SHADER)</span></span><br><span class="line">    <span class="comment">// or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)</span></span><br><span class="line">    <span class="keyword">return</span> GLES20.glCreateShader(type).also &#123; shader -&gt;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// add the source code to the shader and compile it</span></span><br><span class="line">        GLES20.glShaderSource(shader, shaderCode)</span><br><span class="line">        GLES20.glCompileShader(shader)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>要绘制形状，必须编译着色程序代码，将它们添加到 OpenGL ES 程序对象中，然后关联该程序。该操作需要在绘制对象的构造函数中完成，因此只需执行一次。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Triangle</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mProgram: <span class="built_in">Int</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">init</span> &#123;</span><br><span class="line">        <span class="keyword">val</span> vertexShader: <span class="built_in">Int</span> = loadShader(GLES20.GL_VERTEX_SHADER, vertexShaderCode)</span><br><span class="line">        <span class="keyword">val</span> fragmentShader: <span class="built_in">Int</span> = loadShader(GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// create empty OpenGL ES Program</span></span><br><span class="line">        mProgram = GLES20.glCreateProgram().also &#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// add the vertex shader to program</span></span><br><span class="line">            GLES20.glAttachShader(it, vertexShader)</span><br><span class="line"></span><br><span class="line">            <span class="comment">// add the fragment shader to program</span></span><br><span class="line">            GLES20.glAttachShader(it, fragmentShader)</span><br><span class="line"></span><br><span class="line">            <span class="comment">// creates OpenGL ES program executables</span></span><br><span class="line">            GLES20.glLinkProgram(it)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此时可以添加绘制形状的实际调用，使用 OpenGL ES 绘制形状时需要指定多个参数，以告知渲染管道要绘制的形状以及如何进行绘制。由于绘制选项因形状而异，因此最好使形状类包含自身的绘制逻辑。</p>
+<p>创建用于绘制形状的 draw() 方法，此代码将位置和颜色值设置为形状的顶点着色程序和 Fragment 着色程序，然后执行绘制功能。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">var</span> positionHandle: <span class="built_in">Int</span> = <span class="number">0</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">var</span> mColorHandle: <span class="built_in">Int</span> = <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> vertexCount: <span class="built_in">Int</span> = triangleCoords.size / COORDS_PER_VERTEX</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> vertexStride: <span class="built_in">Int</span> = COORDS_PER_VERTEX * <span class="number">4</span> <span class="comment">// 4 bytes per vertex</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">draw</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="comment">// Add program to OpenGL ES environment</span></span><br><span class="line">    GLES20.glUseProgram(mProgram)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// get handle to vertex shader&#x27;s vPosition member</span></span><br><span class="line">    positionHandle = GLES20.glGetAttribLocation(mProgram, <span class="string">&quot;vPosition&quot;</span>).also &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Enable a handle to the triangle vertices</span></span><br><span class="line">        GLES20.glEnableVertexAttribArray(it)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Prepare the triangle coordinate data</span></span><br><span class="line">        GLES20.glVertexAttribPointer(</span><br><span class="line">                it,</span><br><span class="line">                COORDS_PER_VERTEX,</span><br><span class="line">                GLES20.GL_FLOAT,</span><br><span class="line">                <span class="literal">false</span>,</span><br><span class="line">                vertexStride,</span><br><span class="line">                vertexBuffer</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        <span class="comment">// get handle to fragment shader&#x27;s vColor member</span></span><br><span class="line">        mColorHandle = GLES20.glGetUniformLocation(mProgram, <span class="string">&quot;vColor&quot;</span>).also &#123; colorHandle -&gt;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Set color for drawing the triangle</span></span><br><span class="line">            GLES20.glUniform4fv(colorHandle, <span class="number">1</span>, color, <span class="number">0</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Draw the triangle</span></span><br><span class="line">        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, <span class="number">0</span>, vertexCount)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Disable vertex array</span></span><br><span class="line">        GLES20.glDisableVertexAttribArray(it)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>将所有的代码编译完成之后，只需从渲染程序的 onDrawFrame() 方法中调用 draw() 方法即可绘制此对象：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDrawFrame</span><span class="params">(unused: <span class="type">GL10</span>)</span></span> &#123;</span><br><span class="line">    mTriangle.draw()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在横屏手机上绘制结果如下：</p>
+<p><img src="%E4%B8%89%E8%A7%92%E5%BD%A2-%E6%97%A0%E8%BD%AC%E6%8D%A2.jpg" alt="三角形-无转换"></p>
+<p>形状偏斜的原因在于，对象的顶点尚未针对显示 GLSurfaceView 的屏幕区域的比例进行校正。</p>
+<h1 id="投影和相机视图"><a href="#投影和相机视图" class="headerlink" title="投影和相机视图"></a>投影和相机视图</h1><p>在 Android 设备上显示图形时，一个基本问题在于屏幕的尺寸和形状各不相同，OpenGL 假设屏幕采用均匀的方形坐标系。</p>
+<p><img src="OpenGL-Android%E5%9D%90%E6%A0%87%E7%B3%BB.png" alt="OpenGL-Android坐标系"></p>
+<p>上图左侧显示了针对 OpenGL 假定的均匀坐标系，右侧显示了坐标实际上如何映射到右侧屏幕方向为横向的设备屏幕上。要解决此问题，可以通过应用 OpenGL 投影模式和相机视图来转换坐标，这样，图形对象在任何屏幕上都具有正确的比例。</p>
+<ul>
+<li>投影：根据显示绘制对象的 GLSurfaceView 的宽度和高度调整绘制对象的坐标。通常只有在渲染程序的 onSurfaceChanged() 方法中确定或更改 OpenGL 视图的比例时，才需要计算投影转换。</li>
+<li>相机视图：根据虚拟相机的位置调整绘制对象的坐标。相机视图转换可能在确定 GLSurfaceView 时计算一次，也可能会根据用户操作或应用的功能动态变化。</li>
+</ul>
+<h2 id="定义投影"><a href="#定义投影" class="headerlink" title="定义投影"></a>定义投影</h2><p>用于投影转换的数据使用 GLSurfaceView.Renderer 的 onSurfaceChanged() 方法计算。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// vPMatrix is an abbreviation for &quot;Model View Projection Matrix&quot;--模型视图投影矩阵</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> vPMatrix = FloatArray(<span class="number">16</span>)</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> projectionMatrix = FloatArray(<span class="number">16</span>)</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> viewMatrix = FloatArray(<span class="number">16</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onSurfaceChanged</span><span class="params">(unused: <span class="type">GL10</span>, width: <span class="type">Int</span>, height: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">    GLES20.glViewport(<span class="number">0</span>, <span class="number">0</span>, width, height)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> ratio: <span class="built_in">Float</span> = width.toFloat() / height.toFloat()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// this projection matrix is applied to object coordinates</span></span><br><span class="line">    <span class="comment">// in the onDrawFrame() method</span></span><br><span class="line">    Matrix.frustumM(projectionMatrix, <span class="number">0</span>, -ratio, ratio, -<span class="number">1f</span>, <span class="number">1f</span>, <span class="number">3f</span>, <span class="number">7f</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="定义相机视图"><a href="#定义相机视图" class="headerlink" title="定义相机视图"></a>定义相机视图</h2><p>通过在渲染程序中添加相机视图转换作为绘制流程的一部分，完成绘制对象的转换流程。在以下示例代码中，相机视图转换使用 Matrix.setLookAtM() 方法进行计算，然后与之前计算的投影矩阵合并。之后，系统会将合并后的转换矩阵传递到绘制的形状。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDrawFrame</span><span class="params">(unused: <span class="type">GL10</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">// Set the camera position (View matrix)</span></span><br><span class="line">    Matrix.setLookAtM(viewMatrix, <span class="number">0</span>, <span class="number">0f</span>, <span class="number">0f</span>, -<span class="number">3f</span>, <span class="number">0f</span>, <span class="number">0f</span>, <span class="number">0f</span>, <span class="number">0f</span>, <span class="number">1.0f</span>, <span class="number">0.0f</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Calculate the projection and view transformation</span></span><br><span class="line">    Matrix.multiplyMM(vPMatrix, <span class="number">0</span>, projectionMatrix, <span class="number">0</span>, viewMatrix, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Draw shape</span></span><br><span class="line">    mTriangle.draw(vPMatrix)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="应用投影和相机转换"><a href="#应用投影和相机转换" class="headerlink" title="应用投影和相机转换"></a>应用投影和相机转换</h2><p>为了使用预览部分中显示的合并后的投影和相机视图转换矩阵，请先将矩阵变体添加到之前在 Triangle 类中定义的顶点着色程序。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Triangle</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> vertexShaderCode =</span><br><span class="line">            <span class="comment">// This matrix member variable provides a hook to manipulate</span></span><br><span class="line">            <span class="comment">// the coordinates of the objects that use this vertex shader</span></span><br><span class="line">            <span class="string">&quot;uniform mat4 uMVPMatrix;&quot;</span> +</span><br><span class="line">            <span class="string">&quot;attribute vec4 vPosition;&quot;</span> +</span><br><span class="line">            <span class="string">&quot;void main() &#123;&quot;</span> +</span><br><span class="line">            <span class="comment">// the matrix must be included as a modifier of gl_Position</span></span><br><span class="line">            <span class="comment">// Note that the uMVPMatrix factor *must be first* in order</span></span><br><span class="line">            <span class="comment">// for the matrix multiplication product to be correct.</span></span><br><span class="line">            <span class="string">&quot;  gl_Position = uMVPMatrix * vPosition;&quot;</span> +</span><br><span class="line">            <span class="string">&quot;&#125;&quot;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Use to access and set the view transformation</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> vPMatrixHandle: <span class="built_in">Int</span> = <span class="number">0</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来，修改图形对象的 draw() 方法以接受合并后的转换矩阵，并将其应用于形状：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">draw</span><span class="params">(mvpMatrix: <span class="type">FloatArray</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">// Add program to OpenGL ES environment</span></span><br><span class="line">    GLES20.glUseProgram(mProgram)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// get handle to vertex shader&#x27;s vPosition member</span></span><br><span class="line">    positionHandle = GLES20.glGetAttribLocation(mProgram, <span class="string">&quot;vPosition&quot;</span>).also &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Enable a handle to the triangle vertices</span></span><br><span class="line">        GLES20.glEnableVertexAttribArray(it)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Prepare the triangle coordinate data</span></span><br><span class="line">        GLES20.glVertexAttribPointer(</span><br><span class="line">                it,</span><br><span class="line">                COORDS_PER_VERTEX,</span><br><span class="line">                GLES20.GL_FLOAT,</span><br><span class="line">                <span class="literal">false</span>,</span><br><span class="line">                vertexStride,</span><br><span class="line">                vertexBuffer</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">        <span class="comment">// get handle to fragment shader&#x27;s vColor member</span></span><br><span class="line">        mColorHandle = GLES20.glGetUniformLocation(mProgram, <span class="string">&quot;vColor&quot;</span>).also &#123; colorHandle -&gt;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// Set color for drawing the triangle</span></span><br><span class="line">            GLES20.glUniform4fv(colorHandle, <span class="number">1</span>, color, <span class="number">0</span>)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// get handle to shape&#x27;s transformation matrix</span></span><br><span class="line">        vPMatrixHandle = GLES20.glGetUniformLocation(mProgram, <span class="string">&quot;uMVPMatrix&quot;</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Pass the projection and view transformation to the shader</span></span><br><span class="line">        GLES20.glUniformMatrix4fv(vPMatrixHandle, <span class="number">1</span>, <span class="literal">false</span>, mvpMatrix, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Draw the triangle</span></span><br><span class="line">        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, <span class="number">0</span>, vertexCount)</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Disable vertex array</span></span><br><span class="line">        GLES20.glDisableVertexAttribArray(positionHandle)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样就能按照正确的比例显示形状了。</p>
+<h1 id="添加动画"><a href="#添加动画" class="headerlink" title="添加动画"></a>添加动画</h1><h2 id="旋转形状"><a href="#旋转形状" class="headerlink" title="旋转形状"></a>旋转形状</h2><p>使用 OpenGL ES 2.0 旋转绘制的对象相对比较简单。在渲染程序中，再创建一个转换矩阵（旋转矩阵），然后将其与投影和相机视图转换矩阵相结合：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> rotationMatrix = FloatArray(<span class="number">16</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDrawFrame</span><span class="params">(gl: <span class="type">GL10</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> scratch = FloatArray(<span class="number">16</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Create a rotation transformation for the triangle</span></span><br><span class="line">    <span class="keyword">val</span> time = SystemClock.uptimeMillis() % <span class="number">4000L</span></span><br><span class="line">    <span class="keyword">val</span> angle = <span class="number">0.090f</span> * time.toInt()</span><br><span class="line">    Matrix.setRotateM(rotationMatrix, <span class="number">0</span>, angle, <span class="number">0f</span>, <span class="number">0f</span>, -<span class="number">1.0f</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Combine the rotation matrix with the projection and camera view</span></span><br><span class="line">    <span class="comment">// Note that the vPMatrix factor *must be first* in order</span></span><br><span class="line">    <span class="comment">// for the matrix multiplication product to be correct.</span></span><br><span class="line">    Matrix.multiplyMM(scratch, <span class="number">0</span>, vPMatrix, <span class="number">0</span>, rotationMatrix, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Draw triangle</span></span><br><span class="line">    mTriangle.draw(scratch)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果三角形在进行这些更改后没有旋转，请确保已对 GLSurfaceView.RENDERMODE_WHEN_DIRTY 设置取消备注。</p>
+<h2 id="启用连续渲染"><a href="#启用连续渲染" class="headerlink" title="启用连续渲染"></a>启用连续渲染</h2><p>请确保对将渲染模式设置为仅在脏时才进行绘制的行取消备注，否则 OpenGL 仅按一个增量旋转形状，然后就等待从 GLSurfaceView 容器调用 requestRender()：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyGLSurfaceView</span></span>(context: Context) : GLSurfaceView(context) &#123;</span><br><span class="line">    <span class="keyword">init</span> &#123;</span><br><span class="line">        <span class="comment">// Render the view only when there is a change in the drawing data.</span></span><br><span class="line">        <span class="comment">// To allow the triangle to rotate automatically, this line is commented out:</span></span><br><span class="line">        <span class="comment">//renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>除非在没有任何用户互动的情况下更改对象，否则通常最好启用此标记。</p>
+<h1 id="响应触摸事件"><a href="#响应触摸事件" class="headerlink" title="响应触摸事件"></a>响应触摸事件</h1><h2 id="设置触摸监听器"><a href="#设置触摸监听器" class="headerlink" title="设置触摸监听器"></a>设置触摸监听器</h2><p>为了使 OpenGL ES 应用响应触摸事件，需要在 GLSurfaceView 类中实现 onTouchEvent() 方法。以下示例实现展示了如何监听 MotionEvent.ACTION_MOVE 事件，并将其平移到某个形状的旋转角度。这里需要取消上面<code>renderMode = GLSurfaceView.RENDERMODE_WHEN_DIRTY</code>的注释。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">const</span> <span class="keyword">val</span> TOUCH_SCALE_FACTOR: <span class="built_in">Float</span> = <span class="number">180.0f</span> / <span class="number">320f</span></span><br><span class="line">...</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">var</span> previousX: <span class="built_in">Float</span> = <span class="number">0f</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">var</span> previousY: <span class="built_in">Float</span> = <span class="number">0f</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onTouchEvent</span><span class="params">(e: <span class="type">MotionEvent</span>)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">    <span class="comment">// MotionEvent reports input details from the touch screen</span></span><br><span class="line">    <span class="comment">// and other input controls. In this case, you are only</span></span><br><span class="line">    <span class="comment">// interested in events where the touch position changed.</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> x: <span class="built_in">Float</span> = e.x</span><br><span class="line">    <span class="keyword">val</span> y: <span class="built_in">Float</span> = e.y</span><br><span class="line"></span><br><span class="line">    <span class="keyword">when</span> (e.action) &#123;</span><br><span class="line">        MotionEvent.ACTION_MOVE -&gt; &#123;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">var</span> dx: <span class="built_in">Float</span> = x - previousX</span><br><span class="line">            <span class="keyword">var</span> dy: <span class="built_in">Float</span> = y - previousY</span><br><span class="line"></span><br><span class="line">            <span class="comment">// reverse direction of rotation above the mid-line</span></span><br><span class="line">            <span class="keyword">if</span> (y &gt; height / <span class="number">2</span>) &#123;</span><br><span class="line">                dx *= -<span class="number">1</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// reverse direction of rotation to left of the mid-line</span></span><br><span class="line">            <span class="keyword">if</span> (x &lt; width / <span class="number">2</span>) &#123;</span><br><span class="line">                dy *= -<span class="number">1</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            renderer.angle += (dx + dy) * TOUCH_SCALE_FACTOR</span><br><span class="line">            requestRender()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    previousX = x</span><br><span class="line">    previousY = y</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="线程安全"><a href="#线程安全" class="headerlink" title="线程安全"></a>线程安全</h2><p>上面的代码需要公开 angle 成员，由于渲染程序代码在独立于应用的主界面线程的线程上运行，因此必须将此公开变量声明为 volatile。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyGLRenderer</span> : <span class="type">GLSurfaceView.Renderer &#123;</span></span></span><br><span class="line">    <span class="meta">@Volatile</span></span><br><span class="line">    <span class="keyword">var</span> angle: <span class="built_in">Float</span> = <span class="number">0f</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="应用旋转"><a href="#应用旋转" class="headerlink" title="应用旋转"></a>应用旋转</h2><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDrawFrame</span><span class="params">(gl: <span class="type">GL10</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">val</span> scratch = FloatArray(<span class="number">16</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Create a rotation for the triangle</span></span><br><span class="line">    <span class="comment">// long time = SystemClock.uptimeMillis() % 4000L;</span></span><br><span class="line">    <span class="comment">// float angle = 0.090f * ((int) time);</span></span><br><span class="line">    Matrix.setRotateM(rotationMatrix, <span class="number">0</span>, angle, <span class="number">0f</span>, <span class="number">0f</span>, -<span class="number">1.0f</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Combine the rotation matrix with the projection and camera view</span></span><br><span class="line">    <span class="comment">// Note that the mvpMatrix factor *must be first* in order</span></span><br><span class="line">    <span class="comment">// for the matrix multiplication product to be correct.</span></span><br><span class="line">    Matrix.multiplyMM(scratch, <span class="number">0</span>, mvpMatrix, <span class="number">0</span>, rotationMatrix, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Draw triangle</span></span><br><span class="line">    triangle.draw(scratch)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样就可以实现拖动旋转三角形了。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/Framework/" rel="tag"># Framework</a>
+              <a href="/tags/OpenGL/" rel="tag"># OpenGL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/08/16/Gradle%E7%AC%94%E8%AE%B0/" rel="prev" title="Gradle笔记">
+      <i class="fa fa-chevron-left"></i> Gradle笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/08/21/Android-Gradle%E7%AC%94%E8%AE%B0/" rel="next" title="Android-Gradle笔记">
+      Android-Gradle笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GlSurfaceView"><span class="nav-number">2.</span> <span class="nav-text">GlSurfaceView</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GlSurfaceView-Renderer"><span class="nav-number">3.</span> <span class="nav-text">GlSurfaceView.Renderer</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A3%B0%E6%98%8EOpenGL"><span class="nav-number">4.</span> <span class="nav-text">声明OpenGL</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8"><span class="nav-number">5.</span> <span class="nav-text">简单使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E5%BD%A2%E7%8A%B6"><span class="nav-number">6.</span> <span class="nav-text">定义形状</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E4%B8%89%E8%A7%92%E5%BD%A2"><span class="nav-number">6.1.</span> <span class="nav-text">定义三角形</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E6%96%B9%E5%BD%A2"><span class="nav-number">6.2.</span> <span class="nav-text">定义方形</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%98%E5%88%B6%E5%BD%A2%E7%8A%B6"><span class="nav-number">7.</span> <span class="nav-text">绘制形状</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96%E5%BD%A2%E7%8A%B6"><span class="nav-number">7.1.</span> <span class="nav-text">初始化形状</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%98%E5%88%B6%E5%BD%A2%E7%8A%B6-1"><span class="nav-number">7.2.</span> <span class="nav-text">绘制形状</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8A%95%E5%BD%B1%E5%92%8C%E7%9B%B8%E6%9C%BA%E8%A7%86%E5%9B%BE"><span class="nav-number">8.</span> <span class="nav-text">投影和相机视图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E6%8A%95%E5%BD%B1"><span class="nav-number">8.1.</span> <span class="nav-text">定义投影</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89%E7%9B%B8%E6%9C%BA%E8%A7%86%E5%9B%BE"><span class="nav-number">8.2.</span> <span class="nav-text">定义相机视图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E6%8A%95%E5%BD%B1%E5%92%8C%E7%9B%B8%E6%9C%BA%E8%BD%AC%E6%8D%A2"><span class="nav-number">8.3.</span> <span class="nav-text">应用投影和相机转换</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E5%8A%A8%E7%94%BB"><span class="nav-number">9.</span> <span class="nav-text">添加动画</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC%E5%BD%A2%E7%8A%B6"><span class="nav-number">9.1.</span> <span class="nav-text">旋转形状</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%AF%E7%94%A8%E8%BF%9E%E7%BB%AD%E6%B8%B2%E6%9F%93"><span class="nav-number">9.2.</span> <span class="nav-text">启用连续渲染</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%93%8D%E5%BA%94%E8%A7%A6%E6%91%B8%E4%BA%8B%E4%BB%B6"><span class="nav-number">10.</span> <span class="nav-text">响应触摸事件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE%E8%A7%A6%E6%91%B8%E7%9B%91%E5%90%AC%E5%99%A8"><span class="nav-number">10.1.</span> <span class="nav-text">设置触摸监听器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E5%AE%89%E5%85%A8"><span class="nav-number">10.2.</span> <span class="nav-text">线程安全</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E6%97%8B%E8%BD%AC"><span class="nav-number">10.3.</span> <span class="nav-text">应用旋转</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

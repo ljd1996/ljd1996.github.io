@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述Android 图形显示系统的相关原理可参考 Android图形系统综述 中的系列文章，在了解了 Android 图形显示系统的工作原理之后，可以得出造成页面卡顿的根本原因可分为两种：  绘制任务过于复杂，使得绘制一帧的时间过长。 主线程太忙碌，使得没有及时处理 Vsync 信号到来后的绘制任务。  因此可以针对这两个原因来做相关的优化工作。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android性能优化之布局与绘制优化">
+<meta property="og:url" content="http://yoursite.com/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B8%83%E5%B1%80%E4%B8%8E%E7%BB%98%E5%88%B6%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述Android 图形显示系统的相关原理可参考 Android图形系统综述 中的系列文章，在了解了 Android 图形显示系统的工作原理之后，可以得出造成页面卡顿的根本原因可分为两种：  绘制任务过于复杂，使得绘制一帧的时间过长。 主线程太忙碌，使得没有及时处理 Vsync 信号到来后的绘制任务。  因此可以针对这两个原因来做相关的优化工作。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-11-27T03:25:09.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.820Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="性能优化">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B8%83%E5%B1%80%E4%B8%8E%E7%BB%98%E5%88%B6%E4%BC%98%E5%8C%96/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android性能优化之布局与绘制优化 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B8%83%E5%B1%80%E4%B8%8E%E7%BB%98%E5%88%B6%E4%BC%98%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android性能优化之布局与绘制优化
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-27 11:25:09" itemprop="dateCreated datePublished" datetime="2020-11-27T11:25:09+08:00">2020-11-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">性能优化</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B8%83%E5%B1%80%E4%B8%8E%E7%BB%98%E5%88%B6%E4%BC%98%E5%8C%96/" class="post-meta-item leancloud_visitors" data-flag-title="Android性能优化之布局与绘制优化" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B8%83%E5%B1%80%E4%B8%8E%E7%BB%98%E5%88%B6%E4%BC%98%E5%8C%96/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B8%83%E5%B1%80%E4%B8%8E%E7%BB%98%E5%88%B6%E4%BC%98%E5%8C%96/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Android 图形显示系统的相关原理可参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/09/15/Android%E5%9B%BE%E5%BD%A2%E7%B3%BB%E7%BB%9F%E7%BB%BC%E8%BF%B0/">Android图形系统综述</a> 中的系列文章，在了解了 Android 图形显示系统的工作原理之后，可以得出造成页面卡顿的根本原因可分为两种：</p>
+<ol>
+<li>绘制任务过于复杂，使得绘制一帧的时间过长。</li>
+<li>主线程太忙碌，使得没有及时处理 Vsync 信号到来后的绘制任务。</li>
+</ol>
+<p>因此可以针对这两个原因来做相关的优化工作。</p>
+<a id="more"></a>
+
+<h1 id="屏幕适配"><a href="#屏幕适配" class="headerlink" title="屏幕适配"></a>屏幕适配</h1><p>由于 Android 存在的系统，屏幕及分辨率的碎片化，使得 Android 的屏幕适配尤为重要，在此之前介绍一些相关概念：</p>
+<ul>
+<li>px: 像素单位，通常说的手机分辨率 1200*1920 便是 px 单位。</li>
+<li>dp(dip)：设备独立像素，在不同的像素密度的设备上会自动适配，规定在 160dpi 的设备上 1 dp = 1 px。</li>
+<li>dpi: dots per inch，对角线每英寸的像素点的个数。</li>
+<li>sp: 同 dp 相似，它还会根据用户的字体大小偏好来缩放。</li>
+<li>计算公式：px = dp * (dpi/160) = dp * density。</li>
+<li>使用 sp 作为字体大小单位时会随着系统的字体大小改变，而 dp 则不会，因此建议字体大小的数值使用 sp 作为单位。</li>
+</ul>
+<p>dp 与 px 值转换：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">dp2px</span><span class="params">(context: <span class="type">Context</span>, dpValue: <span class="type">Float</span>)</span></span>: <span class="built_in">Int</span> &#123;</span><br><span class="line">    <span class="keyword">val</span> scale: <span class="built_in">Float</span> = context.resources.displayMetrics.density</span><br><span class="line">    <span class="keyword">return</span> (dpValue * scale + <span class="number">0.5f</span>).toInt()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">px2dp</span><span class="params">(context: <span class="type">Context</span>, pxValue: <span class="type">Float</span>)</span></span>: <span class="built_in">Int</span> &#123;</span><br><span class="line">    <span class="keyword">val</span> scale: <span class="built_in">Float</span> = context.resources.displayMetrics.density</span><br><span class="line">    <span class="keyword">return</span> (pxValue / scale + <span class="number">0.5f</span>).toInt()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通常情况下，除了直接使用 Android 原生的 dp 等适配方案外，还可能使用一些其它的适配方案，关于屏幕的适配方案在网上一搜一大堆，这里只介绍一种，其余的网上搜索就行了：根据屏幕的宽/高度动态调整设备的 density 值(每 dp 的像素数)，强行把所有不同尺寸分辨率的手机的 dp 值改成一个统一的值，对应公式: <code>density = 设备屏幕宽度(像素) / 设计图宽度(dp)</code>。代码如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span> Utils &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">const</span> <span class="keyword">val</span> WIDTH = <span class="number">400f</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> appDensity = <span class="number">0f</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> appScaleDensity = <span class="number">0f</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">setDensity</span><span class="params">(application: <span class="type">Application</span>, activity: <span class="type">Activity</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> displayMetrics = application.resources.displayMetrics</span><br><span class="line">        <span class="keyword">if</span> (appDensity == <span class="number">0f</span>) &#123;</span><br><span class="line">            appDensity = displayMetrics.density</span><br><span class="line">            appScaleDensity = displayMetrics.scaledDensity</span><br><span class="line"></span><br><span class="line">            application.registerComponentCallbacks(<span class="keyword">object</span> : ComponentCallbacks &#123;</span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onConfigurationChanged</span><span class="params">(newConfig: <span class="type">Configuration</span>?)</span></span> &#123;</span><br><span class="line">                    <span class="comment">// 字体发生更改，重新对 scaleDensity 赋值</span></span><br><span class="line">                    <span class="keyword">if</span> (newConfig != <span class="literal">null</span> &amp;&amp; newConfig.fontScale &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        appScaleDensity = application.resources.displayMetrics.scaledDensity</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onLowMemory</span><span class="params">()</span></span> &#123;&#125;</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">val</span> targetDensity = displayMetrics.widthPixels / WIDTH</span><br><span class="line">        <span class="keyword">val</span> targetScaleDensity = targetDensity * (appScaleDensity / appDensity)</span><br><span class="line">        <span class="keyword">val</span> targetDensityDpi = (targetDensity * <span class="number">160</span>).toInt()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">val</span> dm = activity.resources.displayMetrics</span><br><span class="line">        dm.density = targetDensity</span><br><span class="line">        dm.scaledDensity = targetScaleDensity</span><br><span class="line">        dm.densityDpi = targetDensityDpi</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 在目标 Activity 中：</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        Utils.setDensity(application, <span class="keyword">this</span>)</span><br><span class="line">        setContentView(R.layout.activity_main)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="布局优化"><a href="#布局优化" class="headerlink" title="布局优化"></a>布局优化</h1><h2 id="减少布局层级-merge"><a href="#减少布局层级-merge" class="headerlink" title="减少布局层级: merge"></a>减少布局层级: merge</h2><p>核心思想：</p>
+<ul>
+<li>删除布局中无用的控件和层次，有选择地使用性能好的 ViewGroup, 合理使用 RelativeLayout 和 LinearLayout，<strong>善于利用 ConstraintLayout 布局减少层级嵌套</strong>。</li>
+<li>合理使用 <code>&lt;merge&gt;</code> 标签。</li>
+</ul>
+<p>RelativeLayout 会对子 View 做两次测量，而 LinearLayout 如果存在 weight 属性则也会进行两次测量。</p>
+<p>对于使用 merge 标签的布局文件，会直接将其子元素添加到 merge 标签的 parent 中，而不会引入额外的层级。注意：</p>
+<ul>
+<li>merge 标签只能用作根元素。</li>
+<li>使用 merge 加载布局时，必须指定一个 ViewGroup 作为其父元素，并且要设置加载的 attachToRoot 参数为true。</li>
+<li>不能在 ViewStub 中使用 merge 标签，因为 ViewStub 的 inflate 方法中没有 attachToRoot 设置。</li>
+</ul>
+<p>示例代码：</p>
+<p><strong>layout_merge.xml</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">merge</span> <span class="attr">xmlns:android</span>=<span class="string">&quot;http://schemas.android.com/apk/res/android&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">&quot;match_parent&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">&quot;wrap_content&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">&quot;wrap_content&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_alignParentStart</span>=<span class="string">&quot;true&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_gravity</span>=<span class="string">&quot;center_horizontal&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">&quot;标签一&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">TextView</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">&quot;wrap_content&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">&quot;wrap_content&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_alignParentEnd</span>=<span class="string">&quot;true&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_gravity</span>=<span class="string">&quot;center_horizontal&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:text</span>=<span class="string">&quot;标签二&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">merge</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>当父布局是 RelativeLayout 时，<code>&lt;merge&gt;</code> 标签内的控件会按照相对布局排列；当父布局是 LinearLayout 时，<code>&lt;merge&gt;</code> 标签内的控件会按照线性布局排列。</p>
+<h2 id="懒加载布局-ViewStub"><a href="#懒加载布局-ViewStub" class="headerlink" title="懒加载布局: ViewStub"></a>懒加载布局: ViewStub</h2><p>ViewStub 是一个轻量级的 View 组件，它不可见且不占布局位置，占用资源非常小。只有通过调用 ViewStub.setVisibility 方法或者 ViewStub.inflate 方法才会将其指向的布局文件加载出来，从而达到延迟加载的效果。注意：</p>
+<ul>
+<li>ViewStub 只能加载一次，之后 ViewStub 对象会被置空。</li>
+<li>ViewStub 只能加载布局文件，而不是某个具体的 View。</li>
+<li>ViewStub 中不能嵌套 merge 标签。</li>
+</ul>
+<p>示例如下：</p>
+<p><strong>activity_main.xml</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span> <span class="attr">xmlns:android</span>=<span class="string">&quot;http://schemas.android.com/apk/res/android&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:orientation</span>=<span class="string">&quot;vertical&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">com.hearing.demo.trace_test.MyView</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">&quot;200dp&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">&quot;200dp&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:onClick</span>=<span class="string">&quot;click&quot;</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">ViewStub</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:id</span>=<span class="string">&quot;@+id/view_stub&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_width</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout_height</span>=<span class="string">&quot;200dp&quot;</span></span></span><br><span class="line"><span class="tag">        <span class="attr">android:layout</span>=<span class="string">&quot;@layout/layout_text&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>layout_text.xml</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">TextView</span> <span class="attr">xmlns:android</span>=<span class="string">&quot;http://schemas.android.com/apk/res/android&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:id</span>=<span class="string">&quot;@+id/text_view&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:text</span>=<span class="string">&quot;@string/app_name&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>使用方法</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 方式一</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">click</span><span class="params">(view: <span class="type">View</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">// 再次点击时会抛出 NullPointerException 异常，因为 viewStub 为 null</span></span><br><span class="line">    <span class="keyword">val</span> viewStub = findViewById&lt;ViewStub&gt;(R.id.view_stub)</span><br><span class="line">    <span class="keyword">val</span> textView = viewStub.findViewById&lt;TextView&gt;(R.id.text_view)</span><br><span class="line">    viewStub.visibility = View.VISIBLE</span><br><span class="line">    viewStub.post &#123;</span><br><span class="line">        <span class="keyword">if</span> (viewStub.visibility == View.VISIBLE) &#123;</span><br><span class="line">            textView.text = <span class="string">&quot;hearing&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 方式二</span></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">click</span><span class="params">(view: <span class="type">View</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">// 再次点击时会抛出 NullPointerException 异常，因为 viewStub 为 null</span></span><br><span class="line">    <span class="keyword">val</span> viewStub = findViewById&lt;ViewStub&gt;(R.id.view_stub)</span><br><span class="line">    <span class="keyword">val</span> textView = viewStub.inflate() <span class="keyword">as</span> TextView</span><br><span class="line">    textView.text = <span class="string">&quot;hearing&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="布局复用-include"><a href="#布局复用-include" class="headerlink" title="布局复用: include"></a>布局复用: include</h2><p>布局复用可以通过 <code>&lt;include&gt;</code> 标签实现：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">LinearLayout</span> <span class="attr">xmlns:android</span>=<span class="string">&quot;http://schemas.android.com/apk/res/android&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">&quot;match_parent&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:orientation</span>=<span class="string">&quot;vertical&quot;</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- ... --&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">include</span> <span class="attr">layout</span>=<span class="string">&quot;@layout/layout_text&quot;</span>/&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">LinearLayout</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="其它方案"><a href="#其它方案" class="headerlink" title="其它方案"></a>其它方案</h2><ul>
+<li>使用低端机器进行测试，便于发现性能瓶颈。</li>
+<li>使用 <code>&lt;Space&gt;</code> 标签添加间距。</li>
+<li>尽可能少用 wrap_content 尺寸，因为它会增加布局 measure 的计算成本，已知宽高为固定值就使用固定值。</li>
+</ul>
+<h1 id="避免过度绘制"><a href="#避免过度绘制" class="headerlink" title="避免过度绘制"></a>避免过度绘制</h1><p>产生过度绘制的主要原因是：</p>
+<ul>
+<li>XML 布局: 控件重叠或设置了无必要的背景。</li>
+<li>View 绘制: View.OnDraw 中同一个区域被绘制多次。</li>
+</ul>
+<p>可以使用手机开发者选项中的 <code>Show GPU Overdraw</code> 功能来查看过度绘制，它会通过不同的颜色来表示绘制的次数：无，蓝色，绿色，粉色，红色，分表代表没有过度绘制，过度绘制 1–4 次，参考 <a target="_blank" rel="noopener" href="https://developer.android.com/topic/performance/rendering/inspect-gpu-rendering?hl=zh-cn#debug_overdraw">直观呈现 GPU 过度绘制</a>。</p>
+<p><strong>XML 优化</strong></p>
+<ul>
+<li>减少重叠的元素，并可以将重叠的元素背景设置为空</li>
+<li>移除 XML 中非必需的背景</li>
+<li>移除非必要的 Window 背景: <code>window?.setBackgroundDrawable(null)</code></li>
+</ul>
+<p><strong>自定义 View 优化</strong></p>
+<ul>
+<li>可以使用 <code>canvas.clipRect</code> 方法指定一块矩形区域，在绘制一个元素之前先判断该元素是否在指定的区域内，若不在则直接返回，否则才绘制。比如说自定义重叠的图片控件时可以通过这个方法避免过度绘制。</li>
+<li>可以使用 <code>invalidate(Rect dirty)</code> 指定脏区，避免整个 View 都重绘。</li>
+<li>onDraw 方法中避免创建对象，避免做耗时操作。</li>
+</ul>
+<h1 id="提高动画性能"><a href="#提高动画性能" class="headerlink" title="提高动画性能"></a>提高动画性能</h1><p>提升动画性能主要有以下三个角度：</p>
+<ul>
+<li>流畅度：控制每一帧动画在 16ms 内完成。</li>
+<li>内存：避免内存泄漏，减小内存开销。</li>
+<li>耗电：减小运算量，优化算法，减小 CPU 占用。</li>
+</ul>
+<h1 id="卡顿监控方案"><a href="#卡顿监控方案" class="headerlink" title="卡顿监控方案"></a>卡顿监控方案</h1><p><strong>Choreographer</strong></p>
+<p>可以使用 <code>Choreographer.getInstance().postFrameCallback()</code> 监听帧率情况，原理在之前的文章中已经解析过了。</p>
+<p><strong>Printer</strong></p>
+<p>查看 Looper 机制，发现在其源码中有以下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Looper</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">loop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">        Message msg = queue.next();</span><br><span class="line">        <span class="keyword">final</span> Printer logging = me.mLogging;</span><br><span class="line">        <span class="keyword">if</span> (logging != <span class="keyword">null</span>) &#123;</span><br><span class="line">            logging.println(<span class="string">&quot;&gt;&gt;&gt;&gt;&gt; Dispatching to &quot;</span> + msg.target + <span class="string">&quot; &quot;</span> + msg.callback + <span class="string">&quot;: &quot;</span> + msg.what);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 处理消息</span></span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        <span class="keyword">if</span> (logging != <span class="keyword">null</span>) &#123;</span><br><span class="line">            logging.println(<span class="string">&quot;&lt;&lt;&lt;&lt;&lt; Finished to &quot;</span> + msg.target + <span class="string">&quot; &quot;</span> + msg.callback);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 Looper 循环消息时，会通过 Printer 输出特定格式的消息，因此可以给主线程的 Looper 设置一个自定义的 Printer 对象用来监听每个消息的处理时长：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyPrinter</span> : <span class="type">Printer &#123;</span></span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> start = <span class="number">0L</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> end = <span class="number">0L</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">companion</span> <span class="keyword">object</span> &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">const</span> <span class="keyword">val</span> LOG_START = <span class="string">&quot;&gt;&gt;&gt;&gt;&gt; Dispatching&quot;</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">const</span> <span class="keyword">val</span> LOG_END = <span class="string">&quot;&lt;&lt;&lt;&lt;&lt; Finished&quot;</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">const</span> <span class="keyword">val</span> TIME_OUT = <span class="number">1000</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">println</span><span class="params">(x: <span class="type">String</span>?)</span></span> &#123;</span><br><span class="line">        x?.let &#123;</span><br><span class="line">            <span class="keyword">if</span> (x.startsWith(LOG_START)) &#123;</span><br><span class="line">                start = System.currentTimeMillis()</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (x.startsWith(LOG_END)) &#123;</span><br><span class="line">                end = System.currentTimeMillis()</span><br><span class="line">                <span class="keyword">val</span> t = end - start</span><br><span class="line">                <span class="keyword">if</span> (t &gt; TIME_OUT) &#123;</span><br><span class="line">                    Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;timeout happened when handle msg: <span class="variable">$it</span>&quot;</span>)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置自定义 Printer 对象</span></span><br><span class="line">Looper.getMainLooper().setMessageLogging(MyPrinter())</span><br></pre></td></tr></table></figure>
+
+<p>如果发现有卡顿后再收集调用栈，则调用栈信息可能不准确，因为此时卡顿代码可能已经执行完成了，此刻搜集到的信息可能不是卡顿发生的关键信息。就像 OOM 一样，它是一个随时都有可能发生的。所以我们需要高频率的收集日志信息，高频率的收集对后端有一定的压力，而我们高频收集的信息有很大一部分也是重复的，所以就需要日志去重操作。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="tag"># 性能优化</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/11/26/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B7%A5%E5%85%B7%E7%AF%87/" rel="prev" title="Android性能优化之工具篇">
+      <i class="fa fa-chevron-left"></i> Android性能优化之工具篇
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/" rel="next" title="Android性能优化之包体积优化">
+      Android性能优化之包体积优化 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D"><span class="nav-number">2.</span> <span class="nav-text">屏幕适配</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%83%E5%B1%80%E4%BC%98%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">布局优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%8F%E5%B0%91%E5%B8%83%E5%B1%80%E5%B1%82%E7%BA%A7-merge"><span class="nav-number">3.1.</span> <span class="nav-text">减少布局层级: merge</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%87%92%E5%8A%A0%E8%BD%BD%E5%B8%83%E5%B1%80-ViewStub"><span class="nav-number">3.2.</span> <span class="nav-text">懒加载布局: ViewStub</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%83%E5%B1%80%E5%A4%8D%E7%94%A8-include"><span class="nav-number">3.3.</span> <span class="nav-text">布局复用: include</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E5%AE%83%E6%96%B9%E6%A1%88"><span class="nav-number">3.4.</span> <span class="nav-text">其它方案</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%81%BF%E5%85%8D%E8%BF%87%E5%BA%A6%E7%BB%98%E5%88%B6"><span class="nav-number">4.</span> <span class="nav-text">避免过度绘制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8F%90%E9%AB%98%E5%8A%A8%E7%94%BB%E6%80%A7%E8%83%BD"><span class="nav-number">5.</span> <span class="nav-text">提高动画性能</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%A1%E9%A1%BF%E7%9B%91%E6%8E%A7%E6%96%B9%E6%A1%88"><span class="nav-number">6.</span> <span class="nav-text">卡顿监控方案</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述Android SDK 自带了混淆工具Proguard。它位于SDK根目录\tools\proguard下面。如果开启了混淆，Proguard默认情况下会对所有代码，包括第三方包都进行混淆，可是有些代码或者第三方包是不能混淆的，这就需要我们手动编写混淆规则来保持不能被混淆的部分。 混淆有几个作用(默认开启)：  【优化】它能优化java的字节码，使程序运行更快(-dontoptimize：关闭">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android代码混淆笔记">
+<meta property="og:url" content="http://yoursite.com/2019/08/27/Android%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述Android SDK 自带了混淆工具Proguard。它位于SDK根目录\tools\proguard下面。如果开启了混淆，Proguard默认情况下会对所有代码，包括第三方包都进行混淆，可是有些代码或者第三方包是不能混淆的，这就需要我们手动编写混淆规则来保持不能被混淆的部分。 混淆有几个作用(默认开启)：  【优化】它能优化java的字节码，使程序运行更快(-dontoptimize：关闭">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2019/08/27/Android%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%AC%94%E8%AE%B0/R8.png">
+<meta property="article:published_time" content="2019-08-27T07:18:31.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.788Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="实战">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2019/08/27/Android%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%AC%94%E8%AE%B0/R8.png">
+
+<link rel="canonical" href="http://yoursite.com/2019/08/27/Android%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android代码混淆笔记 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/27/Android%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android代码混淆笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-08-27 15:18:31" itemprop="dateCreated datePublished" datetime="2019-08-27T15:18:31+08:00">2019-08-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E5%AE%9E%E6%88%98/" itemprop="url" rel="index"><span itemprop="name">实战</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/08/27/Android%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Android代码混淆笔记" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/08/27/Android%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/08/27/Android%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Android SDK 自带了混淆工具Proguard。它位于SDK根目录\tools\proguard下面。如果开启了混淆，Proguard默认情况下会对所有代码，包括第三方包都进行混淆，可是有些代码或者第三方包是不能混淆的，这就需要我们手动编写混淆规则来保持不能被混淆的部分。</p>
+<p>混淆有几个作用(默认开启)：</p>
+<ol>
+<li>【优化】它能优化java的字节码，使程序运行更快(-dontoptimize：关闭优化)；</li>
+<li>【压缩】最直观的就是减少App大小，在混淆过程中它会找出未被使用过的类和类成员并删除他们(-dontshrink，关闭压缩)；</li>
+<li>【混淆】这个功能使我们的java代码中的类、函数、变量名随机变成无意义的代号(-dontobfuscate：关闭混淆)。</li>
+</ol>
+<p>在Android Studio新版本中启用了R8混淆：</p>
+<img src="R8.png"/>
+
+<h1 id="开启混淆"><a href="#开启混淆" class="headerlink" title="开启混淆"></a>开启混淆</h1><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    compileSdkVersion <span class="number">29</span></span><br><span class="line">    buildToolsVersion <span class="string">&quot;29.0.1&quot;</span></span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    buildTypes &#123;</span><br><span class="line">        release &#123;</span><br><span class="line">            zipAlignEnabled <span class="literal">true</span>    <span class="comment">// 能优化java字节码，提高运行效率</span></span><br><span class="line">            minifyEnabled <span class="literal">true</span>      <span class="comment">// 开启混淆</span></span><br><span class="line">            <span class="comment">// &#x27;proguard-android.txt&#x27; 是默认导入的规则，这个文件位于/tools/proguard/下</span></span><br><span class="line">            <span class="comment">// &#x27;proguard-rules.pro&#x27;是针对我们自己的项目需要特别定义混淆规则</span></span><br><span class="line">            proguardFiles getDefaultProguardFile(<span class="string">&#x27;proguard-android.txt&#x27;</span>), <span class="string">&#x27;proguard-rules.pro&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> ....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="混淆规则"><a href="#混淆规则" class="headerlink" title="混淆规则"></a>混淆规则</h1><h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><p><code>proguard-android.txt</code>文件内容如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">混淆时不生成大小写混合的类名</span></span><br><span class="line">-dontusemixedcaseclassnames</span><br><span class="line"><span class="meta">#</span><span class="bash">不忽略非公共的类库</span></span><br><span class="line">-dontskipnonpubliclibraryclasses</span><br><span class="line"><span class="meta">#</span><span class="bash">混淆过程中打印详细信息</span></span><br><span class="line">-verbose</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">关闭优化</span></span><br><span class="line">-dontoptimize</span><br><span class="line"><span class="meta">#</span><span class="bash">不预校验</span></span><br><span class="line">-dontpreverify</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Annotation注释不能混淆</span></span><br><span class="line">-keepattributes *Annotation*</span><br><span class="line"><span class="meta">#</span><span class="bash">对于NDK开发 本地的native方法不能被混淆</span></span><br><span class="line">-keepclasseswithmembernames class * &#123;</span><br><span class="line">    native &lt;methods&gt;;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#</span><span class="bash">保持View的子类里面的<span class="built_in">set</span>、get方法不被混淆（*代替任意字符）</span></span><br><span class="line">-keepclassmembers public class * extends android.view.View &#123;</span><br><span class="line">   void set*(***);</span><br><span class="line">   *** get*();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">保持Activity子类里面的参数类型为View的方法不被混淆，如被XML里面应用的onClick方法</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> We want to keep methods <span class="keyword">in</span> Activity that could be used <span class="keyword">in</span> the XML attribute onClick</span></span><br><span class="line">-keepclassmembers class * extends android.app.Activity &#123;</span><br><span class="line">   public void *(android.view.View);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">保持枚举类型values()、以及valueOf(java.lang.String)成员不被混淆</span></span><br><span class="line">-keepclassmembers enum * &#123;</span><br><span class="line">    public static **[] values();</span><br><span class="line">    public static ** valueOf(java.lang.String);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">保持实现Parcelable接口的类里面的Creator成员不被混淆</span></span><br><span class="line">-keepclassmembers class * implements android.os.Parcelable &#123;</span><br><span class="line">  public static final android.os.Parcelable$Creator CREATOR;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">保持R类静态成员不被混淆</span></span><br><span class="line">-keepclassmembers class **.R$* &#123;</span><br><span class="line">    public static &lt;fields&gt;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">不警告support包中不使用的引用</span></span><br><span class="line">-dontwarn android.support.**</span><br><span class="line">-keep class android.support.annotation.Keep</span><br><span class="line">-keep @android.support.annotation.Keep class * &#123;*;&#125;</span><br><span class="line"><span class="meta">#</span><span class="bash">保持使用了Keep注解的方法以及类不被混淆</span></span><br><span class="line">-keepclasseswithmembers class * &#123;</span><br><span class="line">    @android.support.annotation.Keep &lt;methods&gt;;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#</span><span class="bash">保持使用了Keep注解的成员域以及类不被混淆</span></span><br><span class="line">-keepclasseswithmembers class * &#123;</span><br><span class="line">    @android.support.annotation.Keep &lt;fields&gt;;</span><br><span class="line">&#125;</span><br><span class="line">-keepclasseswithmembers class * &#123;</span><br><span class="line">    @android.support.annotation.Keep &lt;init&gt;(...);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面默认的规则中指示了些需要保持不能别混淆的代码，包括：</p>
+<ol>
+<li>继承至Android组件（Activity, Service…）的类。</li>
+<li>自定义控件，继承至View的类（被xml文件引用到的，名字已经固定了的）</li>
+<li>enum 枚举</li>
+<li>实现了 android.os.Parcelable 接口的</li>
+<li>Android R文件</li>
+<li>数据库驱动…</li>
+<li>Android support 包等</li>
+<li>Android 的注释不能混淆</li>
+<li>对于NDK开发 本地的native方法不能被混淆</li>
+<li>对于特定的项目还有很多不能被混淆的，需要我们自己写规则来指示</li>
+</ol>
+<p>自己编写<code>proguard-rules.pro</code>：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">压缩级别0-7，Android一般为5(对代码迭代优化的次数)</span></span><br><span class="line">-optimizationpasses 5 </span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">不使用大小写混合类名</span></span><br><span class="line">-dontusemixedcaseclassnames </span><br><span class="line"></span><br><span class="line"><span class="meta"> #</span><span class="bash">混淆时记录日志</span></span><br><span class="line">-verbose</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">不警告org.greenrobot.greendao.database包及其子包里面未引用的引用</span></span><br><span class="line">-dontwarn org.greenrobot.greendao.database.**</span><br><span class="line">-dontwarn rx.**</span><br><span class="line">-dontwarn org.codehaus.jackson.**</span><br><span class="line">......</span><br><span class="line"><span class="meta">#</span><span class="bash">保持jackson包以及其子包的类和类成员不被混淆</span></span><br><span class="line">-keep class org.codehaus.jackson.** &#123;*;&#125;</span><br><span class="line"><span class="meta">#</span><span class="bash">--------重要说明-------</span></span><br><span class="line"><span class="meta">#</span><span class="bash">-keep class 类名 &#123;*;&#125;</span></span><br><span class="line"><span class="meta">#</span><span class="bash">-keepclassmembers class 类名&#123;*;&#125;</span></span><br><span class="line"><span class="meta">#</span><span class="bash">一个*表示保持了该包下的类名不被混淆；</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> -keep class org.codehaus.jackson.*</span></span><br><span class="line"><span class="meta">#</span><span class="bash">二个**表示保持该包以及它包含的所有子包下的类名不被混淆</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> -keep class org.codehaus.jackson.** </span></span><br><span class="line"><span class="meta">#</span><span class="bash">------------------------</span></span><br><span class="line"><span class="meta">#</span><span class="bash">保持类名、类里面的方法和变量不被混淆</span></span><br><span class="line">-keep class org.codehaus.jackson.** &#123;*;&#125;</span><br><span class="line"><span class="meta">#</span><span class="bash">不混淆类ClassTwoOne的类名以及类里面的public成员和方法</span></span><br><span class="line"><span class="meta">#</span><span class="bash">public 可以换成其他java属性如private、public static 、final等</span></span><br><span class="line"><span class="meta">#</span><span class="bash">还可以使&lt;init&gt;表示构造方法、&lt;methods&gt;表示方法、&lt;fields&gt;表示成员，</span></span><br><span class="line"><span class="meta">#</span><span class="bash">这些前面也可以加public等java属性限定</span></span><br><span class="line">-keep class com.dev.demo.two.ClassTwoOne &#123;</span><br><span class="line">    public *;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#</span><span class="bash">不混淆类名，以及里面的构造函数</span></span><br><span class="line">-keep class com.dev.demo.ClassOne &#123;</span><br><span class="line">    public &lt;init&gt;();</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#</span><span class="bash">不混淆类名，以及参数为int 的构造函数</span></span><br><span class="line">-keep class com.dev.demo.two.ClassTwoTwo &#123;</span><br><span class="line">    public &lt;init&gt;(int);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#</span><span class="bash">不混淆类的public修饰的方法，和private修饰的变量</span></span><br><span class="line">-keepclassmembers class com.dev.demo.two.ClassTwoThree &#123;</span><br><span class="line">    public &lt;methods&gt;;</span><br><span class="line">    private &lt;fields&gt;;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#</span><span class="bash">不混淆内部类，需要用$修饰</span></span><br><span class="line"><span class="meta">#</span><span class="bash">不混淆内部类ClassTwoTwoInner以及里面的全部成员</span></span><br><span class="line">-keep class com.dev.demo.two.ClassTwoTwo$ClassTwoTwoInner&#123;*;&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="混淆规则-1"><a href="#混淆规则-1" class="headerlink" title="混淆规则"></a>混淆规则</h2><ul>
+<li><p>-keepattributes {name}：保护给定的属性不被混淆</p>
+</li>
+<li><p>-dontwarn {name}：不要警告指定库中找不到的引用。混淆在默认情况下会检查每个库的引用是否正确，但是有些第三方库里面会有用不到的类，有些没有正确引用，所以需要对第三方库取消警告，否则会报错，而且有可能混淆时间会很长</p>
+</li>
+<li><p>-keep {Modifier} {class_specification}：保留指定的类、类成员不被混淆</p>
+  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">例如对一个可执行jar包来说,需要保护main的入口类,对一个类库来说需要保护它的所有public元素</span></span><br><span class="line">-keep public class MyMain&#123;</span><br><span class="line">    public static void main(java.lang.String[]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>-keepclassmembers {modifier} {class_specification}：保留指定的类成员不被混淆</p>
+  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">例如指定继承了Serizalizable的类的如下成员不被混淆,成员属性和方法,非私有的属性非私有的方法.</span></span><br><span class="line">-keepclassmembers class * implements java.io.Serializable&#123;</span><br><span class="line">    static final long seriaVersionUID;</span><br><span class="line">    !private &lt;fields&gt;;</span><br><span class="line">    !private &lt;methods&gt;;</span><br><span class="line">    private void writeObject(java.io.ObjectOuputStream);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>-keepclasseswithmembers {class_specification}：保护指定成员的类,根据成员确定一些将要被保护的类</p>
+  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">保护含有main方法的类以及这个类的main方法</span></span><br><span class="line">-keepclasseswithmembers public class * &#123;</span><br><span class="line">    public static void main(java.lang.String[]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>-keepnames {Modifier}{class_specification}：这个是-keep,allowshrinking {Modifier}{class_specification}的简写.意思是说允许压缩操作,如果在压缩过程中没有被删除,那么类名和该类中的成员的名字会被保护</p>
+</li>
+<li><p>-keepclassmembernames {Modifier}{class_specification}：如果在压缩过程中没有被删除在保护这个类中的成员</p>
+</li>
+<li><p>-keepclasseswithmembernames {Modifier}{class_specification}：如果在压缩过程中该类没有被删除,同样如果该类中有某个成员字段或者方法,那么保护这个类和这个方法</p>
+</li>
+<li><p>-printseeds {filename}将keep的成员输出到文件或者打印到标准输出</p>
+</li>
+</ul>
+<h2 id="通配符"><a href="#通配符" class="headerlink" title="通配符"></a>通配符</h2><table>
+<thead>
+<tr>
+<th align="left">通配符</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">&lt;fields&gt;</td>
+<td align="left">匹配类中的所有字段</td>
+</tr>
+<tr>
+<td align="left">&lt;methods&gt;</td>
+<td align="left">匹配类中的所有方法</td>
+</tr>
+<tr>
+<td align="left">&lt;init&gt;</td>
+<td align="left">匹配类中的所有构造函数</td>
+</tr>
+<tr>
+<td align="left">*</td>
+<td align="left">匹配任意长度字符，但不含包名分隔符(.)。比如说我们的完整类名是com.example.test.MyActivity，使用com.<em>，或者com.exmaple.<em>都是无法匹配的，因为\</em>无法匹配包名中的分隔符，正确的匹配方式是com.exmaple.</em>.*，或者com.exmaple.test.*，这些都是可以的。</td>
+</tr>
+<tr>
+<td align="left">**</td>
+<td align="left">匹配任意长度字符，并且包含包名分隔符(.)。比如proguard-android.txt中使用的<code>-dontwarn android.support.**</code>就可以匹配android.support包下的所有内容，包括任意长度的子包。</td>
+</tr>
+<tr>
+<td align="left">***</td>
+<td align="left">匹配任意参数类型。比如<code>void set*(***)</code>，就能匹配任意传入的参数类型，*** get*()就能匹配任意返回值的类型。</td>
+</tr>
+</tbody></table>
+<h2 id="删除日志"><a href="#删除日志" class="headerlink" title="删除日志"></a>删除日志</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 删除日志 (一定要把 -dontoptimize 配置去掉，否则无法删除日志)</span></span><br><span class="line">-assumenosideeffects class org.apache.log4j.** &#123;*;&#125;</span><br><span class="line">-assumenosideeffects class de.mindpipe.android.logging.log4j.LogConfigurator &#123;*;&#125;</span><br><span class="line">-assumenosideeffects class android.util.Log &#123;</span><br><span class="line">    public static boolean isLoggable(java.lang.String, int);</span><br><span class="line">    public static int v(...);</span><br><span class="line">    public static int i(...);</span><br><span class="line">    public static int w(...);</span><br><span class="line">    public static int d(...);</span><br><span class="line">    public static int e(...);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="混淆输出"><a href="#混淆输出" class="headerlink" title="混淆输出"></a>混淆输出</h1><p>成功打包后会在目录 app/build/outputs/mapping/release 下生成几个文件：</p>
+<ul>
+<li>dump.txt 混淆后类的内部结构说明</li>
+<li>mapping.txt 混淆前与混淆后名称对应关系</li>
+<li>seeds.txt 经过了一系列keep语句的保持，没有被混淆的类，成员的名称列表文件</li>
+<li>usage.txt 经过压缩后被删除的没有使用的代码，方法…等的名称的列表文件</li>
+</ul>
+<h1 id="ReTrace"><a href="#ReTrace" class="headerlink" title="ReTrace"></a>ReTrace</h1><p>可以使用retrace工具和mapping文件反推崩溃日志以及还原混淆代码，retrace工具在tools/proguard/bin 下，可以使用retrace命令行工具，也可以使用proguardgui工具。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">retrace.sh -verbose mapping.txt stacktrace.txt &gt; out.txt</span><br></pre></td></tr></table></figure>
+
+<p>有时为了Crash日志更容易定位可以在规则里面添加:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-keepattributes SourceFile, LineNumberTable</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/%E5%AE%9E%E6%88%98/" rel="tag"># 实战</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/08/26/Android-NDK%E7%AC%94%E8%AE%B0/" rel="prev" title="Android-NDK笔记">
+      <i class="fa fa-chevron-left"></i> Android-NDK笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/08/27/Termux%E8%A7%A3%E6%9E%90/" rel="next" title="Termux解析">
+      Termux解析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%80%E5%90%AF%E6%B7%B7%E6%B7%86"><span class="nav-number">2.</span> <span class="nav-text">开启混淆</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B7%B7%E6%B7%86%E8%A7%84%E5%88%99"><span class="nav-number">3.</span> <span class="nav-text">混淆规则</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E4%BE%8B"><span class="nav-number">3.1.</span> <span class="nav-text">实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%B7%E6%B7%86%E8%A7%84%E5%88%99-1"><span class="nav-number">3.2.</span> <span class="nav-text">混淆规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E9%85%8D%E7%AC%A6"><span class="nav-number">3.3.</span> <span class="nav-text">通配符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A0%E9%99%A4%E6%97%A5%E5%BF%97"><span class="nav-number">3.4.</span> <span class="nav-text">删除日志</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B7%B7%E6%B7%86%E8%BE%93%E5%87%BA"><span class="nav-number">4.</span> <span class="nav-text">混淆输出</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ReTrace"><span class="nav-number">5.</span> <span class="nav-text">ReTrace</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

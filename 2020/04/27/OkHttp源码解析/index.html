@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述在Android开发中可以使用HttpClient(被废弃)、HttpUrlConnection进行网络请求，而OkHttp是Square公司开源的针对Java和Android程序封装的一个高性能http请求库，所以它的职责跟HttpUrlConnection类似。本文直接参考 https:&#x2F;&#x2F;juejin.cn&#x2F;post&#x2F;6844904102669844493 解析。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OkHttp源码解析">
+<meta property="og:url" content="http://yoursite.com/2020/04/27/OkHttp%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述在Android开发中可以使用HttpClient(被废弃)、HttpUrlConnection进行网络请求，而OkHttp是Square公司开源的针对Java和Android程序封装的一个高性能http请求库，所以它的职责跟HttpUrlConnection类似。本文直接参考 https:&#x2F;&#x2F;juejin.cn&#x2F;post&#x2F;6844904102669844493 解析。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2020/04/27/OkHttp%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/OkHttp%E6%B5%81%E7%A8%8B.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/04/27/OkHttp%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/%E6%8B%A6%E6%88%AA%E5%99%A8.jpg">
+<meta property="og:image" content="http://yoursite.com/2020/04/27/OkHttp%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/RetryAndFollowUpInterceptor.jpg">
+<meta property="article:published_time" content="2020-04-27T06:57:05.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.905Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="OkHttp">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2020/04/27/OkHttp%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/OkHttp%E6%B5%81%E7%A8%8B.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2020/04/27/OkHttp%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>OkHttp源码解析 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/04/27/OkHttp%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          OkHttp源码解析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-27 14:57:05" itemprop="dateCreated datePublished" datetime="2020-04-27T14:57:05+08:00">2020-04-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index"><span itemprop="name">框架</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/04/27/OkHttp%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" class="post-meta-item leancloud_visitors" data-flag-title="OkHttp源码解析" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/04/27/OkHttp%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/04/27/OkHttp%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>在Android开发中可以使用HttpClient(被废弃)、HttpUrlConnection进行网络请求，而OkHttp是Square公司开源的针对Java和Android程序封装的一个高性能http请求库，所以它的职责跟HttpUrlConnection类似。本文直接参考 <a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904102669844493">https://juejin.cn/post/6844904102669844493</a> 解析。</p>
+<a id="more"></a>
+
+<h1 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h1><p><strong>添加依赖：</strong></p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">implementation(<span class="string">&quot;com.squareup.okhttp3:okhttp:4.9.0&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><strong>使用：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> val httpClient = OkHttpClient()</span><br><span class="line"><span class="keyword">private</span> val handler = Handler(Looper.getMainLooper())</span><br><span class="line"></span><br><span class="line"><span class="function">fun <span class="title">get</span><span class="params">(url: String, callback: OnHttpCallback?)</span> </span>&#123;</span><br><span class="line">    val request = Request.Builder()</span><br><span class="line">        .url(url)</span><br><span class="line">        .build()</span><br><span class="line">    request(request, callback)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">fun <span class="title">post</span><span class="params">(url: String, json: String, callback: OnHttpCallback?)</span> </span>&#123;</span><br><span class="line">    val body = RequestBody.create(<span class="string">&quot;application/json; charset=utf-8&quot;</span>.toMediaType(), json)</span><br><span class="line">    val request = Request.Builder()</span><br><span class="line">        .url(url)</span><br><span class="line">        .post(body)</span><br><span class="line">        .build()</span><br><span class="line">    request(request, callback)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> fun <span class="title">request</span><span class="params">(request: Request, callback: OnHttpCallback?)</span> </span>&#123;</span><br><span class="line">    httpClient.newCall(request).enqueue(object : Callback &#123;</span><br><span class="line">        <span class="function">override fun <span class="title">onFailure</span><span class="params">(call: Call, e: IOException)</span> </span>&#123;</span><br><span class="line">            handler.post &#123; callback?.onResult(-<span class="number">1</span>, <span class="string">&quot;&quot;</span>) &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function">override fun <span class="title">onResponse</span><span class="params">(call: Call, response: Response)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (response.isSuccessful) &#123;</span><br><span class="line">                handler.post &#123; callback?.onResult(<span class="number">0</span>, response.body.toString()) &#125;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                handler.post &#123; callback?.onResult(-<span class="number">1</span>, response.message) &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 自定义拦截器</span></span><br><span class="line">class ParamsInterceptor : Interceptor &#123;</span><br><span class="line">    <span class="function">override fun <span class="title">intercept</span><span class="params">(chain: Interceptor.Chain)</span>: Response </span>&#123;</span><br><span class="line">        val request = chain.request()</span><br><span class="line">        val newRequest = request.newBuilder().url(request.url.toString() + <span class="string">&quot;?name=ok_http&quot;</span>).build()</span><br><span class="line">        <span class="keyword">return</span> chain.proceed(newRequest)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="整体流程"><a href="#整体流程" class="headerlink" title="整体流程"></a>整体流程</h1><p><img src="OkHttp%E6%B5%81%E7%A8%8B.jpg" alt="OkHttp流程"></p>
+<p>涉及到的几个核心类：</p>
+<ul>
+<li>OkHttpClient: OkHttp 的核心管理类，所有的内部逻辑和对象都由 OkHttpClient 统一来管理，它通过 Builder 构造器生成。</li>
+<li>Request 和 Response: 请求和相应类。</li>
+<li>RealCall: 负责请求的调度(同步 execute 由当前线程发送请求，异步 enqueue 则由 OkHttp 内部的线程池请求)，同时负责构造内部责任链并执行责任链相关的逻辑，直到获取结果。</li>
+</ul>
+<p>execute() 和 enqueue() 方法分别用来处理同步和异步请求。而 enqueue() 方法其实只是通过异步线程和 callback 做了一个异步调用的封装，最终逻辑还是会调用到 getResponseWithInterceptorChain() 获得请求结果。</p>
+<h1 id="Dispatcher调度器"><a href="#Dispatcher调度器" class="headerlink" title="Dispatcher调度器"></a>Dispatcher调度器</h1><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// RealCall</span></span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">enqueue</span><span class="params">(responseCallback: <span class="type">Callback</span>)</span></span> &#123;</span><br><span class="line">  client.dispatcher.enqueue(AsyncCall(responseCallback))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Dispatcher</span></span><br><span class="line"><span class="keyword">internal</span> <span class="function"><span class="keyword">fun</span> <span class="title">enqueue</span><span class="params">(call: <span class="type">AsyncCall</span>)</span></span> &#123;</span><br><span class="line">  synchronized(<span class="keyword">this</span>) &#123;</span><br><span class="line">    readyAsyncCalls.add(call) <span class="comment">// 加入到readyAsyncCalls(ArrayDeque&lt;AsyncCall&gt;)中</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// okhttp会使用共享主机，即地址相同的会共享socket</span></span><br><span class="line">    <span class="keyword">if</span> (!call.call.forWebSocket) &#123;</span><br><span class="line">      <span class="keyword">val</span> existingCall = findExistingCallWithHost(call.host)</span><br><span class="line">      <span class="keyword">if</span> (existingCall != <span class="literal">null</span>) call.reuseCallsPerHostFrom(existingCall)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  promoteAndExecute()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">promoteAndExecute</span><span class="params">()</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">  <span class="keyword">val</span> executableCalls = mutableListOf&lt;AsyncCall&gt;()</span><br><span class="line">  <span class="keyword">val</span> isRunning: <span class="built_in">Boolean</span></span><br><span class="line">  synchronized(<span class="keyword">this</span>) &#123;</span><br><span class="line">    <span class="keyword">val</span> i = readyAsyncCalls.iterator()</span><br><span class="line">    <span class="keyword">while</span> (i.hasNext()) &#123;</span><br><span class="line">      <span class="keyword">val</span> asyncCall = i.next()</span><br><span class="line">      <span class="comment">// 同时请求不能超过并发数，默认64</span></span><br><span class="line">      <span class="keyword">if</span> (runningAsyncCalls.size &gt;= <span class="keyword">this</span>.maxRequests) <span class="keyword">break</span> <span class="comment">// Max capacity.</span></span><br><span class="line">      <span class="comment">// 同一个host最多允许5条线程通知执行请求</span></span><br><span class="line">      <span class="keyword">if</span> (asyncCall.callsPerHost.<span class="keyword">get</span>() &gt;= <span class="keyword">this</span>.maxRequestsPerHost) <span class="keyword">continue</span> <span class="comment">// Host max capacity.</span></span><br><span class="line"></span><br><span class="line">      i.remove()</span><br><span class="line">      asyncCall.callsPerHost.incrementAndGet()</span><br><span class="line">      executableCalls.add(asyncCall)</span><br><span class="line">      runningAsyncCalls.add(asyncCall)</span><br><span class="line">    &#125;</span><br><span class="line">    isRunning = runningCallsCount() &gt; <span class="number">0</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">0</span> until executableCalls.size) &#123;</span><br><span class="line">    <span class="keyword">val</span> asyncCall = executableCalls[i]</span><br><span class="line">    <span class="comment">// 该方法逻辑: executorService.execute(this)</span></span><br><span class="line">    <span class="comment">//即执行到 AsyncCall.run 方法</span></span><br><span class="line">    asyncCall.executeOn(executorService)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> isRunning</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// AsyncCall</span></span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">run</span><span class="params">()</span></span> &#123;</span><br><span class="line">  <span class="keyword">val</span> response = getResponseWithInterceptorChain()</span><br><span class="line">  responseCallback.onResponse(<span class="keyword">this</span><span class="symbol">@RealCall</span>, response)</span><br><span class="line">  <span class="comment">// responseCallback.onFailure(...)</span></span><br><span class="line">  <span class="comment">// finally client.dispatcher.finished(this)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 enqueue 方法会将异步请求 AsyncCall 加入到一个队列中，然后通过 asyncCall.executeOn(executorService) 放到线程池中执行。其执行逻辑与 execute 同步方法一样，都会调用 getResponseWithInterceptorChain() 方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// RealCall</span></span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">execute</span><span class="params">()</span></span>: Response &#123;</span><br><span class="line">  client.dispatcher.executed(<span class="keyword">this</span>)</span><br><span class="line">  <span class="keyword">return</span> getResponseWithInterceptorChain()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里我们看一下 OkHttp 线程池的定义：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ThreadPoolExecutor(<span class="number">0</span>, <span class="built_in">Int</span>.MAX_VALUE, <span class="number">60</span>, TimeUnit.SECONDS, SynchronousQueue(), threadFactory(<span class="string">&quot;<span class="variable">$okHttpName</span> Dispatcher&quot;</span>, <span class="literal">false</span>))</span><br></pre></td></tr></table></figure>
+
+<p>根据上面的参数，可以知道 OkHttp 中的线程池会一直创建新的线程来执行任务，为了防止启动的线程数过多，OkHttp 自身通过 maxRequests 参数限制最大同时请求书，默认为 64。如果超过了这个限制，则不会再往 executableCalls 中添加异步Call，而会在每个 AsyncCall 执行完后都会调用 dispatcher.finished(this) 方法，该方法又会重新调用 promoteAndExecute() 添加待执行的任务，即将等待队列放入到执行队列中。</p>
+<h1 id="OkHttp拦截器"><a href="#OkHttp拦截器" class="headerlink" title="OkHttp拦截器"></a>OkHttp拦截器</h1><h2 id="拦截器调用"><a href="#拦截器调用" class="headerlink" title="拦截器调用"></a>拦截器调用</h2><p>无论是同步还是异步请求，最后都会调用 getResponseWithInterceptorChain() 方法获取响应：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// RealCall</span></span><br><span class="line"><span class="keyword">internal</span> <span class="function"><span class="keyword">fun</span> <span class="title">getResponseWithInterceptorChain</span><span class="params">()</span></span>: Response &#123;</span><br><span class="line">  <span class="keyword">val</span> interceptors = mutableListOf&lt;Interceptor&gt;()</span><br><span class="line">  interceptors += client.interceptors</span><br><span class="line">  interceptors += RetryAndFollowUpInterceptor(client)</span><br><span class="line">  interceptors += BridgeInterceptor(client.cookieJar)</span><br><span class="line">  interceptors += CacheInterceptor(client.cache)</span><br><span class="line">  interceptors += ConnectInterceptor</span><br><span class="line">  <span class="keyword">if</span> (!forWebSocket) &#123;</span><br><span class="line">      interceptors += client.networkInterceptors</span><br><span class="line">  &#125;</span><br><span class="line">  interceptors += CallServerInterceptor(forWebSocket)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">val</span> chain = RealInterceptorChain(</span><br><span class="line">      call = <span class="keyword">this</span>,</span><br><span class="line">      interceptors = interceptors,</span><br><span class="line">      index = <span class="number">0</span>,</span><br><span class="line">      exchange = <span class="literal">null</span>,</span><br><span class="line">      request = originalRequest,</span><br><span class="line">      connectTimeoutMillis = client.connectTimeoutMillis,</span><br><span class="line">      readTimeoutMillis = client.readTimeoutMillis,</span><br><span class="line">      writeTimeoutMillis = client.writeTimeoutMillis</span><br><span class="line">  )</span><br><span class="line">  <span class="keyword">val</span> response = chain.proceed(originalRequest)</span><br><span class="line">  <span class="keyword">return</span> response</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个方法的逻辑主要是生成一个 Interceptors 拦截器的责任链，然后创建了一个 RealInterceptorChain 类，并通过 chain.proceed 方法获取到最后的 Response。OkHttp 将整个请求的复杂逻辑切成了一个个独立模块并命名为拦截器(Interceptor)，通过责任链的设计模式串联到了一起，最终完成请求获取响应结果。</p>
+<p>再看看 RealInterceptorChain.proceed() 的逻辑：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">proceed</span><span class="params">(request: <span class="type">Request</span>)</span></span>: Response &#123;</span><br><span class="line">  <span class="comment">// 从当前 index+1 位置创建一个新的 RealInterceptorChain 链</span></span><br><span class="line">  <span class="keyword">val</span> next = copy(index = index + <span class="number">1</span>, request = request)</span><br><span class="line">  <span class="comment">// 拿到并执行当前的拦截器</span></span><br><span class="line">  <span class="keyword">val</span> interceptor = interceptors[index]</span><br><span class="line">  <span class="keyword">val</span> response = interceptor.intercept(next) ?: <span class="keyword">throw</span> NullPointerException(<span class="string">&quot;interceptor <span class="variable">$interceptor</span> returned null&quot;</span>)</span><br><span class="line">  <span class="keyword">return</span> response</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里调用了当前拦截器的 intercept 方法，参数为根据剩余拦截器创建的 RealInterceptorChain 链。接下来看看相关接口：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="keyword">interface</span> Interceptor &#123;</span></span><br><span class="line">  <span class="function"><span class="keyword">fun</span> <span class="title">intercept</span><span class="params">(chain: <span class="type">Chain</span>)</span></span>: Response</span><br><span class="line"></span><br><span class="line">  <span class="comment">// 其实现类为 RealInterceptorChain</span></span><br><span class="line">  <span class="class"><span class="keyword">interface</span> <span class="title">Chain</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">request</span><span class="params">()</span></span>: Request</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">proceed</span><span class="params">(request: <span class="type">Request</span>)</span></span>: Response</span><br><span class="line">    <span class="comment">// 返回当前请求将要执行的 Connection, 只针对网络拦截器有效</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">connection</span><span class="params">()</span></span>: Connection?</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">call</span><span class="params">()</span></span>: Call</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>拦截器示意图(省略了部分拦截器)：</p>
+<p><img src="%E6%8B%A6%E6%88%AA%E5%99%A8.jpg" alt="拦截器"></p>
+<p>拦截器执行逻辑：</p>
+<ol>
+<li>拦截器按照添加顺序依次执行；</li>
+<li>拦截器的执行从 RealInterceptorChain.proceed() 开始，进入到第一个拦截器的执行逻辑；</li>
+<li>每个拦截器在执行之前，会将剩余尚未执行的拦截器组成新的 RealInterceptorChain；</li>
+<li>拦截器的逻辑被新的责任链调用 next.proceed() 切分为 start, next.proceed, end 这三个部分依次执行，在 end 部分能够拿到后面拦截器执行后的 Response 响应并做相应处理；</li>
+<li>next.proceed() 所代表的其实就是剩余所有拦截器的执行逻辑；</li>
+<li>所有拦截器最终形成一个层层内嵌的嵌套结构。</li>
+</ol>
+<p>看一下每个拦截器的作用：</p>
+<ul>
+<li>RetryAndFollowUpInterceptor: 失败和重定向拦截器；</li>
+<li>BridgeInterceptor: 封装 request 和 response 拦截器；</li>
+<li>CacheInterceptor: 缓存相关的拦截器，负责读取缓存直接返回、更新缓存；</li>
+<li>ConnectInterceptor: 连接服务，负责和服务器建立连接，这里才是真正的请求网络；</li>
+<li>CallServerInterceptor: 执行流操作(写出请求体、获得响应数据)，负责向服务器发送请求数据、从服务器读取响应数据，进行http请求报文的封装与请求报文的解析。</li>
+</ul>
+<h2 id="RetryAndFollowUpInterceptor"><a href="#RetryAndFollowUpInterceptor" class="headerlink" title="RetryAndFollowUpInterceptor"></a>RetryAndFollowUpInterceptor</h2><p>其 intercept 方法逻辑如下：</p>
+<p><img src="RetryAndFollowUpInterceptor.jpg" alt="RetryAndFollowUpInterceptor"></p>
+<p>RetryAndFollowUpInterceptor 开启了一个 while 循环，并在循环内部完成两个重要的判定，如图中的蓝色方框：</p>
+<ul>
+<li>当请求内部抛出异常时，判定是否需要重试</li>
+<li>当响应结果是3xx重定向时，构建新的请求并发送请求</li>
+</ul>
+<h2 id="Interceptors和NetworkInterceptors"><a href="#Interceptors和NetworkInterceptors" class="headerlink" title="Interceptors和NetworkInterceptors"></a>Interceptors和NetworkInterceptors</h2><p>可以通过 addInterceptor 和 addNetworkdInterceptor 方法添加自定义的拦截器。从前面 RealCall 中添加拦截器的顺序可以知道 Interceptors 和 NetworkInterceptors 刚好一个在 RetryAndFollowUpInterceptor 的前面，一个在后面。</p>
+<p>结合前面的责任链调用图可以分析出来，假如一个请求在 RetryAndFollowUpInterceptor 这个拦截器内部重试或者重定向了 N 次，那么其内部嵌套的所有拦截器也会被调用N次，同样 NetworkInterceptors 自定义的拦截器也会被调用 N 次。而相对的 Interceptors 则一个请求只会调用一次，所以在 OkHttp 的内部也将其称之为 Application Interceptor。</p>
+<h2 id="BridgeInterceptor"><a href="#BridgeInterceptor" class="headerlink" title="BridgeInterceptor"></a>BridgeInterceptor</h2><p>BridgeInterceptor 拦截器的功能如下：</p>
+<ul>
+<li>应用层和网络层的桥接拦截器；</li>
+<li>添加固定的header，比如Host、Content-Length、Content-Type、User-Agent等等。</li>
+<li>设置gzip压缩，并在接收到内容后进行解压。省去了应用层处理数据解压的麻烦；</li>
+<li>添加cookie，保存响应结果的cookie；</li>
+</ul>
+<h2 id="CacheInterceptor"><a href="#CacheInterceptor" class="headerlink" title="CacheInterceptor"></a>CacheInterceptor</h2><p><strong>强制缓存</strong></p>
+<p>网络请求响应header标识了Expires或Cache-Control带了max-age信息，而此时客户端计算缓存并未过期，则可以直接使用本地缓存内容，而不用真正的发起一次网络请求。</p>
+<p><strong>协商缓存</strong></p>
+<p>强制缓存最大的问题是，一旦服务端资源有更新，直到缓存时间截止前，客户端无法获取到最新的资源。</p>
+<ul>
+<li>服务端响应头添加Last-Modify头标识资源的最后修改时间，单位为秒，当客户端再次发起请求时添加If-Modify-Since头并赋值为上次请求拿到的Last-Modify头的值。服务端收到请求后自行判断缓存资源是否仍然有效，如果有效则返回状态码304同时body体为空，否则下发最新的资源数据。客户端如果发现状态码是304，则取出本地的缓存数据作为响应。问题：某些文件在一秒内被修改则并不能准确的标识修改时间。资源修改时间并不能作为资源是否修改的唯一依据，比如资源文件是Daily Build的，每天都会生成新的，但是其实际内容可能并未改变。</li>
+<li>HTTP 还提供了另外一组头信息来处理缓存，ETag/If-None-Match。流程与Last-Modify一样，只是把服务端响应的头变成Last-Modify，客户端发出的头变成If-None-Match。ETag是资源的唯一标识符，服务端资源变化一定会导致ETag变化。具体的生成方式有服务端控制，场景的影响因素包括，文件最终修改时间、文件大小、文件编号等等。</li>
+</ul>
+<p>OkHttp 通过 CacheInterceptor 来处理缓存相关的逻辑，OKHttp 默认只支持 get 请求的缓存，像 post 这种请求，缓存的意义不大。在使用时可以通过两方面来设置缓存：</p>
+<ul>
+<li>在OkHttpClient中设置缓存的路径和缓存(DiskLruCache)的大小: <code>new OkHttpClient.Builder().cache(Cache cache)</code>。</li>
+<li>在Request中设置缓存条件(Cache-Control): <code>new Request.Builder().cacheControl(CacheControl cacheControl)</code>。</li>
+</ul>
+<p>OkHttp 默认没有上述设置，如需要使用缓存，需要我们自己添加配置。OkHttp 中通过 CacheStrategy 来设置缓存策略，CacheInterceptor 中缓存策略的生成与 Request 和缓存的 Response 有关。在CacheStrategy中影响到缓存策略的因素有：</p>
+<ul>
+<li>Request 中 HTTP 和 Cache 条件。</li>
+<li>缓存 Response 中 code 和 headers 中的头部字段。</li>
+</ul>
+<p>最终会得到 CacheStrategy 的两个成员变量 networkRequest 和 cacheResponse。接下来看看缓存拦截器的源码：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CacheInterceptor</span></span>(<span class="keyword">internal</span> <span class="keyword">val</span> cache: Cache?) : Interceptor &#123;</span><br><span class="line">  <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">intercept</span><span class="params">(chain: <span class="type">Interceptor</span>.<span class="type">Chain</span>)</span></span>: Response &#123;</span><br><span class="line">    <span class="keyword">val</span> call = chain.call()</span><br><span class="line">    <span class="comment">// 获取 request 对应缓存的 Response, 如果用户没有设置 Cache 则 cacheCandidate 为 null</span></span><br><span class="line">    <span class="keyword">val</span> cacheCandidate = cache?.<span class="keyword">get</span>(chain.request())</span><br><span class="line">    <span class="comment">// 获取缓存策略</span></span><br><span class="line">    <span class="keyword">val</span> strategy = CacheStrategy.Factory(System.currentTimeMillis(), chain.request(), cacheCandidate).compute()</span><br><span class="line">    <span class="comment">// networkRequest 为 null 时说明不使用网络请求</span></span><br><span class="line">    <span class="keyword">val</span> networkRequest = strategy.networkRequest</span><br><span class="line">    <span class="keyword">val</span> cacheResponse = strategy.cacheResponse</span><br><span class="line">    <span class="comment">// 缓存无效则关闭资源</span></span><br><span class="line">    <span class="keyword">if</span> (cacheCandidate != <span class="literal">null</span> &amp;&amp; cacheResponse == <span class="literal">null</span>) &#123;</span><br><span class="line">      <span class="comment">// The cache candidate wasn&#x27;t applicable. Close it.</span></span><br><span class="line">      cacheCandidate.body?.closeQuietly()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 禁止使用网络且 cacheResponse 为空则返回 504</span></span><br><span class="line">    <span class="keyword">if</span> (networkRequest == <span class="literal">null</span> &amp;&amp; cacheResponse == <span class="literal">null</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> Response.Builder()... <span class="comment">// 504</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 禁止网络且存在有效的 cacheResponse 则直接返回缓存的响应</span></span><br><span class="line">    <span class="keyword">if</span> (networkRequest == <span class="literal">null</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> cacheResponse!!.newBuilder().cacheResponse(stripBody(cacheResponse))...</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 调用剩下的拦截器逻辑进行网络请求</span></span><br><span class="line">    <span class="keyword">var</span> networkResponse: Response? = chain.proceed(networkRequest)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果之前存在缓存 cacheResponse 则更新它</span></span><br><span class="line">    <span class="keyword">if</span> (cacheResponse != <span class="literal">null</span>) &#123;</span><br><span class="line">      <span class="comment">// 更新</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 构建响应</span></span><br><span class="line">    <span class="keyword">val</span> response = networkResponse!!.newBuilder()</span><br><span class="line">        .cacheResponse(stripBody(cacheResponse))</span><br><span class="line">        .networkResponse(stripBody(networkResponse))</span><br><span class="line">        .build()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (cache != <span class="literal">null</span>) &#123;</span><br><span class="line">      <span class="keyword">if</span> (response.promisesBody() &amp;&amp; CacheStrategy.isCacheable(response, networkRequest)) &#123;</span><br><span class="line">        <span class="comment">// 设置过缓存且策略支持缓存，则将响应缓存起来</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> response</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>总结一下缓存拦截器的逻辑：</p>
+<ul>
+<li>如果用户没有设置 Cache 则不会使用缓存，且返回的网络 Response 也不会被缓存起来。</li>
+<li>如果用户设置了 Cache, 则在进行网络请求前会根据当前时间, Request 中的字段以及之前缓存的 Response 生成一个缓存策略，策略中包括 networkRequest(为空表示不使用网络) 和 cacheResponse(缓存的响应)。</li>
+<li>如果缓存无效则关闭资源，接着往下走。</li>
+<li>如果禁止使用网络且 cacheResponse 为空则返回 504。</li>
+<li>如果禁止网络且存在有效的 cacheResponse 则直接返回缓存的响应。</li>
+<li>否则调用剩下的拦截器逻辑进行网络请求，拿到网络响应 networkResponse。</li>
+<li>如果之前存在缓存 cacheResponse 则根据 networkResponse 更新缓存。</li>
+<li>如果设置过缓存且策略支持缓存，则将响应缓存起来。</li>
+</ul>
+<h2 id="ConnectInterceptor"><a href="#ConnectInterceptor" class="headerlink" title="ConnectInterceptor"></a>ConnectInterceptor</h2><p>ConnectInterceptor 连接拦截器，内部会维护一个连接池，负责连接复用、创建连接（三次握手等等）、释放连接。</p>
+<p>最终建立 Socket 连接是通过 ExchangeFinder.findConnection() 方法来完成的。这个方法的逻辑如下：</p>
+<ol>
+<li>检查当前 ExchangeFinder 所保存的 Connection 是否满足此次请求；</li>
+<li>检查当前连接池 ConnectionPool 中是否有满足此次请求的 Connection；</li>
+<li>检查当前 RouteSelector 列表中，是否还有可用Route(Route 是 proxy, IP 地址的包装类)，如果没有就发起DNS请求；</li>
+<li>通过 DNS 获取到新的 Route 之后，第二次从 ConnectionPool 查找有无可复用的 Connection，否则就创建新的 RealConnection；</li>
+<li>用 RealConnection 进行 TCP 和 TLS 连接，连接成功后保存到 ConnectionPool 中。</li>
+</ol>
+<p>关于连接池的相关问题：</p>
+<ul>
+<li>连接池是为了解决频繁的进行建立Sokcet连接（TCP三次握手）和断开Socket（TCP四次分手）设计的。</li>
+<li>连接池实现的类是 RealConnectionPool，它负责存储与清除的工作，存储通过双端队列存储，删除交给了线程池处理。</li>
+<li>在每次创建 RealConnection 或从连接池中拿一次 RealConnection 都会给 RealConnection 的 transmitters 集合添加一个弱引用的 transmitter 对象，添加它主要是为了后面判断该连接是否在使用中。</li>
+<li>在连接池中找连接的时候会对比连接池中相同 host 的连接。如果在连接池中找不到连接的话，会创建连接，创建完后会存储到连接池中。</li>
+<li>在把连接放入连接池中时，会把清除操作的任务放入到线程池中执行，删除任务中会判断当前连接有没有在使用中，有没有正在使用通过 RealConnection 的 transmitters 集合的 size 是否为 0 来判断，如果不在使用中，找出空闲时间最长的连接，如果空闲时间最长的连接超过了 keep-alive 时长或者空闲的连接数超过了设置的连接数，则会把存活时间最长的连接从连接池中删除。</li>
+</ul>
+<p>在执行完 ConnectInterceptor 之后，按照顺序执行的规定，所有的 NetworkInterceptor 会开始执行，此时 Socket 连接已经建立了，可以通过 realChain 拿到 Socket 做一些自定义操作，这也就是为什么称之为 NetworkInterceptor 的原因。</p>
+<h2 id="CallServerInterceptor"><a href="#CallServerInterceptor" class="headerlink" title="CallServerInterceptor"></a>CallServerInterceptor</h2><p>CallServerInterceptor 负责传输 Http 头和 Body 数据。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>okhttp运用的设计模式：</p>
+<ul>
+<li><p>构造者模式(OkhttpClient, Request 等各种对象的创建)</p>
+</li>
+<li><p>工厂模式(在Call接口中，有一个内部工厂Factory接口)</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="keyword">interface</span> Factory &#123;</span></span><br><span class="line">  <span class="function"><span class="keyword">fun</span> <span class="title">newCall</span><span class="params">(request: <span class="type">Request</span>)</span></span>: Call</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>单例模式</p>
+</li>
+<li><p>策略模式(缓存策略)</p>
+</li>
+<li><p>责任链模式(拦截器的链式调用)</p>
+</li>
+<li><p>享元模式(线程池和连接池)</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/OkHttp/" rel="tag"># OkHttp</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/23/Javassist%E7%94%A8%E6%B3%95/" rel="prev" title="Javassist用法">
+      <i class="fa fa-chevron-left"></i> Javassist用法
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/28/Volley%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" rel="next" title="Volley源码解析">
+      Volley源码解析 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">基本使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B4%E4%BD%93%E6%B5%81%E7%A8%8B"><span class="nav-number">3.</span> <span class="nav-text">整体流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Dispatcher%E8%B0%83%E5%BA%A6%E5%99%A8"><span class="nav-number">4.</span> <span class="nav-text">Dispatcher调度器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#OkHttp%E6%8B%A6%E6%88%AA%E5%99%A8"><span class="nav-number">5.</span> <span class="nav-text">OkHttp拦截器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%A6%E6%88%AA%E5%99%A8%E8%B0%83%E7%94%A8"><span class="nav-number">5.1.</span> <span class="nav-text">拦截器调用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RetryAndFollowUpInterceptor"><span class="nav-number">5.2.</span> <span class="nav-text">RetryAndFollowUpInterceptor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Interceptors%E5%92%8CNetworkInterceptors"><span class="nav-number">5.3.</span> <span class="nav-text">Interceptors和NetworkInterceptors</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BridgeInterceptor"><span class="nav-number">5.4.</span> <span class="nav-text">BridgeInterceptor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CacheInterceptor"><span class="nav-number">5.5.</span> <span class="nav-text">CacheInterceptor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ConnectInterceptor"><span class="nav-number">5.6.</span> <span class="nav-text">ConnectInterceptor</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CallServerInterceptor"><span class="nav-number">5.7.</span> <span class="nav-text">CallServerInterceptor</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

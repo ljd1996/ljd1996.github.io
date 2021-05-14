@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述 Android Studio 用于构建原生库的默认工具是 CMake，需要提供CmakeList.txt用于构建原生代码。 Android Studio 还支持 ndk-build构建原生库，需要提供Android.mk构建脚本。  ndk-buildndk-build概述ndk-build 脚本可用于编译采用 NDK 基于 Make 的编译系统的项目，包含Application.mk和An">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android-NDK笔记">
+<meta property="og:url" content="http://yoursite.com/2019/08/26/Android-NDK%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述 Android Studio 用于构建原生库的默认工具是 CMake，需要提供CmakeList.txt用于构建原生代码。 Android Studio 还支持 ndk-build构建原生库，需要提供Android.mk构建脚本。  ndk-buildndk-build概述ndk-build 脚本可用于编译采用 NDK 基于 Make 的编译系统的项目，包含Application.mk和An">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2019/08/26/Android-NDK%E7%AC%94%E8%AE%B0/ABI分类.png">
+<meta property="article:published_time" content="2019-08-26T11:31:24.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.759Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="NDK">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2019/08/26/Android-NDK%E7%AC%94%E8%AE%B0/ABI分类.png">
+
+<link rel="canonical" href="http://yoursite.com/2019/08/26/Android-NDK%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android-NDK笔记 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/26/Android-NDK%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android-NDK笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-08-26 19:31:24" itemprop="dateCreated datePublished" datetime="2019-08-26T19:31:24+08:00">2019-08-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/NDK/" itemprop="url" rel="index"><span itemprop="name">NDK</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/08/26/Android-NDK%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Android-NDK笔记" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/08/26/Android-NDK%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/08/26/Android-NDK%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><ul>
+<li>Android Studio 用于构建原生库的默认工具是 CMake，需要提供CmakeList.txt用于构建原生代码。</li>
+<li>Android Studio 还支持 ndk-build构建原生库，需要提供Android.mk构建脚本。</li>
+</ul>
+<h1 id="ndk-build"><a href="#ndk-build" class="headerlink" title="ndk-build"></a>ndk-build</h1><h2 id="ndk-build-1"><a href="#ndk-build-1" class="headerlink" title="ndk-build"></a>ndk-build</h2><h3 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h3><p><a target="_blank" rel="noopener" href="https://developer.android.com/ndk/guides/ndk-build">ndk-build 脚本</a>可用于编译采用 NDK 基于 Make 的编译系统的项目，包含<a target="_blank" rel="noopener" href="https://developer.android.com/ndk/guides/application_mk.html">Application.mk</a>和<a target="_blank" rel="noopener" href="https://developer.android.com/ndk/guides/android_mk.html">Android.mk</a>脚本。</p>
+<h3 id="内部编译"><a href="#内部编译" class="headerlink" title="内部编译"></a>内部编译</h3><p>运行 ndk-build 脚本相当于运行以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">export</span> GNUMAKE=/usr/<span class="built_in">local</span>/bin/gmake</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="variable">$GNUMAKE</span> -f &lt;ndk&gt;/build/core/build-local.mk &lt;parameters&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="命令行编译"><a href="#命令行编译" class="headerlink" title="命令行编译"></a>命令行编译</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ndk-build &lt;option&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>可选options：</p>
+<ul>
+<li>clean：移除之前生成的所有二进制文件。</li>
+<li>V=1：启动编译，并显示编译命令。</li>
+<li>-B：强制执行完整的重新编译。</li>
+<li>-B V=1：强制执行完整的重新编译，并显示编译命令。</li>
+<li>NDK_LOG=1：显示内部 NDK 日志消息（用于调试 NDK 本身）。</li>
+<li>NDK_DEBUG=1：强制执行可调试的编译。</li>
+<li>NDK_DEBUG=0：强制执行发布版编译。</li>
+<li>NDK_HOST_32BIT=1：始终使用 32 位模式下的工具链。</li>
+<li>NDK_APPLICATION_MK=&lt;file&gt;：使用 NDK_APPLICATION_MK 变量指向的特定 Application.mk 文件进行编译。</li>
+<li>-C &lt;project&gt;：编译位于 &lt;project&gt; 的项目路径的原生代码。如果您不想在终端通过 cd 切换到该路径，此选项会非常有用。</li>
+</ul>
+<h2 id="Android-mk"><a href="#Android-mk" class="headerlink" title="Android.mk"></a>Android.mk</h2><p>Android.mk 文件位于项目 jni/ 目录的子目录中，用于向编译系统描述源文件和共享库。它实际上是编译系统解析一次或多次的微小 GNU makefile 片段。Android.mk 文件用于定义 Application.mk、编译系统和环境变量所未定义的项目范围设置。它还可替换特定模块的项目范围设置。</p>
+<p>Android.mk 的语法支持将源文件分组为模块。模块是静态库、共享库或独立的可执行文件。您可在每个 Android.mk 文件中定义一个或多个模块，也可在多个模块中使用同一个源文件。编译系统只将共享库放入您的应用软件包。此外，静态库可生成共享库。</p>
+<p>除了封装库之外，编译系统还可为您处理各种其他事项。例如，您无需在 Android.mk 文件中列出头文件或生成的文件之间的显式依赖关系。NDK 编译系统会自动计算这些关系。因此，您应该能够享受到未来 NDK 版本中新工具链/平台支持带来的益处，而无需处理 Android.mk 文件。</p>
+<p>详见：<a target="_blank" rel="noopener" href="https://developer.android.com/ndk/guides/android_mk.html">Android.mk</a></p>
+<p>简单示例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">LOCAL_PATH:= $(call my-dir)</span><br><span class="line">include $(CLEAR_VARS)</span><br><span class="line">LOCAL_MODULE:= libtermux</span><br><span class="line">LOCAL_SRC_FILES:= termux.c</span><br><span class="line">include $(BUILD_SHARED_LIBRARY)</span><br></pre></td></tr></table></figure>
+
+<h2 id="Application-mk"><a href="#Application-mk" class="headerlink" title="Application.mk"></a>Application.mk</h2><p>Application.mk 指定了 ndk-build 的项目范围设置。默认情况下，它位于应用项目目录中的 jni/Application.mk 下。</p>
+<p>注意：其中许多参数也具有模块等效项。例如，APP_CFLAGS 对应于 LOCAL_CFLAGS。无论何种情况下，特定于模块的选项都将优先于应用范围选项。对于标记，两者都使用，但特定于模块的标记将后出现在命令行中，因此它们可能会替换项目范围设置。</p>
+<p>详见：<a target="_blank" rel="noopener" href="https://developer.android.com/ndk/guides/application_mk.html">Application.mk</a></p>
+<p>简单示例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">APP_ABI := armeabi-v7a arm64-v8a x86</span><br><span class="line"><span class="meta">#</span><span class="bash"> 或者</span></span><br><span class="line">APP_ABI := all</span><br></pre></td></tr></table></figure>
+
+<h1 id="CMake"><a href="#CMake" class="headerlink" title="CMake"></a>CMake</h1><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">  ...</span><br><span class="line">  defaultConfig &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// This block is different from the one you use to link Gradle</span></span><br><span class="line">    <span class="comment">// to your CMake build script.</span></span><br><span class="line">    externalNativeBuild &#123;</span><br><span class="line">        cmake &#123;</span><br><span class="line">            cppFlags <span class="string">&quot;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  buildTypes &#123;...&#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Use this block to link Gradle to your CMake build script.</span></span><br><span class="line">  externalNativeBuild &#123;</span><br><span class="line">      cmake &#123;</span><br><span class="line">          path <span class="string">&quot;src/main/cpp/CMakeLists.txt&quot;</span></span><br><span class="line">          version <span class="string">&quot;3.10.2&quot;</span></span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="创建支持C-C-的项目"><a href="#创建支持C-C-的项目" class="headerlink" title="创建支持C/C++的项目"></a>创建支持C/C++的项目</h1><p>创建完成后，默认使用Cmake构建原生库，目录结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">├─app</span><br><span class="line">│  ├─libs</span><br><span class="line">│  └─src</span><br><span class="line">│      ├─main</span><br><span class="line">│      │  ├─cpp</span><br><span class="line">│      │  │  └─CMakeLists.txt</span><br><span class="line">│      │  │  └─native-lib.cpp</span><br><span class="line">│      │  ├─java</span><br><span class="line">│      │  │  └─com</span><br><span class="line">│      │  │      └─hearing</span><br><span class="line">│      │  │          └─jnidemo</span><br><span class="line">│      │  └─res</span><br><span class="line">│      │      ├─drawable</span><br><span class="line">│      │      ├─drawable-v24</span><br><span class="line">│      │      ├─layout</span><br><span class="line">│      │      ├─mipmap-anydpi-v26</span><br><span class="line">│      │      ├─mipmap-hdpi</span><br><span class="line">│      │      ├─mipmap-mdpi</span><br><span class="line">│      │      ├─mipmap-xhdpi</span><br><span class="line">│      │      ├─mipmap-xxhdpi</span><br><span class="line">│      │      ├─mipmap-xxxhdpi</span><br><span class="line">│      │      └─values</span><br></pre></td></tr></table></figure>
+
+<p>CmakeLists.txt:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"># For more information about <span class="keyword">using</span> CMake with Android Studio, read the</span><br><span class="line"><span class="meta"># documentation: https:<span class="comment">//d.android.com/studio/projects/add-native-code.html</span></span></span><br><span class="line"></span><br><span class="line"># Sets the minimum version of CMake required to build the native library.</span><br><span class="line"></span><br><span class="line">cmake_minimum_required(VERSION <span class="number">3.4</span><span class="number">.1</span>)</span><br><span class="line"></span><br><span class="line"># Creates <span class="keyword">and</span> names a library, sets it as either STATIC</span><br><span class="line"><span class="meta"># or SHARED, and provides the relative paths to its source code.</span></span><br><span class="line"># You can define multiple libraries, <span class="keyword">and</span> CMake builds them <span class="keyword">for</span> you.</span><br><span class="line"># Gradle automatically packages shared libraries with your APK.</span><br><span class="line"></span><br><span class="line">add_library( # Sets the name of the library.</span><br><span class="line">        native-lib</span><br><span class="line"></span><br><span class="line">        # Sets the library as a shared library.</span><br><span class="line">        SHARED</span><br><span class="line"></span><br><span class="line">        # Provides a relative path to your source file(s).</span><br><span class="line">        native-lib.cpp)</span><br><span class="line"></span><br><span class="line"># Searches <span class="keyword">for</span> a specified prebuilt library <span class="keyword">and</span> stores the path as a</span><br><span class="line"><span class="meta"># variable. Because CMake includes system libraries in the search path by</span></span><br><span class="line"><span class="meta"># default, you only need to specify the name of the public NDK library</span></span><br><span class="line"><span class="meta"># you want to add. CMake verifies that the library exists before</span></span><br><span class="line"><span class="meta"># completing its build.</span></span><br><span class="line"></span><br><span class="line">find_library( # Sets the name of the path variable.</span><br><span class="line">        <span class="built_in">log</span>-lib</span><br><span class="line"></span><br><span class="line">        # Specifies the name of the NDK library that</span><br><span class="line">        # you want CMake to locate.</span><br><span class="line">        <span class="built_in">log</span>)</span><br><span class="line"></span><br><span class="line"># Specifies libraries CMake should link to your target library. You</span><br><span class="line"><span class="meta"># can link multiple libraries, such as libraries you <span class="meta-keyword">define</span> in this</span></span><br><span class="line"><span class="meta"># build script, prebuilt third-party libraries, or system libraries.</span></span><br><span class="line"></span><br><span class="line">target_link_libraries( # Specifies the target library.</span><br><span class="line">        native-lib</span><br><span class="line"></span><br><span class="line">        # Links the target library to the <span class="built_in">log</span> library</span><br><span class="line">        # included in the NDK.</span><br><span class="line">        $&#123;<span class="built_in">log</span>-lib&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>native-lib.cpp:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;jni.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> JNIEXPORT jstring JNICALL</span><br><span class="line">Java_com_hearing_jnidemo_MainActivity_stringFromJNI(</span><br><span class="line">        JNIEnv *env,</span><br><span class="line">        jobject <span class="comment">/* this */</span>) &#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> hello = <span class="string">&quot;Hello from C++&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> env-&gt;NewStringUTF(hello.c_str());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>MainActivity.java:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.hearing.jnidemo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> androidx.appcompat.app.AppCompatActivity;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> android.os.Bundle;</span><br><span class="line"><span class="keyword">import</span> android.widget.TextView;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Used to load the &#x27;native-lib&#x27; library on application startup.</span></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.loadLibrary(<span class="string">&quot;native-lib&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Example of a call to a native method</span></span><br><span class="line">        TextView tv = findViewById(R.id.sample_text);</span><br><span class="line">        tv.setText(stringFromJNI());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * A native method that is implemented by the &#x27;native-lib&#x27; native library,</span></span><br><span class="line"><span class="comment">     * which is packaged with this application.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">native</span> String <span class="title">stringFromJNI</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>build.gradle</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">apply <span class="attr">plugin:</span> <span class="string">&#x27;com.android.application&#x27;</span></span><br><span class="line"></span><br><span class="line">android &#123;</span><br><span class="line">    compileSdkVersion <span class="number">29</span></span><br><span class="line">    buildToolsVersion <span class="string">&quot;29.0.1&quot;</span></span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">        applicationId <span class="string">&quot;com.hearing.jnidemo&quot;</span></span><br><span class="line">        minSdkVersion <span class="number">21</span></span><br><span class="line">        targetSdkVersion <span class="number">29</span></span><br><span class="line">        versionCode <span class="number">1</span></span><br><span class="line">        versionName <span class="string">&quot;1.0&quot;</span></span><br><span class="line">        testInstrumentationRunner <span class="string">&quot;androidx.test.runner.AndroidJUnitRunner&quot;</span></span><br><span class="line">        externalNativeBuild &#123;</span><br><span class="line">            cmake &#123;</span><br><span class="line">                cppFlags <span class="string">&quot;&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    buildTypes &#123;</span><br><span class="line">        release &#123;</span><br><span class="line">            minifyEnabled <span class="literal">false</span></span><br><span class="line">            proguardFiles getDefaultProguardFile(<span class="string">&#x27;proguard-android-optimize.txt&#x27;</span>), <span class="string">&#x27;proguard-rules.pro&#x27;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    externalNativeBuild &#123;</span><br><span class="line">        cmake &#123;</span><br><span class="line">            path <span class="string">&quot;src/main/cpp/CMakeLists.txt&quot;</span></span><br><span class="line">            version <span class="string">&quot;3.10.2&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    implementation fileTree(<span class="attr">dir:</span> <span class="string">&#x27;libs&#x27;</span>, <span class="attr">include:</span> [<span class="string">&#x27;*.jar&#x27;</span>])</span><br><span class="line">    implementation <span class="string">&#x27;androidx.appcompat:appcompat:1.0.2&#x27;</span></span><br><span class="line">    implementation <span class="string">&#x27;androidx.constraintlayout:constraintlayout:1.1.3&#x27;</span></span><br><span class="line">    testImplementation <span class="string">&#x27;junit:junit:4.12&#x27;</span></span><br><span class="line">    androidTestImplementation <span class="string">&#x27;androidx.test:runner:1.2.0&#x27;</span></span><br><span class="line">    androidTestImplementation <span class="string">&#x27;androidx.test.espresso:espresso-core:3.2.0&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="向已有项目添加C-C-代码"><a href="#向已有项目添加C-C-代码" class="headerlink" title="向已有项目添加C/C++代码"></a>向已有项目添加C/C++代码</h1><ol>
+<li>创建新的原生源文件并将其添加到您的 Android Studio 项目中。如果您已经拥有原生代码或想要导入预构建的原生库，则可以跳过此步骤。</li>
+<li>创建 CMake 构建脚本，将您的原生源代码构建到库中。如果导入和关联预构建库或平台库，您也需要此构建脚本。如果您的现有原生库已经拥有 CMakeLists.txt 构建脚本或者使用 ndk-build 并包含 Android.mk 构建脚本，则可以跳过此步骤。</li>
+<li>提供一个指向您的 CMake 或 ndk-build 脚本文件的路径，将 Gradle 关联到您的原生库。Gradle 使用构建脚本将源代码导入您的 Android Studio 项目并将原生库（SO 文件）打包到 APK 中。</li>
+</ol>
+<h2 id="创建新的原生源文件"><a href="#创建新的原生源文件" class="headerlink" title="创建新的原生源文件"></a>创建新的原生源文件</h2><p>在src/main/cpp下添加cpp文件，编写相应功能。</p>
+<h2 id="创建构建脚本"><a href="#创建构建脚本" class="headerlink" title="创建构建脚本"></a>创建构建脚本</h2><ul>
+<li>如果项目使用CMake，则需要CMake构建脚本，它是一个纯文本文件，必须将其命名为 CMakeLists.txt。</li>
+<li>如果项目使用 ndk-build，则不需要创建 CMake 构建脚本，需要提供一个指向 Android.mk 文件的路径，将 Gradle 关联到您的原生库。</li>
+</ul>
+<h3 id="CMake构建脚本"><a href="#CMake构建脚本" class="headerlink" title="CMake构建脚本"></a>CMake构建脚本</h3><p>将 cmake_minimum_required() 和 add_library() 命令添加到CMakeLists.txt中：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"># Sets the minimum version of CMake required to build your native library.</span><br><span class="line"># This ensures that a certain <span class="built_in">set</span> of CMake features is available to</span><br><span class="line"><span class="meta"># your build.</span></span><br><span class="line"></span><br><span class="line">cmake_minimum_required(VERSION <span class="number">3.4</span><span class="number">.1</span>)</span><br><span class="line"></span><br><span class="line"># Specifies a library name, specifies whether the library is STATIC <span class="keyword">or</span></span><br><span class="line"># SHARED, <span class="keyword">and</span> provides relative paths to the source code. You can</span><br><span class="line"><span class="meta"># <span class="meta-keyword">define</span> multiple libraries by adding multiple add.library() commands,</span></span><br><span class="line"><span class="meta"># and CMake builds them for you. When you build your app, Gradle</span></span><br><span class="line"><span class="meta"># automatically packages shared libraries with your APK.</span></span><br><span class="line"></span><br><span class="line">add_library( # Specifies the name of the library.</span><br><span class="line">             native-lib</span><br><span class="line"></span><br><span class="line">             # Sets the library as a shared library.</span><br><span class="line">             SHARED</span><br><span class="line"></span><br><span class="line">             # Provides a relative path to your source file(s).</span><br><span class="line">             src/main/cpp/native-lib.cpp )</span><br></pre></td></tr></table></figure>
+
+<p>为了确保 CMake 可以在编译时定位您的标头文件，需要将 include_directories() 命令添加到 CMake 构建脚本中并指定标头的路径：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">add_library(...)</span><br><span class="line"></span><br><span class="line"># Specifies a path to native header files.</span><br><span class="line">include_directories(src/main/cpp/include/)</span><br></pre></td></tr></table></figure>
+
+<p>CMake 使用以下规范来为库文件命名：<code>lib库名称.so</code></p>
+<p>例如，如果您在构建脚本中指定“native-lib”作为共享库的名称，CMake 将创建一个名称为 libnative-lib.so 的文件。在 Java 代码中加载此库时，请使用您在 CMake 构建脚本中指定的名称：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> &#123;</span><br><span class="line">    System.loadLibrary(“<span class="keyword">native</span>-lib”);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用多个 add_library() 命令，您可以为 CMake 定义要从其他源文件构建的更多库。</p>
+<p>Android NDK 提供了一套实用的原生 API 和库。通过将 NDK 库包含到项目的 CMakeLists.txt 脚本文件中，您可以使用这些 API 中的任意一种。预构建的 NDK 库已经存在于 Android 平台上，因此，您无需再构建或将其打包到 APK 中。由于 NDK 库已经是 CMake 搜索路径的一部分，只需要向 CMake 提供您希望使用的库的名称，并将其关联到您自己的原生库。</p>
+<p>将 find_library() 命令添加到您的 CMake 构建脚本中以定位 NDK 库，并将其路径存储为一个变量。您可以使用此变量在构建脚本的其他部分引用 NDK 库。以下示例可以定位 Android 特定的日志支持库并将其路径存储在 log-lib 中：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">find_library( # Defines the name of the path variable that stores the</span><br><span class="line">              # location of the NDK library.</span><br><span class="line">              <span class="built_in">log</span>-lib</span><br><span class="line"></span><br><span class="line">              # Specifies the name of the NDK library that</span><br><span class="line">              # CMake needs to locate.</span><br><span class="line">              <span class="built_in">log</span> )</span><br></pre></td></tr></table></figure>
+
+<p>为了确保您的原生库可以在 log 库中调用函数，您需要使用 CMake 构建脚本中的 target_link_libraries() 命令关联库：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">find_library(...)</span><br><span class="line"></span><br><span class="line"># Links your native library against one <span class="keyword">or</span> more other native libraries.</span><br><span class="line">target_link_libraries( # Specifies the target library.</span><br><span class="line">                       native-lib</span><br><span class="line"></span><br><span class="line">                       # Links the <span class="built_in">log</span> library to the target library.</span><br><span class="line">                       $&#123;<span class="built_in">log</span>-lib&#125; )</span><br></pre></td></tr></table></figure>
+
+<p>NDK 还以源代码的形式包含一些库，您在构建和关联到您的原生库时需要使用这些代码。您可以使用 CMake 构建脚本中的 add_library() 命令，将源代码编译到原生库中。要提供本地 NDK 库的路径，您可以使用 ANDROID_NDK 路径变量，Android Studio 会自动为您定义此变量。</p>
+<p>以下命令可以指示 CMake 构建 android_native_app_glue.c，后者会将 NativeActivity 生命周期事件和触摸输入置于静态库中并将静态库关联到 native-lib：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">add_library( app-glue</span><br><span class="line">             STATIC</span><br><span class="line">             $&#123;ANDROID_NDK&#125;/sources/android/native_app_glue/android_native_app_glue.c )</span><br><span class="line"></span><br><span class="line"># You need to link <span class="keyword">static</span> libraries against your shared native library.</span><br><span class="line">target_link_libraries( native-lib app-glue $&#123;<span class="built_in">log</span>-lib&#125; )</span><br></pre></td></tr></table></figure>
+
+<p>添加预构建库与为 CMake 指定要构建的另一个原生库类似。不过，由于库已经预先构建，您需要使用 IMPORTED 标志告知 CMake 您只希望将库导入到项目中：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">add_library( imported-lib</span><br><span class="line">             SHARED</span><br><span class="line">             IMPORTED )</span><br></pre></td></tr></table></figure>
+
+<p>然后，您需要使用 set_target_properties() 命令指定库的路径，如下所示。</p>
+<p>某些库为特定的 CPU 架构（或应用二进制接口 (ABI)）提供了单独的软件包，并将其组织到单独的目录中。此方法既有助于库充分利用特定的 CPU 架构，又能让您仅使用所需的库版本。要向 CMake 构建脚本中添加库的多个 ABI 版本，而不必为库的每个版本编写多个命令，您可以使用 ANDROID_ABI 路径变量。此变量使用 NDK 支持的一组默认 ABI，或者您手动配置 Gradle 而让其使用的一组经过筛选的 ABI。例如：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">add_library(...)</span><br><span class="line">set_target_properties( # Specifies the target library.</span><br><span class="line">                       imported-lib</span><br><span class="line"></span><br><span class="line">                       # Specifies the parameter you want to define.</span><br><span class="line">                       PROPERTIES IMPORTED_LOCATION</span><br><span class="line"></span><br><span class="line">                       # Provides the path to the library you want to <span class="keyword">import</span>.</span><br><span class="line">                       imported-lib/src/$&#123;ANDROID_ABI&#125;/libimported-lib.so )</span><br></pre></td></tr></table></figure>
+
+<p>为了确保 CMake 可以在编译时定位您的标头文件，您需要使用 include_directories() 命令，并包含标头文件的路径：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">include_directories( imported-lib/include/ )</span><br></pre></td></tr></table></figure>
+
+<p>注：如果您希望打包一个并不是构建时依赖项的预构建库（例如在添加属于 imported-lib 依赖项的预构建库时），则不需要执行以下说明来关联库。</p>
+<p>要将预构建库关联到您自己的原生库，请将其添加到 CMake 构建脚本的 target_link_libraries() 命令中：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">target_link_libraries( native-lib imported-lib app-glue $&#123;<span class="built_in">log</span>-lib&#125; )</span><br></pre></td></tr></table></figure>
+
+<p>如需了解有关 CMake 命令的详细信息，请参阅 <a target="_blank" rel="noopener" href="https://cmake.org/cmake/help/latest/manual/cmake-commands.7.html">CMake 文档</a></p>
+<h3 id="ndk-build构建脚本"><a href="#ndk-build构建脚本" class="headerlink" title="ndk-build构建脚本"></a>ndk-build构建脚本</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">LOCAL_PATH:= $(call my-dir)</span><br><span class="line">include $(CLEAR_VARS)</span><br><span class="line">LOCAL_MODULE:= libtermux</span><br><span class="line">LOCAL_SRC_FILES:= termux.c</span><br><span class="line">include $(BUILD_SHARED_LIBRARY)</span><br></pre></td></tr></table></figure>
+
+<h2 id="将-Gradle-关联到原生库"><a href="#将-Gradle-关联到原生库" class="headerlink" title="将 Gradle 关联到原生库"></a>将 Gradle 关联到原生库</h2><p>要将 Gradle 关联到您的原生库，您需要提供一个指向 CMake 或 ndk-build 脚本文件的路径。在您构建应用时，Gradle 会以依赖项的形式运行 CMake 或 ndk-build，并将共享的库打包到您的 APK 中。</p>
+<p>如果在将 CMake 或 ndk-build 脚本文件关联到 Gradle 后再对其进行更改，您应当从菜单栏中选择 Build &gt; Refresh Linked C++ Projects，将 Android Studio 与您的更改同步。</p>
+<h3 id="手动配置"><a href="#手动配置" class="headerlink" title="手动配置"></a>手动配置</h3><p>要手动配置 Gradle 以关联到您的原生库，您需要将 externalNativeBuild {} 块添加到模块级 build.gradle 文件中，并使用 cmake {} 或 ndkBuild {} 对其进行配置：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">  ...</span><br><span class="line">  defaultConfig &#123;...&#125;</span><br><span class="line">  buildTypes &#123;...&#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Encapsulates your external native build configurations.</span></span><br><span class="line">  externalNativeBuild &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Encapsulates your CMake build configurations.</span></span><br><span class="line">    cmake &#123;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// Provides a relative path to your CMake build script.</span></span><br><span class="line">      path <span class="string">&quot;src/main/cpp/CMakeLists.txt&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注：如果您想要将 Gradle 关联到现有 ndk-build 项目，请使用 ndkBuild {} 块而不是 cmake {}，并提供 Android.mk 文件的相对路径。如果 Application.mk 文件与您的 Android.mk 文件位于相同目录下，Gradle 也会包含此文件。</p>
+<h3 id="指定可选配置"><a href="#指定可选配置" class="headerlink" title="指定可选配置"></a>指定可选配置</h3><p>您可以在模块级 build.gradle 文件的 defaultConfig {} 块中配置另一个 externalNativeBuild {} 块，为 CMake 或 ndk-build 指定可选参数和标志。与 defaultConfig {} 块中的其他属性类似，您也可以在构建配置中为每个产品风味重写这些属性。</p>
+<p>例如，如果您的 CMake 或 ndk-build 项目定义多个原生库，您可以使用 targets 属性仅为给定产品风味构建和打包这些库中的一部分。以下代码示例说明了您可以配置的部分属性：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">  ...</span><br><span class="line">  defaultConfig &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// This block is different from the one you use to link Gradle</span></span><br><span class="line">    <span class="comment">// to your CMake or ndk-build script.</span></span><br><span class="line">    externalNativeBuild &#123;</span><br><span class="line"></span><br><span class="line">      <span class="comment">// For ndk-build, instead use ndkBuild &#123;&#125;</span></span><br><span class="line">      cmake &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Passes optional arguments to CMake.</span></span><br><span class="line">        arguments <span class="string">&quot;-DANDROID_ARM_NEON=TRUE&quot;</span>, <span class="string">&quot;-DANDROID_TOOLCHAIN=clang&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// Sets optional flags for the C compiler.</span></span><br><span class="line">        cFlags <span class="string">&quot;-D_EXAMPLE_C_FLAG1&quot;</span>, <span class="string">&quot;-D_EXAMPLE_C_FLAG2&quot;</span></span><br><span class="line"></span><br><span class="line">        <span class="comment">// Sets a flag to enable format macro constants for the C++ compiler.</span></span><br><span class="line">        cppFlags <span class="string">&quot;-D__STDC_FORMAT_MACROS&quot;</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  buildTypes &#123;...&#125;</span><br><span class="line"></span><br><span class="line">  productFlavors &#123;</span><br><span class="line">    ...</span><br><span class="line">    demo &#123;</span><br><span class="line">      ...</span><br><span class="line">      externalNativeBuild &#123;</span><br><span class="line">        cmake &#123;</span><br><span class="line">          ...</span><br><span class="line">          <span class="comment">// Specifies which native libraries to build and package for this</span></span><br><span class="line">          <span class="comment">// product flavor. If you don&#x27;t configure this property, Gradle</span></span><br><span class="line">          <span class="comment">// builds and packages all shared object libraries that you define</span></span><br><span class="line">          <span class="comment">// in your CMake or ndk-build project.</span></span><br><span class="line">          targets <span class="string">&quot;native-lib-demo&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    paid &#123;</span><br><span class="line">      ...</span><br><span class="line">      externalNativeBuild &#123;</span><br><span class="line">        cmake &#123;</span><br><span class="line">          ...</span><br><span class="line">          targets <span class="string">&quot;native-lib-paid&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Use this block to link Gradle to your CMake or ndk-build script.</span></span><br><span class="line">  externalNativeBuild &#123;</span><br><span class="line">    cmake &#123;...&#125;</span><br><span class="line">    <span class="comment">// or ndkBuild &#123;...&#125;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="指定-ABI"><a href="#指定-ABI" class="headerlink" title="指定 ABI"></a>指定 ABI</h3><p>默认情况下，Gradle 会针对 NDK 支持的 ABI 将您的原生库构建到单独的 .so 文件中，并将其全部打包到您的 APK 中。如果您希望 Gradle 仅构建和打包原生库的特定 ABI 配置，您可以在模块级 build.gradle 文件中使用 ndk.abiFilters 标志指定这些配置，如下所示：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">  ...</span><br><span class="line">  defaultConfig &#123;</span><br><span class="line">    ...</span><br><span class="line">    externalNativeBuild &#123;</span><br><span class="line">      cmake &#123;...&#125;</span><br><span class="line">      <span class="comment">// or ndkBuild &#123;...&#125;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ndk &#123;</span><br><span class="line">      <span class="comment">// Specifies the ABI configurations of your native</span></span><br><span class="line">      <span class="comment">// libraries Gradle should build and package with your APK.</span></span><br><span class="line">      abiFilters <span class="string">&#x27;x86&#x27;</span>, <span class="string">&#x27;x86_64&#x27;</span>, <span class="string">&#x27;armeabi&#x27;</span>, <span class="string">&#x27;armeabi-v7a&#x27;</span>,</span><br><span class="line">                   <span class="string">&#x27;arm64-v8a&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  buildTypes &#123;...&#125;</span><br><span class="line">  externalNativeBuild &#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在大多数情况下，您只需要在 ndk {} 块中指定 abiFilters（如上所示），因为它会指示 Gradle 构建和打包原生库的这些版本。不过，如果您希望控制 Gradle 应当构建的配置，并独立于您希望其打包到 APK 中的配置，请在 defaultConfig.externalNativeBuild.cmake {} 块（或 defaultConfig.externalNativeBuild.ndkBuild {} 块中）配置另一个 abiFilters 标志。Gradle 会构建这些 ABI 配置，不过仅会打包您在 defaultConfig.ndk{} 块中指定的配置。</p>
+<p>为了进一步降低 APK 的大小，请考虑<a target="_blank" rel="noopener" href="https://developer.android.com/studio/build/configure-apk-splits.html#configure-abi-split">配置 ABI APK 拆分</a>，而不是创建一个包含原生库所有版本的大型 APK，Gradle 会为您想要支持的每个 ABI 创建单独的 APK，并且仅打包每个 ABI 需要的文件。如果您配置 ABI 拆分，但没有像上面的代码示例一样指定 abiFilters 标志，Gradle 会构建原生库的所有受支持 ABI 版本，不过仅会打包您在 ABI 拆分配置中指定的版本。为了避免构建您不想要的原生库版本，请为 abiFilters 标志和 ABI 拆分配置提供相同的 ABI 列表。</p>
+<h1 id="ABI"><a href="#ABI" class="headerlink" title="ABI"></a>ABI</h1><h2 id="概述-2"><a href="#概述-2" class="headerlink" title="概述"></a>概述</h2><p>不同的 Android 手机使用不同的 CPU，而不同的 CPU 支持不同的指令集。CPU 与指令集的每种组合都有专属的应用二进制接口，即 ABI。ABI 可以非常精确地定义应用的机器代码在运行时如何与系统交互。您必须为应用要使用的每个 CPU 架构指定 ABI。典型的 ABI 包含以下信息：</p>
+<ul>
+<li>可使用的 CPU 指令集（和扩展指令集）。</li>
+<li>运行时内存存储和加载的字节顺序。Android 始终是 little-endian。</li>
+<li>在应用和系统之间传递数据的规范（包括对齐限制），以及系统调用函数时如何使用堆栈和寄存器。</li>
+<li>可执行二进制文件（例如程序和共享库）的格式，以及它们支持的内容类型。Android 始终使用 ELF。</li>
+</ul>
+<img src="ABI分类.png"/>
+
+<table>
+<thead>
+<tr>
+<th align="center">CPU（纵向）/ABI（横向）</th>
+<th align="center">armeabi</th>
+<th align="center">armeabi-v7a</th>
+<th align="center">arm64-v8a</th>
+<th align="center">x86</th>
+<th align="center">x86_64</th>
+<th align="center">mips</th>
+<th align="center">mips64</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">ARMv5</td>
+<td align="center">支持</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">ARMv7</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">ARMv8</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">x86</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+<td align="center"></td>
+<td align="center">支持</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">x86_64</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+<td align="center"></td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">MIPS</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">支持</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">MIPS64</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+</tr>
+</tbody></table>
+<h2 id="Android-平台-ABI-支持"><a href="#Android-平台-ABI-支持" class="headerlink" title="Android 平台 ABI 支持"></a>Android 平台 ABI 支持</h2><p>Android 系统在运行时知道它支持哪些 ABI，因为 build 特定的系统属性会指示：</p>
+<ul>
+<li>设备的主要 ABI，与系统映像本身使用的机器代码对应。</li>
+<li>（可选）与系统映像也支持的其他 ABI 对应的辅助 ABI。</li>
+</ul>
+<p>此机制确保系统在安装时从软件包提取最佳机器代码。</p>
+<p>为实现最佳性能，应直接针对主要 ABI 进行编译。例如，基于 ARMv5TE 的典型设备只会定义主 ABI：armeabi。相反，基于 ARMv7 的典型设备将主 ABI 定义为 armeabi-v7a，并将辅助 ABI 定义为 armeabi，因为它可以运行为每个 ABI 生成的应用原生二进制文件。</p>
+<p>64 位设备也支持其 32 位变体。以 arm64-v8a 设备为例，该设备也可以运行 armeabi 和 armeabi-v7a 代码。但请注意，如果应用以 arm64-v8a 为目标，而非依赖于运行 armeabi-v7a 版应用的设备，则应用在 64 位设备上的性能要好得多。</p>
+<p>许多基于 x86 的设备也可运行 armeabi-v7a 和 armeabi NDK 二进制文件。对于这些设备，主 ABI 将是 x86，辅助 ABI 是 armeabi-v7a。</p>
+<p>您可以为特定 ABI 强制安装 apk。这在测试时非常有用。请使用以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb install --abi abi-identifier path_to_apk</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装自动解压原生代码"><a href="#安装自动解压原生代码" class="headerlink" title="安装自动解压原生代码"></a>安装自动解压原生代码</h2><p>安装应用时，软件包管理器服务将扫描 APK，并查找以下形式的任何共享库：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lib/&lt;primary-abi&gt;/lib&lt;name&gt;.so</span><br></pre></td></tr></table></figure>
+
+<p>如果未找到，并且您已定义辅助 ABI，该服务将扫描以下形式的共享库：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lib/&lt;secondary-abi&gt;/lib&lt;name&gt;.so</span><br></pre></td></tr></table></figure>
+
+<p>找到所需的库时，软件包管理器会将它们复制到应用的原生库目录 (<code>&lt;nativeLibraryDir&gt;/</code>) 下的 <code>/lib/lib&lt;name&gt;.so</code>。以下代码段会收到 nativeLibraryDir(<code>/data/app/com.hearing.test-b4Q3jAne7emB6ypXB6AHtQ==/lib/arm64</code>)：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> ainfo = <span class="keyword">this</span>.applicationContext.packageManager.getApplicationInfo(</span><br><span class="line">        <span class="string">&quot;com.hearing.test&quot;</span>,</span><br><span class="line">        PackageManager.GET_SHARED_LIBRARY_FILES</span><br><span class="line">)</span><br><span class="line">Log.v(TAG, <span class="string">&quot;native library dir <span class="subst">$&#123;ainfo.nativeLibraryDir&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>如果根本没有共享对象文件，应用也会构建并安装，但在运行时会崩溃。</p>
+<h2 id="so库的名称和文件名"><a href="#so库的名称和文件名" class="headerlink" title="so库的名称和文件名"></a>so库的名称和文件名</h2><ul>
+<li>so库的名称可任意，如hearing。</li>
+<li>so库的文件名必须以lib开头。如libhearing.so，其中lib是必要前缀，hearing才是这个库的名称。</li>
+</ul>
+<h2 id="so库文件的路径"><a href="#so库文件的路径" class="headerlink" title="so库文件的路径"></a>so库文件的路径</h2><ul>
+<li><p>在Android Studio中的路径：默认要放在模块<code>/src/&lt;SourceSet&gt;/jniLibs/&lt;ABI&gt;/</code>下。如：将so库放在<code>app/src/main/jniLibs/armeabi</code>。可在模块的build.gradle中修改配置指定so库的路径。如，将so库放在app/libs/armeabi下，并修改配置如下：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">  ...</span><br><span class="line">  sourceSets &#123;</span><br><span class="line">    main &#123;</span><br><span class="line">      jniLibs.srcDirs = [<span class="string">&#x27;libs&#x27;</span>]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在Android系统中的路径：<code>/data/data/&lt;应用包名&gt;/lib/</code>下。</p>
+</li>
+<li><p>在aar包中的路径：<code>jni/&lt;ABI&gt;</code>下。</p>
+</li>
+</ul>
+<h2 id="so库的代码加载"><a href="#so库的代码加载" class="headerlink" title="so库的代码加载"></a>so库的代码加载</h2><ul>
+<li>System.loadLibrary(“so库的名称”)：如System.loadLibrary(“hearing”)，会加载该应用下的libhearing.so文件。</li>
+<li>System.load(“so库文件的全路径”)：如System.load(“/data/data/com.hearing.app.demo/libhearing.so”)，会加载包名为com.hearing.app.demo的应用的libhearing.so文件。</li>
+</ul>
+<h2 id="so库的使用建议"><a href="#so库的使用建议" class="headerlink" title="so库的使用建议"></a>so库的使用建议</h2><ul>
+<li>理论上应该为每个ABI目录提供对应的so库。但是Android支持7种ABI，若全部支持，必然导致APK包过大。</li>
+<li>一般只保留arm64-v8a、armeabi-v7a这两个ABI的so库。</li>
+<li>mips/mips64：极少用于手机，可忽略。</li>
+<li>x86/x86_64：x86架构的手机的市场占有率很低，约为1%左右。而且x86架构都包含ARM模拟层，兼容ARM类型的ABI。注意，模拟器大为x86架构，平板很多也是x86。</li>
+<li>arm64-v8a：64位ARM架构。可用32位模式运行armeabi-v7a和armeabi。</li>
+<li>armeabi-v7a：32位。</li>
+<li>armeabi：老版本ARMv5。</li>
+</ul>
+<p>不难发现，只要提供armeabi便可兼容新/旧设备。但armeabi缺少对浮点数机器的支持，存在性能瓶颈。应该将armeabi目录中的so库拷贝一份到armeabi-v7a目录中。</p>
+<h1 id="JNI"><a href="#JNI" class="headerlink" title="JNI"></a>JNI</h1><h2 id="概述-3"><a href="#概述-3" class="headerlink" title="概述"></a>概述</h2><p>JNI是Java native interface的简写，可以译作Java原生接口。</p>
+<p>使用JNI的代价：JAVA程序是运行在JVM之上的，可以做到平台无关。但是如果Java程序通过JNI调用了原生的代码（比如 c/c++等），则Java程序就丧失了平台无关性。最起码需要重新编译原生代码部分。所以应用JNI需要好好权衡，不到万不得已，请不要选择JNI，可以选择替代方案，比如TCP/IP进行进程间通讯等。这也是为什么Google的Android平台的底层虽然用JNI实现，但是他不建议开发人员用JNI来开发Android上面的应用的原因。因为这将会丧失Android上面的应用程序平台无关性。</p>
+<ul>
+<li>JVM: jvm是java虚拟机在jni层的代表，全局只有一个。</li>
+<li>JNIENV: 代表了java在本线程的运行环境，每个线程都有一个。</li>
+</ul>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>工作原理：</p>
+<ol>
+<li>java层调用system.load方法。</li>
+<li>通过classloader拿到了so的绝对路径，然后调用nativeload()方法。</li>
+<li>通过linux下的dlopen方法，加载并查找so库里的方法，如有jni_onload会优先加载。</li>
+<li>当前线程下的jnienv会将所有的jni方法注册到了同一个vm中，so和class到了同一个进程空间。</li>
+<li>通过当前线程的jnienv即可调用对应的对象方法了。</li>
+</ol>
+<h2 id="内存管理"><a href="#内存管理" class="headerlink" title="内存管理"></a>内存管理</h2><p>Heap Memory内存泄漏：</p>
+<ul>
+<li><p>Java对象存储在JVM进程空间中的Java Heap中，Java Heap可以在JVM运行过程中动态变化。如果Java对象越来越多，占据Java Heap的空间也越来越大，JVM会在运行时动态扩展Java Heap的容量。如果Java Heap容量扩充到了上限，并且GC后仍然没有足够的空间分配新的Java对象，便会抛出OutOfMemory错误，导致程序崩溃。<br>  <br>Native memory内存泄漏：</p>
+</li>
+<li><p>从操作系统角度来看，JVM在运行时和其他进程没有本质的区别。在系统级别上，它们具有同样的调度机制，同样的内存分配方式，同样的内存格局。多种原因可能导致JVM的native memory内存泄漏。例如：</p>
+<ul>
+<li>JVM在运行中过多的线程被创建，并且同时运行；</li>
+<li>JVM为线程分配的资源就可能耗尽native memory的容量；</li>
+<li>JNI编程错误也可能导致native memory的内存泄漏；<br>    <br>JNI编程错误造成的内存泄漏有以下几类：</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li><p>Native Code本身造成的内存泄漏：在JNI编程中，会使用到native编程语言，例如C/C++。native编程语言都自己的内存管理机制，如果没有遵循native编程语言的内存管理机制，也会造成内存泄漏。例如，在C语言中，是通过malloc()函数分配内存，对应的释放内存函数是free()。如果分配内存后，没有调用相应的free()函数，则会造成native memory内存泄漏。</p>
+</li>
+<li><p>Global Reference（全局引用）引入的内存泄漏：JNI编程需要遵循JNI的规范标准，JVM附加了JNI编程特有的内存管理机制。在JNI中的Local Reference(局部引用)只在本地方法内有效，当本地方法返回时，会被自动失效。这种自动失效，会把它们所引用的Java对象中的引用计数减1，从而可以让Java中的对象被回收，不会造成Java Heap中Java对象的内存泄漏。而JNI中的Global Reference(全局引用)对Java对象的引用一直有效，除非显式的调用DeleteGlobalRef方法释放全Global Reference。在使用Global Reference时，需要仔细维护对Global Reference的使用，在不使用的时候要及时释放Global Reference，否则Global Reference引用的Java对象将永远停留在Java Heap中，造成Java Heap的内存泄漏。</p>
+</li>
+<li><p>Local Reference可能造成的内存泄漏：虽然在本地方法返回时，JNI可以确保Local Reference引用的对象可以被自动回收。但还是存在以下几种情况，需要手动释放Local Reference，否则也会造成内存泄漏。</p>
+<ul>
+<li>在本地方法中引用了很大的Java对象，在使用完该Java对象后，还需要执行一些耗时操作。如果不主动释放该Local Reference的话，则将一直保持对Java对象的引用，需要等到本地方法返回时，才能释放对Java对象的引用。在执行耗时操作期间，会由于Local Reference没有及时释放，导致Java Heap的内存泄漏。</li>
+<li>在本地代码中创建了大量的Local Reference对象，没有及时手动释放，导致内存溢出。此时需要手动释放那些不再使用的Local Reference对象，例如在本地代码中创建一个很大的对象数组。</li>
+<li>不返回的本地函数。例如：在一个本地函数中循环处理消息，如果不释放循环中使用的局部引用，则会无限地累积，进而导致内存泄漏。此时在循环体中需要手动释放局部引用。</li>
+</ul>
+</li>
+</ol>
+<h2 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h2><h3 id="局部引用"><a href="#局部引用" class="headerlink" title="局部引用"></a>局部引用</h3><p>通过NewLocalRef和各种JNI接口创建（FindClass、NewObject、GetObjectClass和NewCharArray等）。会阻止GC回收所引用的对象，不在本地函数中跨函数使用，不能跨线前使用。函数返回后局部引用所引用的对象会被JVM自动释放，或调用DeleteLocalRef释放。(*env)-&gt;DeleteLocalRef(env,local_ref)。</p>
+<p>局部引用只有在创建它的本地方法返回前有效，本地方法返回到Java层之后，如果Java层没有对返回的局部引用使用的话，局部引用就会被JVM自动释放。释放一个局部引用有两种方式，一个是本地方法执行完毕后JVM自动释放，另外一个是自己调用DeleteLocalRef手动释放。</p>
+<ol>
+<li>JNI会将创建的局部引用都存储在一个局部引用表中，如果这个表超过了最大容量限制，就会造成局部引用表溢出，使程序崩溃。经测试，Android上的JNI局部引用表最大数量是512个。当我们在实现一个本地方法时，可能需要创建大量的局部引用，如果没有及时释放，就有可能导致JNI局部引用表的溢出，所以，在不需要局部引用时就立即调用DeleteLocalRef手动删除。</li>
+<li>如果你的本地函数不会返回。比如一个接收消息的函数，里面有一个死循环，用于等待别人发送消息过来while(true) { if (有新的消息) ｛ 处理之。。。。｝ else { 等待新的消息。。。}}。如果在消息循环当中创建的引用你不显示删除，很快将会造成JVM局部引用表溢出。 </li>
+<li>局部引用会阻止所引用的对象被GC回收。比如你写的一个本地函数中刚开始需要访问一个大对象，因此一开始就创建了一个对这个对象的引用，但在函数返回前会有一个大量的非常复杂的计算过程，而在这个计算过程当中是不需要前面创建的那个大对象的引用的。但是，在计算的过程当中，如果这个大对象的引用还没有被释放的话，会阻止GC回收这个对象，内存一直占用者，造成资源的浪费。</li>
+</ol>
+<p>JNI提供了一系列函数来管理局部引用的生命周期。这些函数包括：EnsureLocalCapacity、NewLocalRef、PushLocalFrame、PopLocalFrame、DeleteLocalRef.</p>
+<h3 id="全局引用"><a href="#全局引用" class="headerlink" title="全局引用"></a>全局引用</h3><p>调用NewGlobalRef基于局部引用创建，会阻GC回收所引用的对象。可以跨方法、跨线程使用。JVM不会自动释放，必须调用DeleteGlobalRef手动释放(*env)-&gt;DeleteGlobalRef(env,g_cls_string);</p>
+<h3 id="弱全局引用"><a href="#弱全局引用" class="headerlink" title="弱全局引用"></a>弱全局引用</h3><p>调用NewWeakGlobalRef基于局部引用或全局引用创建，不会阻止GC回收所引用的对象，可以跨方法、跨线程使用。引用不会自动释放，在JVM认为应该回收它的时候（比如内存紧张的时候）进行回收而被释放。或调用DeleteWeakGlobalRef手动释放。(*env)-&gt;DeleteWeakGlobalRef(env,g_cls_string).</p>
+<p>弱引用可以跨方法、线程使用。但与全局引用很重要不同的一点是，弱引用不会阻止GC回收它引用的对象。在newString这个函数中，我们也可以使用弱引用来存储String的Class引用，因为java.lang.String这个类是系统类，永远不会被GC回收。当本地代码中缓存的引用不一定要阻止GC回收它所指向的对象时，弱引用就是一个最好的选择。假设，一个本地方法mypkg.MyCls.f需要缓存一个指向类mypkg.MyCls2的引用，如果在弱引用中缓存的话，仍然允许mypkg.MyCls2这个类被unload，因为弱引用不会阻止GC回收所引用的对象。我们在使用弱引用时，必须先检查缓存过的弱引用是指向活动的类对象，还是指向一个已经被GC给unload的类对象。</p>
+<p>给定两个引用（不管是全局、局部还是弱全局引用），我们只需要调用IsSameObject来判断它们两个是否指向相同的对象。例如：（*env)-&gt;IsSameObject(env, obj1, obj2)，如果obj1和obj2指向相同的对象，则返回JNI_TRUE（或者1），否则返回JNI_FALSE（或者0）。有一个特殊的引用需要注意：NULL，JNI中的NULL引用指向JVM中的null对象。如果obj是一个局部或全局引用，使用(*env)-&gt;IsSameObject(env, obj, NULL) 或者 obj == NULL 来判断obj是否指向一个null对象即可.</p>
+<h2 id="使用步骤"><a href="#使用步骤" class="headerlink" title="使用步骤"></a>使用步骤</h2><ol>
+<li><p>创建一个Java程序（JNIDemo.java）定义原生的c/c++函数。</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JNIDemo</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.loadLibrary(<span class="string">&quot;JNIDemo&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">hello</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        hello();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>生成本地链接库。必须指定classpath 为当前目录。或者在系统CLASS_PATH加入当前路径。</p>
+ <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">javac JINDemo.java</span><br><span class="line">javah -classpath . JNIDemo</span><br></pre></td></tr></table></figure>
+
+<p> 生成的JNIDemo.h如下：</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* DO NOT EDIT THIS FILE - it is machine generated */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;jni.h&gt;</span></span></span><br><span class="line"><span class="comment">/* Header for class JNIDemo */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> _Included_JNIDemo</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> _Included_JNIDemo</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __cplusplus</span></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> &#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">* Class:     JNIDemo</span></span><br><span class="line"><span class="comment">* Method:    hello</span></span><br><span class="line"><span class="comment">* Signature: ()V</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line">JNIEXPORT <span class="keyword">void</span> JNICALL Java_JNIDemo_hello</span><br><span class="line">(JNIEnv *, jclass);</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __cplusplus</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在与Hello.h相同的路径下创建一个CPP文件JNIDemo.c。</p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># <span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta"># <span class="meta-keyword">include</span> <span class="meta-string">&quot;JNIDemo.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function">JNIEXPORT <span class="keyword">void</span> JNICALL <span class="title">Java_JNIDemo_hello</span><span class="params">(JNIEnv *env, jclass jclass)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Hello World!\n&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>编译生成共享库。注意在linux下，动态链接库的名字 必须是 lib****.so，必须以lib开头！</p>
+ <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gcc -I /home/hearing/Software/jdk1.8.0_144/include/linux/ -I /home/hearing/Software/jdk1.8.0_144/include/ -fPIC -shared -o libJNIDemo.so JNIDemo.c</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>运行程序。</p>
+</li>
+</ol>
+<ul>
+<li>linux下面 java.library.path 和环境变量 jdk/bin 的那个PATH不是一回事情，有另外一个默认变量 LD_LIBRARY_PATH 来保存他的信息。而windows下，首先java会找当前目录，其次，它会去环境变量的地址找！linux执行的时候却不知道在当前路径找。</li>
+<li>由于linux的路径特殊，所以，解决方法如下：<ol>
+<li>可以调用sysout(System.getProperty(“java.library.path”)); 来查看,然后把 libXXXX.so拷贝到那里面的目录下去。</li>
+<li>设置环境变量：<br> export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH</li>
+<li>可以单次执行时候指定library位置：<br> java -Djava.library.path=. -cp . JNIDemo</li>
+</ol>
+</li>
+</ul>
+<h2 id="Android-JNI"><a href="#Android-JNI" class="headerlink" title="Android JNI"></a>Android JNI</h2><h3 id="概述-4"><a href="#概述-4" class="headerlink" title="概述"></a>概述</h3><p><image src="Android-JNI.png"/></image></p>
+<p>其中Application层和Firmware层都是Java代码编写，而底层众多Libararies、Kernel和一系列驱动程序都是C/C++代码写的，因此上层Java要调用底层的C/C++函数库必须通过JNI来实现，可以说JNI是底层到App层的一个桥梁。</p>
+<ol>
+<li>操作系统内核层（Kernel）<br>Android系统基于Linux内核作为整个系统的基础核心，依托Linux内核强大的内存管理、进程控制、网络管理以及安全管理等能力，使得Android系统的整体性能得到提升；Google公司针对移动设备的特点，基于Linux驱动模型添加了移动设备中常用的驱动程序，例如音频驱动、摄像头驱动等，极大提升了系统的可扩展性。Linux内核之上，Linux内核也同时作为软件层之下的硬件抽象层（Hardware Abstract Layer），负责对Linux内核驱动程序的封装，并向上提供接口。</li>
+<li>核心库（Libraries）与运行环境层（Android Runtime）<br>该层的核心函数库都与移动设备平台的应用密切相关，其中大部分都是基于C/C++语言，通过使用Java提供的JNI（Java Native Interface）接口Android上层应用使用，方便应用程序开发与维护。Android基于Dalvik虚拟机技术实现系统运行环境，具有较好的硬件优化能力，更加适合移动设备领域应用。</li>
+<li>应用框架层（Application Framework）<br>应用框架是Android应用开发的基础，为开发人员提供各种API接口；该层首先实现了Android应用程序中的各种组件，并且在遵循框架安全限制的前提下，任何应用程序之间都可以相互发布其功能并使用，使得应用程序开发更加便捷。</li>
+<li>应用层（Application）<br>Android应用层包括在系统上运行的应用程序，还包括安装在设备上的第三方应用，第三方应用的开发都是基于Android提供的SDK工具包（Software Development Kit），并且都是使用Java语言编程；开发人员可以利用Android应用框架层进行应用程序的开发，也可以绕过框架层直接使用NDK（Native Development Kit）进行开发。</li>
+</ol>
+<ul>
+<li>Android平台上服用C代码有两种方式：<ul>
+<li>JNI</li>
+<li>原生C可执行程序</li>
+</ul>
+</li>
+</ul>
+<h3 id="JNI方式"><a href="#JNI方式" class="headerlink" title="JNI方式"></a>JNI方式</h3><h3 id="原生-C-可执行程序"><a href="#原生-C-可执行程序" class="headerlink" title="原生 C 可执行程序"></a>原生 C 可执行程序</h3><p>Android本是 Linux，调用 Native 可执行程序是自然而然的途径。Java也提供了语言层面的支持，Runtime.exec() 函数就是干这个的。通过 exec() 启动进程，可以读取 Native 进程的标准输出，可以向 Native 进程的标准输入写入数据。</p>
+<p>调用原生可执行程序的方式的例子， WifiManager 在连接无线网络时会通过控制接口和 wpa_supplicant （用于无线连接的 wpa_suppliacant ，是原生C可执行程序）通信传递诸如扫瞄接入点、选择网络、连接网络等指令。</p>
+<p>还有，有些安卓系统机顶盒上自带的宽带拨号（PPPoE）程序，也是 C 可执行程序， Java 层的 PPPoEService 最终通过调用pppd/ppppoe 这样一些程序来执行实际的拨号过程。</p>
+<p>还有，我们常说的 root，其实也是通过调用一个叫 su 的程序来实现的。</p>
+<p>我们在实际开发中也可以这么用，比如想看某个目录下都有什么文件，可以直接调用 ls 命令，读取它的标准输出。</p>
+<h3 id="编译-C-可执行程序"><a href="#编译-C-可执行程序" class="headerlink" title="编译 C 可执行程序"></a>编译 C 可执行程序</h3><p>为Android平台编译 C 可执行程序，有几个方法：</p>
+<ul>
+<li>使用 NDK，使用 Android.mk。</li>
+<li>手动使用预编译的 gcc 编译</li>
+<li>使用 Qt 5.2 ，参考《Windows下Qt 5.2 for Android开发入门》和《Windows下Qt for Android 编译安卓C语言可执行程序》</li>
+</ul>
+<h3 id="在-APK-中集成和使用-C-可执行程序"><a href="#在-APK-中集成和使用-C-可执行程序" class="headerlink" title="在 APK 中集成和使用 C 可执行程序"></a>在 APK 中集成和使用 C 可执行程序</h3><ul>
+<li>可以把可执行程序放在 assets 目录下，这样打包成 APK 时会自动打包</li>
+<li>APK 运行时访问 assets 文件夹内的资源，释放可执行程序，添加可执行权限</li>
+<li>使用 Runtime.exec() 启动可执行程序。</li>
+</ul>
+<h2 id="JNI函数注册方式"><a href="#JNI函数注册方式" class="headerlink" title="JNI函数注册方式"></a>JNI函数注册方式</h2><h3 id="静态注册"><a href="#静态注册" class="headerlink" title="静态注册"></a>静态注册</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MediaRecorder</span> </span>&#123;</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.loadLibrary(<span class="string">&quot;media_jni&quot;</span>);</span><br><span class="line">        native_init();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">native</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">native_init</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">native</span> <span class="keyword">void</span> <span class="title">start</span><span class="params">()</span> <span class="keyword">throws</span> IllegalStateException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">javac MediaRecorder.java</span><br><span class="line">javah MediaRecorder</span><br></pre></td></tr></table></figure>
+
+<p>第二个命令会在当前目录中生成com_example_MediaRecorder.h文件，如下所示：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* DO NOT EDIT THIS FILE - it is machine generated */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;jni.h&gt;</span></span></span><br><span class="line"><span class="comment">/* Header for class com_example_MediaRecorder */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> _Included_com_example_MediaRecorder</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> _Included_com_example_MediaRecorder</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __cplusplus</span></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> &#123;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Class:     com_example_MediaRecorder</span></span><br><span class="line"><span class="comment"> * Method:    native_init</span></span><br><span class="line"><span class="comment"> * Signature: ()V</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">JNIEXPORT <span class="keyword">void</span> JNICALL Java_com_example_MediaRecorder_native_1init</span><br><span class="line">  (JNIEnv *, jclass);<span class="comment">//1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Class:     com_example_MediaRecorder</span></span><br><span class="line"><span class="comment"> * Method:    start</span></span><br><span class="line"><span class="comment"> * Signature: ()V</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">JNIEXPORT <span class="keyword">void</span> JNICALL Java_com_example_MediaRecorder_start</span><br><span class="line">  (JNIEnv *, jobject);</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> __cplusplus</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<p>当我们在Java中调用native_init方法时，就会从JNI中寻找Java_com_example_MediaRecorder_native_1init方法，如果没有就会报错，如果找到就会为native_init和Java_com_example_MediaRecorder_native_1init建立关联，其实是保存JNI的方法指针，这样再次调用native_init方法时就会直接使用这个方法指针就可以了。 </p>
+<p>静态注册就是根据方法名，将Java方法和JNI方法建立关联，但是它有一些缺点：</p>
+<ul>
+<li>JNI层的方法名称过长。</li>
+<li>声明Native方法的类需要用javah生成头文件。</li>
+<li>初次调用JNI方法时需要建立关联，影响效率。</li>
+</ul>
+<p>我们知道，静态注册就是Java的Native方法通过方法指针来与JNI进行关联的，如果Native方法知道它在JNI中对应的方法指针，就可以避免上述的缺点，这就是动态注册。</p>
+<h3 id="动态注册"><a href="#动态注册" class="headerlink" title="动态注册"></a>动态注册</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;jni.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;Business/Log/Log.hpp&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;mars/xlog/xlogger.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">char</span> *classPath = <span class="string">&quot;com/mail/jni/Log&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">log</span><span class="params">(JNIEnv *env, jclass type, jint level_, jstring module_, jstring file_, jstring func_,</span></span></span><br><span class="line"><span class="function"><span class="params">        jint line_, jstring msg_)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *<span class="keyword">module</span> = env-&gt;GetStringUTFChars(module_, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *file = env-&gt;GetStringUTFChars(file_, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *func = env-&gt;GetStringUTFChars(func_, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span> *msg = env-&gt;GetStringUTFChars(msg_, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">    SE_LOG_INIT(<span class="string">&quot;/sdcard/&quot;</span>, LOG_LEVEL_ALL);</span><br><span class="line">    xlogger2((TLogLevel) level_, <span class="keyword">module</span>, file, func, line_, msg);</span><br><span class="line"></span><br><span class="line">    env-&gt;ReleaseStringUTFChars(module_, <span class="keyword">module</span>);</span><br><span class="line">    env-&gt;ReleaseStringUTFChars(msg_, msg);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> JNINativeMethod getMethods[] = &#123;</span><br><span class="line">        &#123;<span class="string">&quot;log&quot;</span>, <span class="string">&quot;(ILjava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/String;)V&quot;</span>,</span><br><span class="line">                (<span class="keyword">void</span>*) <span class="built_in">log</span>&#125;,</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//此函数通过调用JNI中 RegisterNatives 方法来注册我们的函数</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">registerNativeMethods</span><span class="params">(JNIEnv* env, <span class="keyword">const</span> <span class="keyword">char</span>* className, JNINativeMethod* getMethods,</span></span></span><br><span class="line"><span class="function"><span class="params">                                <span class="keyword">int</span> methodsNum)</span></span>&#123;</span><br><span class="line">    jclass clazz;</span><br><span class="line">    <span class="comment">//找到声明native方法的类</span></span><br><span class="line">    clazz = env-&gt;FindClass(className);</span><br><span class="line">    <span class="keyword">if</span>(clazz == <span class="literal">NULL</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> JNI_FALSE;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//注册函数 参数：java类 所要注册的函数数组 注册函数的个数</span></span><br><span class="line">    <span class="keyword">if</span>(env-&gt;RegisterNatives(clazz, getMethods, methodsNum) &lt; <span class="number">0</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> JNI_FALSE;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> JNI_TRUE;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">registerNatives</span><span class="params">(JNIEnv* env)</span></span>&#123;</span><br><span class="line">    <span class="comment">//指定类的路径，通过FindClass 方法来找到对应的类</span></span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span>* className  = classPath;</span><br><span class="line">    <span class="keyword">return</span> registerNativeMethods(env, className, getMethods, <span class="keyword">sizeof</span>(getMethods)/ <span class="keyword">sizeof</span>(getMethods[<span class="number">0</span>]));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//回调函数 在这里面注册函数</span></span><br><span class="line"><span class="function">JNIEXPORT jint JNICALL <span class="title">JNI_OnLoad</span><span class="params">(JavaVM* vm, <span class="keyword">void</span>* reserved)</span></span>&#123;</span><br><span class="line">    JNIEnv* env = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="comment">//判断虚拟机状态是否有问题</span></span><br><span class="line">    <span class="keyword">if</span>(vm-&gt;GetEnv((<span class="keyword">void</span>**)&amp;env, JNI_VERSION_1_6)!= JNI_OK)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    assert(env != <span class="literal">NULL</span>);</span><br><span class="line">    <span class="comment">//开始注册函数 registerNatives -》registerNativeMethods -》env-&gt;RegisterNatives</span></span><br><span class="line">    <span class="keyword">if</span>(!registerNatives(env))&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//返回jni 的版本</span></span><br><span class="line">    <span class="keyword">return</span> JNI_VERSION_1_6;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="JAVA和C-数据类型对应"><a href="#JAVA和C-数据类型对应" class="headerlink" title="JAVA和C++数据类型对应"></a>JAVA和C++数据类型对应</h2><p>见博客：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qinjuning/article/details/7607214">操作JNI函数以及复杂对象传递</a></p>
+<h3 id="JAVA原始类型"><a href="#JAVA原始类型" class="headerlink" title="JAVA原始类型"></a>JAVA原始类型</h3><table>
+<thead>
+<tr>
+<th align="center">JAVA类型</th>
+<th align="center">本地类型</th>
+<th align="center">JNI类型</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">int</td>
+<td align="center">long</td>
+<td align="center">jint/jsize</td>
+<td align="center">signed 32 bits</td>
+</tr>
+<tr>
+<td align="center">long</td>
+<td align="center">_int64</td>
+<td align="center">jlong</td>
+<td align="center">signed 64 bits</td>
+</tr>
+<tr>
+<td align="center">byte</td>
+<td align="center">signed char</td>
+<td align="center">jbyte</td>
+<td align="center">signed 8 bits</td>
+</tr>
+<tr>
+<td align="center">boolean</td>
+<td align="center">unsigned char</td>
+<td align="center">jboolean</td>
+<td align="center">unsigned 8 bits</td>
+</tr>
+<tr>
+<td align="center">char</td>
+<td align="center">unsigned short</td>
+<td align="center">jchar</td>
+<td align="center">unsigned 16 bits</td>
+</tr>
+<tr>
+<td align="center">short</td>
+<td align="center">short</td>
+<td align="center">jshort</td>
+<td align="center">signed 16 bits</td>
+</tr>
+<tr>
+<td align="center">float</td>
+<td align="center">float</td>
+<td align="center">jfloat</td>
+<td align="center">32 bits</td>
+</tr>
+<tr>
+<td align="center">double</td>
+<td align="center">double</td>
+<td align="center">jdouble</td>
+<td align="center">64 bits</td>
+</tr>
+<tr>
+<td align="center">void</td>
+<td align="center">void</td>
+<td align="center">void</td>
+<td align="center">N/A</td>
+</tr>
+</tbody></table>
+<h3 id="Java对象"><a href="#Java对象" class="headerlink" title="Java对象"></a>Java对象</h3><p>Java对象做为引用被传递到本地方法中，所有这些Java对象的引用都有一个共同的父类型jobject(相当于java中的Object类是所有类的父类一样)。下面是JNI实现的一些jobject的子类：</p>
+<h4 id="String对象"><a href="#String对象" class="headerlink" title="String对象"></a>String对象</h4><p>从java程序中传过去的String对象在本地方法中对应的是jstring类型，jstring类型和c中的char<em>不同，所以如果你直接当做char</em>使用的话，就会出错。因此在使用之前需要将jstring转换成为c/c++中的char*，这里使用JNIEnv的方法转换。下面是一个例子：</p>
+<pre><code>JNIEXPORT jstring JNICALL Java_Prompt_getLine
+(JNIEnv *env, jobject obj, jstring prompt)
+&#123;
+char buf[128];
+const char *str = (*env)-&gt;GetStringUTFChars(env, prompt, 0);
+printf(&quot;%s&quot;, str);
+(*env)-&gt;ReleaseStringUTFChars(env, prompt, str);</code></pre>
+<p>这里使用GetStringUTFChars方法将传进来的prompt（jstring类型）转换成为UTF－8的格式，就能够在本地方法中使用了。</p>
+<p>注意：在使用完你所转换之后的对象之后，需要显示调用ReleaseStringUTFChars方法，让JVM释放转换成UTF-8的string的对象的空间，如果不显示的调用的话，JVM中会一直保存该对象，不会被垃圾回收器回收，因此就会导致内存溢出。</p>
+<p>下面是访问String的一些方法：</p>
+<ul>
+<li>GetStringUTFChars将jstring转换成为UTF-8格式的char*</li>
+<li>GetStringChars将jstring转换成为Unicode格式的char*</li>
+<li>ReleaseStringUTFChars释放指向UTF-8格式的char*的指针</li>
+<li>ReleaseStringChars释放指向Unicode格式的char*的指针</li>
+<li>NewStringUTF创建一个UTF-8格式的String对象</li>
+<li>NewString创建一个Unicode格式的String对象</li>
+<li>GetStringUTFLengt获取UTF-8格式的char*的长度</li>
+<li>GetStringLength获取Unicode格式的char*的长度</li>
+</ul>
+<h4 id="Array对象"><a href="#Array对象" class="headerlink" title="Array对象"></a>Array对象</h4><p>和String对象一样，在本地方法中不能直接访问jarray对象，而是使用JNIEnv指针指向的一些方法来是用。</p>
+<h5 id="Java原始类型数组"><a href="#Java原始类型数组" class="headerlink" title="Java原始类型数组"></a>Java原始类型数组</h5><ol>
+<li><p>获取数组的长度</p>
+<pre><code> JNIEXPORT jint JNICALL Java_IntArray_sumArray
+ (JNIEnv *env, jobject obj, jintArray arr) &#123;
+     int i, sum = 0;
+     jsize len = (*env)-&gt;GetArrayLength(env, arr);
+ &#125;</code></pre>
+</li>
+<li><p>获取一个指向数组元素的指针</p>
+<pre><code> // 第三个参数是数组里面开始的元素
+ jint *body = (*env)-&gt;GetIntArrayElements(env, arr, 0);</code></pre>
+</li>
+<li><p>使用指针取出Array中的元素</p>
+<pre><code> for (i=0; i&lt;len; i++) &#123;
+ 　　sum += body[i];
+ &#125;</code></pre>
+</li>
+<li><p>释放数组元素的引用</p>
+<pre><code> (*env)-&gt;ReleaseIntArrayElements(env, arr, body, 0);</code></pre>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th align="center">获取函数</th>
+<th align="center">释放函数</th>
+<th align="center">数组类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">GetBooleanArrayElements</td>
+<td align="center">ReleaseBooleanArrayElements</td>
+<td align="center">boolean</td>
+</tr>
+<tr>
+<td align="center">GetByteArrayElements</td>
+<td align="center">ReleaseByteArrayElements</td>
+<td align="center">byte</td>
+</tr>
+<tr>
+<td align="center">GetCharArrayElements</td>
+<td align="center">ReleaseCharArrayElements</td>
+<td align="center">char</td>
+</tr>
+<tr>
+<td align="center">GetShortArrayElements</td>
+<td align="center">ReleaseShortArrayElements</td>
+<td align="center">short</td>
+</tr>
+<tr>
+<td align="center">GetIntArrayElements</td>
+<td align="center">ReleaseIntArrayElements</td>
+<td align="center">int</td>
+</tr>
+<tr>
+<td align="center">GetLongArrayElements</td>
+<td align="center">ReleaseLongArrayElements</td>
+<td align="center">long</td>
+</tr>
+<tr>
+<td align="center">GetFloatArrayElements</td>
+<td align="center">ReleaseFloatArrayElements</td>
+<td align="center">float</td>
+</tr>
+<tr>
+<td align="center">GetDoubleArrayElements</td>
+<td align="center">ReleaseDoubleArrayElements</td>
+<td align="center">double</td>
+</tr>
+</tbody></table>
+<h5 id="Java自定义对象数组"><a href="#Java自定义对象数组" class="headerlink" title="Java自定义对象数组"></a>Java自定义对象数组</h5><p>JNI提供了一组单独的函数来访问对象数组的元素，我们可以使用这些函数来获取和设置单独的对象数组元素。</p>
+<p>不能同时获得所有对象数组元素。</p>
+<ul>
+<li>GetObjectArrayElement在给定的索引中返回对象元素。</li>
+<li>SetObjectArrayElement在给定索引处更新对象元素。</li>
+</ul>
+<h4 id="Java对象-1"><a href="#Java对象-1" class="headerlink" title="Java对象"></a>Java对象</h4><p>在本地方法中调用Java对象的方法的步骤：</p>
+<ol>
+<li><p>获取你需要访问的Java对象的类：</p>
+<pre><code> jclass cls = (*env)-&gt;GetObjectClass(obj);</code></pre>
+</li>
+<li><p>获取MethodID：</p>
+<pre><code> jmethodID mid = (*env)-&gt;GetMethodID(cls, &quot;callback&quot;, &quot;(I)V&quot;);
+
+ // env--&gt;JNIEnv
+ // cls--&gt;第一步获取的jclass
+ // &quot;callback&quot;--&gt;要调用的方法名
+ // &quot;(I)V&quot;--&gt;方法的Signature</code></pre>
+<p> <strong>方法签名</strong></p>
+<p> 调用JNI的GetMethodID函数获取一个jmethodID时，需要传入一个方法名称和方法签名，方法名称就是在Java中定义的方法名，方法签名的格式为：(形参参数类型列表)返回值。</p>
+</li>
+<li><p>调用方法：</p>
+<pre><code> (*env)-&gt;CallVoidMethod(env, obj, mid, depth);
+
+ // env--&gt;JNIEnv
+ // obj--&gt;通过本地方法穿过来的jobject
+ // mid--&gt;要调用的MethodID（即第二步获得的MethodID）
+ // depth--&gt;方法需要的参数（对应方法的需求，添加相应的参数）</code></pre>
+</li>
+</ol>
+<p>注：这里使用的是CallVoidMethod方法调用，因为没有返回值，如果有返回值的话使用对应的方法，在后面会提到。</p>
+<p>方法的Signature<br>方法的Signature是由方法的参数和返回值的类型共同构成的，下面是他们的结构：<br>“(argument-types)return-type”<br>其中Java程序中参数类型和其对应的值如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">Signature</th>
+<th align="center">Java中的类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">Z</td>
+<td align="center">boolean</td>
+</tr>
+<tr>
+<td align="center">B</td>
+<td align="center">byte</td>
+</tr>
+<tr>
+<td align="center">C</td>
+<td align="center">char</td>
+</tr>
+<tr>
+<td align="center">S</td>
+<td align="center">short</td>
+</tr>
+<tr>
+<td align="center">I</td>
+<td align="center">int</td>
+</tr>
+<tr>
+<td align="center">L</td>
+<td align="center">long</td>
+</tr>
+<tr>
+<td align="center">F</td>
+<td align="center">float</td>
+</tr>
+<tr>
+<td align="center">D</td>
+<td align="center">double</td>
+</tr>
+<tr>
+<td align="center">V</td>
+<td align="center">void</td>
+</tr>
+<tr>
+<td align="center">以L开头，以”;”结尾,中间用”/“隔开包和类名.如果是嵌套类，则使用”$”。”Ljava/lang/String;Lxx/xx$$Class“</td>
+<td align="center">object对象</td>
+</tr>
+</tbody></table>
+<p>一个Java类的方法的Signature可以通过javap命令获取：（在classes/debug路径中）</p>
+<pre><code>javap -s Java类名</code></pre>
+<p>给调用的函数传参数:</p>
+<p>通常我们直接在methodID后面将要传的参数添加在后面，但是还有其他的方法也可以传参数：</p>
+<ul>
+<li>CallVoidMethodV可以获取一个数量可变的列表作为参数；</li>
+<li>CallVoidMethodA可以获取一个union。</li>
+</ul>
+<p>调用静态方法：</p>
+<p>就是将第二步和第三步调用的方法改为对应的：</p>
+<p>GetStaticMethodID获取对应的静态方法的ID<br>CallStaticIntMethod调用静态方法</p>
+<h4 id="访问Java对象的属性"><a href="#访问Java对象的属性" class="headerlink" title="访问Java对象的属性"></a>访问Java对象的属性</h4><p>访问Java对象的属性和访问Java对象的方法基本上一样，只需要将函数里面的Method改为Field即可</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/NDK/" rel="tag"># NDK</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/08/26/Android%E7%AD%BE%E5%90%8D%E7%AC%94%E8%AE%B0/" rel="prev" title="Android签名笔记">
+      <i class="fa fa-chevron-left"></i> Android签名笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/08/27/Android%E4%BB%A3%E7%A0%81%E6%B7%B7%E6%B7%86%E7%AC%94%E8%AE%B0/" rel="next" title="Android代码混淆笔记">
+      Android代码混淆笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ndk-build"><span class="nav-number">2.</span> <span class="nav-text">ndk-build</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#ndk-build-1"><span class="nav-number">2.1.</span> <span class="nav-text">ndk-build</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="nav-number">2.1.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E9%83%A8%E7%BC%96%E8%AF%91"><span class="nav-number">2.1.2.</span> <span class="nav-text">内部编译</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E8%A1%8C%E7%BC%96%E8%AF%91"><span class="nav-number">2.1.3.</span> <span class="nav-text">命令行编译</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Android-mk"><span class="nav-number">2.2.</span> <span class="nav-text">Android.mk</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Application-mk"><span class="nav-number">2.3.</span> <span class="nav-text">Application.mk</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CMake"><span class="nav-number">3.</span> <span class="nav-text">CMake</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%94%AF%E6%8C%81C-C-%E7%9A%84%E9%A1%B9%E7%9B%AE"><span class="nav-number">4.</span> <span class="nav-text">创建支持C&#x2F;C++的项目</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%91%E5%B7%B2%E6%9C%89%E9%A1%B9%E7%9B%AE%E6%B7%BB%E5%8A%A0C-C-%E4%BB%A3%E7%A0%81"><span class="nav-number">5.</span> <span class="nav-text">向已有项目添加C&#x2F;C++代码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%96%B0%E7%9A%84%E5%8E%9F%E7%94%9F%E6%BA%90%E6%96%87%E4%BB%B6"><span class="nav-number">5.1.</span> <span class="nav-text">创建新的原生源文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E6%9E%84%E5%BB%BA%E8%84%9A%E6%9C%AC"><span class="nav-number">5.2.</span> <span class="nav-text">创建构建脚本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CMake%E6%9E%84%E5%BB%BA%E8%84%9A%E6%9C%AC"><span class="nav-number">5.2.1.</span> <span class="nav-text">CMake构建脚本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ndk-build%E6%9E%84%E5%BB%BA%E8%84%9A%E6%9C%AC"><span class="nav-number">5.2.2.</span> <span class="nav-text">ndk-build构建脚本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%86-Gradle-%E5%85%B3%E8%81%94%E5%88%B0%E5%8E%9F%E7%94%9F%E5%BA%93"><span class="nav-number">5.3.</span> <span class="nav-text">将 Gradle 关联到原生库</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%8B%E5%8A%A8%E9%85%8D%E7%BD%AE"><span class="nav-number">5.3.1.</span> <span class="nav-text">手动配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E5%AE%9A%E5%8F%AF%E9%80%89%E9%85%8D%E7%BD%AE"><span class="nav-number">5.3.2.</span> <span class="nav-text">指定可选配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E5%AE%9A-ABI"><span class="nav-number">5.3.3.</span> <span class="nav-text">指定 ABI</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ABI"><span class="nav-number">6.</span> <span class="nav-text">ABI</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-2"><span class="nav-number">6.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Android-%E5%B9%B3%E5%8F%B0-ABI-%E6%94%AF%E6%8C%81"><span class="nav-number">6.2.</span> <span class="nav-text">Android 平台 ABI 支持</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E8%87%AA%E5%8A%A8%E8%A7%A3%E5%8E%8B%E5%8E%9F%E7%94%9F%E4%BB%A3%E7%A0%81"><span class="nav-number">6.3.</span> <span class="nav-text">安装自动解压原生代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#so%E5%BA%93%E7%9A%84%E5%90%8D%E7%A7%B0%E5%92%8C%E6%96%87%E4%BB%B6%E5%90%8D"><span class="nav-number">6.4.</span> <span class="nav-text">so库的名称和文件名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#so%E5%BA%93%E6%96%87%E4%BB%B6%E7%9A%84%E8%B7%AF%E5%BE%84"><span class="nav-number">6.5.</span> <span class="nav-text">so库文件的路径</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#so%E5%BA%93%E7%9A%84%E4%BB%A3%E7%A0%81%E5%8A%A0%E8%BD%BD"><span class="nav-number">6.6.</span> <span class="nav-text">so库的代码加载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#so%E5%BA%93%E7%9A%84%E4%BD%BF%E7%94%A8%E5%BB%BA%E8%AE%AE"><span class="nav-number">6.7.</span> <span class="nav-text">so库的使用建议</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#JNI"><span class="nav-number">7.</span> <span class="nav-text">JNI</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-3"><span class="nav-number">7.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8E%9F%E7%90%86"><span class="nav-number">7.2.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="nav-number">7.3.</span> <span class="nav-text">内存管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%95%E7%94%A8"><span class="nav-number">7.4.</span> <span class="nav-text">引用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B1%80%E9%83%A8%E5%BC%95%E7%94%A8"><span class="nav-number">7.4.1.</span> <span class="nav-text">局部引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%A8%E5%B1%80%E5%BC%95%E7%94%A8"><span class="nav-number">7.4.2.</span> <span class="nav-text">全局引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%B1%E5%85%A8%E5%B1%80%E5%BC%95%E7%94%A8"><span class="nav-number">7.4.3.</span> <span class="nav-text">弱全局引用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%AD%A5%E9%AA%A4"><span class="nav-number">7.5.</span> <span class="nav-text">使用步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Android-JNI"><span class="nav-number">7.6.</span> <span class="nav-text">Android JNI</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-4"><span class="nav-number">7.6.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JNI%E6%96%B9%E5%BC%8F"><span class="nav-number">7.6.2.</span> <span class="nav-text">JNI方式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8E%9F%E7%94%9F-C-%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F"><span class="nav-number">7.6.3.</span> <span class="nav-text">原生 C 可执行程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%96%E8%AF%91-C-%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F"><span class="nav-number">7.6.4.</span> <span class="nav-text">编译 C 可执行程序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8-APK-%E4%B8%AD%E9%9B%86%E6%88%90%E5%92%8C%E4%BD%BF%E7%94%A8-C-%E5%8F%AF%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F"><span class="nav-number">7.6.5.</span> <span class="nav-text">在 APK 中集成和使用 C 可执行程序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JNI%E5%87%BD%E6%95%B0%E6%B3%A8%E5%86%8C%E6%96%B9%E5%BC%8F"><span class="nav-number">7.7.</span> <span class="nav-text">JNI函数注册方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E6%B3%A8%E5%86%8C"><span class="nav-number">7.7.1.</span> <span class="nav-text">静态注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E6%B3%A8%E5%86%8C"><span class="nav-number">7.7.2.</span> <span class="nav-text">动态注册</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JAVA%E5%92%8CC-%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%AF%B9%E5%BA%94"><span class="nav-number">7.8.</span> <span class="nav-text">JAVA和C++数据类型对应</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JAVA%E5%8E%9F%E5%A7%8B%E7%B1%BB%E5%9E%8B"><span class="nav-number">7.8.1.</span> <span class="nav-text">JAVA原始类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java%E5%AF%B9%E8%B1%A1"><span class="nav-number">7.8.2.</span> <span class="nav-text">Java对象</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#String%E5%AF%B9%E8%B1%A1"><span class="nav-number">7.8.2.1.</span> <span class="nav-text">String对象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Array%E5%AF%B9%E8%B1%A1"><span class="nav-number">7.8.2.2.</span> <span class="nav-text">Array对象</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Java%E5%8E%9F%E5%A7%8B%E7%B1%BB%E5%9E%8B%E6%95%B0%E7%BB%84"><span class="nav-number">7.8.2.2.1.</span> <span class="nav-text">Java原始类型数组</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Java%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AF%B9%E8%B1%A1%E6%95%B0%E7%BB%84"><span class="nav-number">7.8.2.2.2.</span> <span class="nav-text">Java自定义对象数组</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Java%E5%AF%B9%E8%B1%A1-1"><span class="nav-number">7.8.2.3.</span> <span class="nav-text">Java对象</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%BF%E9%97%AEJava%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%B1%9E%E6%80%A7"><span class="nav-number">7.8.2.4.</span> <span class="nav-text">访问Java对象的属性</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述这两篇后台启动 Activity 的文章的 Demo 工程见 Github, 如有问题欢迎提出。 前段时间调研 Android 后台启动 Activity 的方案，参考 实战|Android后台启动Activity实践之路 一文，当时的结论如下： 原生Android ROM Android 原生 ROM 都能正常地从后台启动 Activity 界面，无论是 Android 9(直接启动) 还是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android后台启动的实践之路二">
+<meta property="og:url" content="http://yoursite.com/2021/01/26/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF%E4%BA%8C/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述这两篇后台启动 Activity 的文章的 Demo 工程见 Github, 如有问题欢迎提出。 前段时间调研 Android 后台启动 Activity 的方案，参考 实战|Android后台启动Activity实践之路 一文，当时的结论如下： 原生Android ROM Android 原生 ROM 都能正常地从后台启动 Activity 界面，无论是 Android 9(直接启动) 还是">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2021/01/26/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF%E4%BA%8C/ROM1.png">
+<meta property="og:image" content="http://yoursite.com/2021/01/26/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF%E4%BA%8C/ROM2.png">
+<meta property="article:published_time" content="2021-01-26T02:18:31.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.790Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="实战">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2021/01/26/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF%E4%BA%8C/ROM1.png">
+
+<link rel="canonical" href="http://yoursite.com/2021/01/26/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF%E4%BA%8C/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android后台启动的实践之路二 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/26/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF%E4%BA%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android后台启动的实践之路二
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-26 10:18:31" itemprop="dateCreated datePublished" datetime="2021-01-26T10:18:31+08:00">2021-01-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E5%AE%9E%E6%88%98/" itemprop="url" rel="index"><span itemprop="name">实战</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/01/26/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF%E4%BA%8C/" class="post-meta-item leancloud_visitors" data-flag-title="Android后台启动的实践之路二" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/01/26/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF%E4%BA%8C/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/01/26/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF%E4%BA%8C/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>这两篇后台启动 Activity 的文章的 Demo 工程见 <a target="_blank" rel="noopener" href="https://github.com/ljd1996/BgStarter">Github</a>, 如有问题欢迎提出。</p>
+<p>前段时间调研 Android 后台启动 Activity 的方案，参考 <a target="_blank" rel="noopener" href="https://juejin.cn/post/6907817072185737224">实战|Android后台启动Activity实践之路</a> 一文，当时的结论如下：</p>
+<p><strong>原生Android ROM</strong></p>
+<p>Android 原生 ROM 都能正常地从后台启动 Activity 界面，无论是 Android 9(直接启动) 还是 10 版本(借助全屏通知)。</p>
+<a id="more"></a>
+
+<p><strong>定制化ROM</strong></p>
+<p>Android P版本的机型：</p>
+<ul>
+<li>通过 moveTaskToFront 方法将应用切换到前台，如果切换失败的话可以多尝试几次调用 moveTaskToFront 方法；</li>
+<li>小米机型可以通过Hook相关参数来后台启动Activity；</li>
+</ul>
+<p>Android Q版本的机型：</p>
+<ul>
+<li>通过系统全屏通知的方式调起后台 Activity；</li>
+<li>在一些另作了限制的 ROM 上可能调起失败；</li>
+</ul>
+<p>后来又想到如果能够拿到这些机型 ROM 的源码，那么通过阅读 startActivity 以及后台启动权限设置页面的源码，那么就有可能找到破解的方法。至于怎么获取 ROM 的源码，我这里有两种方式：</p>
+<ul>
+<li>如果手里有现成的机型，则可以直接将 <code>/system/framework/</code> 中的内容通过 <code>adb pull</code> 命令拉下来，然后通过一些反编译工具可以查阅相关的源码；</li>
+<li>去相关厂商的官网下载对应机型的 ROM 包，通过工具将其解压转换，最终也可以拿到源码。</li>
+</ul>
+<p>这篇文章主要是延续上篇文章的内容，介绍一下怎么拿到 ROM 包源码，并以小米某机型为例，找出它们针对后台启动权限所做的定制化。</p>
+<h1 id="获取ROM源码"><a href="#获取ROM源码" class="headerlink" title="获取ROM源码"></a>获取ROM源码</h1><h2 id="adb-pull"><a href="#adb-pull" class="headerlink" title="adb pull"></a>adb pull</h2><p>我一开始也没想到原来不需要 root 权限即可从手机里 pull <code>/system/framework/</code> 里的内容，方式也很简单，手机连接电脑后运行命令即可在当前路径下拿到 framework 文件夹内容：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> adb pull /system/framework</span></span><br></pre></td></tr></table></figure>
+
+<p>这种方式做过 Android 开发的应该都知道，就不再多说了。不过需要注意的是在一些机器里 pull 下来的 framework 文件夹下的 jar 文件可能都是只有 1Kb 的大小，这种 jar 文件里不含有源代码，在 framework 下还有一些 odex 文件，需要将其转换成 dex 等格式才更好反编译，具体怎么转换的可以网上搜，貌似还有挺多教程的。</p>
+<h2 id="解压ROM"><a href="#解压ROM" class="headerlink" title="解压ROM"></a>解压ROM</h2><p>首先去对应厂商的官网下载 ROM 包，以小米为例是在 <a target="_blank" rel="noopener" href="https://www.miui.com/download.html">MIUI下载</a> 里下载，下载了目标 ROM.zip 后将其解压缩，我下载的是小米 Max3(Android 9) 的 ROM 包，解压后我们需要的有两个文件: <code>system.new.dat.br</code> 和 <code>system.transfer.list</code>。接下来分步骤看看怎么反编译出它的源码：</p>
+<ol>
+<li>下载 ROM 制作工具: <a target="_blank" rel="noopener" href="http://www.rom.cn/Index.aspx">下载地址</a>，下载安装打开后，选择其 <code>实用工具</code> 栏，然后打开 <code>new.dat编辑</code> 功能，如下图：</li>
+</ol>
+<p><img src="ROM1.png" alt="ROM1"></p>
+<ol start="2">
+<li>按照下图的两个步骤转换。首先第一步选择 <code>system.new.dat.br</code> 文件转换，得到 <code>.new.dat</code> 后缀的 <code>system.new.dat</code> 文件；然后第二步选择这个 <code>system.new.dat</code> 文件转换，可能提示需要 <code>.transfer.list</code> 文件，直接选择上面的 <code>system.transfer.list</code> 文件即可，转换后会得到一个 img 后缀的文件，将其解压缩。</li>
+</ol>
+<p><img src="ROM2.png" alt="ROM2"></p>
+<ol start="3">
+<li>打开解压缩后的文件夹，进入 <code>/system/framework/</code> 目录下，即可看到我们需要的 jar 文件们。</li>
+</ol>
+<h1 id="反编译ROM源码"><a href="#反编译ROM源码" class="headerlink" title="反编译ROM源码"></a>反编译ROM源码</h1><p>这一步是要将上面得到的 jar 或者 dex 文件反编译得到源码，网上有很多介绍反编译的文章，也有很多工具比如说 apktool, dex2jar, jd-gui 等，这里介绍一个傻瓜式操作的工具——<a target="_blank" rel="noopener" href="https://github.com/skylot/jadx/releases/tag/v1.2.0">jadx</a>，如果想要省事的话可以直接使用这个工具，它可以直接打开 jar, dex, apk 等后缀的文件，直接查看反编译后的源码，是不是很方便呢？</p>
+<p>另外如果要使用 jd-gui 查看的话，网上有很多教程了，也可以直接参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2018/10/25/Android%E9%80%86%E5%90%91%E7%AC%94%E8%AE%B0/#%E5%B7%A5%E5%85%B7">反编译工具</a>(这是我好多年前写的，质量不太好哈)，或者直接 <code>--help</code> 查看相关工具的 Usage。</p>
+<h1 id="后台启动权限做了什么？"><a href="#后台启动权限做了什么？" class="headerlink" title="后台启动权限做了什么？"></a>后台启动权限做了什么？</h1><p>经过上面的步骤我们得到了 ROM 反编译后的源码，这一章开始进入具体的源码分析流程。从之前 <a target="_blank" rel="noopener" href="https://juejin.cn/post/6907817072185737224">实战|Android后台启动Activity实践之路</a> 可以知道，当我们调用 startActivity 后，会来到 AMS 这一端，AMS 进行了一些处理后，会调用到 ActivityStarter.startActivity 方法，对这个流程有疑问的可以看看 Activity 的启动流程，可以参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/03/18/Android-Activity%E5%8E%9F%E7%90%86/#%E6%80%BB%E7%BB%93">Android-Activity启动流程</a>。查看反编译后的代码，发现里面调用了小米自定义的 Inject 类中的静态方法(在 services.jar 中)：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">startActivity</span><span class="params">(IApplicationThread paramIApplicationThread, Intent paramIntent1, ...)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="comment">// 这个 i 在 AOSP 源码中原名叫 boolean abort</span></span><br><span class="line">    i = activityStackSupervisor.checkStartAnyActivityPermission(...) ^ <span class="keyword">true</span> | <span class="keyword">this</span>.mService.mIntentFirewall.checkStartActivity(...) ^ <span class="keyword">true</span>;</span><br><span class="line">    paramInt1 = i;</span><br><span class="line">    <span class="keyword">if</span> (i == <span class="number">0</span>) &#123; <span class="comment">// 表示 !abort</span></span><br><span class="line">        paramInt1 = i;</span><br><span class="line">        <span class="keyword">if</span> (!ActivityTaskManagerServiceInjector.isAllowedStartActivity(<span class="keyword">this</span>.mService, <span class="keyword">this</span>.mSupervisor, paramIntent1, ...))</span><br><span class="line">            paramInt1 = <span class="number">1</span>; </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 根据上面的bool值判断是否接着执行 startActivity 流程</span></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其实这样的 XXXInject 类在源码中还有很多，都是用来做一些自定义逻辑的，我们重点看下这个 <strong>ActivityTaskManagerServiceInjector.isAllowedStartActivity()</strong> 方法的逻辑：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isAllowedStartActivity</span><span class="params">(..., Intent paramIntent, ...)</span> </span>&#123;</span><br><span class="line">    StringBuilder stringBuilder;</span><br><span class="line">    <span class="comment">// 1</span></span><br><span class="line">    <span class="keyword">if</span> (UserHandle.getAppId(paramInt) == <span class="number">1000</span> || (paramIntent.getMiuiFlags() &amp; <span class="number">0x2</span>) != <span class="number">0</span> || PendingIntentRecordInjector.containsPendingIntent(paramString) || PendingIntentRecordInjector.containsPendingIntent(paramActivityInfo.applicationInfo.packageName) || paramInt == mLastStartActivityUid || paramActivityTaskManagerService.isUidForeground(paramInt)) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="comment">// 2</span></span><br><span class="line">    <span class="keyword">if</span> (paramActivityTaskManagerService.mWindowManager.isKeyguardLocked() &amp;&amp; paramActivityTaskManagerService.getAppOpsService().noteOperation(<span class="number">10020</span>, paramInt, paramString) != <span class="number">0</span>) &#123;</span><br><span class="line">      stringBuilder = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">      stringBuilder.append(<span class="string">&quot;MIUILOG- Permission Denied Activity KeyguardLocked: &quot;</span>);</span><br><span class="line">      <span class="comment">// ...</span></span><br><span class="line">      Slog.d(<span class="string">&quot;ActivityTaskManagerServiceInjector&quot;</span>, stringBuilder.toString());</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="comment">// 3</span></span><br><span class="line">    <span class="keyword">if</span> (stringBuilder.getAppOpsService().checkOperation(<span class="number">10021</span>, paramInt, paramString) != <span class="number">0</span>) &#123;</span><br><span class="line">      SparseArray&lt;WindowProcessController&gt; sparseArray = ((ActivityTaskManagerService)stringBuilder).mProcessMap.getPidMap();</span><br><span class="line">      <span class="keyword">for</span> (<span class="keyword">int</span> i = sparseArray.size() - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">        <span class="keyword">int</span> j = sparseArray.keyAt(i);</span><br><span class="line">        WindowProcessController windowProcessController = (WindowProcessController)sparseArray.get(j);</span><br><span class="line">        <span class="keyword">if</span> (windowProcessController != <span class="keyword">null</span> &amp;&amp; windowProcessController.mUid == paramInt &amp;&amp; (windowProcessController.hasForegroundActivities() || (ExtraActivityManagerService.isProcessRecordVisible(j, paramInt) &amp;&amp; windowProcessController.hasActivities() &amp;&amp; paramInt == activityRecord.launchedFromUid))) &#123;</span><br><span class="line">          mLastStartActivityUid = paramActivityInfo.applicationInfo.uid;</span><br><span class="line">          <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125; </span><br><span class="line">      &#125; </span><br><span class="line">      stringBuilder.getAppOpsService().noteOperation(<span class="number">10021</span>, paramInt, paramString);</span><br><span class="line">      stringBuilder = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">      stringBuilder.append(<span class="string">&quot;MIUILOG- Permission Denied Activity : &quot;</span>);</span><br><span class="line">      <span class="comment">// ...</span></span><br><span class="line">      Slog.d(<span class="string">&quot;ActivityTaskManagerServiceInjector&quot;</span>, stringBuilder.toString());</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来我们从上面标的数字讲起：</p>
+<ul>
+<li>首先看看数字2的部分：我们看到了这里有一个 OpCode=10020, 这个 Code 对应的权限也是小米增加的，看下面的日志可以知道这个 Code 就是我们常看到的小米锁屏显示的权限，由此可以知道如果我们调用 startActivity 时手机没有解锁，那么会走到这个流程，判断应用有没有这个 10020 的权限，如果有则接着往下走，如果没有权限则直接返回 false 表示不能启动目标 Activity。</li>
+<li>然后看数字3的部分：跟上面类似，它处理 OpCode=10021 的权限鉴定，这个值跟我们在前一篇文章里讲到的后台启动权限的 Code 是一样的！也就是说这段代码就是用来判断应用有没有后台启动的权限的。</li>
+</ul>
+<p>至于这两个权限相关的日志：<code>Permission Denied Activity KeyguardLocked: ...</code> 和 <code>Permission Denied Activity: ...</code>，我们在遇到这两种场景后，在 logcat 中过滤 <code>MIUILOG</code> Tag 是可以看到这两种日志输出的，有兴趣的同学可以验证一下~</p>
+<p>接下来再看数字1部分，这里就是我们绕过这两个权限的关键！它在这个方法的开头，如果这个 if 判断为真的话则会直接返回 true，从而跳过后面权限认证的逻辑，我们重点关注 <code>(paramIntent.getMiuiFlags() &amp; 0x2) != 0</code> 这个判断条件：<strong>由此可以看出小米在 Intent 类中增加了一个形如 MiuiFlags 的标志位</strong>，我们打开 Intent 类看看具体情况，Intent 类在 framework.jar 中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Intent</span> <span class="keyword">implements</span> <span class="title">Parcelable</span>, <span class="title">Cloneable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> mMiuiFlags;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Intent <span class="title">addMiuiFlags</span><span class="params">(<span class="keyword">int</span> flags)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.mMiuiFlags |= flags;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Intent <span class="title">setMiuiFlags</span><span class="params">(<span class="keyword">int</span> flags)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.mMiuiFlags = flags;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getMiuiFlags</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.mMiuiFlags;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>果然，Intent 中被增加了一个标志位，那么我们估计就知道怎么去解决这个问题了，那就是在小米平台上通过反射将我们的 Intent 参数中的 mMiuiFlags 设置成 0x2 即可绕过这两个权限的认证！</p>
+<p>另外这里要<strong>注意一个问题</strong>：在 Android 9 以上 Intent 类中的属性是不能被反射的，因此我们需要想办法解决这个问题，网上已经有了许多现成的方式，这里我就不做展开了，想了解具体原理的直接 Google 即可。我借用了 Github 上的一个开源库——<a target="_blank" rel="noopener" href="https://github.com/tiann/FreeReflection">FreeReflection</a>，通过它可以方便地防止反射 Intent 抛出异常崩溃。</p>
+<p>经过实际测试，当我将 Intent 中的这个属性修改成 0x2 以后，可以直接从后台或在锁屏时启动我们应用的 Activity。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>其实整体来说这套解决方案还是挺简单的，在找到工具反编译 ROM 代码后，熟悉 Activity 启动源码的同学还是能比较轻松地找到其中的突破点的，当然中间可能会走错方向，像我有时候就容易盯着一个跟目标毫无关联的方法看，因为不能确定到底哪里才是真正的关键点。猜测其他版本的小米机器应该都是用的这种方式，毕竟同一个厂商没必要弄多套方案去做这个权限的功能。</p>
+<p>参考上述方式，如果对于一些厂商 ROM 的定制化功能有疑问或者开发中有这种奇怪Bug(与厂商定制相关)的，都可以从它们的源码中找到蛛丝马迹，也算是一种解决思路吧，时间足够的话，可以自己直接从源码中寻找答案，不然在网上搜来搜去的，有的能找到答案那是万幸，有的则完全不知所云晕头转向的。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/%E5%AE%9E%E6%88%98/" rel="tag"># 实战</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/21/Android%E6%8B%A6%E6%88%AAAMS%E8%AF%B7%E6%B1%82%E5%AE%9E%E6%88%98/" rel="prev" title="Android拦截AMS请求实战">
+      <i class="fa fa-chevron-left"></i> Android拦截AMS请求实战
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/02/07/Android%E5%A6%82%E4%BD%95%E7%BB%95%E8%BF%87%E5%8F%8D%E5%B0%84%E9%BB%91%E5%90%8D%E5%8D%95/" rel="next" title="Android如何绕过反射黑名单">
+      Android如何绕过反射黑名单 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96ROM%E6%BA%90%E7%A0%81"><span class="nav-number">2.</span> <span class="nav-text">获取ROM源码</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#adb-pull"><span class="nav-number">2.1.</span> <span class="nav-text">adb pull</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%8E%8BROM"><span class="nav-number">2.2.</span> <span class="nav-text">解压ROM</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%8D%E7%BC%96%E8%AF%91ROM%E6%BA%90%E7%A0%81"><span class="nav-number">3.</span> <span class="nav-text">反编译ROM源码</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E6%9D%83%E9%99%90%E5%81%9A%E4%BA%86%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">后台启动权限做了什么？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

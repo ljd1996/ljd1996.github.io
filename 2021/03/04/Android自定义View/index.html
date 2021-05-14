@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Canvas &amp; LayerCanvas的官方注释: To draw something, you need 4 basic components: A Bitmap to hold the pixels, a Canvas to host the draw calls (writing into the bitmap), a drawing primitive (e.g. Rect, P">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android自定义View">
+<meta property="og:url" content="http://yoursite.com/2021/03/04/Android%E8%87%AA%E5%AE%9A%E4%B9%89View/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="Canvas &amp; LayerCanvas的官方注释: To draw something, you need 4 basic components: A Bitmap to hold the pixels, a Canvas to host the draw calls (writing into the bitmap), a drawing primitive (e.g. Rect, P">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2021/03/04/Android%E8%87%AA%E5%AE%9A%E4%B9%89View/save-restore.png">
+<meta property="og:image" content="http://yoursite.com/2021/03/04/Android%E8%87%AA%E5%AE%9A%E4%B9%89View/saveLayer.png">
+<meta property="article:published_time" content="2021-03-04T02:44:14.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.828Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="Framework">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2021/03/04/Android%E8%87%AA%E5%AE%9A%E4%B9%89View/save-restore.png">
+
+<link rel="canonical" href="http://yoursite.com/2021/03/04/Android%E8%87%AA%E5%AE%9A%E4%B9%89View/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android自定义View | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/03/04/Android%E8%87%AA%E5%AE%9A%E4%B9%89View/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android自定义View
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-04 10:44:14" itemprop="dateCreated datePublished" datetime="2021-03-04T10:44:14+08:00">2021-03-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/Framework/" itemprop="url" rel="index"><span itemprop="name">Framework</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/03/04/Android%E8%87%AA%E5%AE%9A%E4%B9%89View/" class="post-meta-item leancloud_visitors" data-flag-title="Android自定义View" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/03/04/Android%E8%87%AA%E5%AE%9A%E4%B9%89View/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/03/04/Android%E8%87%AA%E5%AE%9A%E4%B9%89View/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Canvas-amp-Layer"><a href="#Canvas-amp-Layer" class="headerlink" title="Canvas &amp; Layer"></a>Canvas &amp; Layer</h1><p>Canvas的官方注释: <code>To draw something, you need 4 basic components: A Bitmap to hold the pixels, a Canvas to host the draw calls (writing into the bitmap), a drawing primitive (e.g. Rect, Path, text, Bitmap), and a paint (to describe the colors and styles for the drawing).</code></p>
+<p>即当需要draw的时候，需要4个基本的组件：</p>
+<ul>
+<li>一个Bitmap来存储像素</li>
+<li>一个Canvas来接收draw的调用(draw的结果是将像素画到前面的Bitmap中)</li>
+<li>一个源，即想画的东西(比如矩形，路径，文本，或位图)</li>
+<li>一个画笔(描述想画的颜色和风格等)</li>
+</ul>
+<a id="more"></a>
+
+<p>所以最终这些元素都会被画到一个bitmap上，然后再渲染到屏幕上。</p>
+<p>可以使用 save() 方法保存当前 Canvas 的状态到一个私有栈中(Saves the current matrix and clip onto a private stack)，当调用 restore() 方法的时候，会恢复之前 Canvas 的状态(通过栈的压入和弹出)。可以 save() 多次，也可以 restore() 多次，但是 restore() 的调用次数不能大于 save() 否则会引发异常。</p>
+<p>Canvas 提供了图层(Layer)的支持，Layer(图层)是按<code>栈结构</code>来进行管理的。save 方法保存的并不是一个新的图层，只是画布的状态(类似还原点)，saveLayer() 方法才会开启一个新的图层，所以相对于save方法而言，saveLayer() 方法更耗性能。</p>
+<p>缺省情况可以看作是只有一个图层Layer，如果需要按层次来绘图，可以使用 Canvas 的 saveLayer(saveLayerAlpha)创建新的图层，然后入栈。saveLayer() 会生成一个offscreen bitmap，它可以保存特定的区域，之后的所有操作都是在这个新的offscreen bitmap上，直到调用 restore(restoreToCount) 函数将图层弹出栈，出栈时会把本层绘制的图像绘制到上层或是Canvas上。</p>
+<p><strong>示例一：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">class CustomView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(context, attrs, defStyleAttr) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mPaint = Paint()</span><br><span class="line"></span><br><span class="line">    constructor(context: Context) : <span class="keyword">this</span>(context, <span class="keyword">null</span>)</span><br><span class="line">    constructor(context: Context, attrs: AttributeSet?) : <span class="keyword">this</span>(context, attrs, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">    init &#123;</span><br><span class="line">        mPaint.color = Color.RED</span><br><span class="line">        mPaint.textSize = <span class="number">45f</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">override fun <span class="title">onDraw</span><span class="params">(canvas: Canvas?)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onDraw(canvas)</span><br><span class="line">        Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;layer count = $&#123;canvas?.saveCount&#125;&quot;</span>) <span class="comment">// 1</span></span><br><span class="line"></span><br><span class="line">        canvas?.save()</span><br><span class="line"></span><br><span class="line">        canvas?.translate(<span class="number">200f</span>, <span class="number">200f</span>)</span><br><span class="line">        canvas?.drawText(<span class="string">&quot;Test-Test-Test-Test-1&quot;</span>, <span class="number">0f</span>, <span class="number">0f</span>, mPaint)</span><br><span class="line">        canvas?.save()</span><br><span class="line"></span><br><span class="line">        canvas?.rotate(<span class="number">45f</span>)</span><br><span class="line">        canvas?.drawText(<span class="string">&quot;Test-Test-Test-Test-2&quot;</span>, <span class="number">0f</span>, <span class="number">0f</span>, mPaint)</span><br><span class="line">        canvas?.save()</span><br><span class="line"></span><br><span class="line">        canvas?.rotate(<span class="number">45f</span>)</span><br><span class="line">        canvas?.drawText(<span class="string">&quot;Test-Test-Test-Test-3&quot;</span>, <span class="number">0f</span>, <span class="number">0f</span>, mPaint)</span><br><span class="line">        canvas?.save()</span><br><span class="line"></span><br><span class="line">        canvas?.restore()</span><br><span class="line">        canvas?.restore()</span><br><span class="line"></span><br><span class="line">        canvas?.translate(<span class="number">0f</span>, <span class="number">100f</span>)</span><br><span class="line">        canvas?.drawText(<span class="string">&quot;Test-Test-Test-Test-4&quot;</span>, <span class="number">0f</span>, <span class="number">0f</span>, mPaint)</span><br><span class="line"></span><br><span class="line">        Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;layer count = $&#123;canvas?.saveCount&#125;&quot;</span>) <span class="comment">// 3</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>效果图：</strong></p>
+<p><img src="save-restore.png" alt="save-restore"></p>
+<p><strong>示例二：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">class CustomView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : View(context, attrs, defStyleAttr) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mPaint = Paint()</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mBitmap = Bitmap.createScaledBitmap(</span><br><span class="line">        BitmapFactory.decodeResource(resources, R.drawable.head),</span><br><span class="line">        <span class="number">400</span>, <span class="number">400</span>, <span class="keyword">true</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    constructor(context: Context) : <span class="keyword">this</span>(context, <span class="keyword">null</span>)</span><br><span class="line">    constructor(context: Context, attrs: AttributeSet?) : <span class="keyword">this</span>(context, attrs, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function">override fun <span class="title">onDraw</span><span class="params">(canvas: Canvas?)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onDraw(canvas)</span><br><span class="line">        canvas?.saveLayer(<span class="number">0f</span>, <span class="number">0f</span>, <span class="number">400f</span>, <span class="number">400f</span>, mPaint)</span><br><span class="line">        canvas?.drawColor(Color.RED)</span><br><span class="line">        canvas?.drawBitmap(mBitmap, <span class="number">300f</span>, <span class="number">300f</span>, mPaint)</span><br><span class="line"></span><br><span class="line">        canvas?.saveLayer(<span class="number">200f</span>, <span class="number">0f</span>, <span class="number">800f</span><span class="comment">/*超出上层图层范围*/</span>, <span class="number">200f</span>, mPaint)</span><br><span class="line">        canvas?.drawColor(Color.GREEN)</span><br><span class="line"></span><br><span class="line">        canvas?.restoreToCount(<span class="number">1</span>)</span><br><span class="line">        <span class="comment">// 当不调用canvas?.restoreToCount(1)时，下面这行drawBitmap画不出来，因为超出了新建的画布的范围</span></span><br><span class="line">        canvas?.drawBitmap(mBitmap, <span class="number">400f</span>, <span class="number">400f</span>, mPaint)</span><br><span class="line">        <span class="comment">// 系统会调用canvas.restore()，所以即使onDraw中即使不手动调用restore，新建的画布的内容也会绘制出来</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>效果图：</strong></p>
+<p><img src="saveLayer.png" alt="saveLayer"></p>
+<h1 id="自定义View"><a href="#自定义View" class="headerlink" title="自定义View"></a>自定义View</h1><h2 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h2><ol>
+<li>继承 View 重写 onDraw, onLayout, onMeasure 等方法: 需要自己支持 wrap_content, 且需要处理 padding。</li>
+<li>继承 ViewGroup 派生 Layout: 如 LinearLayout 等，需要处理 ViewGroup 及其子 View 的 measure 和 leyout 过程，可能还需要处理事件分发与滑动冲突等场景。</li>
+<li>继承特定的 View: 不需要自己支持 wrap_content 和 padding。</li>
+<li>继承特定的 ViewGroup: 不需要自己处理 ViewGroup 的 measure 和 leyout。</li>
+</ol>
+<p>与View绘制过程measure，layout，draw相关可见<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/09/09/Android-View%E7%BB%98%E5%88%B6%E5%8E%9F%E7%90%86/">Android-View绘制原理</a>。</p>
+<h2 id="自定义属性文件"><a href="#自定义属性文件" class="headerlink" title="自定义属性文件"></a>自定义属性文件</h2><p>在res/values目录下新建一个attrs.xml文件：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">resources</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">declare-styleable</span> <span class="attr">name</span>=<span class="string">&quot;CustomView&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">&quot;color&quot;</span> <span class="attr">format</span>=<span class="string">&quot;color&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">&quot;font&quot;</span> <span class="attr">format</span>=<span class="string">&quot;dimension&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">&quot;text&quot;</span> <span class="attr">format</span>=<span class="string">&quot;string&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">&quot;type&quot;</span> <span class="attr">format</span>=<span class="string">&quot;enum&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enum</span> <span class="attr">name</span>=<span class="string">&quot;common&quot;</span> <span class="attr">value</span>=<span class="string">&quot;1&quot;</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">enum</span> <span class="attr">name</span>=<span class="string">&quot;material&quot;</span> <span class="attr">value</span>=<span class="string">&quot;2&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">attr</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">&quot;flag&quot;</span> <span class="attr">format</span>=<span class="string">&quot;flags&quot;</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">flag</span> <span class="attr">name</span>=<span class="string">&quot;flag1&quot;</span> <span class="attr">value</span>=<span class="string">&quot;0x01&quot;</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">flag</span> <span class="attr">name</span>=<span class="string">&quot;flag2&quot;</span> <span class="attr">value</span>=<span class="string">&quot;0x02&quot;</span>/&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">flag</span> <span class="attr">name</span>=<span class="string">&quot;flag4&quot;</span> <span class="attr">value</span>=<span class="string">&quot;0x04&quot;</span>/&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">attr</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">declare-styleable</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">resources</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>format的取值如下所示：</p>
+<ul>
+<li>boolean: true 或者 false</li>
+<li>color: 颜色类型，如<code>#ff3344</code>或如<code>R.color.colorAccent</code></li>
+<li>dimension: 尺寸类型，如取值16sp, 16dp, 或<code>R.dimen.dp_16</code>等</li>
+<li>float: 整形或者浮点型</li>
+<li>fraction: 百分数类型，只能以<code>%</code>结尾，如30%</li>
+<li>integer: 整型</li>
+<li>string: String类型或一个指向String的资源id</li>
+<li>reference: 指向资源的id</li>
+<li>enum: 枚举类型，通常隐式定义</li>
+<li>flag: flag类型，通常隐式定义</li>
+</ul>
+<p>可以使用<code>|</code>将format设置为多个类型，例: <code>format=&quot;reference|dimension&quot;</code>。</p>
+<h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><p><strong>属性文件：</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">resources</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">declare-styleable</span> <span class="attr">name</span>=<span class="string">&quot;CountDownView&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">&quot;circleColor&quot;</span> <span class="attr">format</span>=<span class="string">&quot;color&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">&quot;radiusCircle&quot;</span> <span class="attr">format</span>=<span class="string">&quot;dimension&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">&quot;textColor&quot;</span> <span class="attr">format</span>=<span class="string">&quot;color&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">&quot;textSize&quot;</span> <span class="attr">format</span>=<span class="string">&quot;dimension&quot;</span> /&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">attr</span> <span class="attr">name</span>=<span class="string">&quot;count&quot;</span> <span class="attr">format</span>=<span class="string">&quot;integer&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">declare-styleable</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">resources</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>倒计时控件：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 倒计时控件</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> liujiadong</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@since</span> 2020/9/2</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line">class CountDownView(context: Context, attrs: AttributeSet?, defStyleAttr: Int) :</span><br><span class="line">    View(context, attrs, defStyleAttr) &#123;</span><br><span class="line">    <span class="keyword">private</span> val mCirclePaint = Paint(Paint.ANTI_ALIAS_FLAG)</span><br><span class="line">    <span class="keyword">private</span> val mTextPaint = Paint(Paint.ANTI_ALIAS_FLAG)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 自定义属性</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mCircleColor = <span class="number">0</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mRadius = <span class="number">0</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mTextColor = <span class="number">0</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mTextSize = <span class="number">0</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mCount = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mCurrentCount = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mValueAnimator: ValueAnimator? = <span class="keyword">null</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> mOnCountListener: OnCountListener? = <span class="keyword">null</span></span><br><span class="line"></span><br><span class="line">    constructor(context: Context) : <span class="keyword">this</span>(context, <span class="keyword">null</span>)</span><br><span class="line">    constructor(context: Context, attrs: AttributeSet?) : <span class="keyword">this</span>(context, attrs, <span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">    init &#123;</span><br><span class="line">        val ta = context.obtainStyledAttributes(attrs, R.styleable.CountDownView)</span><br><span class="line">        mCircleColor = ta.getColor(R.styleable.CountDownView_circleColor, Color.WHITE)</span><br><span class="line">        mRadius = ta.getDimensionPixelSize(R.styleable.CountDownView_radiusCircle, <span class="number">12</span>)</span><br><span class="line">        mTextColor = ta.getColor(R.styleable.CountDownView_textColor, Color.BLACK)</span><br><span class="line">        mTextSize = ta.getDimensionPixelSize(R.styleable.CountDownView_textSize, <span class="number">16</span>)</span><br><span class="line">        mCount = ta.getInt(R.styleable.CountDownView_count, <span class="number">3</span>)</span><br><span class="line">        ta.recycle()</span><br><span class="line"></span><br><span class="line">        mCurrentCount = mCount</span><br><span class="line">        mCirclePaint.color = mCircleColor</span><br><span class="line">        mCirclePaint.style = Paint.Style.FILL</span><br><span class="line">        mTextPaint.color = mTextColor</span><br><span class="line">        mTextPaint.textSize = mTextSize.toFloat()</span><br><span class="line">        mTextPaint.isAntiAlias = <span class="keyword">true</span></span><br><span class="line">        mTextPaint.textAlign = Paint.Align.CENTER</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">fun <span class="title">setListener</span><span class="params">(onCountListener: OnCountListener)</span> </span>&#123;</span><br><span class="line">        mOnCountListener = onCountListener</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">fun <span class="title">start</span><span class="params">(count: Int)</span> </span>&#123;</span><br><span class="line">        mCount = count</span><br><span class="line">        start()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">fun <span class="title">start</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (mValueAnimator == <span class="keyword">null</span>) &#123;</span><br><span class="line">            mValueAnimator = ValueAnimator.ofInt(mCount, <span class="number">0</span>)</span><br><span class="line">            mValueAnimator?.duration = mCount * <span class="number">1000L</span></span><br><span class="line">            mValueAnimator?.interpolator = LinearInterpolator()</span><br><span class="line">            mValueAnimator?.repeatCount = <span class="number">0</span></span><br><span class="line">            mValueAnimator?.addUpdateListener &#123;</span><br><span class="line">                val count = it.animatedValue</span><br><span class="line">                <span class="keyword">if</span> (count is Int) &#123;</span><br><span class="line">                    mCurrentCount = count</span><br><span class="line">                    invalidate()</span><br><span class="line">                    <span class="keyword">if</span> (count == <span class="number">0</span>) &#123;</span><br><span class="line">                        mOnCountListener?.onFinish()</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        mValueAnimator?.cancel()</span><br><span class="line">        mValueAnimator?.start()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">override fun <span class="title">onMeasure</span><span class="params">(widthMeasureSpec: Int, heightMeasureSpec: Int)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onMeasure(MeasureSpec.makeMeasureSpec(mRadius * <span class="number">2</span> + paddingStart + paddingEnd, MeasureSpec.EXACTLY),</span><br><span class="line">            MeasureSpec.makeMeasureSpec(mRadius * <span class="number">2</span> + paddingTop + paddingBottom, MeasureSpec.EXACTLY))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">override fun <span class="title">onDraw</span><span class="params">(canvas: Canvas?)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onDraw(canvas)</span><br><span class="line">        val radius: Float = mRadius.toFloat()</span><br><span class="line">        val padding = (measuredWidth - radius * <span class="number">2</span>) / <span class="number">2</span></span><br><span class="line">        canvas?.drawCircle(padding + radius, padding + radius, radius, mCirclePaint)</span><br><span class="line"></span><br><span class="line">        val fontMetrics = mTextPaint.fontMetricsInt</span><br><span class="line">        canvas?.drawText(<span class="string">&quot;$mCurrentCount&quot;</span>, radius + padding,</span><br><span class="line">            radius + padding - (fontMetrics.bottom + fontMetrics.top) / <span class="number">2</span>, mTextPaint)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">OnCountListener</span> </span>&#123;</span><br><span class="line">        <span class="function">fun <span class="title">onFinish</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    &#125;</span></span><br><span class="line"><span class="function">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>使用布局：</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">com.hearing.componentdemo.CountDownView</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:id</span>=<span class="string">&quot;@+id/count_view&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_width</span>=<span class="string">&quot;wrap_content&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">android:layout_height</span>=<span class="string">&quot;wrap_content&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">app:circleColor</span>=<span class="string">&quot;@color/colorAccent&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">app:count</span>=<span class="string">&quot;3&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">app:radiusCircle</span>=<span class="string">&quot;20dp&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">app:textColor</span>=<span class="string">&quot;@color/colorPrimary&quot;</span></span></span><br><span class="line"><span class="tag">    <span class="attr">app:textSize</span>=<span class="string">&quot;20sp&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="圆角ImageView"><a href="#圆角ImageView" class="headerlink" title="圆角ImageView"></a>圆角ImageView</h1><p>Android 原生的 Button, TextView 可以通过自定义 shape 实现圆形或圆角形状，但是 ImageView 不可以，可以通过以下方式实现：</p>
+<ul>
+<li>Canvas.clipPath(path): 该方法只留下 path 内的画布区域，需要在 draw 之前调用。当传入一个带圆角的矩形 Path 时绘制的图片自然而然就变成了圆角图片。但是该方法会有锯齿，有一些解决锯齿的方法，但可能受到硬件加速的影响而失效。</li>
+<li>Xfermode: 该方法可定义高，支持多图层的圆角，但是很麻烦。使用Xfermode通常来说会绘制两层，第一层称为 Dst 图层，第二层称为 Src 图层，然后根据 Xfermode 去计算两个图层的关系。</li>
+<li>BitmapShader: 推荐使用，使用简单，但不支持 LayerDrawable 这种复杂的定义。</li>
+</ul>
+<p>BitmapShader 是 Shader 的子类，可以通过 <code>Paint.setShader(Shader shader)</code> 进行设置，其构造函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">BitmapShader</span><span class="params">(<span class="meta">@NonNull</span> Bitmap bitmap, TileMode tileX, TileMode tileY)</span> </span>&#123; &#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中 bitmap 指的是要作为纹理的图片，tileX 和 tileY 分别指的是在 ｘ 和 y 方向上纹理的绘制模式，取值如下：</p>
+<ul>
+<li>CLAMP: 拉伸，横向拉伸最后一个横行像素，纵向拉伸最后一个纵列像素；</li>
+<li>REPEAT: 重复，横向、纵向不断重复Bitmap；</li>
+<li>MIRROR: 镜像，横向、纵向不断翻转重复Bitmap。</li>
+</ul>
+<p>可以通过 BitmapShader 自定义圆形，圆角，多边形等形状的 View:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ShaderView</span> <span class="keyword">extends</span> <span class="title">AppCompatImageView</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Paint mPaint;</span><br><span class="line">    <span class="keyword">private</span> RectF mBmpRect;</span><br><span class="line">    <span class="keyword">private</span> Matrix mMatrix;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ShaderView</span><span class="params">(Context context)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(context, <span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ShaderView</span><span class="params">(Context context, <span class="meta">@Nullable</span> AttributeSet attrs)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(context, attrs, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ShaderView</span><span class="params">(Context context, <span class="meta">@Nullable</span> AttributeSet attrs, <span class="keyword">int</span> defStyleAttr)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(context, attrs, defStyleAttr);</span><br><span class="line">        init();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">init</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        mPaint = <span class="keyword">new</span> Paint(Paint.ANTI_ALIAS_FLAG);</span><br><span class="line">        mMatrix = <span class="keyword">new</span> Matrix();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onSizeChanged</span><span class="params">(<span class="keyword">int</span> w, <span class="keyword">int</span> h, <span class="keyword">int</span> oldw, <span class="keyword">int</span> oldh)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onSizeChanged(w, h, oldw, oldh);</span><br><span class="line">        mBmpRect = <span class="keyword">new</span> RectF(<span class="number">0</span>, <span class="number">0</span>, w, h);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onDraw</span><span class="params">(Canvas canvas)</span> </span>&#123;</span><br><span class="line">        Bitmap bitmap = Utils.drawable2Bitmap(getDrawable());</span><br><span class="line">        BitmapShader bitmapShader = <span class="keyword">new</span> BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);</span><br><span class="line">        <span class="comment">// 图片的缩放比例</span></span><br><span class="line">        <span class="keyword">float</span> scale = Math.max(getWidth() * <span class="number">1.0f</span> / bitmap.getWidth(), getHeight() * <span class="number">1.0f</span> / bitmap.getHeight());</span><br><span class="line">        mMatrix.reset();</span><br><span class="line">        mMatrix.setScale(scale, scale);</span><br><span class="line">        bitmapShader.setLocalMatrix(mMatrix);</span><br><span class="line">        mPaint.setShader(bitmapShader);</span><br><span class="line">        <span class="keyword">int</span> borderRadius = <span class="number">30</span>;</span><br><span class="line">        canvas.drawRoundRect(mBmpRect, borderRadius, borderRadius, mPaint);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/Framework/" rel="tag"># Framework</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/02/Android-RecyclerView%E7%AC%94%E8%AE%B0/" rel="prev" title="Android-RecyclerView笔记">
+      <i class="fa fa-chevron-left"></i> Android-RecyclerView笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/04/Android-Jetpack%E7%BB%84%E4%BB%B6%E4%B9%8BCompose/" rel="next" title="Android-Jetpack组件之Compose">
+      Android-Jetpack组件之Compose <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Canvas-amp-Layer"><span class="nav-number">1.</span> <span class="nav-text">Canvas &amp; Layer</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89View"><span class="nav-number">2.</span> <span class="nav-text">自定义View</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E7%B1%BB"><span class="nav-number">2.1.</span> <span class="nav-text">分类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B1%9E%E6%80%A7%E6%96%87%E4%BB%B6"><span class="nav-number">2.2.</span> <span class="nav-text">自定义属性文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E4%BE%8B"><span class="nav-number">2.3.</span> <span class="nav-text">实例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9C%86%E8%A7%92ImageView"><span class="nav-number">3.</span> <span class="nav-text">圆角ImageView</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

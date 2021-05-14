@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Termux概述Termux是一个Android下一个高级的终端模拟器，开源且不需要root，支持apt管理软件包，拥有自己的apt仓库源，可以十分方便地安装软件包，可以实现支持Python,PHP,Ruby,Go,Nodejs,MySQL等功能环境。 仓库地址 一切皆文件linux&#x2F;unix下的哲学核心思想是一切皆文件。它指的是，对所有文件（目录、字符设备、块设备、套接字、打印机、进程、线程、管">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Termux-AAB分享">
+<meta property="og:url" content="http://yoursite.com/2019/10/29/Termux-AAB%E5%88%86%E4%BA%AB/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="Termux概述Termux是一个Android下一个高级的终端模拟器，开源且不需要root，支持apt管理软件包，拥有自己的apt仓库源，可以十分方便地安装软件包，可以实现支持Python,PHP,Ruby,Go,Nodejs,MySQL等功能环境。 仓库地址 一切皆文件linux&#x2F;unix下的哲学核心思想是一切皆文件。它指的是，对所有文件（目录、字符设备、块设备、套接字、打印机、进程、线程、管">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2019/10/29/Termux-AAB%E5%88%86%E4%BA%AB/Termux%E6%BA%90%E7%A0%81%E6%B5%81%E7%A8%8B.jpg">
+<meta property="og:image" content="http://yoursite.com/2019/10/29/Termux-AAB%E5%88%86%E4%BA%AB/aab.gif">
+<meta property="article:published_time" content="2019-10-29T01:42:30.000Z">
+<meta property="article:modified_time" content="2021-05-14T06:14:57.919Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="分享">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2019/10/29/Termux-AAB%E5%88%86%E4%BA%AB/Termux%E6%BA%90%E7%A0%81%E6%B5%81%E7%A8%8B.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2019/10/29/Termux-AAB%E5%88%86%E4%BA%AB/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Termux-AAB分享 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/29/Termux-AAB%E5%88%86%E4%BA%AB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Termux-AAB分享
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-10-29 09:42:30" itemprop="dateCreated datePublished" datetime="2019-10-29T09:42:30+08:00">2019-10-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E5%88%86%E4%BA%AB/" itemprop="url" rel="index"><span itemprop="name">分享</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/10/29/Termux-AAB%E5%88%86%E4%BA%AB/" class="post-meta-item leancloud_visitors" data-flag-title="Termux-AAB分享" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/10/29/Termux-AAB%E5%88%86%E4%BA%AB/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/10/29/Termux-AAB%E5%88%86%E4%BA%AB/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Termux"><a href="#Termux" class="headerlink" title="Termux"></a>Termux</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Termux是一个Android下一个高级的终端模拟器，开源且不需要root，支持apt管理软件包，拥有自己的apt仓库源，可以十分方便地安装软件包，可以实现支持Python,PHP,Ruby,Go,Nodejs,MySQL等功能环境。</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/termux/termux-app">仓库地址</a></p>
+<h2 id="一切皆文件"><a href="#一切皆文件" class="headerlink" title="一切皆文件"></a>一切皆文件</h2><p>linux/unix下的哲学核心思想是<strong>一切皆文件</strong>。它指的是，对所有文件（目录、字符设备、块设备、套接字、打印机、进程、线程、管道等）操作，读写都可用<code>fopen()/fclose()/fwrite()/fread()</code>等函数进行处理，屏蔽了硬件的区别，所有设备都抽象成文件，提供统一的接口给用户，虽然类型各不相同，但是对其提供的却是同一套操作界面，更进一步，对文件的操作也可以跨文件系统执行。</p>
+<p>操作一个已经打开的文件：使用文件描述符（file descriptor），简称fd，它是一个对应某个已经打开的文件的索引（非负整数）。</p>
+<h2 id="文件描述符"><a href="#文件描述符" class="headerlink" title="文件描述符"></a>文件描述符</h2><p>文件描述符在形式上是一个非负整数。实际上，它是一个索引值，指向内核为每一个进程所维护的该进程打开文件的记录表。当程序打开一个现有文件或者创建一个新文件时，内核向进程返回一个文件描述符。在程序设计中，一些涉及底层的程序编写往往会围绕着文件描述符展开。</p>
+<p>Linux 系统中，把一切都看做是文件，当进程打开现有文件或创建新文件时，内核向进程返回一个文件描述符，文件描述符就是内核为了高效管理已被打开的文件所创建的索引，用来指向被打开的文件，所有执行I/O操作的系统调用都会通过文件描述符。</p>
+<h2 id="Termux工作方式"><a href="#Termux工作方式" class="headerlink" title="Termux工作方式"></a>Termux工作方式</h2><h3 id="apt-amp-dpkg"><a href="#apt-amp-dpkg" class="headerlink" title="apt&amp;dpkg"></a>apt&amp;dpkg</h3><p>在Linux平台下使用源代码进行软件编译可以具有定制化的设置，但对于Linux distribution的发行商来说，毕竟不是每个人都会进行源代码编译的，这个问题将会严重的影响linux平台上软件的发行与推广。</p>
+<p>为了解决上述的问题，厂商先在他们的系统上面编译好了用户所需要的软件，然后将这个编译好并可执行的软件直接发布给用户安装。不同的 Linux 发行版使用不同的打包系统，一般而言，大多数发行版分别属于两大包管理技术阵营：Debian 的”.deb”，和 Red Hat的”.rpm”。</p>
+<p>dpkg是Debian的一个底层包管理工具，主要用于对已下载到本地和已安装的软件包进行管理。</p>
+<p>虽然我们在使用dpkg时，已经解决掉了软件安装过程中的大量问题，但是当依赖关系不满足时，仍然需要手动解决，而apt这个工具解决了这样的问题，linux distribution 先将软件放置到对应的服务器中，然后分析软件的依赖关系，并且记录下来，然后当客户端有安装软件需求时，通过清单列表与本地的dpkg以存在的软件数据相比较，就能从网络端获取所有需要的具有依赖属性的软件了。</p>
+<p>Termux在它自己维护的apt源中有它编译好的deb软件包，这些deb针对的是 applicationId为 <code>com.termux</code> 的应用。</p>
+<h3 id="Termux提供了什么"><a href="#Termux提供了什么" class="headerlink" title="Termux提供了什么"></a>Termux提供了什么</h3><ul>
+<li>在Android Linux内核的基础上，提供了一些更为丰富的命令以及它们的依赖，比如说 bash（Android系统自带的shell是位于/system/bin下的sh，sh支持的功能比较有限），apt（可以说是对Android sh最为强大的扩展，通过apt可以安装编译好的各种软件，包括Python）。</li>
+<li>通过在app的进程中fork子进程，通过文件操作开启一个终端，然后通过返回的文件描述符对终端进行操作，首先执行login（termux）或者bash（termux）或者sh（/system/bin/sh）命令，得到一个可执行shell操作的环境。后续才可继续进行安装python等操作。</li>
+<li>为了支持这些扩展的命令，需要配置一些环境变量（包括Path等）。</li>
+</ul>
+<h2 id="修改包名"><a href="#修改包名" class="headerlink" title="修改包名"></a>修改包名</h2><p>为什么需要修改依赖的包名？</p>
+<ul>
+<li>termux-app 的 默认applicationId是 <code>com.termux</code>，如果需要修改applicationId的话，则需要重新编译所有的deb包以及提供一个apt源，并且重新生成bootstraps.zip</li>
+</ul>
+<p>Python官网的deb解包后目录结构：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">└─data</span><br><span class="line">    ├─usr</span><br><span class="line">    │  ├─bin</span><br><span class="line">    │  ├─lib</span><br><span class="line">    │  │  └─valgrind</span><br><span class="line">    │  └─share</span><br><span class="line">    │      ├─apps</span><br><span class="line">    │      │  └─konsole</span><br><span class="line">    │      ├─doc</span><br><span class="line">    │      │  └─python</span><br><span class="line">    │      ├─lintian</span><br><span class="line">    │      │  └─overrides</span><br><span class="line">    │      ├─man</span><br><span class="line">    │      │  └─man1</span><br><span class="line">    │      └─pixmaps</span><br></pre></td></tr></table></figure>
+
+<p>termux 编译后的目录结构：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">├─data</span><br><span class="line">│  └─data</span><br><span class="line">│      └─$pkg</span><br><span class="line">│          └─files</span><br><span class="line">│              └─usr</span><br><span class="line">│                  ├─bin</span><br><span class="line">│                  ├─include</span><br><span class="line">│                  │  └─python2.7</span><br><span class="line">│                  ├─lib</span><br><span class="line">│                  │  ├─pkgconfig</span><br><span class="line">│                  │  └─python2.7</span><br><span class="line">│                  └─share</span><br><span class="line">│                      ├─doc</span><br><span class="line">│                      │  └─python2</span><br><span class="line">│                      └─man</span><br><span class="line">│                          └─man1</span><br><span class="line">└─_</span><br></pre></td></tr></table></figure>
+
+<p>修改方法：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/08/08/termux-app%E4%BF%AE%E6%94%B9%E5%8C%85%E5%90%8D">Termux修改包名</a></li>
+</ul>
+<h2 id="源码解读"><a href="#源码解读" class="headerlink" title="源码解读"></a>源码解读</h2><p>流程图:</p>
+<p><img src="Termux%E6%BA%90%E7%A0%81%E6%B5%81%E7%A8%8B.jpg" alt="Termux流程图"></p>
+<h3 id="setupIfNeeded"><a href="#setupIfNeeded" class="headerlink" title="setupIfNeeded"></a>setupIfNeeded</h3><p>bootstraps.zip目录结构：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">bootstrap-aarch64</span><br><span class="line">    ├── SYMLINKS.txt</span><br><span class="line">    ├── bin</span><br><span class="line">    ├── etc</span><br><span class="line">    ├── include</span><br><span class="line">    ├── lib</span><br><span class="line">    ├── libexec</span><br><span class="line">    ├── repo.asc</span><br><span class="line">    ├── share</span><br><span class="line">    ├── tmp</span><br><span class="line">    └── var</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String FILES_PATH = <span class="string">&quot;/data/data/$pkg/files&quot;</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String PREFIX_PATH = FILES_PATH + <span class="string">&quot;/usr&quot;</span>;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String HOME_PATH = FILES_PATH + <span class="string">&quot;/home&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setupIfNeeded</span><span class="params">(<span class="keyword">final</span> Activity activity, <span class="keyword">final</span> Runnable whenDone)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Termux can only be run as the primary user (device owner) since only that</span></span><br><span class="line">    <span class="comment">// account has the expected file system paths. Verify that:</span></span><br><span class="line">    UserManager um = (UserManager) activity.getSystemService(Context.USER_SERVICE);</span><br><span class="line">    <span class="keyword">boolean</span> isPrimaryUser = um.getSerialNumberForUser(android.os.Process.myUserHandle()) == <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (!isPrimaryUser) &#123;</span><br><span class="line">        Termux.mInstance.setInstalled(<span class="keyword">false</span>);</span><br><span class="line">        Termux.mInstance.getTermuxHandle().initFail();</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> File PREFIX_FILE = <span class="keyword">new</span> File(Termux.PREFIX_PATH);</span><br><span class="line">    <span class="keyword">if</span> (PREFIX_FILE.isDirectory()) &#123;</span><br><span class="line">        whenDone.run();</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">new</span> Thread() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">final</span> String STAGING_PREFIX_PATH = Termux.FILES_PATH + <span class="string">&quot;/usr-staging&quot;</span>;</span><br><span class="line">                <span class="keyword">final</span> File STAGING_PREFIX_FILE = <span class="keyword">new</span> File(STAGING_PREFIX_PATH);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (STAGING_PREFIX_FILE.exists()) &#123;</span><br><span class="line">                    deleteFolder(STAGING_PREFIX_FILE);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">8096</span>];</span><br><span class="line">                <span class="keyword">final</span> List&lt;Pair&lt;String, String&gt;&gt; symlinks = <span class="keyword">new</span> ArrayList&lt;&gt;(<span class="number">50</span>);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">final</span> URL zipUrl = determineZipUrl();</span><br><span class="line">                <span class="keyword">try</span> (ZipInputStream zipInput = <span class="keyword">new</span> ZipInputStream(zipUrl.openStream())) &#123;</span><br><span class="line">                    ZipEntry zipEntry;</span><br><span class="line">                    <span class="keyword">while</span> ((zipEntry = zipInput.getNextEntry()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                        <span class="keyword">if</span> (zipEntry.getName().equals(<span class="string">&quot;SYMLINKS.txt&quot;</span>)) &#123;</span><br><span class="line">                            BufferedReader symlinksReader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(zipInput));</span><br><span class="line">                            String line;</span><br><span class="line">                            <span class="keyword">while</span> ((line = symlinksReader.readLine()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                                String[] parts = line.split(<span class="string">&quot;←&quot;</span>);</span><br><span class="line">                                <span class="keyword">if</span> (parts.length != <span class="number">2</span>)</span><br><span class="line">                                    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;Malformed symlink line: &quot;</span> + line);</span><br><span class="line">                                String oldPath = parts[<span class="number">0</span>];</span><br><span class="line">                                String newPath = STAGING_PREFIX_PATH + <span class="string">&quot;/&quot;</span> + parts[<span class="number">1</span>];</span><br><span class="line">                                symlinks.add(Pair.create(oldPath, newPath));</span><br><span class="line"></span><br><span class="line">                                ensureDirectoryExists(<span class="keyword">new</span> File(newPath).getParentFile());</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                            String zipEntryName = zipEntry.getName();</span><br><span class="line">                            File targetFile = <span class="keyword">new</span> File(STAGING_PREFIX_PATH, zipEntryName);</span><br><span class="line">                            <span class="keyword">boolean</span> isDirectory = zipEntry.isDirectory();</span><br><span class="line"></span><br><span class="line">                            ensureDirectoryExists(isDirectory ? targetFile : targetFile.getParentFile());</span><br><span class="line"></span><br><span class="line">                            <span class="keyword">if</span> (!isDirectory) &#123;</span><br><span class="line">                                <span class="keyword">try</span> (FileOutputStream outStream = <span class="keyword">new</span> FileOutputStream(targetFile)) &#123;</span><br><span class="line">                                    <span class="keyword">int</span> readBytes;</span><br><span class="line">                                    <span class="keyword">while</span> ((readBytes = zipInput.read(buffer)) != -<span class="number">1</span>)</span><br><span class="line">                                        outStream.write(buffer, <span class="number">0</span>, readBytes);</span><br><span class="line">                                &#125;</span><br><span class="line">                                <span class="keyword">if</span> (zipEntryName.startsWith(<span class="string">&quot;bin/&quot;</span>) || zipEntryName.startsWith(<span class="string">&quot;libexec&quot;</span>) || zipEntryName.startsWith(<span class="string">&quot;lib/apt/methods&quot;</span>)) &#123;</span><br><span class="line">                                    <span class="comment">//noinspection OctalInteger</span></span><br><span class="line">                                    Os.chmod(targetFile.getAbsolutePath(), <span class="number">0700</span>);</span><br><span class="line">                                &#125;</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (symlinks.isEmpty())</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;No SYMLINKS.txt encountered&quot;</span>);</span><br><span class="line">                <span class="keyword">for</span> (Pair&lt;String, String&gt; symlink : symlinks) &#123;</span><br><span class="line">                    Os.symlink(symlink.first, symlink.second);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (!STAGING_PREFIX_FILE.renameTo(PREFIX_FILE)) &#123;</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;Unable to rename staging folder&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">                activity.runOnUiThread(whenDone);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (<span class="keyword">final</span> Exception e) &#123;</span><br><span class="line">                Log.e(EmulatorDebug.LOG_TAG, <span class="string">&quot;Bootstrap error&quot;</span>, e);</span><br><span class="line">                Termux.mInstance.setInstalled(<span class="keyword">false</span>);</span><br><span class="line">                Termux.mInstance.getTermuxHandle().initFail();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;.start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="createSession"><a href="#createSession" class="headerlink" title="createSession"></a>createSession</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> TerminalSession <span class="title">createSession</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">new</span> File(HOME_PATH).mkdirs();</span><br><span class="line"></span><br><span class="line">    String[] env = BackgroundJob.buildEnvironment(<span class="keyword">false</span>, HOME_PATH);</span><br><span class="line">    String executablePath = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">for</span> (String shellBinary : <span class="keyword">new</span> String[]&#123;<span class="string">&quot;login&quot;</span>, <span class="string">&quot;bash&quot;</span>, <span class="string">&quot;zsh&quot;</span>&#125;) &#123;</span><br><span class="line">        File shellFile = <span class="keyword">new</span> File(PREFIX_PATH + <span class="string">&quot;/bin/&quot;</span> + shellBinary);</span><br><span class="line">        <span class="keyword">if</span> (shellFile.canExecute()) &#123;</span><br><span class="line">            executablePath = shellFile.getAbsolutePath();</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (executablePath == <span class="keyword">null</span>) &#123;</span><br><span class="line">        XLLog.d(TermuxDebug.TAG, <span class="string">&quot;fall back to system shell&quot;</span>);</span><br><span class="line">        executablePath = <span class="string">&quot;/system/bin/sh&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    String[] processArgs = BackgroundJob.setupProcessArgs(executablePath, <span class="keyword">null</span>);</span><br><span class="line">    executablePath = processArgs[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">int</span> lastSlashIndex = executablePath.lastIndexOf(<span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">    String processName = <span class="string">&quot;-&quot;</span> +</span><br><span class="line">            (lastSlashIndex == -<span class="number">1</span> ? executablePath : executablePath.substring(lastSlashIndex + <span class="number">1</span>));</span><br><span class="line"></span><br><span class="line">    String[] args = <span class="keyword">new</span> String[processArgs.length];</span><br><span class="line">    args[<span class="number">0</span>] = processName;</span><br><span class="line">    <span class="keyword">if</span> (processArgs.length &gt; <span class="number">1</span>)</span><br><span class="line">        System.arraycopy(processArgs, <span class="number">1</span>, args, <span class="number">1</span>, processArgs.length - <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    TerminalSession session = <span class="keyword">new</span> TerminalSession(executablePath, HOME_PATH, args, env);</span><br><span class="line">    session.initializeEmulator(Integer.MAX_VALUE, <span class="number">120</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> session;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>参数如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mShellPath: /data/data/$pkg/files/usr/bin/login</span><br><span class="line">mCwd: /data/data/$pkg/files/home</span><br><span class="line">mArgs: [-login]</span><br><span class="line">mEnv: [TERM=xterm-256color, HOME=/data/data/$pkg/files/home, PREFIX=/data/data/$pkg/files/usr, BOOTCLASSPATH/system/framework/com.qualcomm.qti.camera.jar:/system/framework/QPerformance.jar:/system/framework/core-oj.jar:/system/framework/core-libart.jar:/system/framework/conscrypt.jar:/system/framework/okhttp.jar:/system/framework/bouncycastle.jar:/system/framework/apache-xml.jar:/system/framework/legacy-test.jar:/system/framework/ext.jar:/system/framework/framework.jar:/system/framework/telephony-common.jar:/system/framework/voip-common.jar:/system/framework/ims-common.jar:/system/framework/org.apache.http.legacy.boot.jar:/system/framework/android.hidl.base-V1.0-java.jar:/system/framework/android.hidl.manager-V1.0-java.jar:/system/framework/tcmiface.jar:/system/framework/WfdCommon.jar:/system/framework/oem-services.jar:/system/framework/qcom.fmradio.jar:/system/framework/telephony-ext.jar:/system/app/miui/miui.apk:/system/app/miuisystem/miuisystem.apk, ANDROID_ROOT=/system, ANDROID_DATA=/data, EXTERNAL_STORAGE=/sdcard, LD_LIBRARY_PATH=/data/data/$pkg/files/usr/lib, LANG=en_US.UTF-8, PATH=/data/data/$pkg/files/usr/bin:/data/data/$pkg/files/usr/bin/applets, PWD=/data/data/$pkg/files/home, TMPDIR=/data/data/$pkg/files/usr/tmp]</span><br><span class="line">mShellPid: 15381</span><br><span class="line">mTerminalFileDescriptor: 54</span><br></pre></td></tr></table></figure>
+
+<h3 id="操作terminal"><a href="#操作terminal" class="headerlink" title="操作terminal"></a>操作terminal</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    * A queue written to from a separate thread when the process outputs, and read by main thread to process by</span></span><br><span class="line"><span class="comment">    * terminal emulator.</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ByteQueue mProcessToTerminalIOQueue = <span class="keyword">new</span> ByteQueue(<span class="number">4096</span>);</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    * A queue written to from the main thread due to user interaction, and read by another thread which forwards by</span></span><br><span class="line"><span class="comment">    * writing to the &#123;<span class="doctag">@link</span> #mTerminalFileDescriptor&#125;.</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> ByteQueue mTerminalToProcessIOQueue = <span class="keyword">new</span> ByteQueue(<span class="number">4096</span>);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">initializeEmulator</span><span class="params">(<span class="keyword">int</span> columns, <span class="keyword">int</span> rows)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span>[] processId = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">1</span>];</span><br><span class="line">    mTerminalFileDescriptor = JNI.createSubprocess(mShellPath, mCwd, mArgs, mEnv, processId, rows, columns);</span><br><span class="line">    mShellPid = processId[<span class="number">0</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">final</span> FileDescriptor terminalFileDescriptorWrapped = wrapFileDescriptor(mTerminalFileDescriptor);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">new</span> Thread(<span class="string">&quot;TermSessionInputReader[pid=&quot;</span> + mShellPid + <span class="string">&quot;]&quot;</span>) &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">try</span> (InputStream termIn = <span class="keyword">new</span> FileInputStream(terminalFileDescriptorWrapped)) &#123;</span><br><span class="line">                <span class="keyword">final</span> <span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">4096</span>];</span><br><span class="line">                <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                    <span class="keyword">int</span> read = termIn.read(buffer);</span><br><span class="line">                    <span class="keyword">if</span> (read == -<span class="number">1</span>) <span class="keyword">return</span>;</span><br><span class="line">                    <span class="keyword">if</span> (!mProcessToTerminalIOQueue.write(buffer, <span class="number">0</span>, read)) <span class="keyword">return</span>;</span><br><span class="line">                    mMainThreadHandler.sendEmptyMessage(MSG_NEW_INPUT);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                <span class="comment">// Ignore, just shutting down.</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;.start();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">new</span> Thread(<span class="string">&quot;TermSessionOutputWriter[pid=&quot;</span> + mShellPid + <span class="string">&quot;]&quot;</span>) &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">final</span> <span class="keyword">byte</span>[] buffer = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">4096</span>];</span><br><span class="line">            <span class="keyword">try</span> (FileOutputStream termOut = <span class="keyword">new</span> FileOutputStream(terminalFileDescriptorWrapped)) &#123;</span><br><span class="line">                <span class="keyword">while</span> (<span class="keyword">true</span>) &#123;</span><br><span class="line">                    <span class="keyword">int</span> bytesToWrite = mTerminalToProcessIOQueue.read(buffer, <span class="keyword">true</span>);</span><br><span class="line">                    <span class="keyword">if</span> (bytesToWrite == -<span class="number">1</span>) <span class="keyword">return</span>;</span><br><span class="line">                    termOut.write(buffer, <span class="number">0</span>, bytesToWrite);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                <span class="comment">// Ignore.</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;.start();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">new</span> Thread(<span class="string">&quot;TermSessionWaiter[pid=&quot;</span> + mShellPid + <span class="string">&quot;]&quot;</span>) &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">int</span> processExitCode = JNI.waitFor(mShellPid);</span><br><span class="line">            mMainThreadHandler.sendMessage(mMainThreadHandler.obtainMessage(MSG_PROCESS_EXITED, processExitCode));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;.start();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="createSubprocess"><a href="#createSubprocess" class="headerlink" title="createSubprocess"></a>createSubprocess</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">create_subprocess</span><span class="params">(JNIEnv* env,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">char</span> <span class="keyword">const</span>* cmd,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">char</span> <span class="keyword">const</span>* cwd,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">char</span>* <span class="keyword">const</span> argv[],</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">char</span>** envp,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">int</span>* pProcessId,</span></span></span><br><span class="line"><span class="function"><span class="params">        jint rows,</span></span></span><br><span class="line"><span class="function"><span class="params">        jint columns)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> ptm = open(<span class="string">&quot;/dev/ptmx&quot;</span>, O_RDWR | O_CLOEXEC);</span><br><span class="line">    <span class="keyword">if</span> (ptm &lt; <span class="number">0</span>) <span class="keyword">return</span> throw_runtime_exception(env, <span class="string">&quot;Cannot open /dev/ptmx&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> LACKS_PTSNAME_R</span></span><br><span class="line">    <span class="keyword">char</span>* devname;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line">    <span class="keyword">char</span> devname[<span class="number">64</span>];</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">    <span class="keyword">if</span> (grantpt(ptm) || unlockpt(ptm) ||</span><br><span class="line">#ifdef LACKS_PTSNAME_R</span><br><span class="line">            (devname = ptsname(ptm)) == <span class="literal">NULL</span></span><br><span class="line">#<span class="keyword">else</span></span><br><span class="line">            ptsname_r(ptm, devname, <span class="keyword">sizeof</span>(devname))</span><br><span class="line">#endif</span><br><span class="line">       ) &#123;</span><br><span class="line">        <span class="keyword">return</span> throw_runtime_exception(env, <span class="string">&quot;Cannot grantpt()/unlockpt()/ptsname_r() on /dev/ptmx&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Enable UTF-8 mode and disable flow control to prevent Ctrl+S from locking up the display.</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">termios</span> <span class="title">tios</span>;</span></span><br><span class="line">    tcgetattr(ptm, &amp;tios);</span><br><span class="line">    tios.c_iflag |= IUTF8;</span><br><span class="line">    tios.c_iflag &amp;= ~(IXON | IXOFF);</span><br><span class="line">    tcsetattr(ptm, TCSANOW, &amp;tios);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** Set initial winsize. */</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">winsize</span> <span class="title">sz</span> = &#123;</span> .ws_row = (<span class="keyword">unsigned</span> <span class="keyword">short</span>) rows, .ws_col = (<span class="keyword">unsigned</span> <span class="keyword">short</span>) columns &#125;;</span><br><span class="line">    ioctl(ptm, TIOCSWINSZ, &amp;sz);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pid_t</span> pid = fork();</span><br><span class="line">    <span class="keyword">if</span> (pid &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> throw_runtime_exception(env, <span class="string">&quot;Fork failed&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (pid &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        *pProcessId = (<span class="keyword">int</span>) pid;</span><br><span class="line">        <span class="keyword">return</span> ptm;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// Clear signals which the Android java process may have blocked:</span></span><br><span class="line">        <span class="keyword">sigset_t</span> signals_to_unblock;</span><br><span class="line">        sigfillset(&amp;signals_to_unblock);</span><br><span class="line">        sigprocmask(SIG_UNBLOCK, &amp;signals_to_unblock, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">        close(ptm);</span><br><span class="line">        setsid();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> pts = open(devname, O_RDWR);</span><br><span class="line">        <span class="keyword">if</span> (pts &lt; <span class="number">0</span>) <span class="built_in">exit</span>(<span class="number">-1</span>);</span><br><span class="line"></span><br><span class="line">        dup2(pts, <span class="number">0</span>);</span><br><span class="line">        dup2(pts, <span class="number">1</span>);</span><br><span class="line">        dup2(pts, <span class="number">2</span>);</span><br><span class="line"></span><br><span class="line">        DIR* self_dir = opendir(<span class="string">&quot;/proc/self/fd&quot;</span>);</span><br><span class="line">        <span class="keyword">if</span> (self_dir != <span class="literal">NULL</span>) &#123;</span><br><span class="line">            <span class="keyword">int</span> self_dir_fd = dirfd(self_dir);</span><br><span class="line">            <span class="class"><span class="keyword">struct</span> <span class="title">dirent</span>* <span class="title">entry</span>;</span></span><br><span class="line">            <span class="keyword">while</span> ((entry = readdir(self_dir)) != <span class="literal">NULL</span>) &#123;</span><br><span class="line">                <span class="keyword">int</span> fd = atoi(entry-&gt;d_name);</span><br><span class="line">                <span class="keyword">if</span>(fd &gt; <span class="number">2</span> &amp;&amp; fd != self_dir_fd) close(fd);</span><br><span class="line">            &#125;</span><br><span class="line">            closedir(self_dir);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        clearenv();</span><br><span class="line">        <span class="keyword">if</span> (envp) <span class="keyword">for</span> (; *envp; ++envp) putenv(*envp);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (chdir(cwd) != <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">char</span>* error_message;</span><br><span class="line">            <span class="comment">// No need to free asprintf()-allocated memory since doing execvp() or exit() below.</span></span><br><span class="line">            <span class="keyword">if</span> (asprintf(&amp;error_message, <span class="string">&quot;chdir(\&quot;%s\&quot;)&quot;</span>, cwd) == <span class="number">-1</span>) error_message = <span class="string">&quot;chdir()&quot;</span>;</span><br><span class="line">            perror(error_message);</span><br><span class="line">            fflush(<span class="built_in">stderr</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        execvp(cmd, argv);</span><br><span class="line">        <span class="comment">// Show terminal output about failing exec() call:</span></span><br><span class="line">        <span class="keyword">char</span>* error_message;</span><br><span class="line">        <span class="keyword">if</span> (asprintf(&amp;error_message, <span class="string">&quot;exec(\&quot;%s\&quot;)&quot;</span>, cmd) == <span class="number">-1</span>) error_message = <span class="string">&quot;exec()&quot;</span>;</span><br><span class="line">        perror(error_message);</span><br><span class="line">        _exit(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="一些问题和思考"><a href="#一些问题和思考" class="headerlink" title="一些问题和思考"></a>一些问题和思考</h2><ul>
+<li>最开始的版本使用的bootstrap.zip中打包进了包括bash以及apt在内的许多命令及依赖，大小有16M左右，它提供了一个比较完整的shell功能，后续可以通过apt去下载python然后获取youtube-dl，一个流程下载需要26M左右的流量</li>
+<li>由于deb包以及bootstrap.zip都是我们自己编译后放在自己的服务器上的，因此在安装python时可以按照dpkg本地安装的方式，python.deb的获取通过http的方式从服务器下载，在编译bootstrap.zip时只添加dpkg以及其依赖，其余的apt和bash都不提供，使用Android系统内部的shell客户端————sh，虽然sh功能有限，使用不方便，但是可以满足基本的一些需求。按照这种方式，打包的bootstrap.zip只包括dpkg，大小为3M，然后加上下载的python以及youtube-dl，总共13M左右（而且免去了<code>apt update</code>等所需的流量）。</li>
+<li>由于dpkg按照python.deb的方式需要手动解决依赖包的问题，需要手动下载许多的deb依赖包，因此最后直接在打包bootstrap.zip的时候，去掉dpkg，直接加上python的依赖，将其打包进bootstrap.zip，在客户端下载配置完bootstrap.zip后，即可直接使用python的pip下载youtube-dl，操作上方便了许多，并且避免了不同Android系统可能存在的兼容性问题。</li>
+</ul>
+<h1 id="Android-App-Bundle"><a href="#Android-App-Bundle" class="headerlink" title="Android App Bundle"></a>Android App Bundle</h1><h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>Android App Bundle是Google推出的Apk动态打包，动态组件化的技术，与Instant App不同，AAB是借助Split Apk完成动态加载，使用AAB动态下发方式，可以大幅度减少应用体积。只须在 Android Studio 中构建一个应用 (app bundle)，就可以将应用所需的全部内容 (适用于所有设备) 都涵盖在内：所有语言、所有设备屏幕大小、所有硬件架构。它本身并不支持动态化，只是动态化的一个载体文件，真正实现逻辑并不是它。</p>
+<img src="aab.gif"/>
+
+<h2 id="Split-APK"><a href="#Split-APK" class="headerlink" title="Split APK"></a>Split APK</h2><p>Split APK是Google为解决65536上限，以及APK安装包越来越大等问题，在Android L中引入的机制。它可以将一个庞大的APK，按屏幕密度，ABI等形式拆分成多个独立的APK，在应用程序更新时，不必下载整个APK，只需单独下载某个模块即可安装更新。Split APK将原来一个APK中多个模块共享同一份资源的模型分离成多个APK使用各自的资源，并且可以继承Base APK中的资源，多个APK有相同的data，cache目录，多个dex文件，相同的进程，在Settings.apk中只显示一个APK，并且使用相同的包名。</p>
+<h2 id="Building-App-Bundles"><a href="#Building-App-Bundles" class="headerlink" title="Building App Bundles"></a>Building App Bundles</h2><p>在gradle中配置Split的维度：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    bundle &#123;</span><br><span class="line">        language &#123;</span><br><span class="line">            enableSplit = <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">        density &#123;</span><br><span class="line">            enableSplit = <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">        abi &#123;</span><br><span class="line">            enableSplit = <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后通过Android Studio/Gradle/Bundletool生成.aab文件。</p>
+<h2 id="Test-Android-App-Bundle"><a href="#Test-Android-App-Bundle" class="headerlink" title="Test Android App Bundle"></a>Test Android App Bundle</h2><p>可以通过两种方法测试aab：</p>
+<ol>
+<li>在本地使用 bundletool 命令行工具</li>
+<li>将 bundle上传到 Google Play Console，然后使用新的内部测试轨道</li>
+</ol>
+<h3 id="bundletool"><a href="#bundletool" class="headerlink" title="bundletool"></a>bundletool</h3><p>在 <a target="_blank" rel="noopener" href="https://github.com/google/bundletool/releases">Github 仓库</a> 中下载 bundletool 工具。</p>
+<p>从 app bundle 生成一组 APK：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar bundletool-all-0.3.3.jar build-apks --bundle=[aab file] --output=[output file name].apks</span><br></pre></td></tr></table></figure>
+
+<h4 id="解压-apks"><a href="#解压-apks" class="headerlink" title="解压.apks"></a>解压.apks</h4><p>解压 <code>.apks</code> 文件：<code>unzip app.apks -d tmp</code>，输出如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br></pre></td><td class="code"><pre><span class="line">Archive:  app.apks</span><br><span class="line">extracting: tmp/base-hdpi.apk       </span><br><span class="line">extracting: tmp/base-mdpi.apk       </span><br><span class="line">extracting: tmp/base-ldpi.apk       </span><br><span class="line">extracting: tmp/base-xhdpi.apk      </span><br><span class="line">extracting: tmp/base-xxxhdpi.apk    </span><br><span class="line">extracting: tmp/base-xxhdpi.apk     </span><br><span class="line">extracting: tmp/base-tvdpi.apk      </span><br><span class="line">extracting: tmp/base-ca.apk         </span><br><span class="line">extracting: tmp/base-da.apk         </span><br><span class="line">extracting: tmp/base-fa.apk         </span><br><span class="line">extracting: tmp/base-ja.apk         </span><br><span class="line">extracting: tmp/base-ka.apk         </span><br><span class="line">extracting: tmp/base-pa.apk         </span><br><span class="line">extracting: tmp/base-ta.apk         </span><br><span class="line">extracting: tmp/base-nb.apk         </span><br><span class="line">extracting: tmp/base-be.apk         </span><br><span class="line">extracting: tmp/base-de.apk         </span><br><span class="line">extracting: tmp/base-ne.apk         </span><br><span class="line">extracting: tmp/base-te.apk         </span><br><span class="line">extracting: tmp/base-af.apk         </span><br><span class="line">extracting: tmp/base-bg.apk         </span><br><span class="line">extracting: tmp/base-th.apk         </span><br><span class="line">extracting: tmp/base-fi.apk         </span><br><span class="line">extracting: tmp/base-si.apk         </span><br><span class="line">extracting: tmp/base-hi.apk         </span><br><span class="line">extracting: tmp/base-vi.apk         </span><br><span class="line">extracting: tmp/base-kk.apk         </span><br><span class="line">extracting: tmp/base-mk.apk         </span><br><span class="line">extracting: tmp/base-sk.apk         </span><br><span class="line">extracting: tmp/base-uk.apk         </span><br><span class="line">extracting: tmp/base-el.apk         </span><br><span class="line">extracting: tmp/base-master.apk     </span><br><span class="line">extracting: tmp/base-gl.apk</span><br><span class="line">extracting: tmp/base-nl.apk</span><br><span class="line">extracting: tmp/base-ml.apk</span><br><span class="line">extracting: tmp/base-pl.apk</span><br><span class="line">extracting: tmp/base-sl.apk</span><br><span class="line">extracting: tmp/base-tl.apk</span><br><span class="line">extracting: tmp/base-am.apk</span><br><span class="line">extracting: tmp/base-km.apk</span><br><span class="line">extracting: tmp/base-bn.apk</span><br><span class="line">extracting: tmp/base-in.apk</span><br><span class="line">extracting: tmp/base-kn.apk</span><br><span class="line">extracting: tmp/base-mn.apk</span><br><span class="line">extracting: tmp/base-ko.apk</span><br><span class="line">extracting: tmp/base-lo.apk</span><br><span class="line">extracting: tmp/base-ro.apk</span><br><span class="line">extracting: tmp/base-sq.apk</span><br><span class="line">extracting: tmp/base-ar.apk</span><br><span class="line">extracting: tmp/base-fr.apk</span><br><span class="line">extracting: tmp/base-hr.apk</span><br><span class="line">extracting: tmp/base-mr.apk</span><br><span class="line">extracting: tmp/base-or.apk</span><br><span class="line">extracting: tmp/base-sr.apk</span><br><span class="line">extracting: tmp/base-tr.apk</span><br><span class="line">extracting: tmp/base-ur.apk</span><br><span class="line">extracting: tmp/base-as.apk</span><br><span class="line">extracting: tmp/base-bs.apk</span><br><span class="line">extracting: tmp/base-cs.apk</span><br><span class="line">extracting: tmp/base-es.apk</span><br><span class="line">extracting: tmp/base-is.apk</span><br><span class="line">extracting: tmp/base-ms.apk</span><br><span class="line">extracting: tmp/base-et.apk</span><br><span class="line">extracting: tmp/base-it.apk</span><br><span class="line">extracting: tmp/base-lt.apk</span><br><span class="line">extracting: tmp/base-pt.apk</span><br><span class="line">extracting: tmp/base-gu.apk</span><br><span class="line">extracting: tmp/base-eu.apk</span><br><span class="line">extracting: tmp/base-hu.apk</span><br><span class="line">extracting: tmp/base-ru.apk</span><br><span class="line">extracting: tmp/base-lv.apk</span><br><span class="line">extracting: tmp/base-zu.apk</span><br><span class="line">extracting: tmp/base-sv.apk</span><br><span class="line">extracting: tmp/base-iw.apk</span><br><span class="line">extracting: tmp/base-sw.apk</span><br><span class="line">extracting: tmp/base-hy.apk</span><br><span class="line">extracting: tmp/base-ky.apk</span><br><span class="line">extracting: tmp/base-my.apk</span><br><span class="line">extracting: tmp/base-az.apk</span><br><span class="line">extracting: tmp/base-uz.apk</span><br><span class="line">extracting: tmp/base-en.apk</span><br><span class="line">extracting: tmp/base-zh.apk</span><br><span class="line">extracting: tmp/base-armeabi_v7a.apk  </span><br><span class="line">extracting: tmp/base-arm64_v8a.apk  </span><br><span class="line">extracting: tmp/standalone-arm64_v8a_mdpi.apk  </span><br><span class="line">extracting: tmp/standalone-arm64_v8a_ldpi.apk  </span><br><span class="line">extracting: tmp/standalone-arm64_v8a_hdpi.apk  </span><br><span class="line">extracting: tmp/standalone-arm64_v8a_xhdpi.apk  </span><br><span class="line">extracting: tmp/standalone-armeabi_v7a_ldpi.apk  </span><br><span class="line">extracting: tmp/standalone-arm64_v8a_xxxhdpi.apk  </span><br><span class="line">extracting: tmp/standalone-arm64_v8a_xxhdpi.apk  </span><br><span class="line">extracting: tmp/standalone-arm64_v8a_tvdpi.apk  </span><br><span class="line">extracting: tmp/standalone-armeabi_v7a_mdpi.apk  </span><br><span class="line">extracting: tmp/standalone-armeabi_v7a_xhdpi.apk  </span><br><span class="line">extracting: tmp/standalone-armeabi_v7a_xxhdpi.apk  </span><br><span class="line">extracting: tmp/standalone-armeabi_v7a_hdpi.apk  </span><br><span class="line">extracting: tmp/standalone-armeabi_v7a_xxxhdpi.apk  </span><br><span class="line">extracting: tmp/standalone-armeabi_v7a_tvdpi.apk  </span><br><span class="line">inflating: tmp/toc.pb              </span><br></pre></td></tr></table></figure>
+
+<p>可以使用如下命令安装多个 split apks：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb install-multiple -r 1.apk 2.apk</span><br></pre></td></tr></table></figure>
+
+<h3 id="Google-Play-Console"><a href="#Google-Play-Console" class="headerlink" title="Google Play Console"></a>Google Play Console</h3><p>使用内部测试方式。</p>
+<h2 id="Dynamic-Delivery"><a href="#Dynamic-Delivery" class="headerlink" title="Dynamic Delivery"></a>Dynamic Delivery</h2><ul>
+<li>基本 APK</li>
+<li>配置 APK</li>
+<li>动态功能 APK</li>
+</ul>
+<h2 id="一些问题"><a href="#一些问题" class="headerlink" title="一些问题"></a>一些问题</h2><ul>
+<li>从非GP的渠道下载base.apk：采用Google官方的方法，即提示用户跳转GP安装最新版</li>
+<li>从Apk更新到aab：测试之后发现可以正常更新</li>
+<li>分享apk：Instant Apps/茄子快传分享Split Apk时可以组装成一个完整的apk</li>
+<li>Google Play签名计划会使用我们自己的签名文件去签名(而不是我们手动签名)(v1，v2)</li>
+</ul>
+<h1 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/08/27/Termux%E8%A7%A3%E6%9E%90/">Termux解析</a></li>
+<li><a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/08/08/termux-app%E4%BF%AE%E6%94%B9%E5%8C%85%E5%90%8D/">termux-app修改包名</a></li>
+<li><a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/09/16/Android-App-Bundle%E7%AC%94%E8%AE%B0/">Android-App-Bundle笔记</a></li>
+<li><a target="_blank" rel="noopener" href="https://developer.android.com/guide/app-bundle/">Android App Bundles</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/%E5%88%86%E4%BA%AB/" rel="tag"># 分享</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/10/21/Android-init-zygote/" rel="prev" title="Android-init-zygote">
+      <i class="fa fa-chevron-left"></i> Android-init-zygote
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/11/01/Android-Security/" rel="next" title="Android-Security">
+      Android-Security <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Termux"><span class="nav-number">1.</span> <span class="nav-text">Termux</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E5%88%87%E7%9A%86%E6%96%87%E4%BB%B6"><span class="nav-number">1.2.</span> <span class="nav-text">一切皆文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E6%8F%8F%E8%BF%B0%E7%AC%A6"><span class="nav-number">1.3.</span> <span class="nav-text">文件描述符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Termux%E5%B7%A5%E4%BD%9C%E6%96%B9%E5%BC%8F"><span class="nav-number">1.4.</span> <span class="nav-text">Termux工作方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#apt-amp-dpkg"><span class="nav-number">1.4.1.</span> <span class="nav-text">apt&amp;dpkg</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Termux%E6%8F%90%E4%BE%9B%E4%BA%86%E4%BB%80%E4%B9%88"><span class="nav-number">1.4.2.</span> <span class="nav-text">Termux提供了什么</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%AE%E6%94%B9%E5%8C%85%E5%90%8D"><span class="nav-number">1.5.</span> <span class="nav-text">修改包名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB"><span class="nav-number">1.6.</span> <span class="nav-text">源码解读</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#setupIfNeeded"><span class="nav-number">1.6.1.</span> <span class="nav-text">setupIfNeeded</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#createSession"><span class="nav-number">1.6.2.</span> <span class="nav-text">createSession</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%93%8D%E4%BD%9Cterminal"><span class="nav-number">1.6.3.</span> <span class="nav-text">操作terminal</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#createSubprocess"><span class="nav-number">1.6.4.</span> <span class="nav-text">createSubprocess</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98%E5%92%8C%E6%80%9D%E8%80%83"><span class="nav-number">1.7.</span> <span class="nav-text">一些问题和思考</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Android-App-Bundle"><span class="nav-number">2.</span> <span class="nav-text">Android App Bundle</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="nav-number">2.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Split-APK"><span class="nav-number">2.2.</span> <span class="nav-text">Split APK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Building-App-Bundles"><span class="nav-number">2.3.</span> <span class="nav-text">Building App Bundles</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Test-Android-App-Bundle"><span class="nav-number">2.4.</span> <span class="nav-text">Test Android App Bundle</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#bundletool"><span class="nav-number">2.4.1.</span> <span class="nav-text">bundletool</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%A7%A3%E5%8E%8B-apks"><span class="nav-number">2.4.1.1.</span> <span class="nav-text">解压.apks</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Google-Play-Console"><span class="nav-number">2.4.2.</span> <span class="nav-text">Google Play Console</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dynamic-Delivery"><span class="nav-number">2.5.</span> <span class="nav-text">Dynamic Delivery</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98"><span class="nav-number">2.6.</span> <span class="nav-text">一些问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%99%84%E5%BD%95"><span class="nav-number">3.</span> <span class="nav-text">附录</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">153</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">101</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
