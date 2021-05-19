@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="协程的状态机这一章会以下面的代码为例解析一下协程启动，挂起以及恢复的流程：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kotlin笔记之协程工作原理">
+<meta property="og:url" content="http://yoursite.com/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="协程的状态机这一章会以下面的代码为例解析一下协程启动，挂起以及恢复的流程：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/Kotlin%E5%8D%8F%E7%A8%8B%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.jpg">
+<meta property="article:published_time" content="2021-05-19T09:38:04.000Z">
+<meta property="article:modified_time" content="2021-05-19T09:59:44.099Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Kotlin">
+<meta property="article:tag" content="协程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/Kotlin%E5%8D%8F%E7%A8%8B%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Kotlin笔记之协程工作原理 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Kotlin笔记之协程工作原理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-05-19 17:38:04 / 修改时间：17:59:44" itemprop="dateCreated datePublished" datetime="2021-05-19T17:38:04+08:00">2021-05-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">语言</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%AD%E8%A8%80/Kotlin/" itemprop="url" rel="index"><span itemprop="name">Kotlin</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" class="post-meta-item leancloud_visitors" data-flag-title="Kotlin笔记之协程工作原理" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="协程的状态机"><a href="#协程的状态机" class="headerlink" title="协程的状态机"></a>协程的状态机</h1><p>这一章会以下面的代码为例解析一下协程启动，挂起以及恢复的流程：</p>
+<a id="more"></a>
+
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">getId</span><span class="params">()</span></span>: String &#123;</span><br><span class="line">    <span class="keyword">return</span> GlobalScope.async(Dispatchers.IO) &#123;</span><br><span class="line">        delay(<span class="number">1000</span>)</span><br><span class="line">        <span class="string">&quot;hearing&quot;</span></span><br><span class="line">    &#125;.await()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">getAvatar</span><span class="params">(id: <span class="type">String</span>)</span></span>: String &#123;</span><br><span class="line">    <span class="keyword">return</span> GlobalScope.async(Dispatchers.IO) &#123;</span><br><span class="line">        delay(<span class="number">1000</span>)</span><br><span class="line">        <span class="string">&quot;avatar-<span class="variable">$id</span>&quot;</span></span><br><span class="line">    &#125;.await()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    GlobalScope.launch &#123;</span><br><span class="line">        <span class="keyword">val</span> id = getId()</span><br><span class="line">        <span class="keyword">val</span> avatar = getAvatar(id)</span><br><span class="line">        println(<span class="string">&quot;<span class="subst">$&#123;Thread.currentThread().name&#125;</span> - <span class="variable">$id</span> - <span class="variable">$avatar</span>&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面 main 方法中，GlobalScope.launch 启动的协程体在执行到 getId 后，协程体会挂起，直到 getId 返回可用结果，才会 resume launch 协程，执行到 getAvatar 也是同样的过程。协程内部实现使用状态机来处理不同的挂起点，将 GlobalScope.launch 协程体字节码反编译成 Java 代码，大致如下(有所删减)：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">BuildersKt.launch$<span class="keyword">default</span>((CoroutineScope)GlobalScope.INSTANCE, (CoroutineContext)<span class="keyword">null</span>,</span><br><span class="line">    (CoroutineStart)<span class="keyword">null</span>, (Function2)(<span class="keyword">new</span> Function2((Continuation)<span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">int</span> label;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Object <span class="title">invokeSuspend</span><span class="params">(<span class="meta">@NotNull</span> Object $result)</span> </span>&#123;</span><br><span class="line">        Object var10000;</span><br><span class="line">        String id;</span><br><span class="line">        label17: &#123;</span><br><span class="line">            CoroutineScope $<span class="keyword">this</span>$launch;</span><br><span class="line">            <span class="keyword">switch</span>(<span class="keyword">this</span>.label) &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">0</span>: <span class="comment">// a</span></span><br><span class="line">                ResultKt.throwOnFailure($result);</span><br><span class="line">                $<span class="keyword">this</span>$launch = <span class="keyword">this</span>.p$;</span><br><span class="line">                <span class="keyword">this</span>.label = <span class="number">1</span>; <span class="comment">// label置为1</span></span><br><span class="line">                var10000 = getId(<span class="keyword">this</span>);</span><br><span class="line">                <span class="keyword">if</span> (var10000 == COROUTINE_SUSPENDED) &#123;</span><br><span class="line">                    <span class="keyword">return</span> COROUTINE_SUSPENDED;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// 若此时已经有结果，则不挂起，直接break</span></span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">1</span>: <span class="comment">// b</span></span><br><span class="line">                ResultKt.throwOnFailure($result);</span><br><span class="line">                var10000 = $result;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">2</span>: <span class="comment">// d</span></span><br><span class="line">                id = (String)<span class="keyword">this</span>.L$<span class="number">1</span>;</span><br><span class="line">                ResultKt.throwOnFailure($result);</span><br><span class="line">                var10000 = $result;</span><br><span class="line">                <span class="keyword">break</span> label17; <span class="comment">// 退出label17</span></span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">&quot;call to &#x27;resume&#x27; before &#x27;invoke&#x27; with coroutine&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// c</span></span><br><span class="line">            id = (String)var10000;</span><br><span class="line">            <span class="keyword">this</span>.L$<span class="number">1</span> = id; <span class="comment">// 将id赋给L$1</span></span><br><span class="line">            <span class="keyword">this</span>.label = <span class="number">2</span>; <span class="comment">// label置为2</span></span><br><span class="line">            var10000 = getAvatar(id, <span class="keyword">this</span>);</span><br><span class="line">            <span class="keyword">if</span> (var10000 == COROUTINE_SUSPENDED) &#123;</span><br><span class="line">                <span class="keyword">return</span> COROUTINE_SUSPENDED;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// e</span></span><br><span class="line">        String avatar = (String)var10000;</span><br><span class="line">        String var5 = var9.append(var10001.getName()).append(<span class="string">&quot; - &quot;</span>).append(id).append(<span class="string">&quot; - &quot;</span>).append(avatar).toString();</span><br><span class="line">        System.out.println(var5);</span><br><span class="line">        <span class="keyword">return</span> Unit.INSTANCE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Continuation <span class="title">create</span><span class="params">(<span class="meta">@Nullable</span> Object value, <span class="meta">@NotNull</span> Continuation completion)</span> </span>&#123;</span><br><span class="line">        Intrinsics.checkParameterIsNotNull(completion, <span class="string">&quot;completion&quot;</span>);</span><br><span class="line">        Function2 var3 = <span class="keyword">new</span> &lt;anonymous constructor&gt;(completion);</span><br><span class="line">        var3.p$ = (CoroutineScope)value;</span><br><span class="line">        <span class="keyword">return</span> var3;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Object <span class="title">invoke</span><span class="params">(Object var1, Object var2)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> ((&lt;undefinedtype&gt;)<span class="keyword">this</span>.create(var1, (Continuation)var2)).invokeSuspend(Unit.INSTANCE);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里我们根据上面的注释以及字母标签来看一下执行流程(invokeSuspend 方法会在协程体中的 suspend 函数得到结果后被调用，具体是在哪里被调用的稍后会讲到)：</p>
+<ul>
+<li>a: launch 协程体刚执行到 getId 方法时，getId 方法的返回值将是 COROUTINE_SUSPENDED, 此时直接 return, 则 launch 协程体中 getId 后面的代码暂时不会执行，即 launch 协程体被挂起(非阻塞, 该线程依旧会做其它工作)。这里将 label 置为了 1. 而若此时 getId 已经有结果(内部没有调用 delay 之类的 suspend 函数等)，则不挂起，而是直接 break。</li>
+<li>b: 若上面 a 中 getId 返回 COROUTINE_SUSPENDED, 则当 getId 有可用结果返回后，会重新执行 launch 协程体的 invokeSuspend 方法，根据上面的 label==1, 会执行到这里检查一下 result 没问题的话就 break, 此时 id 赋值给了 var10000。</li>
+<li>c: 在 a 中若直接 break 或 在 b 中得到 getId 的结果然后 break 后，都会执行到这里，得到 id 的值并把 label 置为2。然后调用 getAvatar 方法，跟 getId 类似，若其返回 COROUTINE_SUSPENDED 则 return，协程被挂起，等到下次 invokeSuspend 被执行，否则离开 label17 接着执行后续逻辑。</li>
+<li>d: 若上面 c 中 getAvatar 返回 COROUTINE_SUSPENDED, 则当 getAvatar 有可用结果返回后会重新调用 launch 协程体的 invokeSuspend 方法，此时根据 label==2 来到这里并取得之前的 id 值，检验 result(即avatar)，然后break label17。</li>
+<li>e: c 中直接返回了可用结果 或 d 中 break label17 后，launch 协程体中的 suspend 函数都执行完毕了，这里会执行剩下的逻辑。</li>
+</ul>
+<p>suspend 函数不会阻塞线程，且 suspend 函数不一定会挂起协程，如果相关调用的结果已经可用，则继续运行而不挂起，例如 async{} 返回值 Deferred 的结果已经可用时，await()挂起函数可以直接返回结果，不用再挂起协程。</p>
+<p>这一节看了一下 launch 协程体反编译成 Java 后的代码逻辑，关于 invokeSuspend 是何时怎么被调用的，将会在下面讲到。</p>
+<h1 id="协程的创建与启动"><a href="#协程的创建与启动" class="headerlink" title="协程的创建与启动"></a>协程的创建与启动</h1><p>这一节以 <code>CoroutineScope.launch &#123;&#125;</code> 默认参数为例，从源码角度看看 Kotlin 协程是怎样创建与启动的：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> CoroutineScope.<span class="title">launch</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    context: <span class="type">CoroutineContext</span> = EmptyCoroutineContext,</span></span></span><br><span class="line"><span class="function"><span class="params">    start: <span class="type">CoroutineStart</span> = CoroutineStart.DEFAULT,</span></span></span><br><span class="line"><span class="function"><span class="params">    block: <span class="type">suspend</span> <span class="type">CoroutineScope</span>.() -&gt; <span class="type">Unit</span></span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>: Job &#123;</span><br><span class="line">    <span class="keyword">val</span> newContext = newCoroutineContext(context)</span><br><span class="line">    <span class="keyword">val</span> coroutine = <span class="keyword">if</span> (start.isLazy) LazyStandaloneCoroutine(newContext, block) <span class="keyword">else</span> StandaloneCoroutine(newContext, active = <span class="literal">true</span>)</span><br><span class="line">    coroutine.start(start, coroutine, block)</span><br><span class="line">    <span class="keyword">return</span> coroutine</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// AbstractCoroutine.kt</span></span><br><span class="line"><span class="comment">// receiver: StandaloneCoroutine</span></span><br><span class="line"><span class="comment">// block: suspend StandaloneCoroutine.() -&gt; Unit</span></span><br><span class="line"><span class="comment">// private open class StandaloneCoroutine(...) : AbstractCoroutine&lt;Unit&gt;(...) &#123;&#125;</span></span><br><span class="line"><span class="comment">// public abstract class AbstractCoroutine&lt;in T&gt;(...) : JobSupport(active), Job, Continuation&lt;T&gt;, CoroutineScope &#123;&#125;</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;R&gt;</span> <span class="title">start</span><span class="params">(start: <span class="type">CoroutineStart</span>, receiver: <span class="type">R</span>, block: <span class="type">suspend</span> <span class="type">R</span>.() -&gt; <span class="type">T</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">// 调用 CoroutineStart 中的 invoke 方法</span></span><br><span class="line">    start(block, receiver, <span class="keyword">this</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="class"><span class="keyword">class</span> <span class="title">CoroutineStart</span> </span>&#123;</span><br><span class="line">    <span class="comment">// block - StandaloneCoroutine.() -&gt; Unit</span></span><br><span class="line">    <span class="comment">// receiver - StandaloneCoroutine</span></span><br><span class="line">    <span class="comment">// completion - StandaloneCoroutine&lt;Unit&gt;</span></span><br><span class="line">    public operator fun &lt;R, T&gt; invoke(block: suspend R.() -&gt; T, receiver: R, completion: Continuation&lt;T&gt;): Unit =</span><br><span class="line">        <span class="keyword">when</span> (<span class="keyword">this</span>) &#123;</span><br><span class="line">            <span class="comment">// 根据 start 参数的类型调用不同的方法</span></span><br><span class="line">            DEFAULT -&gt; block.startCoroutineCancellable(receiver, completion)</span><br><span class="line">            ATOMIC -&gt; block.startCoroutine(receiver, completion)</span><br><span class="line">            UNDISPATCHED -&gt; block.startCoroutineUndispatched(receiver, completion)</span><br><span class="line">            LAZY -&gt; <span class="built_in">Unit</span> <span class="comment">// will start lazily</span></span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来看看 startCoroutineCancellable 方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// receiver - StandaloneCoroutine</span></span><br><span class="line"><span class="comment">// completion - StandaloneCoroutine&lt;Unit&gt;</span></span><br><span class="line"><span class="keyword">internal</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;R, T&gt;</span> <span class="params">(<span class="keyword">suspend</span> (R)</span></span> -&gt; T).startCoroutineCancellable(receiver: R, completion: Continuation&lt;T&gt;) =</span><br><span class="line">    runSafely(completion) &#123;</span><br><span class="line">        createCoroutineUnintercepted(receiver, completion).intercepted().resumeCancellableWith(Result.success(<span class="built_in">Unit</span>))</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>createCoroutineUnintercepted 方法创建了一个 Continuation 类型(协程)的实例，即创建了一个协程：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">actual</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;R, T&gt;</span> <span class="params">(<span class="keyword">suspend</span> R.()</span></span> -&gt; T).createCoroutineUnintercepted(</span><br><span class="line">    receiver: R, completion: Continuation&lt;T&gt;</span><br><span class="line">): Continuation&lt;<span class="built_in">Unit</span>&gt; &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">if</span> (<span class="keyword">this</span> <span class="keyword">is</span> BaseContinuationImpl) create(receiver, completion) <span class="keyword">else</span> <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>调用的是 <code>(suspend (R) -&gt; T)</code> 的 createCoroutineUnintercepted 方法，<code>(suspend (R) -&gt; T)</code> 就是协程体。直接看上面示例代码中 <code>GlobalScope.launch</code> 编译后的字节码，可以发现 CoroutineScope.launch 传入的 lambda 表达式被编译成了继承 SuspendLambda 的子类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span>$<span class="title">main</span>$1 <span class="keyword">extends</span> <span class="title">kotlin</span>/<span class="title">coroutines</span>/<span class="title">jvm</span>/<span class="title">internal</span>/<span class="title">SuspendLambda</span> <span class="keyword">implements</span> <span class="title">kotlin</span>/<span class="title">jvm</span>/<span class="title">functions</span>/<span class="title">Function2</span></span></span><br></pre></td></tr></table></figure>
+
+<p>其继承关系为: <code>SuspendLambda -&gt; ContinuationImpl -&gt; BaseContinuationImpl -&gt; Continuation</code>, 因此走 <code>create(receiver, completion)</code> 方法，从上面反编译出的 Java 代码可以看到 create 方法创建了一个 Continuation 实例，再看一下 Kotlin 代码编译后的字节码(包名已省略)：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="title">create</span><span class="params">(Ljava/lang/Object;Lkotlin/coroutines/Continuation;)</span>Lkotlin/coroutines/Continuation</span>;</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line">NEW Main$main$<span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>从上面可以看到，create 方法创建了 <code>Main$main$1</code> 实例，而其继承自 SuspendLambda, 因此 create 方法创建的 Continuation 是一个 SuspendLambda 对象。</p>
+<p>即 createCoroutineUnintercepted 方法创建了一个 SuspendLambda 实例。然后看看 intercepted 方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">actual</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> Continuation<span class="type">&lt;T&gt;</span>.<span class="title">intercepted</span><span class="params">()</span></span>: Continuation&lt;T&gt; =</span><br><span class="line">    <span class="comment">// 如果是ContinuationImpl类型，则调用intercepted方法，否则返回自身</span></span><br><span class="line">    <span class="comment">// 这里的 this 是 Main$main$1 实例 - ContinuationImpl的子类</span></span><br><span class="line">    (<span class="keyword">this</span> <span class="keyword">as</span>? ContinuationImpl)?.intercepted() ?: <span class="keyword">this</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// ContinuationImpl</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="title">intercepted</span><span class="params">()</span></span>: Continuation&lt;Any?&gt; =</span><br><span class="line">    <span class="comment">// context[ContinuationInterceptor]是 CoroutineDispatcher 实例</span></span><br><span class="line">    <span class="comment">// 需要线程调度 - 返回 DispatchedContinuation，其 continuation 参数值为 SuspendLambda</span></span><br><span class="line">    <span class="comment">// 不需要线程调度 - 返回 SuspendLambda</span></span><br><span class="line">    intercepted ?: (context[ContinuationInterceptor]?.interceptContinuation(<span class="keyword">this</span>) ?: <span class="keyword">this</span>).also &#123; intercepted = it &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// CoroutineDispatcher</span></span><br><span class="line"><span class="comment">// continuation - SuspendLambda -&gt; ContinuationImpl -&gt; BaseContinuationImpl</span></span><br><span class="line">public final override fun &lt;T&gt; interceptContinuation(continuation: Continuation&lt;T&gt;): Continuation&lt;T&gt; =</span><br><span class="line">    DispatchedContinuation(<span class="keyword">this</span>, continuation)</span><br></pre></td></tr></table></figure>
+
+<p>接下来看看 resumeCancellableWith 是怎么启动协程的，这里还涉及到Dispatchers线程调度的逻辑：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">internal</span> <span class="class"><span class="keyword">class</span> <span class="title">DispatchedContinuation</span>&lt;<span class="type">in T</span>&gt;</span>(</span><br><span class="line">    <span class="meta">@JvmField</span> <span class="keyword">val</span> dispatcher: CoroutineDispatcher,</span><br><span class="line">    <span class="meta">@JvmField</span> <span class="keyword">val</span> continuation: Continuation&lt;T&gt;</span><br><span class="line">) : DispatchedTask&lt;T&gt;(MODE_ATOMIC_DEFAULT), CoroutineStackFrame, Continuation&lt;T&gt; <span class="keyword">by</span> continuation &#123;</span><br><span class="line">    public fun &lt;T&gt; Continuation&lt;T&gt;.resumeCancellableWith(result: Result&lt;T&gt;): Unit = when (this) &#123;</span><br><span class="line">        <span class="comment">// 进行线程调度，最后也会执行到continuation.resumeWith方法</span></span><br><span class="line">        <span class="keyword">is</span> DispatchedContinuation -&gt; resumeCancellableWith(result)</span><br><span class="line">        <span class="comment">// 直接执行continuation.resumeWith方法</span></span><br><span class="line">        <span class="keyword">else</span> -&gt; resumeWith(result)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> <span class="title">resumeCancellableWith</span><span class="params">(result: <span class="type">Result</span>&lt;<span class="type">T</span>&gt;)</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> state = result.toState()</span><br><span class="line">        <span class="comment">// 判断是否需要线程调度</span></span><br><span class="line">        <span class="keyword">if</span> (dispatcher.isDispatchNeeded(context)) &#123;</span><br><span class="line">            _state = state</span><br><span class="line">            resumeMode = MODE_CANCELLABLE</span><br><span class="line">            <span class="comment">// 需要调度则先进行调度</span></span><br><span class="line">            dispatcher.dispatch(context, <span class="keyword">this</span>)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            executeUnconfined(state, MODE_CANCELLABLE) &#123;</span><br><span class="line">                <span class="keyword">if</span> (!resumeCancelled()) &#123;</span><br><span class="line">                    <span class="comment">// 不需要调度则直接在当前线程执行协程</span></span><br><span class="line">                    resumeUndispatchedWith(result)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> <span class="title">resumeUndispatchedWith</span><span class="params">(result: <span class="type">Result</span>&lt;<span class="type">T</span>&gt;)</span></span> &#123;</span><br><span class="line">        withCoroutineContext(context, countOrElement) &#123;</span><br><span class="line">            continuation.resumeWith(result)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>当需要线程调度时，则在调度后会调用 DispatchedContinuation.continuation.resumeWith 来启动协程，其中 continuation 是 SuspendLambda 实例；</li>
+<li>当不需要线程调度时，则直接调用 SuspendLambda.resumeWith 来启动协程。</li>
+</ul>
+<p>resumeWith 方法调用的是父类 BaseContinuationImpl 中的 resumeWith 方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">internal</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">BaseContinuationImpl</span></span>(<span class="keyword">public</span> <span class="keyword">val</span> completion: Continuation&lt;Any?&gt;?) : Continuation&lt;Any?&gt;, CoroutineStackFrame, Serializable &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">resumeWith</span><span class="params">(result: <span class="type">Result</span>&lt;<span class="type">Any</span>?&gt;)</span></span> &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        <span class="keyword">val</span> outcome = invokeSuspend(param)</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>因此，协程的启动是通过 BaseContinuationImpl.resumeWith 方法调用到了子类 SuspendLambda.invokeSuspend 方法，然后通过状态机来控制顺序运行。</strong></p>
+<h1 id="协程的挂起和恢复"><a href="#协程的挂起和恢复" class="headerlink" title="协程的挂起和恢复"></a>协程的挂起和恢复</h1><p>Kotlin 编译器会为 协程体 生成继承自 SuspendLambda 的子类，协程的真正运算逻辑都在其 invokeSuspend 方法中。上一节介绍了 launch 是怎么创建和启动协程的，在这一节我们再看看当协程代码执行到 suspend 函数后，<strong>协程是怎么被挂起的</strong> 以及 <strong>当 suspend 函数执行完成得到可用结果后是怎么恢复协程的</strong>。</p>
+<p>Kotlin 协程的内部实现使用了 Kotlin 编译器的一些编译技术，当 suspend 函数被调用时，都有一个隐式的参数额外传入，这个参数是 Continuation 类型，封装了协程 resume 后执行的代码逻辑。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">getId</span><span class="params">()</span></span>: String &#123;</span><br><span class="line">    <span class="keyword">return</span> GlobalScope.async(Dispatchers.IO) &#123;</span><br><span class="line">        delay(<span class="number">1000</span>)</span><br><span class="line">        <span class="string">&quot;hearing&quot;</span></span><br><span class="line">    &#125;.await()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Decompile成Java</span></span><br><span class="line"><span class="keyword">final</span> Object getId(<span class="meta">@NotNull</span> Continuation $completion) &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中传入的 <code>$completion</code> 参数，从上一节可以看到是调用 getId 方法所在的协程体对象，也就是一个 SuspendLambda 对象。Continuation的定义如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Continuation</span>&lt;<span class="type">in T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">val</span> context: CoroutineContext</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="title">resumeWith</span><span class="params">(result: <span class="type">Result</span>&lt;<span class="type">T</span>&gt;)</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>将 getId 方法编译后的字节码反编译成 Java 代码如下(为便于阅读，删减及修改了部分代码)：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> Object <span class="title">getId</span><span class="params">(<span class="meta">@NotNull</span> Continuation $completion)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 新建与启动协程</span></span><br><span class="line">    <span class="keyword">return</span> BuildersKt.async$<span class="keyword">default</span>((CoroutineScope)GlobalScope.INSTANCE, (CoroutineContext)Dispatchers.getIO(), (CoroutineStart)<span class="keyword">null</span>, (Function2)(<span class="keyword">new</span> Function2((Continuation)<span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">int</span> label;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Nullable</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> Object <span class="title">invokeSuspend</span><span class="params">(<span class="meta">@NotNull</span> Object $result)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">switch</span>(<span class="keyword">this</span>.label) &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">                ResultKt.throwOnFailure($result);</span><br><span class="line">                <span class="keyword">this</span>.label = <span class="number">1</span>;</span><br><span class="line">                <span class="keyword">if</span> (DelayKt.delay(<span class="number">1000L</span>, <span class="keyword">this</span>) == COROUTINE_SUSPENDED) &#123;</span><br><span class="line">                    <span class="keyword">return</span> COROUTINE_SUSPENDED;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">                ResultKt.throwOnFailure($result);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">&quot;call to &#x27;resume&#x27; before &#x27;invoke&#x27; with coroutine&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;hearing&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;), <span class="number">2</span>, (Object)<span class="keyword">null</span>).await($completion); <span class="comment">// 调用 await() suspend 函数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结合<strong>协程的状态机</strong>一节，当上面的 launch 协程体执行到 getId 方法时, 会根据其返回值是否为 COROUTINE_SUSPENDED 来决定是否挂起，由于 getId 的逻辑是通过 async 启动一个新的协程，协程体内调用了 suspend delay 方法，然后通过 await suspend 函数等待结果，当 async 协程没完成时, await 会返回 COROUTINE_SUSPENDED, 因此 launch 协程体的 invokeSuspend 方法直接 return COROUTINE_SUSPENDED 值执行完成，此时 launch 启动的协程处于挂起状态但不阻塞所处线程，而 async 启动的协程开始执行。</p>
+<p>我们看一下 async 的源码：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> CoroutineScope.<span class="title">async</span><span class="params">(...)</span></span>: Deferred&lt;T&gt; &#123;</span><br><span class="line">    <span class="keyword">val</span> newContext = newCoroutineContext(context)</span><br><span class="line">    <span class="keyword">val</span> coroutine = <span class="keyword">if</span> (start.isLazy) LazyDeferredCoroutine(newContext, block) <span class="keyword">else</span></span><br><span class="line">        DeferredCoroutine&lt;T&gt;(newContext, active = <span class="literal">true</span>)</span><br><span class="line">    coroutine.start(start, coroutine, block)</span><br><span class="line">    <span class="keyword">return</span> coroutine</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>默认情况下，上面的 coroutine 取 DeferredCoroutine 实例，于是我们看一下其 await 方法以及在 async 协程执行完成后，是怎么恢复 launch 协程的：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">open</span> <span class="class"><span class="keyword">class</span> <span class="title">DeferredCoroutine</span>&lt;<span class="type">T</span>&gt;</span>(</span><br><span class="line">    parentContext: CoroutineContext, active: <span class="built_in">Boolean</span></span><br><span class="line">) : AbstractCoroutine&lt;T&gt;(parentContext, active), Deferred&lt;T&gt;, SelectClause1&lt;T&gt; &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">await</span><span class="params">()</span></span>: T = awaitInternal() <span class="keyword">as</span> T</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// JobSupport</span></span><br><span class="line"><span class="keyword">internal</span> <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">awaitInternal</span><span class="params">()</span></span>: Any? &#123;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123; <span class="comment">// lock-free loop on state</span></span><br><span class="line">        <span class="keyword">val</span> state = <span class="keyword">this</span>.state</span><br><span class="line">        <span class="keyword">if</span> (state !<span class="keyword">is</span> Incomplete) &#123;</span><br><span class="line">            <span class="comment">// 已经完成，则直接返回结果</span></span><br><span class="line">            <span class="keyword">if</span> (state <span class="keyword">is</span> CompletedExceptionally) &#123; <span class="comment">// Slow path to recover stacktrace</span></span><br><span class="line">                recoverAndThrow(state.cause)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> state.unboxState()</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 不需要重试时直接break，执行awaitSuspend</span></span><br><span class="line">        <span class="keyword">if</span> (startInternal(state) &gt;= <span class="number">0</span>) <span class="keyword">break</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> awaitSuspend() <span class="comment">// slow-path</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// suspendCoroutineUninterceptedOrReturn: 获取当前协程，且挂起当前协程(返回COROUTINE_SUSPENDED)或不挂起直接返回结果</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">awaitSuspend</span><span class="params">()</span></span>: Any? = suspendCoroutineUninterceptedOrReturn &#123; uCont -&gt;</span><br><span class="line">    <span class="keyword">val</span> cont = AwaitContinuation(uCont.intercepted(), <span class="keyword">this</span>)</span><br><span class="line">    cont.disposeOnCancellation(invokeOnCompletion(ResumeAwaitOnCompletion(<span class="keyword">this</span>, cont).asHandler))</span><br><span class="line">    cont.getResult()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面 awaitInternal 的大致逻辑是<strong>当挂起函数已经有结果时则直接返回，否则挂起父协程，然后 invokeOnCompletion 方法将 ResumeAwaitOnCompletion 插入一个队列(state.list)中，源码就不再贴出了。接着看看在 async 执行完成后是怎么调用 ResumeAwaitOnCompletion 来 resume 被挂起的协程的。注意：不要绕进 async 协程体中 delay 是怎么挂起和恢复 async 协程的这一逻辑，我们不需要关注这一层！</strong></p>
+<p>接着 async 协程的执行往下看，从前面可知它会调用 BaseContinuationImpl.resumeWith 方法来执行协程逻辑，我们详细看一下这个方法，在这里会执行该协程的 invokeSuspend 函数：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">internal</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">BaseContinuationImpl</span></span>(</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">val</span> completion: Continuation&lt;Any?&gt;?</span><br><span class="line">) : Continuation&lt;Any?&gt;, CoroutineStackFrame, Serializable &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">resumeWith</span><span class="params">(result: <span class="type">Result</span>&lt;<span class="type">Any</span>?&gt;)</span></span> &#123;</span><br><span class="line">        <span class="keyword">var</span> current = <span class="keyword">this</span></span><br><span class="line">        <span class="keyword">var</span> param = result</span><br><span class="line">        <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">            with(current) &#123;</span><br><span class="line">                <span class="keyword">val</span> completion = completion!! <span class="comment">// fail fast when trying to resume continuation without completion</span></span><br><span class="line">                <span class="keyword">val</span> outcome: Result&lt;Any?&gt; =</span><br><span class="line">                    <span class="keyword">try</span> &#123;<span class="comment">// 调用 invokeSuspend 方法执行协程逻辑</span></span><br><span class="line">                        <span class="keyword">val</span> outcome = invokeSuspend(param)</span><br><span class="line">                        <span class="comment">// 协程挂起时返回的是 COROUTINE_SUSPENDED，即协程挂起时，resumeWith 执行结束</span></span><br><span class="line">                        <span class="comment">// 再次调用 resumeWith 时协程挂起点之后的代码才能继续执行</span></span><br><span class="line">                        <span class="keyword">if</span> (outcome === COROUTINE_SUSPENDED) <span class="keyword">return</span></span><br><span class="line">                        Result.success(outcome)</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (exception: Throwable) &#123;</span><br><span class="line">                        Result.failure(exception)</span><br><span class="line">                    &#125;</span><br><span class="line">                releaseIntercepted() <span class="comment">// this state machine instance is terminating</span></span><br><span class="line">                <span class="keyword">if</span> (completion <span class="keyword">is</span> BaseContinuationImpl) &#123;</span><br><span class="line">                    <span class="comment">// unrolling recursion via loop</span></span><br><span class="line">                    current = completion</span><br><span class="line">                    param = outcome</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// top-level completion reached -- invoke and return</span></span><br><span class="line">                    completion.resumeWith(outcome)</span><br><span class="line">                    <span class="keyword">return</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们从上面的源码可以看到，在 createCoroutineUnintercepted 方法中创建的 SuspendLambda 实例是 BaseContinuationImpl 的子类对象，其 completion 参数为下：</p>
+<ul>
+<li>launch: <code>if (isLazy) LazyStandaloneCoroutine else StandaloneCoroutine</code></li>
+<li>async: <code>if (isLazy) LazyDeferredCoroutine else DeferredCoroutine</code></li>
+</ul>
+<p>上面这几个类都是 AbstractCoroutine 的子类。而根据 completion 的类型会执行不同的逻辑：</p>
+<ul>
+<li>BaseContinuationImpl: 执行协程逻辑</li>
+<li>其它: 调用 resumeWith 方法，处理协程的状态，协程挂起后的恢复即与它有关</li>
+</ul>
+<p>在上面的例子中 async 启动的协程，它也会调用其 invokeSuspend 方法执行 async 协程逻辑，假设 async 返回的结果已经可用时，即非 COROUTINE_SUSPENDED 值，此时 completion 是 DeferredCoroutine 对象，因此会调用 DeferredCoroutine.resumeWith 方法，然后返回，父协程的恢复逻辑便是在这里。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// AbstractCoroutine</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">resumeWith</span><span class="params">(result: <span class="type">Result</span>&lt;<span class="type">T</span>&gt;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> state = makeCompletingOnce(result.toState())</span><br><span class="line">    <span class="keyword">if</span> (state === COMPLETING_WAITING_CHILDREN) <span class="keyword">return</span></span><br><span class="line">    afterResume(state)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 makeCompletingOnce 方法中，会根据 state 去处理协程状态，并执行上面插入 state.list 队列中的 ResumeAwaitOnCompletion.invoke 来恢复父协程，必要的话还会把 async 的结果给它，具体代码实现太多就不贴了，不是本节的重点。直接看 ResumeAwaitOnCompletion.invoke 方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">ResumeAwaitOnCompletion</span>&lt;<span class="type">T</span>&gt;</span>(</span><br><span class="line">    job: JobSupport, <span class="keyword">private</span> <span class="keyword">val</span> continuation: CancellableContinuationImpl&lt;T&gt;</span><br><span class="line">) : JobNode&lt;JobSupport&gt;(job) &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">invoke</span><span class="params">(cause: <span class="type">Throwable</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> state = job.state</span><br><span class="line">        assert &#123; state !<span class="keyword">is</span> Incomplete &#125;</span><br><span class="line">        <span class="keyword">if</span> (state <span class="keyword">is</span> CompletedExceptionally) &#123;</span><br><span class="line">            <span class="comment">// Resume with with the corresponding exception to preserve it</span></span><br><span class="line">            continuation.resumeWithException(state.cause)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// resume 被挂起的协程</span></span><br><span class="line">            continuation.resume(state.unboxState() <span class="keyword">as</span> T)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里的 continuation 就是 launch 协程体，也就是 SuspendLambda 对象，于是 invoke 方法会再一次调用到 BaseContinuationImpl.resumeWith 方法，接着调用 SuspendLambda.invokeSuspend, 然后根据 label 取值继续执行接下来的逻辑！</p>
+<h1 id="suspendCoroutineUninterceptedOrReturn"><a href="#suspendCoroutineUninterceptedOrReturn" class="headerlink" title="suspendCoroutineUninterceptedOrReturn"></a>suspendCoroutineUninterceptedOrReturn</h1><p>接下来我们看一下怎么将一个基于回调的方法改造成一个基于协程的 suspend 方法，要实现这个需求，重点在于 suspendCoroutineUninterceptedOrReturn 方法，根据注释，这个方法的作用是: <code>Obtains the current continuation instance inside suspend functions and either suspends currently running coroutine or returns result immediately without suspension.</code> 即获取当前协程的实例，并且挂起当前协程或不挂起直接返回结果。函数定义如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">suspend</span> <span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> <span class="title">suspendCoroutineUninterceptedOrReturn</span><span class="params">(<span class="keyword">crossinline</span> block: (<span class="type">Continuation</span>&lt;<span class="type">T</span>&gt;) -&gt; <span class="type">Any</span>?)</span></span>: T &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>根据 block 的返回值，有两种情况：</p>
+<ul>
+<li>如果 block 返回 COROUTINE_SUSPENDED, 意味着 suspend 函数会挂起当前协程而不会立即返回结果。这种情况下, block 中的 Continuation 需要在结果可用后调用 Continuation.resumeWith 来 resume 协程。</li>
+<li>如果 block 返回的 T 是 suspend 函数的结果，则协程不会被挂起, block 中的 Continuation 不会被调用。</li>
+</ul>
+<p>调用 Continuation.resumeWith 会直接在调用者的线程 resume 协程，而不会经过 CoroutineContext 中可能存在的 ContinuationInterceptor。建议使用更安全的 suspendCoroutine 方法，在其 block 中可以同步或在异步线程调用 Continuation.resume 和 Continuation.resumeWithException:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">suspend</span> <span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> <span class="title">suspendCoroutine</span><span class="params">(<span class="keyword">crossinline</span> block: (<span class="type">Continuation</span>&lt;<span class="type">T</span>&gt;) -&gt; <span class="type">Unit</span>)</span></span>: T &#123;</span><br><span class="line">    contract &#123; callsInPlace(block, InvocationKind.EXACTLY_ONCE) &#125;</span><br><span class="line">    <span class="keyword">return</span> suspendCoroutineUninterceptedOrReturn &#123; c: Continuation&lt;T&gt; -&gt;</span><br><span class="line">        <span class="comment">// 调用拦截器</span></span><br><span class="line">        <span class="keyword">val</span> safe = SafeContinuation(c.intercepted())</span><br><span class="line">        block(safe)</span><br><span class="line">        safe.getOrThrow()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此外除了 suspendCoroutine 方法，还有 suspendCancellableCoroutine, suspendAtomicCancellableCoroutine, suspendAtomicCancellableCoroutineReusable 等方法都可以用来将异步回调的方法封装成 suspend 函数。</p>
+<p>下面来看一个例子来介绍怎么将异步回调函数封装成 suspend 函数：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NetFetcher</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 将下面的 request 方法封装成 suspend 方法</span></span><br><span class="line">    <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">requestSuspend</span><span class="params">(id: <span class="type">Int</span>)</span></span>: String = suspendCoroutine &#123; continuation -&gt;</span><br><span class="line">        request(id, <span class="keyword">object</span> : OnResponseListener &#123;</span><br><span class="line">            <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onResponse</span><span class="params">(response: <span class="type">String</span>)</span></span> &#123;</span><br><span class="line">                continuation.resume(response)</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onError</span><span class="params">(error: <span class="type">String</span>)</span></span> &#123;</span><br><span class="line">                continuation.resumeWithException(Exception(error))</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">request</span><span class="params">(id: <span class="type">Int</span>, listener: <span class="type">OnResponseListener</span>)</span></span> &#123;</span><br><span class="line">        Thread.sleep(<span class="number">5000</span>)</span><br><span class="line">        <span class="keyword">if</span> (id % <span class="number">2</span> == <span class="number">0</span>) &#123;</span><br><span class="line">            listener.onResponse(<span class="string">&quot;success&quot;</span>)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            listener.onError(<span class="string">&quot;error&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">OnResponseListener</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">onResponse</span><span class="params">(response: <span class="type">String</span>)</span></span></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">onError</span><span class="params">(error: <span class="type">String</span>)</span></span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">object</span> Main &#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">        requestByCoroutine()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使用回调</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">requestByCallback</span><span class="params">()</span></span> &#123;</span><br><span class="line">        NetFetcher().request(<span class="number">21</span>, <span class="keyword">object</span> : NetFetcher.OnResponseListener &#123;</span><br><span class="line">            <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onResponse</span><span class="params">(response: <span class="type">String</span>)</span></span> &#123;</span><br><span class="line">                println(<span class="string">&quot;result = <span class="variable">$response</span>&quot;</span>)</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onError</span><span class="params">(error: <span class="type">String</span>)</span></span> &#123;</span><br><span class="line">                println(<span class="string">&quot;result = <span class="variable">$error</span>&quot;</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使用协程</span></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">requestByCoroutine</span><span class="params">()</span></span> &#123;</span><br><span class="line">        GlobalScope.launch(Dispatchers.Main) &#123;</span><br><span class="line">            <span class="keyword">val</span> result = withContext(Dispatchers.IO) &#123;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    NetFetcher().requestSuspend(<span class="number">22</span>)</span><br><span class="line">                &#125; <span class="keyword">catch</span> (e: Exception) &#123;</span><br><span class="line">                    e.message</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            println(<span class="string">&quot;result = <span class="variable">$result</span>&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>为加深理解，再介绍一下 Kotlin 提供的两个借助 suspendCancellableCoroutine 实现的挂起函数: delay &amp; yield。</p>
+<p><strong>delay</strong></p>
+<p>delay 方法借助了 suspendCancellableCoroutine 方法来挂起协程：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">delay</span><span class="params">(timeMillis: <span class="type">Long</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (timeMillis &lt;= <span class="number">0</span>) <span class="keyword">return</span> <span class="comment">// don&#x27;t delay</span></span><br><span class="line">    <span class="keyword">return</span> suspendCancellableCoroutine <span class="symbol">sc@</span> &#123; cont: CancellableContinuation&lt;<span class="built_in">Unit</span>&gt; -&gt;</span><br><span class="line">        cont.context.delay.scheduleResumeAfterDelay(timeMillis, cont)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">scheduleResumeAfterDelay</span><span class="params">(timeMillis: <span class="type">Long</span>, continuation: <span class="type">CancellableContinuation</span>&lt;<span class="type">Unit</span>&gt;)</span></span> &#123;</span><br><span class="line">    postDelayed(Runnable &#123;</span><br><span class="line">        with(continuation) &#123; resumeUndispatched(<span class="built_in">Unit</span>) &#125;</span><br><span class="line">    &#125;, timeMillis)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看出这里 delay 的逻辑类似于 Handle 机制，将 resumeUndispatched 封装的 Runnable 放到一个队列中，在延迟的时间到达便会执行 resume 恢复协程。</p>
+<p><strong>yield</strong></p>
+<p>yield 方法作用是挂起当前协程，这样可以让该协程所在线程运行其他逻辑，当其他协程执行完成或也调用 yield 让出执行权时，之前的协程可以恢复执行。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">launch(Dispatchers.Main) &#123;</span><br><span class="line">    repeat(<span class="number">3</span>) &#123;</span><br><span class="line">        println(<span class="string">&quot;job1 <span class="variable">$it</span>&quot;</span>)</span><br><span class="line">        yield()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">launch(Dispatchers.Main) &#123;</span><br><span class="line">    repeat(<span class="number">3</span>) &#123;</span><br><span class="line">        println(<span class="string">&quot;job2 <span class="variable">$it</span>&quot;</span>)</span><br><span class="line">        yield()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// output</span></span><br><span class="line">job1 <span class="number">0</span></span><br><span class="line">job2 <span class="number">0</span></span><br><span class="line">job1 <span class="number">1</span></span><br><span class="line">job2 <span class="number">1</span></span><br><span class="line">job1 <span class="number">2</span></span><br><span class="line">job2 <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p>看一下 yield 的源码：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">yield</span><span class="params">()</span></span>: <span class="built_in">Unit</span> = suspendCoroutineUninterceptedOrReturn <span class="symbol">sc@</span> &#123; uCont -&gt;</span><br><span class="line">    <span class="keyword">val</span> context = uCont.context</span><br><span class="line">    <span class="comment">// 如果协程没有调度器，或者像 Unconfined 一样没有进行调度则直接返回</span></span><br><span class="line">    <span class="keyword">val</span> cont = uCont.intercepted() <span class="keyword">as</span>? DispatchedContinuation&lt;<span class="built_in">Unit</span>&gt; ?: <span class="keyword">return</span><span class="symbol">@sc</span> <span class="built_in">Unit</span></span><br><span class="line">    <span class="keyword">if</span> (cont.dispatcher.isDispatchNeeded(context)) &#123;</span><br><span class="line">        <span class="comment">// this is a regular dispatcher -- do simple dispatchYield</span></span><br><span class="line">        cont.dispatchYield(context, <span class="built_in">Unit</span>)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// This is either an &quot;immediate&quot; dispatcher or the Unconfined dispatcher</span></span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">    COROUTINE_SUSPENDED</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// DispatchedContinuation</span></span><br><span class="line"><span class="keyword">internal</span> <span class="function"><span class="keyword">fun</span> <span class="title">dispatchYield</span><span class="params">(context: <span class="type">CoroutineContext</span>, value: <span class="type">T</span>)</span></span> &#123;</span><br><span class="line">    _state = value</span><br><span class="line">    resumeMode = MODE_CANCELLABLE</span><br><span class="line">    dispatcher.dispatchYield(context, <span class="keyword">this</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">open</span> <span class="function"><span class="keyword">fun</span> <span class="title">dispatchYield</span><span class="params">(context: <span class="type">CoroutineContext</span>, block: <span class="type">Runnable</span>)</span></span>: <span class="built_in">Unit</span> = dispatch(context, block)</span><br></pre></td></tr></table></figure>
+
+<p>可知 dispatchYield 会调用到 dispatcher.dispatch 方法将协程分发到调度器队列中，这样线程可以执行其他协程，等到调度器再次执行到该协程时，会 resume 该协程。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>通过上面协程的工作原理解析，可以从源码中发现 Kotlin 中的协程存在着三层包装：</p>
+<ul>
+<li>第一层包装: launch &amp; async 返回的 Job, Deferred 继承自 AbstractCoroutine, 里面封装了协程的状态，提供了 cancel 等接口；</li>
+<li>第二层包装: 编译器生成的 SuspendLambda 子类，封装了协程的真正执行逻辑，其继承关系为 <code>SuspendLambda -&gt; ContinuationImpl -&gt; BaseContinuationImpl</code>, 它的 completion 参数就是第一层包装实例；</li>
+<li>第三层包装: DispatchedContinuation, 封装了线程调度逻辑，它的 continuation 参数就是第二层包装实例。</li>
+</ul>
+<p>这三层包装都实现了 Continuation 接口，通过代理模式将协程的各层包装组合在一起，每层负责不同的功能，如下图：</p>
+<p><img src="Kotlin%E5%8D%8F%E7%A8%8B%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.jpg" alt="Kotlin协程工作流程"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kotlin/" rel="tag"># Kotlin</a>
+              <a href="/tags/%E5%8D%8F%E7%A8%8B/" rel="tag"># 协程</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%9F%BA%E7%A1%80/" rel="prev" title="Kotlin笔记之协程基础">
+      <i class="fa fa-chevron-left"></i> Kotlin笔记之协程基础
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%BC%82%E5%B8%B8%E4%B8%8E%E5%8F%96%E6%B6%88/" rel="next" title="Kotlin笔记之协程异常与取消">
+      Kotlin笔记之协程异常与取消 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%8F%E7%A8%8B%E7%9A%84%E7%8A%B6%E6%80%81%E6%9C%BA"><span class="nav-number">1.</span> <span class="nav-text">协程的状态机</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%8F%E7%A8%8B%E7%9A%84%E5%88%9B%E5%BB%BA%E4%B8%8E%E5%90%AF%E5%8A%A8"><span class="nav-number">2.</span> <span class="nav-text">协程的创建与启动</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%8F%E7%A8%8B%E7%9A%84%E6%8C%82%E8%B5%B7%E5%92%8C%E6%81%A2%E5%A4%8D"><span class="nav-number">3.</span> <span class="nav-text">协程的挂起和恢复</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#suspendCoroutineUninterceptedOrReturn"><span class="nav-number">4.</span> <span class="nav-text">suspendCoroutineUninterceptedOrReturn</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">156</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">100</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

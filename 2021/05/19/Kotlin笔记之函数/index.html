@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="参数和返回值函数参数可以有默认值，当省略相应的参数时使用默认值。与其他语言相比，这可以减少重载数量： 1fun read(b: Array&lt;Byte&gt;, off: Int &#x3D; 0, len: Int &#x3D; b.size) &amp;#123; &#x2F;*……*&#x2F; &amp;#125;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kotlin笔记之函数">
+<meta property="og:url" content="http://yoursite.com/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%87%BD%E6%95%B0/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="参数和返回值函数参数可以有默认值，当省略相应的参数时使用默认值。与其他语言相比，这可以减少重载数量： 1fun read(b: Array&lt;Byte&gt;, off: Int &#x3D; 0, len: Int &#x3D; b.size) &amp;#123; &#x2F;*……*&#x2F; &amp;#125;">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-05-19T09:37:07.000Z">
+<meta property="article:modified_time" content="2021-05-19T09:47:43.548Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Kotlin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%87%BD%E6%95%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Kotlin笔记之函数 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%87%BD%E6%95%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Kotlin笔记之函数
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-05-19 17:37:07 / 修改时间：17:47:43" itemprop="dateCreated datePublished" datetime="2021-05-19T17:37:07+08:00">2021-05-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">语言</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%AD%E8%A8%80/Kotlin/" itemprop="url" rel="index"><span itemprop="name">Kotlin</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%87%BD%E6%95%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Kotlin笔记之函数" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%87%BD%E6%95%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%87%BD%E6%95%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="参数和返回值"><a href="#参数和返回值" class="headerlink" title="参数和返回值"></a>参数和返回值</h1><p>函数参数可以有默认值，当省略相应的参数时使用默认值。与其他语言相比，这可以减少重载数量：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">read</span><span class="params">(b: <span class="type">Array</span>&lt;<span class="type">Byte</span>&gt;, off: <span class="type">Int</span> = <span class="number">0</span>, len: <span class="type">Int</span> = b.size)</span></span> &#123; <span class="comment">/*……*/</span> &#125;</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p>覆盖方法总是使用与基类型方法相同的默认参数值。当覆盖一个带有默认参数值的方法时，必须从签名中省略默认参数值：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">open</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</span><br><span class="line">    <span class="keyword">open</span> <span class="function"><span class="keyword">fun</span> <span class="title">foo</span><span class="params">(i: <span class="type">Int</span> = <span class="number">10</span>)</span></span> &#123; <span class="comment">/*……*/</span> &#125;</span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> : <span class="type">A</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">foo</span><span class="params">(i: <span class="type">Int</span>)</span></span> &#123; <span class="comment">/*……*/</span> &#125;  <span class="comment">// 不能有默认值</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果一个默认参数在一个无默认值的参数之前，那么该默认值只能通过使用命名参数调用该函数来使用：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">foo</span><span class="params">(bar: <span class="type">Int</span> = <span class="number">0</span>, baz: <span class="type">Int</span>)</span></span> &#123; <span class="comment">/*……*/</span> &#125;</span><br><span class="line">foo(baz = <span class="number">1</span>) <span class="comment">// 使用默认值 bar = 0</span></span><br></pre></td></tr></table></figure>
+
+<p>如果在默认参数之后的最后一个参数是lambda表达式，那么它既可以作为命名参数在括号内传入，也可以在括号外传入。</p>
+<p>函数的参数（通常是最后一个）可以用vararg修饰符标记：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> <span class="title">asList</span><span class="params">(<span class="keyword">vararg</span> ts: <span class="type">T</span>)</span></span>: List&lt;T&gt; &#123;</span><br><span class="line">    <span class="keyword">val</span> result = ArrayList&lt;T&gt;()</span><br><span class="line">    <span class="keyword">for</span> (t <span class="keyword">in</span> ts) <span class="comment">// ts is an Array</span></span><br><span class="line">        result.add(t)</span><br><span class="line">    <span class="keyword">return</span> result</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 允许将可变数量的参数传递给函数：</span></span><br><span class="line"><span class="keyword">val</span> list = asList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br></pre></td></tr></table></figure>
+
+<p>在函数内部，类型T的vararg参数是作为T数组，即上例中的ts变量具有类型<code>Array &lt;out T&gt;</code>。</p>
+<p>只有一个参数可以标注为vararg。如果vararg参数不是列表中的最后一个参数，可以使用命名参数语法传递其后的参数的值，或者，如果参数具有函数类型，则通过在括号外部传一个lambda。</p>
+<p>当我们调用vararg函数时，我们可以一个接一个地传参，例如asList(1, 2, 3)，或者，如果我们已经有一个数组并希望将其内容传给该函数，我们使用在数组前面加<code>*</code>：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> a = arrayOf(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line"><span class="keyword">val</span> list = asList(-<span class="number">1</span>, <span class="number">0</span>, *a, <span class="number">4</span>)</span><br></pre></td></tr></table></figure>
+
+<p>如果一个函数不返回任何有用的值，它的返回类型是Unit。Unit是一种只有一个值——Unit的类型。这个值不需要显式返回，Unit返回类型声明也是可选的：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">printHello</span><span class="params">(name: <span class="type">String</span>?)</span></span>: <span class="built_in">Unit</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (name != <span class="literal">null</span>)</span><br><span class="line">        println(<span class="string">&quot;Hello <span class="subst">$&#123;name&#125;</span>&quot;</span>)</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        println(<span class="string">&quot;Hi there!&quot;</span>)</span><br><span class="line">    <span class="comment">// `return Unit` 或者 `return` 是可选的</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当函数返回单个表达式时，可以省略花括号并且在=符号之后指定代码体即可：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">double</span><span class="params">(x: <span class="type">Int</span>)</span></span>: <span class="built_in">Int</span> = x * <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p>当返回值类型可由编译器推断时，显式声明返回类型是可选的。</p>
+<h1 id="局部函数"><a href="#局部函数" class="headerlink" title="局部函数"></a>局部函数</h1><p>Kotlin支持局部函数，即一个函数在另一个函数内部，局部函数可以访问外部函数（即闭包）的局部变量：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">dfs</span><span class="params">(graph: <span class="type">Graph</span>)</span></span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">dfs</span><span class="params">(current: <span class="type">Vertex</span>, visited: <span class="type">MutableSet</span>&lt;<span class="type">Vertex</span>&gt;)</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!visited.add(current)) <span class="keyword">return</span></span><br><span class="line">        <span class="keyword">for</span> (v <span class="keyword">in</span> current.neighbors)</span><br><span class="line">            dfs(v, visited)</span><br><span class="line">    &#125;</span><br><span class="line">​</span><br><span class="line">    dfs(graph.vertices[<span class="number">0</span>], HashSet())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="高阶函数"><a href="#高阶函数" class="headerlink" title="高阶函数"></a>高阶函数</h1><p>高阶函数是将函数用作参数或返回值的函数。</p>
+<h1 id="中缀表示法：infix"><a href="#中缀表示法：infix" class="headerlink" title="中缀表示法：infix"></a>中缀表示法：infix</h1><p>标有infix关键字的函数也可以使用中缀表示法调用。中缀函数必须满足以下要求：</p>
+<ul>
+<li>它们必须是成员函数或扩展函数；</li>
+<li>它们必须只有一个参数；</li>
+<li>其参数不得接受可变数量的参数且不能有默认值。</li>
+</ul>
+<p>实例如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">infix</span> <span class="function"><span class="keyword">fun</span> <span class="built_in">Int</span>.<span class="title">shl</span><span class="params">(x: <span class="type">Int</span>)</span></span>: <span class="built_in">Int</span> &#123; …… &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 用中缀表示法调用该函数</span></span><br><span class="line"><span class="number">1</span> shl <span class="number">2</span></span><br><span class="line">​</span><br><span class="line"><span class="comment">// 等同于这样</span></span><br><span class="line"><span class="number">1</span>.shl(<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="尾递归函数：tailrec"><a href="#尾递归函数：tailrec" class="headerlink" title="尾递归函数：tailrec"></a>尾递归函数：tailrec</h1><p>Kotlin支持一种称为尾递归的函数式编程风格，可以将一些用循环写的算法改用递归函数来写，而无堆栈溢出的风险。当一个函数用tailrec修饰符标记并满足所需的形式时，编译器会优化该递归，留下一个快速而高效的基于循环的版本。</p>
+<p>要符合tailrec修饰符的条件的话，函数必须将其自身调用作为它执行的最后一个操作。在递归调用后有更多代码时，不能使用尾递归，并且不能用在try/catch/finally块中。</p>
+<h1 id="内联函数：inline"><a href="#内联函数：inline" class="headerlink" title="内联函数：inline"></a>内联函数：inline</h1><p>在kotlin中，函数就是对象，调用某个函数的时候，就会创建相关的对象，这会造成空间上的开销。当调用某个函数的时候，虚拟机会去找到调用函数的位置，然后执行函数，然后再回到你调用的初始位置，这是时间上的开销。</p>
+<p>可以使用inline标识符用在函数声明上，这样该函数就成了内联函数。而如果其参数有使用lambda表达式，那么这个lambda表达式也会默认变成inline函数，可以使用noinline标识符强制让它不内联。如下：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> <span class="title">doCall</span><span class="params">(a: <span class="type">Int</span>, b: <span class="type">Int</span>, <span class="keyword">noinline</span> call: (<span class="type">a</span>: <span class="type">Int</span>, <span class="type">b</span>: <span class="type">Int</span>) -&gt; <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="函数类型"><a href="#函数类型" class="headerlink" title="函数类型"></a>函数类型</h1><h2 id="函数类型-1"><a href="#函数类型-1" class="headerlink" title="函数类型"></a>函数类型</h2><p>Kotlin使用类似<code>(Int) -&gt; String</code>的一系列函数类型来处理函数的声明。</p>
+<ul>
+<li>所有函数类型都有一个圆括号括起来的参数类型列表以及一个返回类型：(A, B) -&gt; C 表示接受类型分别为 A 与 B 两个参数并返回一个 C 类型值的函数类型。参数类型列表可以为空，如 () -&gt; A。Unit 返回类型不可省略。</li>
+<li>函数类型可以有一个额外的接收者类型，它在表示法中的点之前指定：类型 A.(B) -&gt; C 表示可以在 A 的接收者对象上以一个 B 类型参数来调用并返回一个 C 类型值的函数。带有接收者的函数字面值通常与这些类型一起使用。</li>
+<li>挂起函数属于特殊种类的函数类型，它的表示法中有一个 suspend 修饰符 ，例如 suspend () -&gt; Unit 或者 suspend A.(B) -&gt; C。</li>
+</ul>
+<p>函数类型表示法可以选择性地包含函数的参数名：(x: Int, y: Int) -&gt; Point。 这些名称可用于表明参数的含义。</p>
+<ul>
+<li>如需将函数类型指定为可空，请使用圆括号：((Int, Int) -&gt; Int)?。</li>
+<li>函数类型可以使用圆括号进行接合：(Int) -&gt; ((Int) -&gt; Unit)</li>
+<li>箭头表示法是右结合的，(Int) -&gt; (Int) -&gt; Unit 与前述示例等价，但不等于 ((Int) -&gt; (Int)) -&gt; Unit。</li>
+</ul>
+<p>还可以通过使用类型别名给函数类型起一个别称：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typealias</span> ClickHandler = (Button, ClickEvent) -&gt; <span class="built_in">Unit</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="函数类型实例化"><a href="#函数类型实例化" class="headerlink" title="函数类型实例化"></a>函数类型实例化</h2><p>有几种方法可以获得函数类型的实例：</p>
+<ol>
+<li><p>使用函数字面值的代码块，采用以下形式之一：</p>
+<ul>
+<li>lambda 表达式: { a, b -&gt; a + b }</li>
+<li>匿名函数: fun(s: String): Int { return s.toIntOrNull() ?: 0 }</li>
+</ul>
+</li>
+<li><p>使用已有声明的可调用引用：</p>
+<ul>
+<li>顶层、局部、成员、扩展函数：<code>::isOdd</code>，<code>String::toInt</code></li>
+<li>顶层、成员、扩展属性：<code>List&lt;Int&gt;::size</code></li>
+<li>构造函数：<code>::Regex</code><br>这包括指向特定实例成员的绑定的可调用引用：foo::toString。</li>
+</ul>
+</li>
+<li><p>使用实现函数类型接口的自定义类的实例：</p>
+ <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">IntTransformer</span>: <span class="type"></span></span>(<span class="built_in">Int</span>) -&gt; <span class="built_in">Int</span> &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">operator</span> <span class="function"><span class="keyword">fun</span> <span class="title">invoke</span><span class="params">(x: <span class="type">Int</span>)</span></span>: <span class="built_in">Int</span> = TODO()</span><br><span class="line">&#125;</span><br><span class="line">​</span><br><span class="line"><span class="keyword">val</span> intFunction: (<span class="built_in">Int</span>) -&gt; <span class="built_in">Int</span> = IntTransformer()</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>带与不带接收者的函数类型非字面值可以互换，其中接收者可以替代第一个参数，反之亦然。例如，(A, B) -&gt; C 类型的值可以传给或赋值给期待 A.(B) -&gt; C 的地方，反之亦然：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> repeatFun: String.(<span class="built_in">Int</span>) -&gt; String = &#123; times -&gt; <span class="keyword">this</span>.repeat(times) &#125;</span><br><span class="line"><span class="keyword">val</span> twoParameters: (String, <span class="built_in">Int</span>) -&gt; String = repeatFun <span class="comment">// OK</span></span><br><span class="line">​</span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">runTransformation</span><span class="params">(f: (<span class="type">String</span>, <span class="type">Int</span>) -&gt; <span class="type">String</span>)</span></span>: String &#123;</span><br><span class="line">    <span class="keyword">return</span> f(<span class="string">&quot;hello&quot;</span>, <span class="number">3</span>)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">val</span> result = runTransformation(repeatFun) <span class="comment">// OK</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="函数类型实例调用"><a href="#函数类型实例调用" class="headerlink" title="函数类型实例调用"></a>函数类型实例调用</h2><p>函数类型的值可以通过其 <code>invoke(……)</code> 操作符调用：<code>f.invoke(x)</code> 或者直接 <code>f(x)</code>。</p>
+<p>如果该值具有接收者类型，那么应该将接收者对象作为第一个参数传递。调用带有接收者的函数类型值的另一个方式是在其前面加上接收者对象，就好比该值是一个扩展函数：1.foo(2)，例如：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> stringPlus: (String, String) -&gt; String = String::plus</span><br><span class="line"><span class="keyword">val</span> intPlus: <span class="built_in">Int</span>.(<span class="built_in">Int</span>) -&gt; <span class="built_in">Int</span> = <span class="built_in">Int</span>::plus</span><br><span class="line">​</span><br><span class="line">println(stringPlus.invoke(<span class="string">&quot;&lt;-&quot;</span>, <span class="string">&quot;-&gt;&quot;</span>))</span><br><span class="line">println(stringPlus(<span class="string">&quot;Hello, &quot;</span>, <span class="string">&quot;world!&quot;</span>)) </span><br><span class="line">​</span><br><span class="line">println(intPlus.invoke(<span class="number">1</span>, <span class="number">1</span>))</span><br><span class="line">println(intPlus(<span class="number">1</span>, <span class="number">2</span>))</span><br><span class="line">println(<span class="number">2</span>.intPlus(<span class="number">3</span>)) <span class="comment">// 类扩展调用</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="Lambda-表达式与匿名函数"><a href="#Lambda-表达式与匿名函数" class="headerlink" title="Lambda 表达式与匿名函数"></a>Lambda 表达式与匿名函数</h1><h2 id="Lambda-表达式"><a href="#Lambda-表达式" class="headerlink" title="Lambda 表达式"></a>Lambda 表达式</h2><p>lambda表达式与匿名函数是<code>函数字面值</code>，即未声明的函数，但立即做为表达式传递。lambda表达式总是括在花括号中，完整语法形式的参数声明放在花括号内，并有可选的类型标注，函数体跟在一个<code>-&gt;</code>符号之后。如果推断出的该lambda的返回类型不是Unit，那么该lambda主体中的最后一个（或可能是单个）表达式会视为返回值。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> sum: <span class="built_in">Int</span> = &#123; x: <span class="built_in">Int</span>, y: <span class="built_in">Int</span> -&gt; x + y &#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果函数的最后一个参数是函数，那么作为相应参数传入的lambda表达式可以放在圆括号之外，这种语法也称为拖尾lambda表达式，如果lambda表达式是调用时唯一的参数，那么圆括号可以完全省略：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">run &#123; println(<span class="string">&quot;...&quot;</span>) &#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果 lambda 表达式的参数未使用，那么可以用下划线取代其名称：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">map.forEach &#123; _, value -&gt; println(<span class="string">&quot;<span class="variable">$value</span>!&quot;</span>) &#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="匿名函数"><a href="#匿名函数" class="headerlink" title="匿名函数"></a>匿名函数</h2><p>上面提供的lambda表达式语法缺少的一个东西是指定函数的返回类型的能力。在大多数情况下，这是不必要的。因为返回类型可以自动推断出来。然而，如果确实需要显式指定，可以使用另一种语法：匿名函数。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">fun</span><span class="params">(x: <span class="type">Int</span>, y: <span class="type">Int</span>)</span></span>: <span class="built_in">Int</span> = x + y</span><br></pre></td></tr></table></figure>
+
+<p>匿名函数参数总是在括号内传递，允许将函数留在圆括号外的简写语法仅适用于lambda表达式。</p>
+<h2 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h2><p>Lambda表达式或者匿名函数（以及局部函数和对象表达式）可以访问其<strong>闭包</strong>，即在外部作用域中声明的变量。在lambda表达式中可以修改闭包中捕获的变量：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> sum = <span class="number">0</span></span><br><span class="line">ints.filter &#123; it &gt; <span class="number">0</span> &#125;.forEach &#123;</span><br><span class="line">    sum += it</span><br><span class="line">&#125;</span><br><span class="line">print(sum)</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kotlin/" rel="tag"># Kotlin</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%9F%BA%E7%A1%80/" rel="prev" title="Kotlin笔记之基础">
+      <i class="fa fa-chevron-left"></i> Kotlin笔记之基础
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/" rel="next" title="Kotlin笔记之面向对象">
+      Kotlin笔记之面向对象 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E5%92%8C%E8%BF%94%E5%9B%9E%E5%80%BC"><span class="nav-number">1.</span> <span class="nav-text">参数和返回值</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B1%80%E9%83%A8%E5%87%BD%E6%95%B0"><span class="nav-number">2.</span> <span class="nav-text">局部函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%AB%98%E9%98%B6%E5%87%BD%E6%95%B0"><span class="nav-number">3.</span> <span class="nav-text">高阶函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%AD%E7%BC%80%E8%A1%A8%E7%A4%BA%E6%B3%95%EF%BC%9Ainfix"><span class="nav-number">4.</span> <span class="nav-text">中缀表示法：infix</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%BE%E9%80%92%E5%BD%92%E5%87%BD%E6%95%B0%EF%BC%9Atailrec"><span class="nav-number">5.</span> <span class="nav-text">尾递归函数：tailrec</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%85%E8%81%94%E5%87%BD%E6%95%B0%EF%BC%9Ainline"><span class="nav-number">6.</span> <span class="nav-text">内联函数：inline</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E7%B1%BB%E5%9E%8B"><span class="nav-number">7.</span> <span class="nav-text">函数类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E7%B1%BB%E5%9E%8B-1"><span class="nav-number">7.1.</span> <span class="nav-text">函数类型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E7%B1%BB%E5%9E%8B%E5%AE%9E%E4%BE%8B%E5%8C%96"><span class="nav-number">7.2.</span> <span class="nav-text">函数类型实例化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%87%BD%E6%95%B0%E7%B1%BB%E5%9E%8B%E5%AE%9E%E4%BE%8B%E8%B0%83%E7%94%A8"><span class="nav-number">7.3.</span> <span class="nav-text">函数类型实例调用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Lambda-%E8%A1%A8%E8%BE%BE%E5%BC%8F%E4%B8%8E%E5%8C%BF%E5%90%8D%E5%87%BD%E6%95%B0"><span class="nav-number">8.</span> <span class="nav-text">Lambda 表达式与匿名函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Lambda-%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">8.1.</span> <span class="nav-text">Lambda 表达式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8C%BF%E5%90%8D%E5%87%BD%E6%95%B0"><span class="nav-number">8.2.</span> <span class="nav-text">匿名函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%97%AD%E5%8C%85"><span class="nav-number">8.3.</span> <span class="nav-text">闭包</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">156</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">100</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

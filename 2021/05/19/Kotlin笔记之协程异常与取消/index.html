@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="父子协程协程之间存在父子关系，以下面代码为例：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kotlin笔记之协程异常与取消">
+<meta property="og:url" content="http://yoursite.com/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%BC%82%E5%B8%B8%E4%B8%8E%E5%8F%96%E6%B6%88/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="父子协程协程之间存在父子关系，以下面代码为例：">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-05-19T09:38:18.000Z">
+<meta property="article:modified_time" content="2021-05-19T10:01:10.229Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Kotlin">
+<meta property="article:tag" content="协程">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%BC%82%E5%B8%B8%E4%B8%8E%E5%8F%96%E6%B6%88/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Kotlin笔记之协程异常与取消 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%BC%82%E5%B8%B8%E4%B8%8E%E5%8F%96%E6%B6%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Kotlin笔记之协程异常与取消
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-05-19 17:38:18 / 修改时间：18:01:10" itemprop="dateCreated datePublished" datetime="2021-05-19T17:38:18+08:00">2021-05-19</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">语言</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%AD%E8%A8%80/Kotlin/" itemprop="url" rel="index"><span itemprop="name">Kotlin</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%BC%82%E5%B8%B8%E4%B8%8E%E5%8F%96%E6%B6%88/" class="post-meta-item leancloud_visitors" data-flag-title="Kotlin笔记之协程异常与取消" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%BC%82%E5%B8%B8%E4%B8%8E%E5%8F%96%E6%B6%88/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%BC%82%E5%B8%B8%E4%B8%8E%E5%8F%96%E6%B6%88/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="父子协程"><a href="#父子协程" class="headerlink" title="父子协程"></a>父子协程</h1><p>协程之间存在父子关系，以下面代码为例：</p>
+<a id="more"></a>
+
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> CoroutineScope.<span class="title">launch</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    context: <span class="type">CoroutineContext</span> = EmptyCoroutineContext,</span></span></span><br><span class="line"><span class="function"><span class="params">    start: <span class="type">CoroutineStart</span> = CoroutineStart.DEFAULT,</span></span></span><br><span class="line"><span class="function"><span class="params">    block: <span class="type">suspend</span> <span class="type">CoroutineScope</span>.() -&gt; <span class="type">Unit</span></span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>: Job &#123;</span><br><span class="line">    <span class="keyword">val</span> newContext = newCoroutineContext(context)</span><br><span class="line">    <span class="keyword">val</span> coroutine = <span class="keyword">if</span> (start.isLazy)</span><br><span class="line">        LazyStandaloneCoroutine(newContext, block) <span class="keyword">else</span></span><br><span class="line">        StandaloneCoroutine(newContext, active = <span class="literal">true</span>)</span><br><span class="line">    coroutine.start(start, coroutine, block)</span><br><span class="line">    <span class="keyword">return</span> coroutine</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">actual</span> <span class="function"><span class="keyword">fun</span> CoroutineScope.<span class="title">newCoroutineContext</span><span class="params">(context: <span class="type">CoroutineContext</span>)</span></span>: CoroutineContext &#123;</span><br><span class="line">    <span class="keyword">val</span> combined = coroutineContext + context</span><br><span class="line">    <span class="keyword">val</span> debug = <span class="keyword">if</span> (DEBUG) combined + CoroutineId(COROUTINE_ID.incrementAndGet()) <span class="keyword">else</span> combined</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">if</span> (combined !== Dispatchers.Default &amp;&amp; combined[ContinuationInterceptor] == <span class="literal">null</span>)</span><br><span class="line">        debug + Dispatchers.Default <span class="keyword">else</span> debug</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可知在 newCoroutineContext 中，新的协程会使用之前 CoroutineScope 的 coroutineContext 结合 launch 传入的 context, 然后调用 <code>coroutine.start(start, coroutine, block)</code>: </p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">AbstractCoroutine</span>&lt;<span class="type">in T</span>&gt;</span>(</span><br><span class="line">    <span class="meta">@JvmField</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">val</span> parentContext: CoroutineContext, active: <span class="built_in">Boolean</span> = <span class="literal">true</span></span><br><span class="line">) : JobSupport(active), Job, Continuation&lt;T&gt;, CoroutineScope &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;R&gt;</span> <span class="title">start</span><span class="params">(start: <span class="type">CoroutineStart</span>, receiver: <span class="type">R</span>, block: <span class="type">suspend</span> <span class="type">R</span>.() -&gt; <span class="type">T</span>)</span></span> &#123;</span><br><span class="line">        initParentJob()</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">internal</span> <span class="function"><span class="keyword">fun</span> <span class="title">initParentJob</span><span class="params">()</span></span> &#123;</span><br><span class="line">        initParentJobInternal(parentContext[Job])</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">open</span> <span class="class"><span class="keyword">class</span> <span class="title">JobSupport</span> <span class="keyword">constructor</span></span>(active: <span class="built_in">Boolean</span>) : Job, ChildJob, ParentJob, SelectClause0 &#123;</span><br><span class="line">    <span class="keyword">internal</span> <span class="function"><span class="keyword">fun</span> <span class="title">initParentJobInternal</span><span class="params">(parent: <span class="type">Job</span>?)</span></span> &#123;</span><br><span class="line">        assert &#123; parentHandle == <span class="literal">null</span> &#125;</span><br><span class="line">        <span class="keyword">if</span> (parent == <span class="literal">null</span>) &#123;</span><br><span class="line">            parentHandle = NonDisposableHandle</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">        parent.start() <span class="comment">// make sure the parent is started</span></span><br><span class="line">        <span class="keyword">val</span> handle = parent.attachChild(<span class="keyword">this</span>)</span><br><span class="line">        parentHandle = handle</span><br><span class="line">        <span class="comment">// now check our state _after_ registering (see tryFinalizeSimpleState order of actions)</span></span><br><span class="line">        <span class="keyword">if</span> (isCompleted) &#123;</span><br><span class="line">            handle.dispose()</span><br><span class="line">            parentHandle = NonDisposableHandle <span class="comment">// release it just in case, to aid GC</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里看下 GlobalScope 代码：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">object</span> GlobalScope : CoroutineScope &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">val</span> coroutineContext: CoroutineContext</span><br><span class="line">        <span class="keyword">get</span>() = EmptyCoroutineContext</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其 coroutineContext 是一个 EmptyCoroutineContext, 因此 <code>parentContext[Job]</code> 是空的，所以 <code>GlobalScope.launch&#123;&#125;</code> 和 <code>GlobalScope.async&#123;&#125;</code> 新建的协程没有父协程。</p>
+<p>接下来重点在于 parent.attachChild 方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">attachChild</span><span class="params">(child: <span class="type">ChildJob</span>)</span></span>: ChildHandle &#123;</span><br><span class="line">    <span class="keyword">return</span> invokeOnCompletion(onCancelling = <span class="literal">true</span>, handler = ChildHandleNode(<span class="keyword">this</span>, child).asHandler) <span class="keyword">as</span> ChildHandle</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>invokeOnCompletion 方法在之前已经看过，具体源码不给出了，主要是<strong>将 handler 节点添加到父协程的一个队列(state.list)中</strong>。</p>
+<h1 id="协程完成"><a href="#协程完成" class="headerlink" title="协程完成"></a>协程完成</h1><p>前面讲过协程的完成通过 AbstractCoroutine.resumeWith 实现，它会这样调用: makeCompletingOnce -&gt; tryMakeCompleting -&gt; tryMakeCompletingSlowPath -&gt; tryWaitForChild: </p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">tailrec</span> <span class="function"><span class="keyword">fun</span> <span class="title">tryWaitForChild</span><span class="params">(state: <span class="type">Finishing</span>, child: <span class="type">ChildHandleNode</span>, proposedUpdate: <span class="type">Any</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">    <span class="keyword">val</span> handle = child.childJob.invokeOnCompletion(</span><br><span class="line">        invokeImmediately = <span class="literal">false</span>,</span><br><span class="line">        handler = ChildCompletion(<span class="keyword">this</span>, state, child, proposedUpdate).asHandler</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">if</span> (handle !== NonDisposableHandle) <span class="keyword">return</span> <span class="literal">true</span> <span class="comment">// child is not complete and we&#x27;ve started waiting for it</span></span><br><span class="line">    <span class="keyword">val</span> nextChild = child.nextChild() ?: <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">    <span class="keyword">return</span> tryWaitForChild(state, nextChild, proposedUpdate)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可知 tryWaitForChild 方法将 ChildCompletion 节点添加到了子协程的 state.list 队列中，当子协程完成或者取消时调用 ChildCompletion.invoke: </p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">invoke</span><span class="params">(cause: <span class="type">Throwable</span>?)</span></span> &#123;</span><br><span class="line">    parent.continueCompleting(state, child, proposedUpdate)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">continueCompleting</span><span class="params">(state: <span class="type">Finishing</span>, lastChild: <span class="type">ChildHandleNode</span>, proposedUpdate: <span class="type">Any</span>?)</span></span> &#123;</span><br><span class="line">    assert &#123; <span class="keyword">this</span>.state === state &#125; <span class="comment">// consistency check -- it cannot change while we are waiting for children</span></span><br><span class="line">    <span class="comment">// figure out if we need to wait for next child</span></span><br><span class="line">    <span class="keyword">val</span> waitChild = lastChild.nextChild()</span><br><span class="line">    <span class="comment">// try wait for next child</span></span><br><span class="line">    <span class="keyword">if</span> (waitChild != <span class="literal">null</span> &amp;&amp; tryWaitForChild(state, waitChild, proposedUpdate)) <span class="keyword">return</span> <span class="comment">// waiting for next child</span></span><br><span class="line">    <span class="comment">// no more children to wait -- try update state</span></span><br><span class="line">    <span class="keyword">val</span> finalState = finalizeFinishingState(state, proposedUpdate)</span><br><span class="line">    afterCompletion(finalState)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因此可以知道，<strong>父协程需要等待所有子协程处于完成或者取消状态才能完成自身</strong>。</p>
+<h1 id="协程取消"><a href="#协程取消" class="headerlink" title="协程取消"></a>协程取消</h1><p>先看看协程的 cancel 方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="title">cancel</span><span class="params">(cause: <span class="type">CancellationException</span>? = <span class="literal">null</span>)</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// JobSupport</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">cancel</span><span class="params">(cause: <span class="type">CancellationException</span>?)</span></span> &#123;</span><br><span class="line">    cancelInternal(cause ?: defaultCancellationException())</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">internal</span> <span class="keyword">inline</span> <span class="function"><span class="keyword">fun</span> <span class="title">defaultCancellationException</span><span class="params">(message: <span class="type">String</span>? = <span class="literal">null</span>, cause: <span class="type">Throwable</span>? = <span class="literal">null</span>)</span></span> =</span><br><span class="line">    JobCancellationException(message ?: cancellationExceptionMessage(), cause, <span class="keyword">this</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">open</span> <span class="function"><span class="keyword">fun</span> <span class="title">cancelInternal</span><span class="params">(cause: <span class="type">Throwable</span>)</span></span> &#123;</span><br><span class="line">    cancelImpl(cause)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">internal</span> <span class="function"><span class="keyword">fun</span> <span class="title">cancelImpl</span><span class="params">(cause: <span class="type">Any</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">    <span class="keyword">var</span> finalState: Any? = COMPLETING_ALREADY</span><br><span class="line">    <span class="keyword">if</span> (onCancelComplete) &#123;</span><br><span class="line">        <span class="comment">// make sure it is completing, if cancelMakeCompleting returns state it means it had make it</span></span><br><span class="line">        <span class="comment">// completing and had recorded exception</span></span><br><span class="line">        finalState = cancelMakeCompleting(cause)</span><br><span class="line">        <span class="keyword">if</span> (finalState === COMPLETING_WAITING_CHILDREN) <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (finalState === COMPLETING_ALREADY) &#123;</span><br><span class="line">        finalState = makeCancelling(cause)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">when</span> &#123;</span><br><span class="line">        finalState === COMPLETING_ALREADY -&gt; <span class="literal">true</span></span><br><span class="line">        finalState === COMPLETING_WAITING_CHILDREN -&gt; <span class="literal">true</span></span><br><span class="line">        finalState === TOO_LATE_TO_CANCEL -&gt; <span class="literal">false</span></span><br><span class="line">        <span class="keyword">else</span> -&gt; &#123;</span><br><span class="line">            afterCompletion(finalState)</span><br><span class="line">            <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接着会调用到 notifyCancelling 方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 这里的 list 即是上面添加了 handler 的 list</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">notifyCancelling</span><span class="params">(list: <span class="type">NodeList</span>, cause: <span class="type">Throwable</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">// first cancel our own children</span></span><br><span class="line">    onCancelling(cause)</span><br><span class="line">    <span class="comment">// 会循环执行上面添加的 ChildHandleNode 的 invoke 方法</span></span><br><span class="line">    notifyHandlers&lt;JobCancellingNode&lt;*&gt;&gt;(list, cause)</span><br><span class="line">    <span class="comment">// 可能取消父协程</span></span><br><span class="line">    cancelParent(cause) <span class="comment">// tentative cancellation -- does not matter if there is no parent</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">internal</span> <span class="class"><span class="keyword">class</span> <span class="title">ChildHandleNode</span></span>(</span><br><span class="line">    parent: JobSupport,</span><br><span class="line">    <span class="meta">@JvmField</span> <span class="keyword">val</span> childJob: ChildJob</span><br><span class="line">) : JobCancellingNode&lt;JobSupport&gt;(parent), ChildHandle &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">invoke</span><span class="params">(cause: <span class="type">Throwable</span>?)</span></span> = childJob.parentCancelled(job)</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 子协程通过该方法取消自己</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">parentCancelled</span><span class="params">(parentJob: <span class="type">ParentJob</span>)</span></span> &#123;</span><br><span class="line">    cancelImpl(parentJob)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// The method that is invoked when the job is cancelled to possibly propagate cancellation to the parent.</span></span><br><span class="line"><span class="comment">// Returns `true` if the parent is responsible for handling the exception, `false` otherwise.</span></span><br><span class="line"><span class="comment">// never returns `false` for instances of [CancellationException], otherwise such exception</span></span><br><span class="line"><span class="comment">// may leak to the [CoroutineExceptionHandler].</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">cancelParent</span><span class="params">(cause: <span class="type">Throwable</span>)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">    <span class="comment">// isScopedCoroutine 为 true 则不传播且不取消父协程直接返回，默认为false，子类可以重写</span></span><br><span class="line">    <span class="keyword">if</span> (isScopedCoroutine) <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/* CancellationException is considered &quot;normal&quot; and parent usually is not cancelled when child produces it.</span></span><br><span class="line"><span class="comment">     * This allow parent to cancel its children (normally) without being cancelled itself, unless</span></span><br><span class="line"><span class="comment">     * child crashes and produce some other exception during its completion.</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">val</span> isCancellation = cause <span class="keyword">is</span> CancellationException</span><br><span class="line">    <span class="keyword">val</span> parent = parentHandle</span><br><span class="line">    <span class="comment">// No parent -- ignore CE, report other exceptions.</span></span><br><span class="line">    <span class="keyword">if</span> (parent === <span class="literal">null</span> || parent === NonDisposableHandle) &#123;</span><br><span class="line">        <span class="keyword">return</span> isCancellation</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 调用之前的ChildHandleNode.childCancelled</span></span><br><span class="line">    <span class="keyword">return</span> parent.childCancelled(cause) || isCancellation</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">internal</span> <span class="class"><span class="keyword">class</span> <span class="title">ChildHandleNode</span></span>(</span><br><span class="line">    parent: JobSupport,</span><br><span class="line">    <span class="meta">@JvmField</span> <span class="keyword">val</span> childJob: ChildJob</span><br><span class="line">) : JobCancellingNode&lt;JobSupport&gt;(parent), ChildHandle &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">invoke</span><span class="params">(cause: <span class="type">Throwable</span>?)</span></span> = childJob.parentCancelled(job)</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">childCancelled</span><span class="params">(cause: <span class="type">Throwable</span>)</span></span>: <span class="built_in">Boolean</span> = job.childCancelled(cause)</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// JobSupport</span></span><br><span class="line"><span class="comment">// Child was cancelled with a cause. In this method parent decides whether it cancels itself</span></span><br><span class="line"><span class="comment">// It is overridden in supervisor implementations to completely ignore any child cancellation.</span></span><br><span class="line"><span class="comment">// Returns `true` if exception is handled, `false` otherwise (then caller is responsible for handling an exception)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">open</span> <span class="function"><span class="keyword">fun</span> <span class="title">childCancelled</span><span class="params">(cause: <span class="type">Throwable</span>)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (cause <span class="keyword">is</span> CancellationException) <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    <span class="keyword">return</span> cancelImpl(cause) &amp;&amp; handlesException</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">SupervisorCoroutine</span>&lt;<span class="type">in T</span>&gt;</span>(</span><br><span class="line">    context: CoroutineContext,</span><br><span class="line">    uCont: Continuation&lt;T&gt;</span><br><span class="line">) : ScopeCoroutine&lt;T&gt;(context, uCont) &#123;</span><br><span class="line">    <span class="comment">// supervisorScope 启动的协程调用 cancel 和传递异常时，只能由父协程向子协程传播，</span></span><br><span class="line">    <span class="comment">// 不会取消父协程</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">childCancelled</span><span class="params">(cause: <span class="type">Throwable</span>)</span></span>: <span class="built_in">Boolean</span> = <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因此，<strong>协程调用 cancel 时会取消它的所有子协程，默认不会取消它的父协程</strong>。</p>
+<p>协程的取消只是在第一层包装 AbstractCoroutine 中修改协程的状态，不会影响到第二层包装 BaseContinuationImpl 中的执行逻辑，即协程的取消只是修改状态，不会取消协程的实际执行逻辑：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">GlobalScope.launch &#123;</span><br><span class="line">    println(<span class="string">&quot;1&quot;</span>)</span><br><span class="line">    <span class="keyword">val</span> job = launch &#123;</span><br><span class="line">        println(<span class="string">&quot;2&quot;</span>)</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            delay(<span class="number">500</span>)</span><br><span class="line">        &#125; <span class="keyword">catch</span> (e: CancellationException) &#123;</span><br><span class="line">            println(<span class="string">&quot;exception&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        println(<span class="string">&quot;3&quot;</span>)</span><br><span class="line">        <span class="keyword">if</span> (isActive) &#123;</span><br><span class="line">            println(<span class="string">&quot;4&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        delay(<span class="number">500</span>) <span class="comment">// 抛出 CancellationException</span></span><br><span class="line">        println(<span class="string">&quot;5&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    delay(<span class="number">100</span>)</span><br><span class="line">    job.cancel()</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// output</span></span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line">exception</span><br><span class="line"><span class="number">3</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h1><h2 id="异常处理-1"><a href="#异常处理-1" class="headerlink" title="异常处理"></a>异常处理</h2><p>协程构建器有两种形式：自动传播异常(launch 与 actor)或向用户暴露异常(async 与 produce)。当这些构建器用于创建一个根协程时，即该协程不是另一个协程的子协程，前者这类构建器将异常视为未捕获异常，类似 Java 的 Thread.uncaughtExceptionHandler，而后者则依赖用户来最终消费异常，例如通过 await 或 receive。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">log</span><span class="params">(obj: <span class="type">Any</span>)</span></span> &#123;</span><br><span class="line">    println(<span class="string">&quot;<span class="subst">$&#123;Thread.currentThread()&#125;</span>: <span class="variable">$obj</span>&quot;</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> = runBlocking &#123;</span><br><span class="line">    <span class="keyword">val</span> job = GlobalScope.launch &#123; <span class="comment">// launch 根协程</span></span><br><span class="line">        log(<span class="string">&quot;Throwing exception from launch&quot;</span>)</span><br><span class="line">        <span class="keyword">throw</span> IndexOutOfBoundsException() <span class="comment">// 我们将在控制台打印 Thread.defaultUncaughtExceptionHandler</span></span><br><span class="line">    &#125;</span><br><span class="line">    job.join()</span><br><span class="line">    log(<span class="string">&quot;Joined failed job&quot;</span>)</span><br><span class="line">    <span class="keyword">val</span> deferred = GlobalScope.async &#123; <span class="comment">// async 根协程</span></span><br><span class="line">        log(<span class="string">&quot;Throwing exception from async&quot;</span>)</span><br><span class="line">        <span class="keyword">throw</span> ArithmeticException() <span class="comment">// 没有打印任何东西，依赖用户去调用等待</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        deferred.await()</span><br><span class="line">        log(<span class="string">&quot;Unreached&quot;</span>)</span><br><span class="line">    &#125; <span class="keyword">catch</span> (e: ArithmeticException) &#123;</span><br><span class="line">        log(<span class="string">&quot;Caught ArithmeticException&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// output</span></span><br><span class="line">Thread[DefaultDispatcher-worker-<span class="number">1</span>,<span class="number">5</span>,main]: Throwing exception from launch</span><br><span class="line">Exception <span class="keyword">in</span> thread <span class="string">&quot;DefaultDispatcher-worker-1&quot;</span> java.lang.IndexOutOfBoundsException</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">Thread[main,<span class="number">5</span>,main]: Joined failed job</span><br><span class="line">Thread[DefaultDispatcher-worker-<span class="number">1</span>,<span class="number">5</span>,main]: Throwing exception from async</span><br><span class="line">Thread[main,<span class="number">5</span>,main]: Caught ArithmeticException</span><br></pre></td></tr></table></figure>
+
+<p>可以使用 CoroutineExceptionHandler 来捕获 launch 的异常：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> = runBlocking &#123;</span><br><span class="line">    <span class="keyword">val</span> handler = CoroutineExceptionHandler &#123; _, exception -&gt;</span><br><span class="line">        println(<span class="string">&quot;CoroutineExceptionHandler got <span class="variable">$exception</span>&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">val</span> job = GlobalScope.launch(handler) &#123; <span class="comment">// 根协程，运行在 GlobalScope 中</span></span><br><span class="line">        <span class="keyword">throw</span> AssertionError()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">val</span> deferred = GlobalScope.async(handler) &#123; <span class="comment">// 同样是根协程，但使用 async 代替了 launch</span></span><br><span class="line">        <span class="keyword">throw</span> ArithmeticException() <span class="comment">// 没有打印任何东西，依赖用户去调用 deferred.await()</span></span><br><span class="line">    &#125;</span><br><span class="line">    joinAll(job, deferred)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// output</span></span><br><span class="line">CoroutineExceptionHandler got java.lang.AssertionError</span><br></pre></td></tr></table></figure>
+
+<p>协程内部使用 CancellationException 来进行取消，这个异常会被所有的处理者忽略。如果一个协程遇到了 CancellationException 以外的异常，默认情况下它将使用该异常取消它的父协程。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> = runBlocking &#123;</span><br><span class="line">    coroutineScope &#123;</span><br><span class="line">        log(<span class="number">0</span>)</span><br><span class="line">        launch &#123;</span><br><span class="line">            log(<span class="number">1</span>)</span><br><span class="line">            <span class="keyword">throw</span> Exception()</span><br><span class="line">        &#125;</span><br><span class="line">        log(<span class="number">2</span>)</span><br><span class="line">        delay(<span class="number">100</span>)</span><br><span class="line">        log(<span class="number">3</span>)</span><br><span class="line">        log(isActive)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// output</span></span><br><span class="line">Thread[main,<span class="number">5</span>,main]: <span class="number">0</span></span><br><span class="line">Thread[main,<span class="number">5</span>,main]: <span class="number">2</span></span><br><span class="line">Thread[main,<span class="number">5</span>,main]: <span class="number">1</span></span><br><span class="line">Exception <span class="keyword">in</span> thread <span class="string">&quot;main&quot;</span> java.lang.Exception</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> = runBlocking &#123;</span><br><span class="line">    supervisorScope &#123;</span><br><span class="line">        log(<span class="number">0</span>)</span><br><span class="line">        launch &#123;</span><br><span class="line">            log(<span class="number">1</span>)</span><br><span class="line">            <span class="keyword">throw</span> Exception()</span><br><span class="line">        &#125;</span><br><span class="line">        log(<span class="number">2</span>)</span><br><span class="line">        delay(<span class="number">100</span>)</span><br><span class="line">        log(<span class="number">3</span>)</span><br><span class="line">        log(isActive)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// output</span></span><br><span class="line">Thread[main,<span class="number">5</span>,main]: <span class="number">0</span></span><br><span class="line">Thread[main,<span class="number">5</span>,main]: <span class="number">2</span></span><br><span class="line">Thread[main,<span class="number">5</span>,main]: <span class="number">1</span></span><br><span class="line">Exception <span class="keyword">in</span> thread <span class="string">&quot;main&quot;</span> java.lang.Exception</span><br><span class="line">Thread[main,<span class="number">5</span>,main]: <span class="number">3</span></span><br><span class="line">Thread[main,<span class="number">5</span>,main]: <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> = runBlocking &#123;</span><br><span class="line">    <span class="keyword">val</span> handler = CoroutineExceptionHandler &#123; _, exception -&gt;</span><br><span class="line">        println(<span class="string">&quot;CoroutineExceptionHandler got <span class="variable">$exception</span>&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">val</span> job = GlobalScope.launch(handler) &#123;</span><br><span class="line">        <span class="keyword">val</span> <span class="keyword">inner</span> = launch &#123; <span class="comment">// 该栈内的协程都将被取消</span></span><br><span class="line">            launch &#123;</span><br><span class="line">                launch &#123;</span><br><span class="line">                    <span class="keyword">throw</span> IOException() <span class="comment">// 原始异常</span></span><br><span class="line">                &#125;</span><br><span class="line">                sleep(<span class="number">100</span>)</span><br><span class="line">                println(isActive)</span><br><span class="line">            &#125;</span><br><span class="line">            sleep(<span class="number">100</span>)</span><br><span class="line">            println(isActive)</span><br><span class="line">        &#125;</span><br><span class="line">        println(<span class="string">&quot;before join&quot;</span>)</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">inner</span>.join()</span><br><span class="line">            println(<span class="string">&quot;join&quot;</span>)</span><br><span class="line">        &#125; <span class="keyword">catch</span> (e: CancellationException) &#123;</span><br><span class="line">            println(<span class="string">&quot;Rethrowing CancellationException with original cause&quot;</span>)</span><br><span class="line">            <span class="comment">// 如果不重写抛出取消异常，则下面的&quot;after join&quot;会被执行打印</span></span><br><span class="line">            <span class="keyword">throw</span> e <span class="comment">// 取消异常被重新抛出，但原始 IOException 得到了处理</span></span><br><span class="line">        &#125;</span><br><span class="line">        println(<span class="string">&quot;after join&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    job.join()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// output</span></span><br><span class="line">before join</span><br><span class="line">Rethrowing CancellationException with original cause</span><br><span class="line"><span class="literal">false</span></span><br><span class="line"><span class="literal">false</span></span><br><span class="line">CoroutineExceptionHandler got java.io.IOException</span><br></pre></td></tr></table></figure>
+
+<p>当父协程的所有子协程都结束后，原始的异常才会被父协程处理：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> = runBlocking &#123;</span><br><span class="line">    <span class="keyword">val</span> handler = CoroutineExceptionHandler &#123; _, exception -&gt; </span><br><span class="line">        println(<span class="string">&quot;CoroutineExceptionHandler got <span class="variable">$exception</span>&quot;</span>) </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">val</span> job = GlobalScope.launch(handler) &#123;</span><br><span class="line">        launch &#123; <span class="comment">// 第一个子协程</span></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                delay(<span class="built_in">Long</span>.MAX_VALUE)</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                withContext(NonCancellable) &#123;</span><br><span class="line">                    println(<span class="string">&quot;Children are cancelled, but exception is not handled until all children terminate&quot;</span>)</span><br><span class="line">                    delay(<span class="number">100</span>)</span><br><span class="line">                    println(<span class="string">&quot;The first child finished its non cancellable block&quot;</span>)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        launch &#123; <span class="comment">// 第二个子协程</span></span><br><span class="line">            delay(<span class="number">10</span>)</span><br><span class="line">            println(<span class="string">&quot;Second child throws an exception&quot;</span>)</span><br><span class="line">            <span class="keyword">throw</span> ArithmeticException()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    job.join()    </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// output</span></span><br><span class="line">Second child throws an exception</span><br><span class="line">Children are cancelled, but exception <span class="keyword">is</span> not handled until all children terminate</span><br><span class="line">The first child finished its non cancellable block</span><br><span class="line">CoroutineExceptionHandler got java.lang.ArithmeticException</span><br></pre></td></tr></table></figure>
+
+<p>当协程的多个子协程因异常而失败时，一般规则是“取第一个异常”，因此将处理第一个异常。在第一个异常之后发生的所有其他异常都作为被抑制的异常绑定至第一个异常。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> = runBlocking &#123;</span><br><span class="line">    <span class="keyword">val</span> handler = CoroutineExceptionHandler &#123; _, exception -&gt;</span><br><span class="line">        println(<span class="string">&quot;CoroutineExceptionHandler got <span class="variable">$exception</span> with suppressed <span class="subst">$&#123;exception.suppressed.contentToString()&#125;</span>&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">val</span> job = GlobalScope.launch(handler) &#123;</span><br><span class="line">        launch &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                delay(<span class="built_in">Long</span>.MAX_VALUE) <span class="comment">// 当另一个同级的协程因 IOException  失败时，它将被取消</span></span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                <span class="keyword">throw</span> ArithmeticException() <span class="comment">// 第二个异常</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        launch &#123;</span><br><span class="line">            delay(<span class="number">100</span>)</span><br><span class="line">            <span class="keyword">throw</span> IOException() <span class="comment">// 首个异常</span></span><br><span class="line">        &#125;</span><br><span class="line">        delay(<span class="built_in">Long</span>.MAX_VALUE)</span><br><span class="line">    &#125;</span><br><span class="line">    job.join()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// output</span></span><br><span class="line">CoroutineExceptionHandler got java.io.IOException with suppressed [java.lang.ArithmeticException]</span><br></pre></td></tr></table></figure>
+
+<h2 id="源码解读"><a href="#源码解读" class="headerlink" title="源码解读"></a>源码解读</h2><p>在 BaseContinuationImpl.resumeWith 方法中会 catch 协程抛出的异常：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">internal</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">BaseContinuationImpl</span></span>(</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">val</span> completion: Continuation&lt;Any?&gt;?</span><br><span class="line">) : Continuation&lt;Any?&gt;, CoroutineStackFrame, Serializable &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">resumeWith</span><span class="params">(result: <span class="type">Result</span>&lt;<span class="type">Any</span>?&gt;)</span></span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">            <span class="comment">// ...</span></span><br><span class="line">            with(current) &#123;</span><br><span class="line">                <span class="keyword">val</span> completion = completion!! <span class="comment">// fail fast when trying to resume continuation without completion</span></span><br><span class="line">                <span class="keyword">val</span> outcome: Result&lt;Any?&gt; =</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        <span class="keyword">val</span> outcome = invokeSuspend(param)</span><br><span class="line">                        <span class="keyword">if</span> (outcome === COROUTINE_SUSPENDED) <span class="keyword">return</span></span><br><span class="line">                        Result.success(outcome)</span><br><span class="line">                    &#125; <span class="keyword">catch</span> (exception: Throwable) &#123;</span><br><span class="line">                        <span class="comment">// 子协程抛出异常时，在这里捕获并作为结果给 outcome</span></span><br><span class="line">                        Result.failure(exception)</span><br><span class="line">                    &#125;</span><br><span class="line">                <span class="keyword">if</span> (completion <span class="keyword">is</span> BaseContinuationImpl) &#123;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// top-level completion reached -- invoke and return</span></span><br><span class="line">                    completion.resumeWith(outcome)</span><br><span class="line">                    <span class="keyword">return</span></span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在捕获了异常后，调用 AbstractCoroutine.resumeWith 来处理，其流程为: AbstractCoroutine.resumeWith -&gt; JobSupport.makeCompletingOnce -&gt; JobSupport.tryMakeCompleting -&gt; JobSupport.tryMakeCompletingSlowPath: </p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">resumeWith</span><span class="params">(result: <span class="type">Result</span>&lt;<span class="type">T</span>&gt;)</span></span> &#123;</span><br><span class="line">    <span class="comment">// 通过 result 获取 state</span></span><br><span class="line">    <span class="keyword">val</span> state = makeCompletingOnce(result.toState())</span><br><span class="line">    <span class="keyword">if</span> (state === COMPLETING_WAITING_CHILDREN) <span class="keyword">return</span></span><br><span class="line">    afterResume(state)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">tryMakeCompletingSlowPath</span><span class="params">(state: <span class="type">Incomplete</span>, proposedUpdate: <span class="type">Any</span>?)</span></span>: Any? &#123;</span><br><span class="line">    <span class="keyword">val</span> list = getOrPromoteCancellingList(state) ?: <span class="keyword">return</span> COMPLETING_RETRY</span><br><span class="line">    <span class="keyword">val</span> finishing = state <span class="keyword">as</span>? Finishing ?: Finishing(list, <span class="literal">false</span>, <span class="literal">null</span>)</span><br><span class="line">    <span class="keyword">var</span> notifyRootCause: Throwable? = <span class="literal">null</span></span><br><span class="line">    synchronized(finishing) &#123;</span><br><span class="line">        <span class="keyword">if</span> (finishing.isCompleting) <span class="keyword">return</span> COMPLETING_ALREADY</span><br><span class="line">        finishing.isCompleting = <span class="literal">true</span></span><br><span class="line">        <span class="keyword">if</span> (finishing !== state) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!_state.compareAndSet(state, finishing)) <span class="keyword">return</span> COMPLETING_RETRY</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">val</span> wasCancelling = finishing.isCancelling</span><br><span class="line">        (proposedUpdate <span class="keyword">as</span>? CompletedExceptionally)?.let &#123; finishing.addExceptionLocked(it.cause) &#125;</span><br><span class="line">        <span class="comment">// If it just becomes cancelling --&gt; must process cancelling notifications</span></span><br><span class="line">        notifyRootCause = finishing.rootCause.takeIf &#123; !wasCancelling &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// process cancelling notification here -- it cancels all the children _before_ we start to to wait them (sic!!!)</span></span><br><span class="line">    notifyRootCause?.let &#123; notifyCancelling(list, it) &#125;</span><br><span class="line">    <span class="keyword">val</span> child = firstChild(state) <span class="comment">// now wait for children</span></span><br><span class="line">    <span class="keyword">if</span> (child != <span class="literal">null</span> &amp;&amp; tryWaitForChild(finishing, child, proposedUpdate)) <span class="keyword">return</span> COMPLETING_WAITING_CHILDREN</span><br><span class="line">    <span class="comment">// otherwise -- we have not children left (all were already cancelled?)</span></span><br><span class="line">    <span class="keyword">return</span> finalizeFinishingState(finishing, proposedUpdate)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可知当协程抛出异常后，会调用 notifyCancelling 方法，该方法在上面已经解析过了。</p>
+<p>因此，<strong>当协程发生异常时会取消它的所有子协程，默认会取消它的父协程。</strong></p>
+<p>接下来看看 finalizeFinishingState 方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">finalizeFinishingState</span><span class="params">(state: <span class="type">Finishing</span>, proposedUpdate: <span class="type">Any</span>?)</span></span>: Any? &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">if</span> (finalException != <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">val</span> handled = cancelParent(finalException) || handleJobException(finalException)</span><br><span class="line">        <span class="keyword">if</span> (handled) (finalState <span class="keyword">as</span> CompletedExceptionally).makeHandled()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>cancelParent 的逻辑在之前看过，这里可以看出如果协程抛出未捕获的非取消异常，则会一步步取消上层的协程，最后根协程调用 handleJobException 处理异常：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// JobSupport</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">open</span> <span class="function"><span class="keyword">fun</span> <span class="title">handleJobException</span><span class="params">(exception: <span class="type">Throwable</span>)</span></span>: <span class="built_in">Boolean</span> = <span class="literal">false</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">open</span> <span class="class"><span class="keyword">class</span> <span class="title">StandaloneCoroutine</span></span>(</span><br><span class="line">    parentContext: CoroutineContext,</span><br><span class="line">    active: <span class="built_in">Boolean</span></span><br><span class="line">) : AbstractCoroutine&lt;<span class="built_in">Unit</span>&gt;(parentContext, active) &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">handleJobException</span><span class="params">(exception: <span class="type">Throwable</span>)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">        handleCoroutineException(context, exception)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 handleJobException 默认是空的，而 DeferredCoroutine 也没有重写这个方法，StandaloneCoroutine 中重写了。因此如果根协程为 async 启动的协程，则不会 crash，而 launch 式协程则会调用 handleCoroutineException 处理异常：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="title">handleCoroutineException</span><span class="params">(context: <span class="type">CoroutineContext</span>, exception: <span class="type">Throwable</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 定义了 CoroutineExceptionHandler 则由它处理</span></span><br><span class="line">        context[CoroutineExceptionHandler]?.let &#123;</span><br><span class="line">            it.handleException(context, exception)</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (t: Throwable) &#123;</span><br><span class="line">        handleCoroutineExceptionImpl(context, handlerException(exception, t))</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// If a handler is not present in the context or an exception was thrown, fallback to the global handler</span></span><br><span class="line">    handleCoroutineExceptionImpl(context, exception)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 根据 ServiceLoader, 在 Android 平台中还有 AndroidExceptionPreHandler 处理异常</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> handlers: List&lt;CoroutineExceptionHandler&gt; = ServiceLoader.load(</span><br><span class="line">        CoroutineExceptionHandler::<span class="keyword">class</span>.java,</span><br><span class="line">        CoroutineExceptionHandler::<span class="keyword">class</span>.java.classLoader</span><br><span class="line">).iterator().asSequence().toList()</span><br><span class="line"></span><br><span class="line"><span class="keyword">internal</span> <span class="keyword">actual</span> <span class="function"><span class="keyword">fun</span> <span class="title">handleCoroutineExceptionImpl</span><span class="params">(context: <span class="type">CoroutineContext</span>, exception: <span class="type">Throwable</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">// use additional extension handlers</span></span><br><span class="line">    <span class="keyword">for</span> (handler <span class="keyword">in</span> handlers) &#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            handler.handleException(context, exception)</span><br><span class="line">        &#125; <span class="keyword">catch</span> (t: Throwable) &#123;</span><br><span class="line">            <span class="comment">// Use thread&#x27;s handler if custom handler failed to handle exception</span></span><br><span class="line">            <span class="keyword">val</span> currentThread = Thread.currentThread()</span><br><span class="line">            currentThread.uncaughtExceptionHandler.uncaughtException(currentThread, handlerException(exception, t))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// use thread&#x27;s handler</span></span><br><span class="line">    <span class="keyword">val</span> currentThread = Thread.currentThread()</span><br><span class="line">    currentThread.uncaughtExceptionHandler.uncaughtException(currentThread, exception)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Thread</span></span><br><span class="line"><span class="keyword">public</span> UncaughtExceptionHandler getUncaughtExceptionHandler() &#123;</span><br><span class="line">    <span class="comment">// uncaughtExceptionHandler 为 null 则使用线程组</span></span><br><span class="line">    <span class="comment">// private ThreadGroup group;</span></span><br><span class="line">    <span class="keyword">return</span> uncaughtExceptionHandler != <span class="literal">null</span> ? uncaughtExceptionHandler : group;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ThreadGroup</span></span><br><span class="line"><span class="keyword">public</span> void uncaughtException(Thread t, Throwable e) &#123;</span><br><span class="line">    <span class="keyword">if</span> (parent != <span class="literal">null</span>) &#123;</span><br><span class="line">        首先交给父进程组处理</span><br><span class="line">        parent.uncaughtException(t, e);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 优先使用线程通用的 DefaultUncaughtExceptionHandler, 否则在控制台打印异常堆栈信息</span></span><br><span class="line">        Thread.UncaughtExceptionHandler ueh = Thread.getDefaultUncaughtExceptionHandler();</span><br><span class="line">        <span class="keyword">if</span> (ueh != <span class="literal">null</span>) &#123;</span><br><span class="line">            ueh.uncaughtException(t, e);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!(e instanceof ThreadDeath)) &#123;</span><br><span class="line">            System.err.print(<span class="string">&quot;Exception in thread \&quot;&quot;</span> + t.getName() + <span class="string">&quot;\&quot; &quot;</span>);</span><br><span class="line">            e.printStackTrace(System.err);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li>父协程需要等待所有子协程处于完成或者取消状态才能完成自身。</li>
+<li>协程调用 cancel 时会取消它的所有子协程，默认不会取消它的父协程(被取消的协程会在挂起点抛出 CancellationException 异常且它会被协程的机制所忽略，当前协程不会再继续执行)。</li>
+<li>当协程发生未捕获的异常时会取消它的所有子协程，且不会接着执行自身，可能会取消它的父协程(默认会取消)，默认会一步步取消上层的协程，最后取消根协程，且根协程处理异常。当异常属于 CancellationException 或者使用了 SupervisorJob 和 supervisorScope 时，不会影响父协程，原理是重写了 childCancelled 方法。</li>
+<li>launch 协程和 actor 协程默认处理异常的方式在 JVM 中是打印堆栈信息，在 Android 中会崩溃(参考Android异常机制)，可以自定义 CoroutineExceptionHandler 来处理异常。</li>
+<li>async 协程本身不会处理异常，自定义 CoroutineExceptionHandler 无效，但是会在 await 恢复调用者协程时抛出异常。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kotlin/" rel="tag"># Kotlin</a>
+              <a href="/tags/%E5%8D%8F%E7%A8%8B/" rel="tag"># 协程</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" rel="prev" title="Kotlin笔记之协程工作原理">
+      <i class="fa fa-chevron-left"></i> Kotlin笔记之协程工作原理
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%88%B6%E5%AD%90%E5%8D%8F%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">父子协程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%8F%E7%A8%8B%E5%AE%8C%E6%88%90"><span class="nav-number">2.</span> <span class="nav-text">协程完成</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%8F%E7%A8%8B%E5%8F%96%E6%B6%88"><span class="nav-number">3.</span> <span class="nav-text">协程取消</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">异常处理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86-1"><span class="nav-number">4.1.</span> <span class="nav-text">异常处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB"><span class="nav-number">4.2.</span> <span class="nav-text">源码解读</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">156</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">100</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
