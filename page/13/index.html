@@ -192,6 +192,160 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/05/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/12/05/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">计算机基础</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-12-05 16:43:01" itemprop="dateCreated datePublished" datetime="2018-12-05T16:43:01+08:00">2018-12-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:58" itemprop="dateModified" datetime="2021-05-14T14:14:58+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2018/12/05/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" class="post-meta-item leancloud_visitors" data-flag-title="计算机基础" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/12/05/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/12/05/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="图灵"><a href="#图灵" class="headerlink" title="图灵"></a>图灵</h1><h2 id="图灵-1"><a href="#图灵-1" class="headerlink" title="图灵"></a>图灵</h2><p>艾伦·麦席森·图灵（Alan Mathison Turing，1912年6月23日－1954年6月7日），英国数学家、逻辑学家，被称为计算机科学之父，人工智能之父。</p>
+<h2 id="图灵机"><a href="#图灵机" class="headerlink" title="图灵机"></a>图灵机</h2><p>停机问题通俗地说，停机问题就是判断任意一个程序是否能在有限的时间之内结束运行的问题。该问题等价于如下的判定问题：是否存在一个程序P，对于任意输入的程序w，能够判断w会在有限时间内结束或者死循环。有人猜测图灵机模型是图灵在思考停机问题而顺带设计出来的.</p>
+<img src="图灵机的组成.webp"/>
+
+<p>图灵的基本思想是用机器来模拟人们用纸笔进行数学运算的过程，它运算过程看作下列两种简单的动作：</p>
+<ul>
+<li>在纸上写上或擦除某个符号；</li>
+<li>把注意力从纸的一个位置移动到另一个位置；</li>
+</ul>
+<p>逻辑结构上图灵机有四个部分组成:</p>
+<ul>
+<li>一个无限长的存储带，带子有一个个连续的存储格子组成，每个格子可以存储一个数字或符号</li>
+<li>一个读写头，读写头可以在存储带上左右移动，并可以读、修改存储格上的数字或符号</li>
+<li>内部状态存储器，该存储器可以记录图灵机的当前状态，并且有一种特殊状态为停机状态</li>
+<li>控制程序指令，指令可以根据当前状态以及当前读写头所指的格子上的符号来确定读写头下一步的动作（左移还是右移），并改变状态存储器的值，令机器进入一个新的状态或保持状态不变。</li>
+</ul>
+<h2 id="图灵完备"><a href="#图灵完备" class="headerlink" title="图灵完备"></a>图灵完备</h2><p>可图灵指在可计算性理论中，编程语言或任意其他的逻辑系统如具有等用于通用图灵机的计算能力。换言之，此系统可与通用图灵机互相模拟。</p>
+<p>简单来说，能够抽象成图灵机的系统或编程语言就是图灵完备的；一切可计算的问题图灵机都能计算，因此满足这样要求的逻辑系统、装置或者编程语言就叫图灵完备的。</p>
+<p>在可计算性理论里，如果一系列操作数据的规则（如指令集、编程语言、细胞自动机）按照一定的顺序可以计算出结果，被称为图灵完备（turing complete）。</p>
+<p>一个有图灵完备指令集的设备被定义为通用计算机。如果是图灵完备的，它（计算机设备）有能力执行条件跳转（if、while、goto语句）以及改变内存数据。如果某个东西展现出了图灵完备，它就有能力表现出可以模拟原始计算机，而即使最简单的计算机也能模拟出最复杂的计算机。所有的通用编程语言和现代计算机的指令集都是图灵完备的（C++ template就是图灵完备的），都能解决内存有限的问题。图灵完备的机器都被定义有无限内存，但是机器指令集却通常定义为只工作在特定的、有限数量的RAM上。</p>
+<p>图灵完备的语言，有循环执行语句，判断分支语句等。理论上能解决任何算法。但有可能进入死循环而程序崩溃。</p>
+<p>图灵不完备也不是没有意义，有些场景我们需要限制语言本身。如限制循环和递归, 可以保证该语言能写的程序一定是终止的。</p>
+<p>比特币的脚本系统是图灵不完备的，以太坊的智能合约系统是图灵完备的。各有优缺点，图灵不完备会更安全些，图灵完备会更智能些。</p>
+<h1 id="IO模型"><a href="#IO模型" class="headerlink" title="IO模型"></a>IO模型</h1><p>IO可以理解为对流的操作，当一个read操作发生时，它会经历两个阶段：</p>
+<ol>
+<li>等待数据准备。</li>
+<li>将数据从内核拷贝到进程中</li>
+</ol>
+<h2 id="同步阻塞IO"><a href="#同步阻塞IO" class="headerlink" title="同步阻塞IO"></a>同步阻塞IO</h2><img src="同步阻塞IO.png"/>
+
+<p>用户线程通过系统调用read发起IO读操作，由用户空间转到内核空间。内核等到数据包到达后，然后将接收的数据拷贝到用户空间，完成read操作。</p>
+<h2 id="同步非阻塞IO"><a href="#同步非阻塞IO" class="headerlink" title="同步非阻塞IO"></a>同步非阻塞IO</h2><img src="同步非阻塞IO.png"/>
+
+<p>由于socket是非阻塞的方式，因此用户线程发起IO请求时立即返回。但并未读取到任何数据，用户线程需要不断地发起IO请求，直到数据到达后，才真正读取到数据，继续执行。</p>
+<p>即用户需要不断地调用read，尝试读取socket中的数据，直到读取成功后，才继续处理接收的数据。整个IO请求的过程中，虽然用户线程每次发起IO请求后可以立即返回，但是为了等到数据，仍需要不断地轮询、重复请求，消耗了大量的CPU的资源。一般很少直接使用这种模型，而是在其他IO模型中使用非阻塞IO这一特性。</p>
+<h2 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h2><img src="IO多路复用.png"/>
+
+<p>IO多路复用模型是建立在内核提供的多路分离函数select基础之上的，使用select函数可以避免同步非阻塞IO模型中轮询等待的问题。</p>
+<p>用户首先将需要进行IO操作的socket添加到select中，然后阻塞等待select系统调用返回。当数据到达时，socket被激活，select函数返回。用户线程正式发起read请求，读取数据并继续执行。</p>
+<p>从流程上来看，使用select函数进行IO请求和同步阻塞模型没有太大的区别，甚至还多了添加监视socket，以及调用select函数的额外操作，效率更差。但是，使用select以后最大的优势是用户可以在一个线程内同时处理多个socket的IO请求。用户可以注册多个socket，然后不断地调用select读取被激活的socket，即可达到<font color="#FF0000">在同一个线程内同时处理多个IO请求的目的</font>。而在同步阻塞模型中，必须通过多线程的方式才能达到这个目的。</p>
+<h2 id="异步IO"><a href="#异步IO" class="headerlink" title="异步IO"></a>异步IO</h2><img src="异步IO.png"/>
+
+<p>“真正”的异步IO需要操作系统更强的支持。在IO多路复用模型中，事件循环将文件句柄的状态事件通知给用户线程，由用户线程自行读取数据、处理数据。而在异步IO模型中，当用户线程收到通知时，数据已经被内核读取完毕，并放在了用户线程指定的缓冲区内，内核在IO完成后通知用户线程直接使用即可。</p>
+<h1 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h1><p>闭包的本质源自两点，<strong>词法作用域和函数当作值传递</strong>。</p>
+<ul>
+<li>词法作用域就是按照代码书写时的样子，内部函数可以访问函数外面的变量。</li>
+<li>函数当作值传递，就是可以把函数当作一个值来赋值，当作参数传给别的函数，也可以把函数当作一个值 return。一个函数被当作值返回时，也就相当于返回了一个通道，这个通道可以访问这个函数词法作用域中的变量，即函数所需要的数据结构保存了下来，数据结构中的值在外层函数执行时创建，外层函数执行完毕时理因销毁，但由于内部函数作为值返回出去，这些值得以保存下来。而且无法直接访问，必须通过返回的函数。这也就是私有性。本来执行过程和词法作用域是封闭的，这种返回的函数就好比是一个虫洞。</li>
+</ul>
+<p>显然，闭包的形成很简单，在执行过程完毕后，返回函数，或者将函数得以保留下来，即形成闭包。</p>
+<p>闭包可以理解成：一个持有外部环境变量的函数就是闭包。理解闭包通常有着以下几个关键点：</p>
+<ol>
+<li>函数</li>
+<li>自由变量</li>
+<li>环境</li>
+</ol>
+<p>举例如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">a</span>(<span class="params">x, y</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(x, y) <span class="comment">//在这里，x和y都不是自由变量</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">b</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(x, y) <span class="comment">//但在这个内部函数b中，x和y相对于b都是自由变量，而函数a的作用域则是环境。</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//无论b最终是否会作为返回值被函数a返回，b本身都已经形成了闭包。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>“闭”的意思不是封闭内部状态，而是封闭外部状态，当外部状态的scope失效的时候，还有一份保留在内部状态里，就是所说的封闭外部状态。</p>
+<p>知乎有个回答：我叫独孤求败，我在一个山洞里，里面有世界上最好的剑法，还有最好的武器。我学习了里面的剑法，拿走了最好的剑。离开了这里。我来到这个江湖，快意恩仇。但是从来没有人知道我这把剑的来历，和我这一身的武功。那山洞就是一个闭包，而我，就是那个山洞里唯一一个可以与外界交汇的地方。这山洞的一切对外人而言就像不存在一样，只有我才拥有这里面的宝藏！</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/01/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1999,310 +2153,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/10/25/Android%E9%80%86%E5%90%91%E7%AC%94%E8%AE%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/head.png">
-      <meta itemprop="name" content="苍耳叔叔">
-      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苍耳的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/10/25/Android%E9%80%86%E5%90%91%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">Android逆向笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-10-25 13:29:24" itemprop="dateCreated datePublished" datetime="2018-10-25T13:29:24+08:00">2018-10-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">系统</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2018/10/25/Android%E9%80%86%E5%90%91%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Android逆向笔记" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2018/10/25/Android%E9%80%86%E5%90%91%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2018/10/25/Android%E9%80%86%E5%90%91%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><h2 id="Class"><a href="#Class" class="headerlink" title="Class"></a>Class</h2><p>class文件是Java编译后的目标文件，不像J2se，java编译成class就可以直接运行，android平台上class文件不能直接在android上运行。 由于Google使用了自己的Dalvik（后来又变成了ART）来运行应用， 所以这里的class也肯定不能在AndroidDalvik的java环境中运行， android的class文件实际上只是编译过程中的中间目标文件，需要链接成dex文件后才能在dalvik上运行。</p>
-<h2 id="Dex"><a href="#Dex" class="headerlink" title="Dex"></a>Dex</h2><p>dex文件是Android平台上的可执行文件。在编译Java代码之后，通过Android平台上的工具可以将Java字节码转换成Dex字节码。</p>
-<h2 id="Apk"><a href="#Apk" class="headerlink" title="Apk"></a>Apk</h2><p>apk文件是Android上的安装文件。一个Android安装包包含了与某个Android应用程序相关的所有文件。apk文件将AndroidManifest.xml文件、应用程序代码(.dex文件)、资源文件和其他文件打成一个压缩包。</p>
-<h2 id="Hook"><a href="#Hook" class="headerlink" title="Hook"></a>Hook</h2><img src="Hook原理.webp"/>
-
-<p>Hook 又叫“钩子”，它可以在事件传送的过程中截获并监控事件的传输，将自身的代码与系统方法进行融入。这样当这些方法被调用时，也就可以执行我们自己的代码，这也是面向切面编程的思想（AOP）。</p>
-<h3 id="Hook-分类"><a href="#Hook-分类" class="headerlink" title="Hook 分类"></a>Hook 分类</h3><ol>
-<li>根据Android开发模式，Native模式（C/C++）和Java模式（Java）区分，在Android平台上<ul>
-<li>Java层级的Hook；</li>
-<li>Native层级的Hook；</li>
-</ul>
-</li>
-<li>根据Hook 对象与 Hook 后处理事件方式不同，Hook还分为：<ul>
-<li>消息Hook；</li>
-<li>API Hook；</li>
-</ul>
-</li>
-<li>针对Hook的不同进程上来说，还可以分为：<ul>
-<li>全局Hook；</li>
-<li>单个进程Hook；</li>
-</ul>
-</li>
-</ol>
-<h3 id="Hook选择的关键点"><a href="#Hook选择的关键点" class="headerlink" title="Hook选择的关键点"></a>Hook选择的关键点</h3><ul>
-<li>Hook 的选择点：尽量静态变量和单例，因为一旦创建对象，它们不容易变化，非常容易定位。</li>
-<li>Hook 过程：<ol>
-<li>寻找 Hook 点，原则是尽量静态变量或者单例对象，尽量 Hook public 的对象和方法。</li>
-<li>选择合适的代理方式，如果是接口可以用动态代理。</li>
-<li>偷梁换柱——用代理对象替换原始对象。</li>
-</ol>
-</li>
-<li>Android 的 API 版本比较多，方法和类可能不一样，所以要做好 API 的兼容工作。</li>
-</ul>
-<h1 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h1><h2 id="ApkTool"><a href="#ApkTool" class="headerlink" title="ApkTool"></a>ApkTool</h2><p>Apktool可以用来查看apk中的资源文件及布局文件，下载地址：<a target="_blank" rel="noopener" href="https://bitbucket.org/iBotPeaches/apktool/downloads/">https://bitbucket.org/iBotPeaches/apktool/downloads/</a> 。下载了apktool.jar后，可使用如下apktool脚本反编译apk：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Copyright (C) 2007 The Android Open Source Project</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Licensed under the Apache License, Version 2.0 (the <span class="string">&quot;License&quot;</span>);</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> you may not use this file except <span class="keyword">in</span> compliance with the License.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> You may obtain a copy of the License at</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="meta">#</span><span class="bash">     http://www.apache.org/licenses/LICENSE-2.0</span></span><br><span class="line"><span class="meta">#</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Unless required by applicable law or agreed to <span class="keyword">in</span> writing, software</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> distributed under the License is distributed on an <span class="string">&quot;AS IS&quot;</span> BASIS,</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> See the License <span class="keyword">for</span> the specific language governing permissions and</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> limitations under the License.</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> This script is a wrapper <span class="keyword">for</span> smali.jar, so you can simply call <span class="string">&quot;smali&quot;</span>,</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> instead of java -jar smali.jar. It is heavily based on the <span class="string">&quot;dx&quot;</span> script</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> from the Android SDK</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Set up prog to be the path of this script, including following symlinks,</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> and <span class="built_in">set</span> up progdir to be the fully-qualified pathname of its directory.</span></span><br><span class="line">prog=&quot;$0&quot;</span><br><span class="line">while [ -h &quot;$&#123;prog&#125;&quot; ]; do</span><br><span class="line">    newProg=`/bin/ls -ld &quot;$&#123;prog&#125;&quot;`</span><br><span class="line"></span><br><span class="line">    newProg=`expr &quot;$&#123;newProg&#125;&quot; : &quot;.* -&gt; \(.*\)$&quot;`</span><br><span class="line">    if expr &quot;x$&#123;newProg&#125;&quot; : &#x27;x/&#x27; &gt;/dev/null; then</span><br><span class="line">        prog=&quot;$&#123;newProg&#125;&quot;</span><br><span class="line">    else</span><br><span class="line">        progdir=`dirname &quot;$&#123;prog&#125;&quot;`</span><br><span class="line">        prog=&quot;$&#123;progdir&#125;/$&#123;newProg&#125;&quot;</span><br><span class="line">    fi</span><br><span class="line">done</span><br><span class="line">oldwd=`pwd`</span><br><span class="line">progdir=`dirname &quot;$&#123;prog&#125;&quot;`</span><br><span class="line">cd &quot;$&#123;progdir&#125;&quot;</span><br><span class="line">progdir=`pwd`</span><br><span class="line">prog=&quot;$&#123;progdir&#125;&quot;/`basename &quot;$&#123;prog&#125;&quot;`</span><br><span class="line">cd &quot;$&#123;oldwd&#125;&quot;</span><br><span class="line"></span><br><span class="line">jarfile=apktool.jar</span><br><span class="line">libdir=&quot;$progdir&quot;</span><br><span class="line">if [ ! -r &quot;$libdir/$jarfile&quot; ]</span><br><span class="line">then</span><br><span class="line">    echo `basename &quot;$prog&quot;`&quot;: can&#x27;t find $jarfile&quot;</span><br><span class="line">    exit 1</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">javaOpts=&quot;&quot;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> If you want DX to have more memory when executing, uncomment the following</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> line and adjust the value accordingly. Use <span class="string">&quot;java -X&quot;</span> <span class="keyword">for</span> a list of options</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> you can pass here.</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> </span></span><br><span class="line">javaOpts=&quot;-Xmx512M -Dfile.encoding=utf-8&quot;</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> Alternatively, this will extract any parameter <span class="string">&quot;-Jxxx&quot;</span> from the <span class="built_in">command</span> line</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> and pass them to Java (instead of to dx). This makes it possible <span class="keyword">for</span> you to</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> add a command-line parameter such as <span class="string">&quot;-JXmx256M&quot;</span> <span class="keyword">in</span> your ant scripts, <span class="keyword">for</span></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> example.</span></span><br><span class="line">while expr &quot;x$1&quot; : &#x27;x-J&#x27; &gt;/dev/null; do</span><br><span class="line">    opt=`expr &quot;$1&quot; : &#x27;-J\(.*\)&#x27;`</span><br><span class="line">    javaOpts=&quot;$&#123;javaOpts&#125; -$&#123;opt&#125;&quot;</span><br><span class="line">    shift</span><br><span class="line">done</span><br><span class="line"></span><br><span class="line">if [ &quot;$OSTYPE&quot; = &quot;cygwin&quot; ] ; then</span><br><span class="line">	jarpath=`cygpath -w  &quot;$libdir/$jarfile&quot;`</span><br><span class="line">else</span><br><span class="line">	jarpath=&quot;$libdir/$jarfile&quot;</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> add current location to path <span class="keyword">for</span> aapt</span></span><br><span class="line">PATH=$PATH:`pwd`;</span><br><span class="line">export PATH;</span><br><span class="line">exec java $javaOpts -jar &quot;$jarpath&quot; &quot;$@&quot;</span><br></pre></td></tr></table></figure>
-
-<p>使用方法：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> decode</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ./apktool d sweeper.apk</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> build，builds bar folder into new_bar.apk</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 此时生成的apk是未签名的</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> apktool b bar -o new_bar.apk</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="dex2jar和jar2dex"><a href="#dex2jar和jar2dex" class="headerlink" title="dex2jar和jar2dex"></a>dex2jar和jar2dex</h2><p>这是classes.dex转为jar包的工具，下载地址：<a target="_blank" rel="noopener" href="https://github.com/pxb1988/dex2jar">https://github.com/pxb1988/dex2jar</a> 。使用方法：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ./d2j-dex2jar.sh -f xxx.apk</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="JD-GUI"><a href="#JD-GUI" class="headerlink" title="JD-GUI"></a>JD-GUI</h2><p>可使用JD-GUI工具查看apk的源代码，下载地址：<a target="_blank" rel="noopener" href="http://java-decompiler.github.io/">http://java-decompiler.github.io/</a> 。使用方法：直接打开dex2jar生成的jar文件即可查看。</p>
-<h2 id="baksmali"><a href="#baksmali" class="headerlink" title="baksmali"></a>baksmali</h2><p>可使用baksmali工具把dex转换成smali，下载地址：<a target="_blank" rel="noopener" href="https://bitbucket.org/JesusFreke/smali/downloads/?tab=downloads">https://bitbucket.org/JesusFreke/smali/downloads/?tab=downloads</a> 。使用方法：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> java -jar baksmali.jar -o [输出文件夹] dex文件</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="smali"><a href="#smali" class="headerlink" title="smali"></a>smali</h2><p>可使用smali工具将smali转换成dex，下载地址：<a target="_blank" rel="noopener" href="https://bitbucket.org/JesusFreke/smali/downloads/?tab=downloads">https://bitbucket.org/JesusFreke/smali/downloads/?tab=downloads</a> 。使用方法：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> java -jar smali.jar -o 目标dex文件 [smali文件夹]</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="signer"><a href="#signer" class="headerlink" title="signer"></a>signer</h2><p>关于签名的内容在<code>Android签名笔记</code>中有了新的更新。</p>
-<h3 id="工具介绍"><a href="#工具介绍" class="headerlink" title="工具介绍"></a>工具介绍</h3><ul>
-<li>jarsigner是JDK提供的针对jar包签名的通用工具，位于JDK/bin/；</li>
-<li>apksigner是Google官方提供的针对Android apk签名及验证的专用工具,位于Android SDK/build-tools/SDK版本/。</li>
-</ul>
-<p>不管是apk包，还是jar包，本质都是zip格式的压缩包，所以它们的签名过程都差不多(仅限V1签名)，以上两个工具都可以对Android apk包进行签名。</p>
-<h3 id="V1和V2签名"><a href="#V1和V2签名" class="headerlink" title="V1和V2签名"></a>V1和V2签名</h3><p>从Android 7.0开始, 谷歌增加新签名方案 V2 Scheme (APK Signature);但Android 7.0以下版本, 只能用旧签名方案 V1 scheme (JAR signing)。</p>
-<ul>
-<li>V1签名:来自JDK(jarsigner), 对zip压缩包的每个文件进行验证, 签名后还能对压缩包修改(移动/重新压缩文件)，对V1签名的apk/jar解压,在META-INF存放签名文件(MANIFEST.MF, CERT.SF, CERT.RSA), 其中MANIFEST.MF文件保存所有文件的SHA1指纹(除了META-INF文件), 由此可知: V1签名是对压缩包中单个文件签名验证。</li>
-<li>V2签名:来自Google(apksigner), 对zip压缩包的整个文件验证, 签名后不能修改压缩包(包括zipalign),对V2签名的apk解压,没有发现签名文件,重新压缩后V2签名就失效, 由此可知: V2签名是对整个APK签名验证。因此，V2签名更安全(不能修改压缩包)，且签名验证时间更短(不需要解压验证),因而安装速度加快</li>
-</ul>
-<p>注意: apksigner工具默认同时使用V1和V2签名,以兼容Android 7.0以下版本</p>
-<h3 id="zipalign和V2签名"><a href="#zipalign和V2签名" class="headerlink" title="zipalign和V2签名"></a>zipalign和V2签名</h3><p>位于Android SDK/build-tools/SDK版本/下，zipalign是对zip包对齐的工具,使APK包内未压缩的数据有序排列对齐,从而减少APP运行时内存消耗。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">zipalign -v 4 in.apk out.apk   # 4字节对齐优化</span><br><span class="line">zipalign -c -v 4 in.apk        # 检查APK是否对齐</span><br></pre></td></tr></table></figure>
-
-<p>zipalign可以在V1签名后执行，但zipalign不能在V2签名后执行,只能在V2签名之前执行。</p>
-<h3 id="签名步骤"><a href="#签名步骤" class="headerlink" title="签名步骤"></a>签名步骤</h3><h4 id="1-生成密钥对"><a href="#1-生成密钥对" class="headerlink" title="1. 生成密钥对"></a>1. 生成密钥对</h4><p>Eclipse或Android Studio在Debug时,对App签名都会使用一个默认的密钥库:~/.android/debug.keystore</p>
-<pre><code>密钥库名:   debug.keystore
-密钥别名:   androiddebugkey
-密钥库密码: android</code></pre>
-<ol>
-<li><p>生成密钥对</p>
- <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">keytool -genkeypair -keystore 密钥库名 -alias 密钥别名 -validity 天数 -keyalg RSA</span><br><span class="line"></span><br><span class="line">参数:</span><br><span class="line">-genkeypair  生成一条密钥对(由私钥和公钥组成)</span><br><span class="line">-keystore    密钥库名字以及存储位置(默认当前目录)</span><br><span class="line">-alias       密钥对的别名(密钥库可以存在多个密钥对,用于区分不同密钥对)</span><br><span class="line">-validity    密钥对的有效期(单位: 天)</span><br><span class="line">-keyalg      生成密钥对的算法(常用RSA/DSA,DSA只用于签名,默认采用DSA)</span><br><span class="line">-delete      删除一条密钥</span><br></pre></td></tr></table></figure>
-
-<p> 提示: 可重复使用此条命令,在同一密钥库中创建多条密钥对，例如，在debug.keystore中新增一对密钥,别名是release：</p>
- <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">keytool -genkeypair -keystore debug.keystore -alias release -validity 30000</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>查看密钥库</p>
- <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">keytool -list -v -keystore 密钥库名</span><br><span class="line"></span><br><span class="line">参数:</span><br><span class="line">-list 查看密钥列表</span><br><span class="line">-v    查看密钥详情</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<h4 id="2-签名"><a href="#2-签名" class="headerlink" title="2. 签名"></a>2. 签名</h4><h5 id="jarsigner"><a href="#jarsigner" class="headerlink" title="jarsigner"></a>jarsigner</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jarsigner -keystore 密钥库名 xxx.apk 密钥别名</span><br></pre></td></tr></table></figure>
-
-<p>从JDK7开始, jarsigner默认算法是SHA256, 但Android 4.2以下不支持该算法,所以需要修改算法, 添加参数<code>-digestalg SHA1 -sigalg SHA1withRSA</code>：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">jarsigner -keystore 密钥库名 -digestalg SHA1 -sigalg SHA1withRSA xxx.apk 密钥别名</span><br><span class="line"></span><br><span class="line">参数:</span><br><span class="line">    -digestalg  摘要算法</span><br><span class="line">    -sigalg     签名算法</span><br></pre></td></tr></table></figure>
-
-<h5 id="apksigner"><a href="#apksigner" class="headerlink" title="apksigner"></a>apksigner</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">apksigner sign --ks 密钥库名 --ks-key-alias 密钥别名 xxx.apk</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 若密钥库中有多个密钥对,则必须指定密钥别名</span></span><br><span class="line">apksigner sign --ks 密钥库名 --ks-key-alias 密钥别名 xxx.apk</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 禁用V2签名</span></span><br><span class="line">apksigner sign --v2-signing-enabled false --ks 密钥库名 xxx.apk</span><br><span class="line"></span><br><span class="line">参数:</span><br><span class="line">    --ks-key-alias       密钥别名,若密钥库有一个密钥对,则可省略,反之必选</span><br><span class="line">    --v1-signing-enabled 是否开启V1签名,默认开启</span><br><span class="line">    --v2-signing-enabled 是否开启V2签名,默认开启</span><br></pre></td></tr></table></figure>
-
-<h4 id="3-签名验证"><a href="#3-签名验证" class="headerlink" title="3. 签名验证"></a>3. 签名验证</h4><h5 id="keytool-只支持V1签名校验"><a href="#keytool-只支持V1签名校验" class="headerlink" title="keytool,只支持V1签名校验"></a>keytool,只支持V1签名校验</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">keytool -printcert -jarfile MyApp.apk (显示签名证书信息)</span><br><span class="line"></span><br><span class="line">参数:</span><br><span class="line">    -printcert           打印证书内容</span><br><span class="line">    -jarfile &lt;filename&gt;  已签名的jar文件 或apk文件   </span><br></pre></td></tr></table></figure>
-
-<h5 id="apksigner-支持V1和V2签名校验"><a href="#apksigner-支持V1和V2签名校验" class="headerlink" title="apksigner,支持V1和V2签名校验"></a>apksigner,支持V1和V2签名校验</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">apksigner verify -v --print-certs xxx.apk</span><br><span class="line"></span><br><span class="line">参数:</span><br><span class="line">    -v, --verbose 显示详情(显示是否使用V1和V2签名)</span><br><span class="line">    --print-certs 显示签名证书信息</span><br></pre></td></tr></table></figure>
-
-<h1 id="命令行打包签名apk"><a href="#命令行打包签名apk" class="headerlink" title="命令行打包签名apk"></a>命令行打包签名apk</h1><h2 id="gradlew-keytool"><a href="#gradlew-keytool" class="headerlink" title="gradlew+keytool"></a>gradlew+keytool</h2><ol>
-<li><p>通过keytool生成签名文件</p>
-</li>
-<li><p>配置build.gradle</p>
- <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    signingConfigs &#123;</span><br><span class="line">        release &#123;</span><br><span class="line">            storeFile file(<span class="string">&quot;path/release.keystore&quot;</span>)</span><br><span class="line">            storePassword <span class="string">&quot;123456&quot;</span></span><br><span class="line">            keyAlias <span class="string">&quot;release.keystore&quot;</span></span><br><span class="line">            keyPassword <span class="string">&quot;123456&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">        debug &#123;</span><br><span class="line">            storeFile file(<span class="string">&quot;path/test.keystore&quot;</span>)</span><br><span class="line">            storePassword <span class="string">&quot;123456&quot;</span></span><br><span class="line">            keyAlias <span class="string">&quot;test.keystore&quot;</span></span><br><span class="line">            keyPassword <span class="string">&quot;123456&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    buildTypes &#123;</span><br><span class="line">        release &#123;</span><br><span class="line">            minifyEnabled enableProguardInReleaseBuilds</span><br><span class="line">            proguardFiles getDefaultProguardFile(<span class="string">&quot;proguard-android.txt&quot;</span>), <span class="string">&quot;proguard-rules.pro&quot;</span></span><br><span class="line">            signingConfig signingConfigs.release</span><br><span class="line"></span><br><span class="line">            android.applicationVariants.all &#123; variant -&gt;</span><br><span class="line">                variant.outputs.all &#123;</span><br><span class="line">                    <span class="keyword">if</span> (variant.buildType.name.equals(<span class="string">&#x27;release&#x27;</span>)) &#123;</span><br><span class="line">                        outputFileName = <span class="string">&quot;SecureMail$&#123;defaultConfig.versionName&#125;-$&#123;releaseTime()&#125;.apk&quot;</span></span><br><span class="line">                        variant.getPackageApplication().outputDirectory = <span class="keyword">new</span> File(</span><br><span class="line">                            project.rootDir.absolutePath + <span class="string">&quot;/app/release&quot;</span>)</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">def</span> releaseTime() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Date().format(<span class="string">&quot;yyyy-MM-dd&quot;</span>, TimeZone.getTimeZone(<span class="string">&quot;UTC&quot;</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>执行打包命令</p>
- <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gradlew assemblerelease</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<h2 id="aapt-java-keytool-apksigner"><a href="#aapt-java-keytool-apksigner" class="headerlink" title="aapt+java+keytool+apksigner"></a>aapt+java+keytool+apksigner</h2><p>个人觉得实用性不大，故没有做笔记。</p>
-<h1 id="源码混淆"><a href="#源码混淆" class="headerlink" title="源码混淆"></a>源码混淆</h1><p>Android中代码混淆可以分为两部分：</p>
-<ol>
-<li>Java代码的优化与混淆，依靠 proguard混淆器来实现；</li>
-<li>资源压缩，将移除项目及依赖的库中未被使用的资源(资源压缩严格意义上跟混淆没啥关系，但一般都会放一起用)。</li>
-</ol>
-<h2 id="混淆配置"><a href="#混淆配置" class="headerlink" title="混淆配置"></a>混淆配置</h2><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">android&#123;</span><br><span class="line">    buildTypes &#123;</span><br><span class="line">        release &#123;</span><br><span class="line">            buildConfigField <span class="string">&quot;boolean&quot;</span>, <span class="string">&quot;LOG_DEBUG&quot;</span>, <span class="string">&quot;false&quot;</span> <span class="comment">//不显示log</span></span><br><span class="line">            minifyEnabled <span class="literal">true</span></span><br><span class="line">            shrinkResources <span class="literal">true</span></span><br><span class="line">            proguardFiles getDefaultProguardFile(<span class="string">&#x27;proguard-android.txt&#x27;</span>), <span class="string">&#x27;proguard-rules.pro&#x27;</span></span><br><span class="line">            signingConfig signingConfigs.config</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>开启混淆会使编译时间变长，所以debug模式下不开启。在打包时应修改配置如下：</p>
-<ol>
-<li>将buildConfigField设置为false，不显示log日志；</li>
-<li>将minifyEnabled值设为true，打开混淆；</li>
-<li>将shrinkResources值设为true，打开资源压缩；</li>
-<li>signingConfig signingConfigs.config配置签名文件文件</li>
-<li>proguardFiles定义了混淆规则由两部分构成：位于SDK的<code>tools/proguard/</code>文件夹中的 proguard-android.txt（SDK提供的默认混淆文件）的内容以及默认放置于模块根目录的 proguard-rules.pro（自定义混淆规则）。</li>
-</ol>
-<h2 id="自定义混淆规则"><a href="#自定义混淆规则" class="headerlink" title="自定义混淆规则"></a>自定义混淆规则</h2><h1 id="dex反编译修改Java层代码"><a href="#dex反编译修改Java层代码" class="headerlink" title="dex反编译修改Java层代码"></a>dex反编译修改Java层代码</h1><p>反编译后得到的dex文件以及转为jar包后都无法进行修改，只能把dex文件转化为smali文件进行修改，然后再编译打包为dex文件，替换掉原有apk中的dex文件，然后对apk进行签名，这样就完成了对apk源码的修改，即需要学习smali相关的语法。具体步骤如下：</p>
-<ol>
-<li>使用apktool工具反编译apk文件，可以得到相关的smali文件，通常来说一个class对应一个smali（或者直接解压apk文件，然后使用baksmali工具将里面的dex转换为smali）；</li>
-<li>使用dex2jar工具把dex转为jar文件，然后可以通过JD-GUI进行查看；</li>
-<li>修改对应的smali文件；</li>
-<li>使用smali.jar工具把smali文件转为dex文件;</li>
-<li>把新生成的classes.dex文件替换到原来的apk文件里</li>
-<li>使用签名工具对apk进行签名。</li>
-</ol>
-<h1 id="so反编译修改Native层代码"><a href="#so反编译修改Native层代码" class="headerlink" title="so反编译修改Native层代码"></a>so反编译修改Native层代码</h1><p>so文件是Android NDK动态链接库，是二进制文件，作用相当于windows下的.dll文件，反编译Native代码需要学习ARM汇编。步骤如下：</p>
-<ol>
-<li>使用apktool工具反编译apk文件，可以得到lib目录下各个架构的so文件；</li>
-<li>使用编辑器打开so文件，并修改；</li>
-<li>重新打包并签名apk文件。</li>
-</ol>
-<h1 id="Java运行shell命令"><a href="#Java运行shell命令" class="headerlink" title="Java运行shell命令"></a>Java运行shell命令</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">runShell</span><span class="params">(String command)</span> </span>&#123;</span><br><span class="line">    Process process = <span class="keyword">null</span>;</span><br><span class="line">    BufferedReader bufferedReader = <span class="keyword">null</span>;</span><br><span class="line">    StringBuilder mShellCommandSB = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">    Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;runShell: &quot;</span> + command);</span><br><span class="line">    mShellCommandSB.delete(<span class="number">0</span>, mShellCommandSB.length());</span><br><span class="line">    String[] cmd = <span class="keyword">new</span> String[]&#123;<span class="string">&quot;/system/bin/sh&quot;</span>, <span class="string">&quot;-c&quot;</span>, command&#125;;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        process = Runtime.getRuntime().exec(cmd);</span><br><span class="line">        bufferedReader = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(</span><br><span class="line">                process.getInputStream()));</span><br><span class="line">        String line;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> ((line = bufferedReader.readLine()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">            mShellCommandSB.append(line);</span><br><span class="line">        &#125;</span><br><span class="line">        Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;runShell result: &quot;</span> + mShellCommandSB.toString());</span><br><span class="line">        process.waitFor();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException | InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (bufferedReader != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                bufferedReader.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                <span class="comment">// <span class="doctag">TODO:</span> handle exception</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (process != <span class="keyword">null</span>) &#123;</span><br><span class="line">            process.destroy();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>封装类：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ShellUtil</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String COMMAND_LINE_END = <span class="string">&quot;\n&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String COMMAND_EXIT = <span class="string">&quot;exit\n&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecResult <span class="title">execute</span><span class="params">(String command)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> execute(<span class="keyword">new</span> String[]&#123;command&#125;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ExecResult <span class="title">execute</span><span class="params">(String[] commands)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (commands == <span class="keyword">null</span> || commands.length == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> ExecResult(<span class="keyword">false</span>, <span class="string">&quot;empty command&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">int</span> result = -<span class="number">1</span>;</span><br><span class="line">        Process process = <span class="keyword">null</span>;</span><br><span class="line">        DataOutputStream dataOutputStream = <span class="keyword">null</span>;</span><br><span class="line">        BufferedReader sucResult = <span class="keyword">null</span>, errResult = <span class="keyword">null</span>;</span><br><span class="line">        StringBuilder sucMsg = <span class="keyword">null</span>, errMsg = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 获取shell级别的process</span></span><br><span class="line">            process = Runtime.getRuntime().exec(<span class="string">&quot;sh&quot;</span>);</span><br><span class="line">            dataOutputStream = <span class="keyword">new</span> DataOutputStream(process.getOutputStream());</span><br><span class="line">            <span class="keyword">for</span> (String command : commands) &#123;</span><br><span class="line">                <span class="keyword">if</span> (command == <span class="keyword">null</span>) <span class="keyword">continue</span>;</span><br><span class="line">                System.out.println(<span class="string">&quot;execute command: &quot;</span> + command);</span><br><span class="line">                <span class="comment">// 执行指令</span></span><br><span class="line">                dataOutputStream.write(command.getBytes());</span><br><span class="line">                dataOutputStream.writeBytes(COMMAND_LINE_END);</span><br><span class="line">                <span class="comment">// 刷新</span></span><br><span class="line">                dataOutputStream.flush();</span><br><span class="line">            &#125;</span><br><span class="line">            dataOutputStream.writeBytes(COMMAND_EXIT);</span><br><span class="line">            dataOutputStream.flush();</span><br><span class="line">            result = process.waitFor();</span><br><span class="line">            sucMsg = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">            errMsg = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">            sucResult = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(process.getInputStream()));</span><br><span class="line">            errResult = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> InputStreamReader(process.getErrorStream()));</span><br><span class="line">            String s;</span><br><span class="line">            <span class="keyword">while</span> ((s = sucResult.readLine()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                sucMsg.append(s);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">while</span> ((s = errResult.readLine()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">                errMsg.append(s);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException | InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 关闭资源，防止内存泄漏</span></span><br><span class="line">                <span class="keyword">assert</span> dataOutputStream != <span class="keyword">null</span>;</span><br><span class="line">                dataOutputStream.close();</span><br><span class="line">                <span class="keyword">assert</span> sucResult != <span class="keyword">null</span>;</span><br><span class="line">                sucResult.close();</span><br><span class="line">                <span class="keyword">assert</span> errResult != <span class="keyword">null</span>;</span><br><span class="line">                errResult.close();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            &#125;</span><br><span class="line">            process.destroy();</span><br><span class="line">        &#125;</span><br><span class="line">        ExecResult execResult;</span><br><span class="line">        <span class="keyword">if</span> (result == <span class="number">0</span>) &#123;</span><br><span class="line">            execResult = <span class="keyword">new</span> ExecResult(<span class="keyword">true</span>, sucMsg.toString());</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            execResult = <span class="keyword">new</span> ExecResult(<span class="keyword">false</span>, errMsg.toString());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 返回执行结果</span></span><br><span class="line">        <span class="keyword">return</span> execResult;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ExecResult</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">boolean</span> success;</span><br><span class="line">        <span class="keyword">private</span> String message;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">ExecResult</span><span class="params">(<span class="keyword">boolean</span> success, String message)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.success = success;</span><br><span class="line">            <span class="keyword">this</span>.message = message;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">getSuccess</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>.success;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> String <span class="title">getMessage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>.message;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="Xposed"><a href="#Xposed" class="headerlink" title="Xposed"></a>Xposed</h1><p>Xposed可以用来hook Android应用的Java层，hook代码编写比较方便，不过需要在手机上安装Xposed框架，且每次修改需要重启手机才能生效。Xposed使用中需要注意以下问题：</p>
-<ol>
-<li>这个框架的核心点是系统进程注入技术，那么如果要注入系统进程，就必须要有一个root的设备。</li>
-<li>不是所有的设备所有的系统都支持这个框架的使用。</li>
-<li>Xposed框架针对不同系统也发布了多个版本，所以得针对于自己的设备系统安装正确的Xposed版本。</li>
-</ol>
-<h1 id="CydiaSubstrate"><a href="#CydiaSubstrate" class="headerlink" title="CydiaSubstrate"></a>CydiaSubstrate</h1><p>这个框架可以hook Java和Native层的代码，在手机上需要安装这个框架，也可能会失败。</p>
-<h1 id="Frida"><a href="#Frida" class="headerlink" title="Frida"></a>Frida</h1><h1 id="Legend"><a href="#Legend" class="headerlink" title="Legend"></a>Legend</h1><h1 id="对比"><a href="#对比" class="headerlink" title="对比"></a>对比</h1><ol>
-<li><p>XPOSED</p>
-<p> 优点：</p>
-<ol>
-<li><p>代码编写方便，开发速度较快。</p>
-</li>
-<li><p>有许多现成的模块可以用，而且很多模块也是开源的，方便学习研究。</p>
-<p>缺点：</p>
-</li>
-<li><p>每次编写代码需要重启手机生效。</p>
-</li>
-<li><p>不支持native的HOOK。</p>
-</li>
-<li><p>独立性较差，需要依赖XPOSED installer，不易单独分发。</p>
-</li>
-</ol>
-</li>
-<li><p>substrate</p>
-<p> 优点：</p>
-<ol>
-<li><p>比较擅长在native层的HOOK。</p>
-</li>
-<li><p>独立性较好，实现的功能可以封装在单独APP里分发给用户使用，因此也是较大型外挂辅助工具的首选。</p>
-<p>缺点：</p>
-</li>
-<li><p>每次编写代码需要重启手机生效。</p>
-</li>
-<li><p>开发效率较低，成本较高。</p>
-</li>
-</ol>
-</li>
-<li><p>frida</p>
-<p> 优点：</p>
-<ol>
-<li><p>无须重启手机和目标APP，这个可以节省很多时间，如果APP测试的点需要很复杂地搭建好环境，一旦重新启动就意味着很麻烦地再重新搭建环境，例如账号登录，进入特定关卡等。</p>
-</li>
-<li><p>JS脚本编写，灵活方便，再也不用担心多参数个数和类型问题了。</p>
-</li>
-<li><p>可以直接使用或修改对象的成员变量，非常方便。</p>
-</li>
-<li><p>配合PC终端命令行使用，脚本编写出错也不会导致APP崩溃，只需修改后重新来过即可，有时会有问题，这个时候需要重启下APP或手机即可。</p>
-<p>缺点：</p>
-</li>
-<li><p>JS脚本套在python脚本里面，编写JS脚本时候不是很方便，容易出错，好在即使出错也不会导致APP崩溃掉，修改后重新来过即可。</p>
-</li>
-<li><p>该工具配合PC终端使用，更适合专业者，不利于分发给用户使用。</p>
-</li>
-</ol>
-</li>
-<li><p>Legend</p>
-<p> 优点：</p>
-<ol>
-<li><p>不需要root权限。</p>
-<p>缺点：</p>
-</li>
-<li><p>只能hook自身。</p>
-</li>
-</ol>
-</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2374,7 +2224,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">156</span>
+          <span class="site-state-item-count">157</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

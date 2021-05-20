@@ -192,6 +192,110 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/23/Network-Coding/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/02/23/Network-Coding/" class="post-title-link" itemprop="url">Network-Coding</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-02-23 21:00:53" itemprop="dateCreated datePublished" datetime="2019-02-23T21:00:53+08:00">2019-02-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/02/23/Network-Coding/" class="post-meta-item leancloud_visitors" data-flag-title="Network-Coding" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/02/23/Network-Coding/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/02/23/Network-Coding/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="TCP-IP的问题"><a href="#TCP-IP的问题" class="headerlink" title="TCP/IP的问题"></a>TCP/IP的问题</h1><p>互联网上的数据传递都是封装在“包裹”里的,将信息传递到终点的程序，以及这些“包裹”的格式，通常用 TCP/IP 协议来描述。为了让 TCP 数据传输成功，接收数据的人需要按照当时发出时的顺序，准确的来接收这些“数字包裹”。如果其中有一个数据包，因为某种原因给丢失了，那么这种互联网协议就会将其看作是网络拥堵的一个信号，数据传输速度立刻下降一半，之后它速度回升起来的也非常缓慢。该处理机制在某些状况下也许很理想，但是在另外一些状况下就会很糟糕。其根本的原因就在于：这套互联网协议本身并没有足够的智能，来分别接下来做什么事才是最正确的选择。同时，尽管从理论上来说，数字包可以从 A 点到 B 点以无限条路径进行传说，但事实上，在一个 TCP 连接中，数据传输一般都走的是相同的路径，这就给了数字黑客以机会，方便他们侵入到你的通信交流中。</p>
+<h1 id="网络编码"><a href="#网络编码" class="headerlink" title="网络编码"></a>网络编码</h1><p>网络编码是一种通过中继节点对接收到的信息进行编码来达到提高多播网络容量的技术。在传统的数据传输技术中，中继节点只负责数据的存储转发，而基于网络编码技术的网络的中继节点在具备传统中继功能的基础上，会根据网络编码规则将接收到的信息进行线性或非线性处理再进行传播，这种做法最直观的优势是减少了传输次数。</p>
+<p>“网络编码”能够让网络中的每一个节点都变得比现在更加智能。在 TCP/IP 协议中，网络节点只是一些简单的转换节点，只负责存储“数字包裹”，并且按照之前预设的路径转发到下一节点，而相比之下，在“网络编码”中，每一个节点都可以对“数字包裹”进行再加工，比如重新编制路径，或者重新编码。将智能赋予到网络的每个节点，是该技术称得上“破坏性创新”的理由。因为这将赋予信息处理技术以史无前例的灵活性。例如，它可以利用多路径 TCP，另外，应用了再编码机制，可以进一步的提升安全性和数据传输速度，甚至能够在网络的每个节点内部存储数据信息。</p>
+<p>在”网络编码”中，“数字包裹”中的内容被看作是一个真实的数字，“数字包裹”以“批”为单位进行处理。每一个节点都构建了一套线性方程，利用的是从“数字包裹”中提取出来的数字，以及随机生成的一组系数。每一个线性方程都能生成一个已编码的包裹，其系数存储在编码包裹的头部，未知的变量是每一个包裹的实际信息，当作一个数字。换句话说，每一个已编码的包裹中，都一次性的在几个“标准”的包裹上含有部分的信息，但同时还乘以不同的系数。如果你还没有忘记高中数学的话，你知道需要 N 个线性方程来解决 N 个未知变量。因为每一个以编码的数字包裹都包含一个单独的方程，这意味着接收信息者如果想要解码这段信息，就需要 N 个这样的数字包裹(当然乘以不同的系数才可以)。</p>
+<p>这样做使得接收内容彻底与数字包裹接收的顺序撇开了关系,接收信息者得到了 N 个已编码的包裹，每个都配有不同的系数，所以它能够解开所有的方程，还原最原始的数据。这种打破固有顺序所带来的灵活性，意味着整个信息系统将更加高效。也意味着曾经在 TCP/IP 中发生的严重的数据传递延迟甚至数据包丢失的情况一去不复返。因为顺序不再重要，数字包裹可以在网络中以各种不同的路径进行传递，这样会提升安全性。也就没有人能够切入到私人的通信网络中。</p>
+<h1 id="线性网络编码"><a href="#线性网络编码" class="headerlink" title="线性网络编码"></a>线性网络编码</h1><h2 id="线性网络编码-1"><a href="#线性网络编码-1" class="headerlink" title="线性网络编码"></a>线性网络编码</h2><p>假设网络是有向的，执行线性网络编码时每个节点收到所有连入线路的数据后，再执行编码，然后把数据从连出线路发出。新的数据包括执行线性编码所用的系数以及合成后的数据。</p>
+<img src="线性网络编码.png"/>
+
+<h2 id="随机线性网络编码"><a href="#随机线性网络编码" class="headerlink" title="随机线性网络编码"></a>随机线性网络编码</h2><p>随机线性网络编码可以取得更好的组播传输速率，较为实用。在实际网络中，节点会将来自连入线路的封包缓存起来，当节点需要发送封包时再将缓存的封包执行网络编码，然后发出。</p>
+<img src="随机线性网络编码.png"/>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/02/07/Java%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2559,160 +2663,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/05/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/head.png">
-      <meta itemprop="name" content="苍耳叔叔">
-      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苍耳的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2018/12/05/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">计算机基础</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2018-12-05 16:43:01" itemprop="dateCreated datePublished" datetime="2018-12-05T16:43:01+08:00">2018-12-05</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-14 14:14:58" itemprop="dateModified" datetime="2021-05-14T14:14:58+08:00">2021-05-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2018/12/05/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" class="post-meta-item leancloud_visitors" data-flag-title="计算机基础" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2018/12/05/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2018/12/05/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="图灵"><a href="#图灵" class="headerlink" title="图灵"></a>图灵</h1><h2 id="图灵-1"><a href="#图灵-1" class="headerlink" title="图灵"></a>图灵</h2><p>艾伦·麦席森·图灵（Alan Mathison Turing，1912年6月23日－1954年6月7日），英国数学家、逻辑学家，被称为计算机科学之父，人工智能之父。</p>
-<h2 id="图灵机"><a href="#图灵机" class="headerlink" title="图灵机"></a>图灵机</h2><p>停机问题通俗地说，停机问题就是判断任意一个程序是否能在有限的时间之内结束运行的问题。该问题等价于如下的判定问题：是否存在一个程序P，对于任意输入的程序w，能够判断w会在有限时间内结束或者死循环。有人猜测图灵机模型是图灵在思考停机问题而顺带设计出来的.</p>
-<img src="图灵机的组成.webp"/>
-
-<p>图灵的基本思想是用机器来模拟人们用纸笔进行数学运算的过程，它运算过程看作下列两种简单的动作：</p>
-<ul>
-<li>在纸上写上或擦除某个符号；</li>
-<li>把注意力从纸的一个位置移动到另一个位置；</li>
-</ul>
-<p>逻辑结构上图灵机有四个部分组成:</p>
-<ul>
-<li>一个无限长的存储带，带子有一个个连续的存储格子组成，每个格子可以存储一个数字或符号</li>
-<li>一个读写头，读写头可以在存储带上左右移动，并可以读、修改存储格上的数字或符号</li>
-<li>内部状态存储器，该存储器可以记录图灵机的当前状态，并且有一种特殊状态为停机状态</li>
-<li>控制程序指令，指令可以根据当前状态以及当前读写头所指的格子上的符号来确定读写头下一步的动作（左移还是右移），并改变状态存储器的值，令机器进入一个新的状态或保持状态不变。</li>
-</ul>
-<h2 id="图灵完备"><a href="#图灵完备" class="headerlink" title="图灵完备"></a>图灵完备</h2><p>可图灵指在可计算性理论中，编程语言或任意其他的逻辑系统如具有等用于通用图灵机的计算能力。换言之，此系统可与通用图灵机互相模拟。</p>
-<p>简单来说，能够抽象成图灵机的系统或编程语言就是图灵完备的；一切可计算的问题图灵机都能计算，因此满足这样要求的逻辑系统、装置或者编程语言就叫图灵完备的。</p>
-<p>在可计算性理论里，如果一系列操作数据的规则（如指令集、编程语言、细胞自动机）按照一定的顺序可以计算出结果，被称为图灵完备（turing complete）。</p>
-<p>一个有图灵完备指令集的设备被定义为通用计算机。如果是图灵完备的，它（计算机设备）有能力执行条件跳转（if、while、goto语句）以及改变内存数据。如果某个东西展现出了图灵完备，它就有能力表现出可以模拟原始计算机，而即使最简单的计算机也能模拟出最复杂的计算机。所有的通用编程语言和现代计算机的指令集都是图灵完备的（C++ template就是图灵完备的），都能解决内存有限的问题。图灵完备的机器都被定义有无限内存，但是机器指令集却通常定义为只工作在特定的、有限数量的RAM上。</p>
-<p>图灵完备的语言，有循环执行语句，判断分支语句等。理论上能解决任何算法。但有可能进入死循环而程序崩溃。</p>
-<p>图灵不完备也不是没有意义，有些场景我们需要限制语言本身。如限制循环和递归, 可以保证该语言能写的程序一定是终止的。</p>
-<p>比特币的脚本系统是图灵不完备的，以太坊的智能合约系统是图灵完备的。各有优缺点，图灵不完备会更安全些，图灵完备会更智能些。</p>
-<h1 id="IO模型"><a href="#IO模型" class="headerlink" title="IO模型"></a>IO模型</h1><p>IO可以理解为对流的操作，当一个read操作发生时，它会经历两个阶段：</p>
-<ol>
-<li>等待数据准备。</li>
-<li>将数据从内核拷贝到进程中</li>
-</ol>
-<h2 id="同步阻塞IO"><a href="#同步阻塞IO" class="headerlink" title="同步阻塞IO"></a>同步阻塞IO</h2><img src="同步阻塞IO.png"/>
-
-<p>用户线程通过系统调用read发起IO读操作，由用户空间转到内核空间。内核等到数据包到达后，然后将接收的数据拷贝到用户空间，完成read操作。</p>
-<h2 id="同步非阻塞IO"><a href="#同步非阻塞IO" class="headerlink" title="同步非阻塞IO"></a>同步非阻塞IO</h2><img src="同步非阻塞IO.png"/>
-
-<p>由于socket是非阻塞的方式，因此用户线程发起IO请求时立即返回。但并未读取到任何数据，用户线程需要不断地发起IO请求，直到数据到达后，才真正读取到数据，继续执行。</p>
-<p>即用户需要不断地调用read，尝试读取socket中的数据，直到读取成功后，才继续处理接收的数据。整个IO请求的过程中，虽然用户线程每次发起IO请求后可以立即返回，但是为了等到数据，仍需要不断地轮询、重复请求，消耗了大量的CPU的资源。一般很少直接使用这种模型，而是在其他IO模型中使用非阻塞IO这一特性。</p>
-<h2 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h2><img src="IO多路复用.png"/>
-
-<p>IO多路复用模型是建立在内核提供的多路分离函数select基础之上的，使用select函数可以避免同步非阻塞IO模型中轮询等待的问题。</p>
-<p>用户首先将需要进行IO操作的socket添加到select中，然后阻塞等待select系统调用返回。当数据到达时，socket被激活，select函数返回。用户线程正式发起read请求，读取数据并继续执行。</p>
-<p>从流程上来看，使用select函数进行IO请求和同步阻塞模型没有太大的区别，甚至还多了添加监视socket，以及调用select函数的额外操作，效率更差。但是，使用select以后最大的优势是用户可以在一个线程内同时处理多个socket的IO请求。用户可以注册多个socket，然后不断地调用select读取被激活的socket，即可达到<font color="#FF0000">在同一个线程内同时处理多个IO请求的目的</font>。而在同步阻塞模型中，必须通过多线程的方式才能达到这个目的。</p>
-<h2 id="异步IO"><a href="#异步IO" class="headerlink" title="异步IO"></a>异步IO</h2><img src="异步IO.png"/>
-
-<p>“真正”的异步IO需要操作系统更强的支持。在IO多路复用模型中，事件循环将文件句柄的状态事件通知给用户线程，由用户线程自行读取数据、处理数据。而在异步IO模型中，当用户线程收到通知时，数据已经被内核读取完毕，并放在了用户线程指定的缓冲区内，内核在IO完成后通知用户线程直接使用即可。</p>
-<h1 id="闭包"><a href="#闭包" class="headerlink" title="闭包"></a>闭包</h1><p>闭包的本质源自两点，<strong>词法作用域和函数当作值传递</strong>。</p>
-<ul>
-<li>词法作用域就是按照代码书写时的样子，内部函数可以访问函数外面的变量。</li>
-<li>函数当作值传递，就是可以把函数当作一个值来赋值，当作参数传给别的函数，也可以把函数当作一个值 return。一个函数被当作值返回时，也就相当于返回了一个通道，这个通道可以访问这个函数词法作用域中的变量，即函数所需要的数据结构保存了下来，数据结构中的值在外层函数执行时创建，外层函数执行完毕时理因销毁，但由于内部函数作为值返回出去，这些值得以保存下来。而且无法直接访问，必须通过返回的函数。这也就是私有性。本来执行过程和词法作用域是封闭的，这种返回的函数就好比是一个虫洞。</li>
-</ul>
-<p>显然，闭包的形成很简单，在执行过程完毕后，返回函数，或者将函数得以保留下来，即形成闭包。</p>
-<p>闭包可以理解成：一个持有外部环境变量的函数就是闭包。理解闭包通常有着以下几个关键点：</p>
-<ol>
-<li>函数</li>
-<li>自由变量</li>
-<li>环境</li>
-</ol>
-<p>举例如下：</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">a</span>(<span class="params">x, y</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(x, y) <span class="comment">//在这里，x和y都不是自由变量</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">b</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(x, y) <span class="comment">//但在这个内部函数b中，x和y相对于b都是自由变量，而函数a的作用域则是环境。</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//无论b最终是否会作为返回值被函数a返回，b本身都已经形成了闭包。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>“闭”的意思不是封闭内部状态，而是封闭外部状态，当外部状态的scope失效的时候，还有一份保留在内部状态里，就是所说的封闭外部状态。</p>
-<p>知乎有个回答：我叫独孤求败，我在一个山洞里，里面有世界上最好的剑法，还有最好的武器。我学习了里面的剑法，拿走了最好的剑。离开了这里。我来到这个江湖，快意恩仇。但是从来没有人知道我这把剑的来历，和我这一身的武功。那山洞就是一个闭包，而我，就是那个山洞里唯一一个可以与外界交汇的地方。这山洞的一切对外人而言就像不存在一样，只有我才拥有这里面的宝藏！</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2784,7 +2734,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">156</span>
+          <span class="site-state-item-count">157</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
