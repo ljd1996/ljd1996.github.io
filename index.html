@@ -215,10 +215,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-05-20 16:30:10 / 修改时间：19:54:46" itemprop="dateCreated datePublished" datetime="2021-05-20T16:30:10+08:00">2021-05-20</time>
+              <time title="创建时间：2021-05-20 16:30:10" itemprop="dateCreated datePublished" datetime="2021-05-20T16:30:10+08:00">2021-05-20</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-23 17:12:05" itemprop="dateModified" datetime="2021-05-23T17:12:05+08:00">2021-05-23</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -265,9 +271,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>时间问题，之后再补充具体的原理解析，先简单记录一下。</p>
-<p>首先贴一下 Flow 接口的源码：</p>
-<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Flow</span>&lt;<span class="type">out T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// 是一个 suspend 方法，意味着会挂起当前协程</span></span><br><span class="line">    <span class="meta">@InternalCoroutinesApi</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">collect</span><span class="params">(collector: <span class="type">FlowCollector</span>&lt;<span class="type">T</span>&gt;)</span></span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">FlowCollector</span>&lt;<span class="type">in T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// 数据的发射方</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">emit</span><span class="params">(value: <span class="type">T</span>)</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>最近想学习一下 Kotlin 中 flow 的用法, Google 上搜了搜发现很多比较 RxJava 跟 flow 的文章，其实我在实际业务中从来没有用过 RxJava, 倒不是因为它不好，而是…我一直傻傻不太会用 RxJava 的操作符，看不太懂，又一直没花时间(懒惰)去研究它那些操作符的原理。这次看到了 flow, 想着还是先去了解了解它内部几个操作符的原理吧，不然用起来总是不太踏实。</p>
+<p>需要注意的是 Flow 需要在协程中使用, 分析 flow 工作流程离不开协程的工作原理，关于 Kotlin 协程的解析可以参考下列文章：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6901956626324914184">Kotlin协程之基础使用</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6890348438873964551">Kotlin协程之深入理解协程工作原理</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6909276222895685640">Kotlin协程之协程取消与异常处理</a></li>
+</ul>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2021/05/20/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8Bflow%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/#more" rel="contents">
@@ -825,10 +835,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-05-19 17:36:54 / 修改时间：20:13:24" itemprop="dateCreated datePublished" datetime="2021-05-19T17:36:54+08:00">2021-05-19</time>
+              <time title="创建时间：2021-05-19 17:36:54" itemprop="dateCreated datePublished" datetime="2021-05-19T17:36:54+08:00">2021-05-19</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-21 14:42:04" itemprop="dateModified" datetime="2021-05-21T14:42:04+08:00">2021-05-21</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>

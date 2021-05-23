@@ -1969,7 +1969,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+                <time title="修改时间：2021-05-21 14:20:27" itemprop="dateModified" datetime="2021-05-21T14:20:27+08:00">2021-05-21</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -2214,6 +2214,7 @@
 <li><code>? extends T</code>(上边界通配符)实现协变关系，表示<code>?</code>是继承自<code>T</code>的任意子类型。也表示一种约束关系，只能提供数据，不能接收数据。</li>
 <li><code>? super T</code>(下边界通配符)实现逆变关系，表示<code>?</code>是<code>T</code>的任意父类型。也表示一种约束关系，只能接收数据，不能提供数据。</li>
 <li><code>?</code>的默认实现是<code>? extends Object</code>，表示<code>?</code>是继承自Object的任意类型。</li>
+<li>PECS 法则：「Producer-Extends, Consumer-Super」。</li>
 </ul>
 <p>如下所示：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">List&lt;? extends Number&gt; list1 = <span class="keyword">new</span> ArrayList&lt;Integer&gt;();</span><br><span class="line">List&lt;? <span class="keyword">super</span> Integer&gt; list2 = <span class="keyword">new</span> ArrayList&lt;Number&gt;();</span><br><span class="line"></span><br><span class="line"><span class="comment">// Collections类中的copy方法</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; <span class="function"><span class="keyword">void</span> <span class="title">copy</span><span class="params">(List&lt;? <span class="keyword">super</span> T&gt; dest, List&lt;? extends T&gt; src)</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
