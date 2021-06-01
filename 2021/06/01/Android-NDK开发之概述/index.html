@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述 Android Studio 用于构建原生库的默认工具是 CMake，需要提供 CmakeList.txt 用于构建原生代码。 Android Studio 还支持 ndk-build 构建原生库，需要提供 Android.mk 构建脚本。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android-NDK开发之概述">
+<meta property="og:url" content="http://yoursite.com/2021/06/01/Android-NDK%E5%BC%80%E5%8F%91%E4%B9%8B%E6%A6%82%E8%BF%B0/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述 Android Studio 用于构建原生库的默认工具是 CMake，需要提供 CmakeList.txt 用于构建原生代码。 Android Studio 还支持 ndk-build 构建原生库，需要提供 Android.mk 构建脚本。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2021/06/01/Android-NDK%E5%BC%80%E5%8F%91%E4%B9%8B%E6%A6%82%E8%BF%B0/ABI%E5%88%86%E7%B1%BB.png">
+<meta property="article:published_time" content="2021-06-01T08:51:00.000Z">
+<meta property="article:modified_time" content="2021-06-01T08:52:48.664Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="NDK">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2021/06/01/Android-NDK%E5%BC%80%E5%8F%91%E4%B9%8B%E6%A6%82%E8%BF%B0/ABI%E5%88%86%E7%B1%BB.png">
+
+<link rel="canonical" href="http://yoursite.com/2021/06/01/Android-NDK%E5%BC%80%E5%8F%91%E4%B9%8B%E6%A6%82%E8%BF%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android-NDK开发之概述 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/06/01/Android-NDK%E5%BC%80%E5%8F%91%E4%B9%8B%E6%A6%82%E8%BF%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android-NDK开发之概述
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-06-01 16:51:00 / 修改时间：16:52:48" itemprop="dateCreated datePublished" datetime="2021-06-01T16:51:00+08:00">2021-06-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/NDK/" itemprop="url" rel="index"><span itemprop="name">NDK</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/06/01/Android-NDK%E5%BC%80%E5%8F%91%E4%B9%8B%E6%A6%82%E8%BF%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Android-NDK开发之概述" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/06/01/Android-NDK%E5%BC%80%E5%8F%91%E4%B9%8B%E6%A6%82%E8%BF%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/06/01/Android-NDK%E5%BC%80%E5%8F%91%E4%B9%8B%E6%A6%82%E8%BF%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><ul>
+<li>Android Studio 用于构建原生库的默认工具是 CMake，需要提供 CmakeList.txt 用于构建原生代码。</li>
+<li>Android Studio 还支持 ndk-build 构建原生库，需要提供 Android.mk 构建脚本。</li>
+</ul>
+<a id="more"></a>
+
+<h1 id="ndk-build"><a href="#ndk-build" class="headerlink" title="ndk-build"></a>ndk-build</h1><p><a target="_blank" rel="noopener" href="https://developer.android.com/ndk/guides/ndk-build">ndk-build 脚本</a>可用于编译采用 NDK 基于 Make 的编译系统的项目，包含<a target="_blank" rel="noopener" href="https://developer.android.com/ndk/guides/application_mk.html">Application.mk</a>和<a target="_blank" rel="noopener" href="https://developer.android.com/ndk/guides/android_mk.html">Android.mk</a>脚本。</p>
+<p>运行 ndk-build 脚本相当于运行以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">export</span> GNUMAKE=/usr/<span class="built_in">local</span>/bin/gmake</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="variable">$GNUMAKE</span> -f &lt;ndk&gt;/build/core/build-local.mk &lt;parameters&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>使用方法：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ndk-build &lt;option&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>可选options：</p>
+<ul>
+<li>clean：移除之前生成的所有二进制文件。</li>
+<li>V=1：启动编译，并显示编译命令。</li>
+<li>-B：强制执行完整的重新编译。</li>
+<li>-B V=1：强制执行完整的重新编译，并显示编译命令。</li>
+<li>NDK_LOG=1：显示内部 NDK 日志消息（用于调试 NDK 本身）。</li>
+<li>NDK_DEBUG=1：强制执行可调试的编译。</li>
+<li>NDK_DEBUG=0：强制执行发布版编译。</li>
+<li>NDK_HOST_32BIT=1：始终使用 32 位模式下的工具链。</li>
+<li>NDK_APPLICATION_MK=&lt;file&gt;：使用 NDK_APPLICATION_MK 变量指向的特定 Application.mk 文件进行编译。</li>
+<li>-C &lt;project&gt;：编译位于 &lt;project&gt; 的项目路径的原生代码。如果您不想在终端通过 cd 切换到该路径，此选项会非常有用。</li>
+</ul>
+<p><strong>Android.mk</strong></p>
+<p>Android.mk 文件位于项目 jni/ 目录的子目录中，用于向编译系统描述源文件和共享库。它实际上是编译系统解析一次或多次的微小 GNU makefile 片段。Android.mk 文件用于定义 Application.mk、编译系统和环境变量所未定义的项目范围设置。它还可替换特定模块的项目范围设置。</p>
+<p>Android.mk 的语法支持将源文件分组为模块。模块是静态库、共享库或独立的可执行文件。您可在每个 Android.mk 文件中定义一个或多个模块，也可在多个模块中使用同一个源文件。编译系统只将共享库放入您的应用软件包。此外，静态库可生成共享库。</p>
+<p>除了封装库之外，编译系统还可为您处理各种其他事项。例如，您无需在 Android.mk 文件中列出头文件或生成的文件之间的显式依赖关系。NDK 编译系统会自动计算这些关系。因此，您应该能够享受到未来 NDK 版本中新工具链/平台支持带来的益处，而无需处理 Android.mk 文件。</p>
+<p>详见：<a target="_blank" rel="noopener" href="https://developer.android.com/ndk/guides/android_mk.html">Android.mk</a></p>
+<p>简单示例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">LOCAL_PATH:= $(call my-dir)</span><br><span class="line">include $(CLEAR_VARS)</span><br><span class="line">LOCAL_MODULE:= libtermux</span><br><span class="line">LOCAL_SRC_FILES:= termux.c</span><br><span class="line">include $(BUILD_SHARED_LIBRARY)</span><br></pre></td></tr></table></figure>
+
+<p><strong>Application.mk</strong></p>
+<p>Application.mk 指定了 ndk-build 的项目范围设置。默认情况下，它位于应用项目目录中的 jni/Application.mk 下。</p>
+<p>注意：其中许多参数也具有模块等效项。例如，APP_CFLAGS 对应于 LOCAL_CFLAGS。无论何种情况下，特定于模块的选项都将优先于应用范围选项。对于标记，两者都使用，但特定于模块的标记将后出现在命令行中，因此它们可能会替换项目范围设置。</p>
+<p>详见：<a target="_blank" rel="noopener" href="https://developer.android.com/ndk/guides/application_mk.html">Application.mk</a></p>
+<p>简单示例：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">APP_ABI := armeabi-v7a arm64-v8a x86</span><br><span class="line"><span class="meta">#</span><span class="bash"> 或者</span></span><br><span class="line">APP_ABI := all</span><br></pre></td></tr></table></figure>
+
+<h1 id="CMake"><a href="#CMake" class="headerlink" title="CMake"></a>CMake</h1><p>Android Studio 创建 Native 项目完成后，默认使用 Cmake 构建原生库，目录结构如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">├─app</span><br><span class="line">│  ├─libs</span><br><span class="line">│  └─src</span><br><span class="line">│      ├─main</span><br><span class="line">│      │  ├─cpp</span><br><span class="line">│      │  │  └─CMakeLists.txt</span><br><span class="line">│      │  │  └─native-lib.cpp</span><br><span class="line">│      │  ├─java</span><br><span class="line">│      │  │  └─com</span><br><span class="line">│      │  │      └─hearing</span><br><span class="line">│      │  │          └─jnidemo</span><br><span class="line">│      │  └─res</span><br><span class="line">│      │      ├─drawable</span><br><span class="line">│      │      ├─drawable-v24</span><br><span class="line">│      │      ├─layout</span><br><span class="line">│      │      ├─mipmap-anydpi-v26</span><br><span class="line">│      │      ├─mipmap-hdpi</span><br><span class="line">│      │      ├─mipmap-mdpi</span><br><span class="line">│      │      ├─mipmap-xhdpi</span><br><span class="line">│      │      ├─mipmap-xxhdpi</span><br><span class="line">│      │      ├─mipmap-xxxhdpi</span><br><span class="line">│      │      └─values</span><br></pre></td></tr></table></figure>
+
+<p><strong>build.gradle</strong>:</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">  ...</span><br><span class="line">  defaultConfig &#123;</span><br><span class="line">    ...</span><br><span class="line">    <span class="comment">// This block is different from the one you use to link Gradle</span></span><br><span class="line">    <span class="comment">// to your CMake build script.</span></span><br><span class="line">    externalNativeBuild &#123;</span><br><span class="line">        cmake &#123;</span><br><span class="line">            cppFlags <span class="string">&quot;&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  buildTypes &#123;...&#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// Use this block to link Gradle to your CMake build script.</span></span><br><span class="line">  externalNativeBuild &#123;</span><br><span class="line">      cmake &#123;</span><br><span class="line">          path <span class="string">&quot;src/main/cpp/CMakeLists.txt&quot;</span></span><br><span class="line">          version <span class="string">&quot;3.10.2&quot;</span></span><br><span class="line">      &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>CmakeLists.txt</strong>:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required(VERSION <span class="number">3.10</span><span class="number">.2</span>)</span><br><span class="line"></span><br><span class="line"># Declares <span class="keyword">and</span> names the project.</span><br><span class="line"></span><br><span class="line">project(<span class="string">&quot;nativedemo&quot;</span>)</span><br><span class="line"></span><br><span class="line"># Creates <span class="keyword">and</span> names a library, sets it as either STATIC</span><br><span class="line"><span class="meta"># or SHARED, and provides the relative paths to its source code.</span></span><br><span class="line"># You can define multiple libraries, <span class="keyword">and</span> CMake builds them <span class="keyword">for</span> you.</span><br><span class="line"># Gradle automatically packages shared libraries with your APK.</span><br><span class="line"></span><br><span class="line">add_library( # Sets the name of the library.</span><br><span class="line">             native-lib</span><br><span class="line"></span><br><span class="line">             # Sets the library as a shared library.</span><br><span class="line">             SHARED</span><br><span class="line"></span><br><span class="line">             # Provides a relative path to your source file(s).</span><br><span class="line">             native-lib.cpp )</span><br><span class="line"></span><br><span class="line"># Searches <span class="keyword">for</span> a specified prebuilt library <span class="keyword">and</span> stores the path as a</span><br><span class="line"><span class="meta"># variable. Because CMake includes system libraries in the search path by</span></span><br><span class="line"><span class="meta"># default, you only need to specify the name of the public NDK library</span></span><br><span class="line"><span class="meta"># you want to add. CMake verifies that the library exists before</span></span><br><span class="line"><span class="meta"># completing its build.</span></span><br><span class="line"></span><br><span class="line">find_library( # Sets the name of the path variable.</span><br><span class="line">              <span class="built_in">log</span>-lib</span><br><span class="line"></span><br><span class="line">              # Specifies the name of the NDK library that</span><br><span class="line">              # you want CMake to locate.</span><br><span class="line">              <span class="built_in">log</span> )</span><br><span class="line"></span><br><span class="line"># Specifies libraries CMake should link to your target library. You</span><br><span class="line"><span class="meta"># can link multiple libraries, such as libraries you <span class="meta-keyword">define</span> in this</span></span><br><span class="line"><span class="meta"># build script, prebuilt third-party libraries, or system libraries.</span></span><br><span class="line"></span><br><span class="line">target_link_libraries( # Specifies the target library.</span><br><span class="line">                       native-lib</span><br><span class="line"></span><br><span class="line">                       # Links the target library to the <span class="built_in">log</span> library</span><br><span class="line">                       # included in the NDK.</span><br><span class="line">                       $&#123;<span class="built_in">log</span>-lib&#125; )</span><br></pre></td></tr></table></figure>
+
+<p><strong>native-lib.cpp</strong>:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;jni.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="string">&quot;C&quot;</span> JNIEXPORT jstring JNICALL</span><br><span class="line">Java_com_hearing_jnidemo_MainActivity_stringFromJNI(</span><br><span class="line">        JNIEnv *env,</span><br><span class="line">        jobject <span class="comment">/* this */</span>) &#123;</span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">string</span> hello = <span class="string">&quot;Hello from C++&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> env-&gt;NewStringUTF(hello.c_str());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="ABI"><a href="#ABI" class="headerlink" title="ABI"></a>ABI</h1><h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>不同的 Android 手机使用不同的 CPU，而不同的 CPU 支持不同的指令集。CPU 与指令集的每种组合都有专属的应用二进制接口，即 ABI。ABI 可以非常精确地定义应用的机器代码在运行时如何与系统交互。您必须为应用要使用的每个 CPU 架构指定 ABI。</p>
+<p><img src="ABI%E5%88%86%E7%B1%BB.png"></p>
+<table>
+<thead>
+<tr>
+<th align="center">CPU（纵向）/ABI（横向）</th>
+<th align="center">armeabi</th>
+<th align="center">armeabi-v7a</th>
+<th align="center">arm64-v8a</th>
+<th align="center">x86</th>
+<th align="center">x86_64</th>
+<th align="center">mips</th>
+<th align="center">mips64</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">ARMv5</td>
+<td align="center">支持</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">ARMv7</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">ARMv8</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">x86</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+<td align="center"></td>
+<td align="center">支持</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">x86_64</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+<td align="center"></td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+<td align="center"></td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">MIPS</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">支持</td>
+<td align="center"></td>
+</tr>
+<tr>
+<td align="center">MIPS64</td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center"></td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+</tr>
+</tbody></table>
+<p>Android 系统在运行时知道它支持哪些 ABI，因为 build 特定的系统属性会指示：</p>
+<ul>
+<li>设备的主要 ABI，与系统映像本身使用的机器代码对应。</li>
+<li>（可选）与系统映像也支持的其他 ABI 对应的辅助 ABI。</li>
+</ul>
+<p>此机制确保系统在安装时从软件包提取最佳机器代码。</p>
+<p>为实现最佳性能，应直接针对主要 ABI 进行编译。例如，基于 ARMv5TE 的典型设备只会定义主 ABI：armeabi。相反，基于 ARMv7 的典型设备将主 ABI 定义为 armeabi-v7a，并将辅助 ABI 定义为 armeabi，因为它可以运行为每个 ABI 生成的应用原生二进制文件。</p>
+<p>64 位设备也支持其 32 位变体。以 arm64-v8a 设备为例，该设备也可以运行 armeabi 和 armeabi-v7a 代码。但请注意，如果应用以 arm64-v8a 为目标，而非依赖于运行 armeabi-v7a 版应用的设备，则应用在 64 位设备上的性能要好得多。</p>
+<p>许多基于 x86 的设备也可运行 armeabi-v7a 和 armeabi NDK 二进制文件。对于这些设备，主 ABI 将是 x86，辅助 ABI 是 armeabi-v7a。</p>
+<p>您可以为特定 ABI 强制安装 apk。这在测试时非常有用。请使用以下命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb install --abi abi-identifier path_to_apk</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装自动解压原生代码"><a href="#安装自动解压原生代码" class="headerlink" title="安装自动解压原生代码"></a>安装自动解压原生代码</h2><p>安装应用时，软件包管理器服务将扫描 APK，并查找以下形式的任何共享库：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lib/&lt;primary-abi&gt;/lib&lt;name&gt;.so</span><br></pre></td></tr></table></figure>
+
+<p>如果未找到，并且您已定义辅助 ABI，该服务将扫描以下形式的共享库：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lib/&lt;secondary-abi&gt;/lib&lt;name&gt;.so</span><br></pre></td></tr></table></figure>
+
+<p>找到所需的库时，软件包管理器会将它们复制到应用的原生库目录 (<code>&lt;nativeLibraryDir&gt;/</code>) 下的 <code>/lib/lib&lt;name&gt;.so</code>。以下代码段会收到 nativeLibraryDir(<code>/data/app/com.hearing.test-b4Q3jAne7emB6ypXB6AHtQ==/lib/arm64</code>)：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> ainfo = <span class="keyword">this</span>.applicationContext.packageManager.getApplicationInfo(</span><br><span class="line">        <span class="string">&quot;com.hearing.test&quot;</span>,</span><br><span class="line">        PackageManager.GET_SHARED_LIBRARY_FILES</span><br><span class="line">)</span><br><span class="line">Log.v(TAG, <span class="string">&quot;native library dir <span class="subst">$&#123;ainfo.nativeLibraryDir&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>如果根本没有共享对象文件，应用也会构建并安装，但在运行时会崩溃。</p>
+<h2 id="so库的名称和文件名"><a href="#so库的名称和文件名" class="headerlink" title="so库的名称和文件名"></a>so库的名称和文件名</h2><ul>
+<li>so库的名称可任意，如hearing。</li>
+<li>so库的文件名必须以lib开头。如libhearing.so，其中lib是必要前缀，hearing才是这个库的名称。</li>
+</ul>
+<h2 id="so库文件的路径"><a href="#so库文件的路径" class="headerlink" title="so库文件的路径"></a>so库文件的路径</h2><ul>
+<li><p>在Android Studio中的路径：默认要放在模块<code>/src/&lt;SourceSet&gt;/jniLibs/&lt;ABI&gt;/</code>下。如：将so库放在<code>app/src/main/jniLibs/armeabi</code>。可在模块的build.gradle中修改配置指定so库的路径。如，将so库放在app/libs/armeabi下，并修改配置如下：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">  ...</span><br><span class="line">  sourceSets &#123;</span><br><span class="line">    main &#123;</span><br><span class="line">      jniLibs.srcDirs = [<span class="string">&#x27;libs&#x27;</span>]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在Android系统中的路径：<code>/data/data/&lt;应用包名&gt;/lib/</code>下。</p>
+</li>
+<li><p>在aar包中的路径：<code>jni/&lt;ABI&gt;</code>下。</p>
+</li>
+</ul>
+<h2 id="so库的代码加载"><a href="#so库的代码加载" class="headerlink" title="so库的代码加载"></a>so库的代码加载</h2><ul>
+<li>System.loadLibrary(“so库的名称”)：如System.loadLibrary(“hearing”)，会加载该应用下的libhearing.so文件。</li>
+<li>System.load(“so库文件的全路径”)：如System.load(“/data/data/com.hearing.app.demo/libhearing.so”)，会加载包名为com.hearing.app.demo的应用的libhearing.so文件。</li>
+</ul>
+<h2 id="so库的使用建议"><a href="#so库的使用建议" class="headerlink" title="so库的使用建议"></a>so库的使用建议</h2><ul>
+<li>理论上应该为每个ABI目录提供对应的so库。但是Android支持7种ABI，若全部支持，必然导致APK包过大。</li>
+<li>一般只保留arm64-v8a、armeabi-v7a这两个ABI的so库。</li>
+<li>mips/mips64：极少用于手机，可忽略。</li>
+<li>x86/x86_64：x86架构的手机的市场占有率很低，约为1%左右。而且x86架构都包含ARM模拟层，兼容ARM类型的ABI。注意，模拟器大为x86架构，平板很多也是x86。</li>
+<li>arm64-v8a：64位ARM架构。可用32位模式运行armeabi-v7a和armeabi。</li>
+<li>armeabi-v7a：32位。</li>
+<li>armeabi：老版本ARMv5。</li>
+</ul>
+<p>不难发现，只要提供armeabi便可兼容新/旧设备。但armeabi缺少对浮点数机器的支持，存在性能瓶颈。应该将armeabi目录中的so库拷贝一份到armeabi-v7a目录中。</p>
+<h2 id="Gradle指定ABI"><a href="#Gradle指定ABI" class="headerlink" title="Gradle指定ABI"></a>Gradle指定ABI</h2><p>默认情况下，Gradle 会针对 NDK 支持的 ABI 将您的原生库构建到单独的 .so 文件中，并将其全部打包到您的 APK 中。如果您希望 Gradle 仅构建和打包原生库的特定 ABI 配置，您可以在模块级 build.gradle 文件中使用 ndk.abiFilters 标志指定这些配置，如下所示：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">  ...</span><br><span class="line">  defaultConfig &#123;</span><br><span class="line">    ...</span><br><span class="line">    externalNativeBuild &#123;</span><br><span class="line">      cmake &#123;...&#125;</span><br><span class="line">      <span class="comment">// or ndkBuild &#123;...&#125;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ndk &#123;</span><br><span class="line">      <span class="comment">// Specifies the ABI configurations of your native</span></span><br><span class="line">      <span class="comment">// libraries Gradle should build and package with your APK.</span></span><br><span class="line">      abiFilters <span class="string">&#x27;x86&#x27;</span>, <span class="string">&#x27;x86_64&#x27;</span>, <span class="string">&#x27;armeabi&#x27;</span>, <span class="string">&#x27;armeabi-v7a&#x27;</span>,</span><br><span class="line">                   <span class="string">&#x27;arm64-v8a&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  buildTypes &#123;...&#125;</span><br><span class="line">  externalNativeBuild &#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在大多数情况下，您只需要在 ndk {} 块中指定 abiFilters（如上所示），因为它会指示 Gradle 构建和打包原生库的这些版本。不过，如果您希望控制 Gradle 应当构建的配置，并独立于您希望其打包到 APK 中的配置，请在 defaultConfig.externalNativeBuild.cmake {} 块（或 defaultConfig.externalNativeBuild.ndkBuild {} 块中）配置另一个 abiFilters 标志。Gradle 会构建这些 ABI 配置，不过仅会打包您在 defaultConfig.ndk{} 块中指定的配置。</p>
+<p>为了进一步降低 APK 的大小，请考虑<a target="_blank" rel="noopener" href="https://developer.android.com/studio/build/configure-apk-splits.html#configure-abi-split">配置 ABI APK 拆分</a>，而不是创建一个包含原生库所有版本的大型 APK，Gradle 会为您想要支持的每个 ABI 创建单独的 APK，并且仅打包每个 ABI 需要的文件。如果您配置 ABI 拆分，但没有像上面的代码示例一样指定 abiFilters 标志，Gradle 会构建原生库的所有受支持 ABI 版本，不过仅会打包您在 ABI 拆分配置中指定的版本。为了避免构建您不想要的原生库版本，请为 abiFilters 标志和 ABI 拆分配置提供相同的 ABI 列表。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/NDK/" rel="tag"># NDK</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/05/20/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8Bflow%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" rel="prev" title="Kotlin笔记之flow工作原理">
+      <i class="fa fa-chevron-left"></i> Kotlin笔记之flow工作原理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/06/01/Android-NDK%E5%BC%80%E5%8F%91%E4%B9%8BJNI/" rel="next" title="Android-NDK开发之JNI">
+      Android-NDK开发之JNI <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ndk-build"><span class="nav-number">2.</span> <span class="nav-text">ndk-build</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CMake"><span class="nav-number">3.</span> <span class="nav-text">CMake</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ABI"><span class="nav-number">4.</span> <span class="nav-text">ABI</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="nav-number">4.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E8%87%AA%E5%8A%A8%E8%A7%A3%E5%8E%8B%E5%8E%9F%E7%94%9F%E4%BB%A3%E7%A0%81"><span class="nav-number">4.2.</span> <span class="nav-text">安装自动解压原生代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#so%E5%BA%93%E7%9A%84%E5%90%8D%E7%A7%B0%E5%92%8C%E6%96%87%E4%BB%B6%E5%90%8D"><span class="nav-number">4.3.</span> <span class="nav-text">so库的名称和文件名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#so%E5%BA%93%E6%96%87%E4%BB%B6%E7%9A%84%E8%B7%AF%E5%BE%84"><span class="nav-number">4.4.</span> <span class="nav-text">so库文件的路径</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#so%E5%BA%93%E7%9A%84%E4%BB%A3%E7%A0%81%E5%8A%A0%E8%BD%BD"><span class="nav-number">4.5.</span> <span class="nav-text">so库的代码加载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#so%E5%BA%93%E7%9A%84%E4%BD%BF%E7%94%A8%E5%BB%BA%E8%AE%AE"><span class="nav-number">4.6.</span> <span class="nav-text">so库的使用建议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Gradle%E6%8C%87%E5%AE%9AABI"><span class="nav-number">4.7.</span> <span class="nav-text">Gradle指定ABI</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">158</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">40</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">100</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
