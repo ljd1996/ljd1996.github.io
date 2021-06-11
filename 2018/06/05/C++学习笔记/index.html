@@ -28,7 +28,7 @@
 <meta property="og:description" content="指针和引用指针传递参数本质上是值传递的方式，它所传递的是一个地址值。值传递的特点是被调函数对形参的任何操作都是作为局部变量进行，不会影响主调函数的实参变量的值（这里是在说实参指针本身的地址值不会变）。 而在引用传递过程中，被调函数的形式参数虽然也作为局部变量在栈中开辟了内存空间，但是这时存放的是由主调函数放进来的实参变量的地址（int &amp;a的形式）。被调函数对形参的任何操作都被处理成间接寻">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2018-06-05T10:38:27.000Z">
-<meta property="article:modified_time" content="2021-06-02T13:21:33.481Z">
+<meta property="article:modified_time" content="2021-06-03T06:43:43.502Z">
 <meta property="article:author" content="苍耳叔叔">
 <meta property="article:tag" content="C++">
 <meta name="twitter:card" content="summary">
@@ -225,7 +225,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-06-02 21:21:33" itemprop="dateModified" datetime="2021-06-02T21:21:33+08:00">2021-06-02</time>
+                <time title="修改时间：2021-06-03 14:43:43" itemprop="dateModified" datetime="2021-06-03T14:43:43+08:00">2021-06-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -287,6 +287,15 @@
 <li>“sizeof 引用”得到的是所指向的变量(对象)的大小，而“sizeof 指针”得到的是指针本身的大小；</li>
 <li>引用是类型安全的，而指针不是 (引用比指针多了类型检查）。</li>
 </ul>
+<h1 id="Enum-amp-Union"><a href="#Enum-amp-Union" class="headerlink" title="Enum&amp;Union"></a>Enum&amp;Union</h1><p>Java 的枚举比较复杂，里面还可以包含方法和成员变量。C/C++ 中的枚举比较纯粹，就是一些特定整数值的集合。在 C++ 中应避免使用 C-style 的枚举：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Deprecated style</span></span><br><span class="line"><span class="keyword">enum</span> Fruit &#123;</span><br><span class="line">    NONE = <span class="number">0</span>,</span><br><span class="line">    APPLE = <span class="number">1</span>,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// APPLE is visiable</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Suggested style</span></span><br><span class="line"><span class="keyword">enum</span> <span class="class"><span class="keyword">class</span> <span class="title">Fruit</span> &#123;</span></span><br><span class="line">    NONE = <span class="number">0</span>,</span><br><span class="line">    APPLE = <span class="number">1</span>,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// APPLE is invisiable, you need to reference it as Fruit::APPLE.</span></span><br></pre></td></tr></table></figure>
+
+<p>还可以指定 enum 的 underlying type, 即底层实现使用什么整数类型来存储它：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> Fruit: <span class="keyword">char</span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>Union 的主要使用场景是使用同一个类型存储 A 或者 B 类型的数据，二者不会共存，也可以扩展到多类型：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">union</span> test &#123;</span><br><span class="line">    <span class="keyword">int32_t</span> mark;    <span class="comment">// 4 bytes</span></span><br><span class="line">    <span class="keyword">uint16_t</span> num[<span class="number">2</span>]; <span class="comment">// 4 bytes</span></span><br><span class="line">    <span class="keyword">uint8_t</span> score;   <span class="comment">// 1 byte</span></span><br><span class="line">&#125;;  <span class="comment">// 总共占用 4 个字节</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// use it</span></span><br><span class="line"><span class="keyword">union</span> test t;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">&quot;%d&quot;</span>, t.mark);</span><br></pre></td></tr></table></figure>
+
 <h1 id="友元函数和友元类"><a href="#友元函数和友元类" class="headerlink" title="友元函数和友元类"></a>友元函数和友元类</h1><ul>
 <li>C++ 中引入友元函数，是为在该类中提供一个对外访问的窗口，在类中声明该函数可以直接访问类中的 private 或者 protected 成员。</li>
 <li>友元函数的声明可以放在类的私有部分，也可放在共有部分。友元函数的定义在类体外实现，不需要加类限定。</li>
@@ -300,7 +309,20 @@
 
 </li>
 </ul>
-<h1 id="泛型"><a href="#泛型" class="headerlink" title="泛型"></a>泛型</h1><h1 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h1><h1 id="智能指针"><a href="#智能指针" class="headerlink" title="智能指针"></a>智能指针</h1><p>智能指针是相对于原始指针而言的，看看两者用法的不同：</p>
+<h1 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h1><p>旧有 C 风格的括号强制类型转换不再推荐使用。</p>
+<p><strong>static_cast</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static_cast</span>&lt;new_type&gt;(expression)</span><br></pre></td></tr></table></figure>
+
+<p>static_cast 强制转换只会在编译时检查，没有运行时类型检查来保证转换的安全性。</p>
+<p><strong>dynamic_cast</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">dynamic_cast</span>&lt;new_type&gt;(expression)</span><br></pre></td></tr></table></figure>
+
+<p>new_type 必须是指针或者引用。如果转型失败会返回 null(转型对象为指针时)或抛出异常(转型对象为引用时)。dynamic_cast 会动用运行时信息(RTTI)来进行类型安全检查，因此 dynamic_cast 存在一定的效率损失。</p>
+<p><strong>const_cast</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const_cast</span>&lt;new_type&gt;(expression)</span><br></pre></td></tr></table></figure>
+
+<p>new_type 必须是指针或者引用，const_cast 用于去除除对象的 const 或者 volatile 属性。</p>
+<h1 id="智能指针"><a href="#智能指针" class="headerlink" title="智能指针"></a>智能指针</h1><p>智能指针是相对于原始指针而言的，看看两者用法的不同：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">UseRawPointer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Using a raw pointer -- not recommended.</span></span><br><span class="line">    Song* pSong = <span class="keyword">new</span> Song(<span class="string">L&quot;Nothing on You&quot;</span>, <span class="string">L&quot;Bruno Mars&quot;</span>); </span><br><span class="line">    <span class="comment">// use it...</span></span><br><span class="line">    <span class="keyword">delete</span> pSong; <span class="comment">// Don&#x27;t forget to delete!</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">UseSmartPointer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Declare a smart pointer on stack and pass it the raw pointer.</span></span><br><span class="line">    <span class="function"><span class="built_in">unique_ptr</span>&lt;Song&gt; <span class="title">song2</span><span class="params">(<span class="keyword">new</span> Song(<span class="string">L&quot;Nothing on You&quot;</span>, <span class="string">L&quot;Bruno Mars&quot;</span>))</span></span>;</span><br><span class="line">    <span class="comment">// use it...</span></span><br><span class="line">&#125;   <span class="comment">// song2 is deleted automatically here.</span></span><br></pre></td></tr></table></figure>
 
 <p>智能指针可以这样理解：将基本类型指针封装为类对象指针（这个类肯定是个模板，以适应不同基本类型的需求），并在析构函数里编写 delete 语句删除指针指向的内存空间。</p>
@@ -310,21 +332,29 @@
 <li>如果程序要使用多个指向同一个对象的指针，应选择 shared_ptr。</li>
 <li>如果程序不需要多个指向同一个对象的指针，则可使用 unique_ptr。</li>
 </ul>
-<h1 id="关键字"><a href="#关键字" class="headerlink" title="关键字"></a>关键字</h1><p><strong>default</strong></p>
-<p>C++ 的类有四类特殊成员函数，它们分别是：默认构造函数、析构函数、拷贝构造函数以及拷贝赋值运算符，如果没有显式地为一个类定义某个特殊成员函数，而又需要用到该特殊成员函数时，则编译器会隐式的为这个类生成一个默认的特殊成员函数。在 C++11 标准引入了一个 default 关键字，只需在特殊成员函数声明后加上 <code>=default</code> 即可为其自动生成函数体。</p>
+<h1 id="泛型"><a href="#泛型" class="headerlink" title="泛型"></a>泛型</h1><h2 id="泛型方法"><a href="#泛型方法" class="headerlink" title="泛型方法"></a>泛型方法</h2><p>Java:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> &lt;T&gt; <span class="function">List&lt;T&gt; <span class="title">array2List</span><span class="params">(T[] a)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> Arrays.stream(a).collect(Collectors.toList());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>C++:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line"><span class="function"><span class="built_in">std</span>::<span class="built_in">vector</span>&lt;T&gt; <span class="title">array2List</span><span class="params">(<span class="keyword">const</span> T* a, <span class="keyword">int64_t</span> size)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">std</span>::<span class="built_in">vector</span>&lt;T&gt;(a, a + size);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="泛型类"><a href="#泛型类" class="headerlink" title="泛型类"></a>泛型类</h2><p>Java:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">List</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">add</span><span class="params">(E e)</span></span>;</span><br><span class="line">    <span class="function">Iterrator&lt;E&gt; <span class="title">iterator</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>C++:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> E&gt;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">List</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>：</span><br><span class="line">    <span class="keyword">virtual</span> ~List() = <span class="keyword">default</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(E e)</span> </span>= <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> Iterator&lt;E&gt; <span class="title">iterator</span><span class="params">()</span> <span class="keyword">const</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="关键字-amp-符号"><a href="#关键字-amp-符号" class="headerlink" title="关键字&amp;符号"></a>关键字&amp;符号</h1><h2 id="default"><a href="#default" class="headerlink" title="default"></a>default</h2><p>C++ 的类有四类特殊成员函数，它们分别是：默认构造函数、析构函数、拷贝构造函数以及拷贝赋值运算符，如果没有显式地为一个类定义某个特殊成员函数，而又需要用到该特殊成员函数时，则编译器会隐式的为这个类生成一个默认的特殊成员函数。在 C++11 标准引入了一个 default 关键字，只需在特殊成员函数声明后加上 <code>=default</code> 即可为其自动生成函数体。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> &#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Person() = <span class="keyword">default</span>;</span><br><span class="line">    Person(<span class="keyword">int</span> age) : age(age) &#123;&#125;;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Print</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;Hello Person!&quot;</span> &lt;&lt; <span class="string">&quot;\n&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
-<p><strong>delete</strong></p>
-<p>C++11 标准引入了一个 delete 关键字，当在函数声明后上 <code>=delete</code> 就可将该函数禁用。</p>
-<p><strong>explicit</strong></p>
-<ul>
+<h2 id="delete"><a href="#delete" class="headerlink" title="delete"></a>delete</h2><p>C++11 标准引入了一个 delete 关键字，当在函数声明后上 <code>=delete</code> 就可将该函数禁用。</p>
+<h2 id="explicit"><a href="#explicit" class="headerlink" title="explicit"></a>explicit</h2><ul>
 <li>此关键字只能对用户自己定义的对象起作用，不对默认构造函数起作用</li>
 <li>此关键字只能够修饰构造函数。而且构造函数的参数只能有一个。</li>
 <li>按默认规定，只用传一个参数的构造函数也定义了一个隐式转换。比如说使用 <code>string s = &quot;hearing&quot;;</code> 的过程中实际上隐式调用了 <code>string s(&quot;hearing&quot;);</code>。</li>
 <li>使用explicit声明后，则表明构造函数只能显式调用.</li>
 </ul>
-<p><strong>const</strong></p>
-<p>const 是修饰其左边类型的，除非左边没有类型了，则修饰右边紧挨着的类型，如 <code>const A*</code> 和 <code>A const*</code> 等价。</p>
+<h2 id="const"><a href="#const" class="headerlink" title="const"></a>const</h2><p>const 是修饰其左边类型的，除非左边没有类型了，则修饰右边紧挨着的类型，如 <code>const A*</code> 和 <code>A const*</code> 等价。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 常指针。pt不是“只读”的，而 pt 指向的数据不可更改，它指向常量。因此常指针的作用是保护指向的数据不被更改。</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span>* pt;</span><br><span class="line"><span class="comment">// 指针常量。ps是“只读”的，不能改变指针本身的值，但指向的数据却是能更改的。</span></span><br><span class="line"><span class="keyword">int</span>* <span class="keyword">const</span> ps;</span><br><span class="line"><span class="comment">// 常指针常量。指针不能改变，指针指向的值也不能改变。</span></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> * <span class="keyword">const</span> pp;</span><br><span class="line"><span class="comment">// 实际上不存在引用常量这个说法，因为引用本身就被解释为指针常量，再用const修饰完全没有意义。</span></span><br></pre></td></tr></table></figure>
 
 <p>const 与函数：</p>
@@ -339,32 +369,18 @@
 <li>const 对象的成员是不可修改的，然而 const 对象通过指针维护的对象却是可以修改的。</li>
 <li>const 成员函数不可以修改对象的数据，不管对象是否具有 const 性质。然而加上 mutable 修饰符的数据成员，对于任何情况下通过任何手段都可修改，自然此时的 const 成员函数是可以修改它的。</li>
 </ul>
-<h1 id="C-编码规范"><a href="#C-编码规范" class="headerlink" title="C++编码规范"></a>C++编码规范</h1><ul>
-<li>宏定义的内容用括号包含</li>
-<li>类的成员变量使用m_小写开头，静态全局变量使用s_小写开头，全局变量使用g_小写开头。</li>
-<li>类上添加命名空间</li>
-<li>头文件的包含顺序：先是我们的头文件，再是系统的头文件，这样做如果我们的头文件中少包含了一个必需的系统头文件时就能发现。</li>
+<h2 id="std-optional"><a href="#std-optional" class="headerlink" title="std::optional"></a>std::optional</h2><p>使用 std::optional 表示一个可能为空的值：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">std</span>::optional&lt;Book&gt; <span class="title">makeBook</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (failed) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">std</span>::nullopt;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> Book();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="编码注意事项"><a href="#编码注意事项" class="headerlink" title="编码注意事项"></a>编码注意事项</h1><ul>
+<li>宏定义的内容用括号包含。</li>
 <li>类的声明中先声明public，再声明private，让使用者一眼便能看到他能调用的东西。</li>
-<li>如果一个类不能被复制或赋值，把拷贝构造函数和赋值操作符禁用掉</li>
-<li>类的所有成员都需要初始化</li>
-<li>方法中需要检查参数的合法性</li>
-<li>模块内定义全局变量量应该声明为static</li>
-<li>引用与指针的区别<ul>
-<li>指针是一一个实体,引用用是一一个别名</li>
-<li>引用用必须要初始化,指针可以任意时机初始化</li>
-<li>引用用在定义初始化后不不可再改变,指针可以修改所指内容</li>
-<li>引用用不不能为空,指针可以为空</li>
-<li>引用用不不需要解引用用,指针需要用用*解引用用</li>
-</ul>
-</li>
-<li>对于类类型传值的影响:<ul>
-<li>调用用类的拷⻉贝构造函数构建对象的副本影响性能</li>
-<li>造成对象切割</li>
-</ul>
-</li>
-<li>头文件中不要有using namespace</li>
-<li>对象初始化尽量使用初始化列表进行初始化</li>
-<li>尽量以const、enum、inline替换#define</li>
+<li>如果一个类不能被复制或赋值，把拷贝构造函数和赋值操作符禁用掉。</li>
+<li>类的所有成员都需要初始化。</li>
+<li>头文件中不要有 using namespace。</li>
+<li>对象初始化尽量使用初始化列表进行初始化。</li>
+<li>尽量以 const、enum、inline 替换 #define。</li>
+<li>C++ 中的 std::string 只能当作 bytes array 使用，基本上不考虑 encoding 的问题，当成字符串用的时候要小心，很多方法跟其他容器类不一样。如果需要处理 unicode 字符则不要使用它，可以考虑使用 ICU 项目中的 UnicodeString 类型。</li>
 </ul>
 
     </div>
@@ -447,7 +463,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%87%E9%92%88%E5%92%8C%E5%BC%95%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">指针和引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%8B%E5%85%83%E5%87%BD%E6%95%B0%E5%92%8C%E5%8F%8B%E5%85%83%E7%B1%BB"><span class="nav-number">2.</span> <span class="nav-text">友元函数和友元类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%9B%E5%9E%8B"><span class="nav-number">3.</span> <span class="nav-text">泛型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="nav-number">4.</span> <span class="nav-text">类型转换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88"><span class="nav-number">5.</span> <span class="nav-text">智能指针</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E5%AD%97"><span class="nav-number">6.</span> <span class="nav-text">关键字</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#C-%E7%BC%96%E7%A0%81%E8%A7%84%E8%8C%83"><span class="nav-number">7.</span> <span class="nav-text">C++编码规范</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%87%E9%92%88%E5%92%8C%E5%BC%95%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">指针和引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Enum-amp-Union"><span class="nav-number">2.</span> <span class="nav-text">Enum&amp;Union</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%8B%E5%85%83%E5%87%BD%E6%95%B0%E5%92%8C%E5%8F%8B%E5%85%83%E7%B1%BB"><span class="nav-number">3.</span> <span class="nav-text">友元函数和友元类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="nav-number">4.</span> <span class="nav-text">类型转换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88"><span class="nav-number">5.</span> <span class="nav-text">智能指针</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%9B%E5%9E%8B"><span class="nav-number">6.</span> <span class="nav-text">泛型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%9B%E5%9E%8B%E6%96%B9%E6%B3%95"><span class="nav-number">6.1.</span> <span class="nav-text">泛型方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%9B%E5%9E%8B%E7%B1%BB"><span class="nav-number">6.2.</span> <span class="nav-text">泛型类</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E5%AD%97-amp-%E7%AC%A6%E5%8F%B7"><span class="nav-number">7.</span> <span class="nav-text">关键字&amp;符号</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#default"><span class="nav-number">7.1.</span> <span class="nav-text">default</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#delete"><span class="nav-number">7.2.</span> <span class="nav-text">delete</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#explicit"><span class="nav-number">7.3.</span> <span class="nav-text">explicit</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#const"><span class="nav-number">7.4.</span> <span class="nav-text">const</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#std-optional"><span class="nav-number">7.5.</span> <span class="nav-text">std::optional</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E7%A0%81%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">8.</span> <span class="nav-text">编码注意事项</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -463,14 +479,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">158</span>
+          <span class="site-state-item-count">157</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">40</span>
+        <span class="site-state-item-count">41</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
