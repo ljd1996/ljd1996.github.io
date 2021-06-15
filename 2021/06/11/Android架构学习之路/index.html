@@ -34,8 +34,10 @@
 <meta property="og:image" content="http://yoursite.com/2021/06/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF/%E5%85%B3%E8%81%94.jpg">
 <meta property="og:image" content="http://yoursite.com/2021/06/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF/%E4%BE%9D%E8%B5%96.jpg">
 <meta property="og:image" content="http://yoursite.com/2021/06/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF/UML%E7%A4%BA%E4%BE%8B.jpg">
+<meta property="og:image" content="http://yoursite.com/2021/06/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF/Clean%E6%9E%B6%E6%9E%84.png">
+<meta property="og:image" content="http://yoursite.com/2021/06/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF/Clean%E6%9E%B6%E6%9E%84-MVP.png">
 <meta property="article:published_time" content="2021-06-11T07:09:37.000Z">
-<meta property="article:modified_time" content="2021-06-11T10:34:28.654Z">
+<meta property="article:modified_time" content="2021-06-15T08:55:28.847Z">
 <meta property="article:author" content="苍耳叔叔">
 <meta property="article:tag" content="Android">
 <meta property="article:tag" content="架构">
@@ -226,10 +228,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-06-11 15:09:37 / 修改时间：18:34:28" itemprop="dateCreated datePublished" datetime="2021-06-11T15:09:37+08:00">2021-06-11</time>
+              <time title="创建时间：2021-06-11 15:09:37" itemprop="dateCreated datePublished" datetime="2021-06-11T15:09:37+08:00">2021-06-11</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-06-15 16:55:28" itemprop="dateModified" datetime="2021-06-15T16:55:28+08:00">2021-06-15</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -281,16 +289,8 @@
 
 <p>面向对象和面向过程：</p>
 <ul>
-<li><p>面向对象：面向对象是一种风格，会以类作为代码的基本单位，通过对象访问，并拥有 <code>封装、继承、抽象、多态</code> 四种特性作为基石，可让其更为智能。</p>
-</li>
-<li><p>面向过程：分析出解决问题所需要的步骤，然后用函数把这些步骤一步一步实现，使用的时候一个一个依次调用就可以了，更侧重于功能的设计。</p>
-</li>
-<li><p>掌握设计原则可以写出扩展性强、复用性高的代码</p>
-</li>
-<li><p>掌握设计模式可以设计出易用性强、安全性高成熟的框架</p>
-</li>
-<li><p>掌握设计原则、设计模式，可以设计出容错率更高的架构</p>
-</li>
+<li>面向对象：面向对象是一种风格，会以类作为代码的基本单位，通过对象访问，并拥有 <code>封装、继承、抽象、多态</code> 四种特性作为基石，可让其更为智能。</li>
+<li>面向过程：分析出解决问题所需要的步骤，然后用函数把这些步骤一步一步实现，使用的时候一个一个依次调用就可以了，更侧重于功能的设计。</li>
 </ul>
 <h1 id="UML图"><a href="#UML图" class="headerlink" title="UML图"></a>UML图</h1><p>继承、泛化、实现关系体现的是一种类与类、或者类与接口间的纵向关系；其他关系则体现的是类与类、或者类与接口间的引用、横向关系，是比较难区分的，有很多事物间的关系要想准备定位是很难的，这几种关系都是语义级别的，所以从代码层面并不能完全区分各种关系。</p>
 <p>总的来说，后几种关系所表现的强弱程度依次为: <code>组合 &gt; 聚合 &gt; 关联 &gt; 依赖</code>。</p>
@@ -335,6 +335,45 @@
 <li>变量的声明类型尽量是抽象类或接口。</li>
 <li>使用继承时遵循里氏替换原则。</li>
 </ul>
+<h1 id="Clean架构"><a href="#Clean架构" class="headerlink" title="Clean架构"></a>Clean架构</h1><h2 id="什么是Clean架构"><a href="#什么是Clean架构" class="headerlink" title="什么是Clean架构"></a>什么是Clean架构</h2><p>Clean 架构是由 Uncle Bob 在 2012 年发表的针对 Web App 的架构设计，他提出只需秉持分层与依赖规则的原则，依赖需要遵循内层不能依赖外层的规则。</p>
+<p><img src="Clean%E6%9E%B6%E6%9E%84.png"></p>
+<p>这张图解释如下：</p>
+<ul>
+<li>Enterprise Business Rules: 业务对象</li>
+<li>Application Business Rules: 用于处理业务对象，是业务逻辑和 DataMapper(让 UI 层拿到的数据能直接使用) 所在，也称为 Interactor</li>
+<li>Interface Adapters: 接口转换，Presenters 和 Controllers 就在这一层</li>
+<li>Frameworks and Drivers: 这里是所有具体的实现了</li>
+</ul>
+<p>看看 Clean 与 MVP 的关系(类比 MVVM 架构)：</p>
+<p><img src="Clean%E6%9E%B6%E6%9E%84-MVP.png"></p>
+<h2 id="项目实例"><a href="#项目实例" class="headerlink" title="项目实例"></a>项目实例</h2><p>下面通过一个实例在 Android 中应用 Clean 架构。</p>
+<p><strong>Data层</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HelloService</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 模拟网络请求</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">getData</span><span class="params">()</span></span>: Flow&lt;HelloEntity&gt; = flowOf(HelloEntity(<span class="string">&quot;Hello Hearing<span class="subst">$&#123;Random.nextInt()&#125;</span>&quot;</span>))</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HelloRepository</span> : <span class="type">IRepository &#123;</span></span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> service: HelloService = HelloService()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">getHelloData</span><span class="params">()</span></span>: Flow&lt;HelloEntity&gt; = service.getData()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里 HelloRepository 实现了 IRepository 接口，但是 IRepository 并不是数据层的，它是 domain 层的接口，即以接口进行关联，但内容独立。</p>
+<p><strong>Domain层</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">IRepository</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">getHelloData</span><span class="params">()</span></span>: Flow&lt;HelloEntity&gt;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">UseCase</span>&lt;<span class="type">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">abstract</span> <span class="function"><span class="keyword">fun</span> <span class="title">buildFlow</span><span class="params">()</span></span>: Flow&lt;T&gt;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">execute</span><span class="params">(action: (<span class="type">value</span>: <span class="type">T</span>) -&gt; <span class="type">Unit</span>)</span></span> &#123;</span><br><span class="line">        buildFlow().flowOn(Dispatchers.IO).collect &#123; action.invoke(it) &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HelloUseCase</span> : <span class="type">UseCase</span>&lt;<span class="type">HelloEntity</span>&gt;</span>() &#123;</span><br><span class="line">    <span class="comment">// TODO 使用依赖注入</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> repository: IRepository = HelloRepository()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">buildFlow</span><span class="params">()</span></span>: Flow&lt;HelloEntity&gt; = repository.getHelloData()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Domain 层应该用依赖注入的方式拿到 IRepository 实例，这样 Domain 层则跟 Data 层没有直接关联了。</p>
+<p><strong>View&amp;ViewModel层</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ViewModel</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HelloViewModel</span> : <span class="type">ViewModel</span></span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> helloUseCase: HelloUseCase = HelloUseCase()</span><br><span class="line">    <span class="keyword">val</span> helloData: MutableLiveData&lt;HelloEntity&gt; = MutableLiveData()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">getHelloData</span><span class="params">()</span></span> &#123;</span><br><span class="line">        viewModelScope.launch(Dispatchers.Main) &#123;</span><br><span class="line">            helloUseCase.execute &#123;</span><br><span class="line">                helloData.setValue(it)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// View</span></span><br><span class="line"><span class="keyword">val</span> viewModel = ViewModelProvider(<span class="keyword">this</span>).<span class="keyword">get</span>(HelloViewModel::<span class="keyword">class</span>.java)</span><br><span class="line"><span class="keyword">val</span> helloTv = findViewById&lt;TextView&gt;(R.id.tv_hello)</span><br><span class="line">viewModel.helloData.observe(<span class="keyword">this</span>, &#123;</span><br><span class="line">    helloTv.text = it.<span class="keyword">data</span></span><br><span class="line">&#125;)</span><br><span class="line">helloTv.setOnClickListener &#123;</span><br><span class="line">    viewModel.getHelloData()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p><strong>优点</strong></p>
+<ul>
+<li>测试更容易</li>
+<li>漏洞更容易被隔离</li>
+<li>新功能也很容易添加</li>
+<li>代码更易读和可维护</li>
+<li>单向依赖、数据驱动编程</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>结构复杂</li>
+<li>粒度太细</li>
+<li>Usecase 的复用率极低</li>
+<li>急剧的增加类和重复代码</li>
+</ul>
+<p>建议大型项目才考虑使用该架构。</p>
 
     </div>
 
@@ -417,7 +456,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#UML%E5%9B%BE"><span class="nav-number">2.</span> <span class="nav-text">UML图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%9B%E5%8C%96-%E7%BB%A7%E6%89%BF"><span class="nav-number">2.1.</span> <span class="nav-text">泛化&#x2F;继承</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.2.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E5%90%88"><span class="nav-number">2.3.</span> <span class="nav-text">组合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%81%9A%E5%90%88"><span class="nav-number">2.4.</span> <span class="nav-text">聚合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E8%81%94"><span class="nav-number">2.5.</span> <span class="nav-text">关联</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96"><span class="nav-number">2.6.</span> <span class="nav-text">依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.7.</span> <span class="nav-text">示例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E5%A4%A7%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99"><span class="nav-number">3.</span> <span class="nav-text">六大设计原则</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E4%B8%80%E8%B4%A3%E4%BB%BB%E5%8E%9F%E5%88%99"><span class="nav-number">3.1.</span> <span class="nav-text">单一责任原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E9%97%AD%E5%8E%9F%E5%88%99"><span class="nav-number">3.2.</span> <span class="nav-text">开闭原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%AA%E7%B1%B3%E7%89%B9%E6%B3%95%E5%88%99"><span class="nav-number">3.3.</span> <span class="nav-text">迪米特法则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E9%9A%94%E7%A6%BB%E5%8E%9F%E5%88%99"><span class="nav-number">3.4.</span> <span class="nav-text">接口隔离原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8C%E6%B0%8F%E6%9B%BF%E6%8D%A2%E5%8E%9F%E5%88%99"><span class="nav-number">3.5.</span> <span class="nav-text">里氏替换原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E5%80%92%E7%BD%AE%E5%8E%9F%E5%88%99"><span class="nav-number">3.6.</span> <span class="nav-text">依赖倒置原则</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#UML%E5%9B%BE"><span class="nav-number">2.</span> <span class="nav-text">UML图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%9B%E5%8C%96-%E7%BB%A7%E6%89%BF"><span class="nav-number">2.1.</span> <span class="nav-text">泛化&#x2F;继承</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.2.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E5%90%88"><span class="nav-number">2.3.</span> <span class="nav-text">组合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%81%9A%E5%90%88"><span class="nav-number">2.4.</span> <span class="nav-text">聚合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E8%81%94"><span class="nav-number">2.5.</span> <span class="nav-text">关联</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96"><span class="nav-number">2.6.</span> <span class="nav-text">依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.7.</span> <span class="nav-text">示例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E5%A4%A7%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99"><span class="nav-number">3.</span> <span class="nav-text">六大设计原则</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E4%B8%80%E8%B4%A3%E4%BB%BB%E5%8E%9F%E5%88%99"><span class="nav-number">3.1.</span> <span class="nav-text">单一责任原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E9%97%AD%E5%8E%9F%E5%88%99"><span class="nav-number">3.2.</span> <span class="nav-text">开闭原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%AA%E7%B1%B3%E7%89%B9%E6%B3%95%E5%88%99"><span class="nav-number">3.3.</span> <span class="nav-text">迪米特法则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E9%9A%94%E7%A6%BB%E5%8E%9F%E5%88%99"><span class="nav-number">3.4.</span> <span class="nav-text">接口隔离原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8C%E6%B0%8F%E6%9B%BF%E6%8D%A2%E5%8E%9F%E5%88%99"><span class="nav-number">3.5.</span> <span class="nav-text">里氏替换原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E5%80%92%E7%BD%AE%E5%8E%9F%E5%88%99"><span class="nav-number">3.6.</span> <span class="nav-text">依赖倒置原则</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Clean%E6%9E%B6%E6%9E%84"><span class="nav-number">4.</span> <span class="nav-text">Clean架构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFClean%E6%9E%B6%E6%9E%84"><span class="nav-number">4.1.</span> <span class="nav-text">什么是Clean架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E5%AE%9E%E4%BE%8B"><span class="nav-number">4.2.</span> <span class="nav-text">项目实例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">4.3.</span> <span class="nav-text">小结</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
