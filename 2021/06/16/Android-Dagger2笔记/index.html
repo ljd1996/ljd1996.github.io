@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述Dagger 的名字取自有向无环图 DAG (directed acyclic graph)，因为程序里的依赖关系拼接起来就是一个或者多个有向无环图。 首先理解一下什么是依赖注入。一个类 UserRepository 中有一个 UserRemoteDataSource 类型的属性, 那 UserRemoteDataSource 便是 UserRepository 的依赖，初始化这个依赖可以有两">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android-Dagger2笔记">
+<meta property="og:url" content="http://yoursite.com/2021/06/16/Android-Dagger2%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述Dagger 的名字取自有向无环图 DAG (directed acyclic graph)，因为程序里的依赖关系拼接起来就是一个或者多个有向无环图。 首先理解一下什么是依赖注入。一个类 UserRepository 中有一个 UserRemoteDataSource 类型的属性, 那 UserRemoteDataSource 便是 UserRepository 的依赖，初始化这个依赖可以有两">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/2021/06/16/Android-Dagger2%E7%AC%94%E8%AE%B0/%E4%BE%9D%E8%B5%96%E7%A4%BA%E4%BE%8B%E5%9B%BE.png">
+<meta property="og:image" content="http://yoursite.com/2021/06/16/Android-Dagger2%E7%AC%94%E8%AE%B0/Dagger2%E4%BE%9D%E8%B5%96%E5%9B%BE.jpg">
+<meta property="article:published_time" content="2021-06-16T08:23:41.000Z">
+<meta property="article:modified_time" content="2021-06-18T10:53:12.619Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="框架">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/2021/06/16/Android-Dagger2%E7%AC%94%E8%AE%B0/%E4%BE%9D%E8%B5%96%E7%A4%BA%E4%BE%8B%E5%9B%BE.png">
+
+<link rel="canonical" href="http://yoursite.com/2021/06/16/Android-Dagger2%E7%AC%94%E8%AE%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android-Dagger2笔记 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/06/16/Android-Dagger2%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android-Dagger2笔记
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-06-16 16:23:41" itemprop="dateCreated datePublished" datetime="2021-06-16T16:23:41+08:00">2021-06-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-06-18 18:53:12" itemprop="dateModified" datetime="2021-06-18T18:53:12+08:00">2021-06-18</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index"><span itemprop="name">框架</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/06/16/Android-Dagger2%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Android-Dagger2笔记" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/06/16/Android-Dagger2%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/06/16/Android-Dagger2%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Dagger 的名字取自有向无环图 DAG (directed acyclic graph)，因为程序里的依赖关系拼接起来就是一个或者多个有向无环图。</p>
+<p>首先理解一下什么是依赖注入。一个类 UserRepository 中有一个 UserRemoteDataSource 类型的属性, 那 UserRemoteDataSource 便是 UserRepository 的依赖，初始化这个依赖可以有两种方法，一种是在类内部自己初始化，另一种是由外部初始化(即是依赖注入，关键在于初始化是谁做的)。</p>
+<p>这种由外部初始化的方式都可以叫做依赖注入，而 Dagger 则为依赖注入提供了一种更简单的方式。</p>
+<a id="more"></a>
+
+<h1 id="基础用法"><a href="#基础用法" class="headerlink" title="基础用法"></a>基础用法</h1><p>接下来用 Dagger2 实现如下图所示的依赖关系：</p>
+<p><img src="%E4%BE%9D%E8%B5%96%E7%A4%BA%E4%BE%8B%E5%9B%BE.png"></p>
+<p>首先添加 Dagger2 的依赖：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">apply <span class="attr">plugin:</span> <span class="string">&#x27;kotlin-kapt&#x27;</span></span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    implementation <span class="string">&#x27;com.google.dagger:dagger:2.x&#x27;</span></span><br><span class="line">    kapt <span class="string">&#x27;com.google.dagger:dagger-compiler:2.x&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后定义 UserRepository 类：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserRepository</span> <span class="meta">@Inject</span> <span class="keyword">constructor</span></span>(</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> localDataSource: UserLocalDataSource,</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> remoteDataSource: UserRemoteDataSource</span><br><span class="line">) &#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">load</span><span class="params">()</span></span>: String = <span class="string">&quot;<span class="subst">$&#123;localDataSource.load()&#125;</span> - <span class="subst">$&#123;remoteDataSource.load()&#125;</span>&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里通过在构造器上添加 <code>@Inject</code> 注解告知 Dagger 如何创建 UserRepository 实例，它的依赖项为 UserLocalDataSource 和 UserRemoteDataSource, 为了让 Dagger 知道如何创建这两个依赖项实例，也需使用 <code>@Inject</code> 注解：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">DataSource</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">load</span><span class="params">()</span></span>: String</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserRemoteDataSource</span> <span class="meta">@Inject</span> <span class="keyword">constructor</span></span>() : DataSource &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">load</span><span class="params">()</span></span>: String = <span class="string">&quot;UserRemoteDataSource.load()&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserLocalDataSource</span> <span class="meta">@Inject</span> <span class="keyword">constructor</span></span>() : DataSource &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">load</span><span class="params">()</span></span>: String = <span class="string">&quot;UserLocalDataSource.load()&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样 Dagger 便会知道如何创建它们。</p>
+<p>然后在 ViewModel 中也可以通过这种方式依赖 UserRepository:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoginViewModel</span> <span class="meta">@Inject</span> <span class="keyword">constructor</span></span>(<span class="keyword">private</span> <span class="keyword">val</span> userRepository: UserRepository) &#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">loadData</span><span class="params">()</span></span>: String = userRepository.load()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来在 Activity 中怎么引用 LoginViewModel 实例呢？显然它不能跟上面一样在构造方法中使用 <code>@Inject</code> 注解了，因为 Activity 实例化是由系统完成的，无法由 Dagger 去进行实例化，因此这里不能由构造函数注入 LoginViewModel, 而应该使用属性注入(<strong>注意：注入的属性不能为私有属性</strong>)：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoginActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="meta">@Inject</span></span><br><span class="line">    <span class="keyword">lateinit</span> <span class="keyword">var</span> viewModel: LoginViewModel</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>光是这样显然是不够的，我们还需要告知 Dagger 要求注入依赖项的对象是谁(LoginActivity)，在此之前就得先看看 Dagger Component 的概念。</p>
+<h1 id="Component"><a href="#Component" class="headerlink" title="Component"></a>Component</h1><p>Dagger 可以在项目中创建一个有向无环图(依赖关系)，然后它可以从该图中了解在需要这些依赖项时从何处获取它们。为了让 Dagger 执行此操作，我们需要创建一个接口，并使用 <code>@Component</code> 为其添加注解，在上面的基础用法里，Dagger 需要知道 LoginActivity 中的 LoginViewModel 依赖应该怎么创建：</p>
+<h2 id="属性注入"><a href="#属性注入" class="headerlink" title="属性注入"></a>属性注入</h2><p>对于属性注入，Dagger 需要让 LoginActivity 访问该图才能提供所需的 LoginViewModel 依赖实例，为此应在 Component 接口中提供一个函数，让该函数将请求注入的对象作为参数。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">ApplicationComponent</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">inject</span><span class="params">(activity: <span class="type">LoginActivity</span>)</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>@Component</code> 会让 Dagger 生成一个容器，其中应包含满足其提供的类型所需的所有依赖项，这称为 Dagger 组件，它包含一个图，其中包括 Dagger 知道如何提供的对象及其各自的依赖项。在 build 项目时 Dagger 会生成 ApplicationComponent 接口的实现：DaggerApplicationComponent。Dagger 通过其注解处理器(处理 <code>@Inject</code> 等)创建了一个依赖关系图，包含了这些依赖之间的关系，并且将 ApplicationComponent 接口中我们加入的方法(inject 方法，方法名可以随意)涉及的依赖作为入口点。</p>
+<p>在声明了 inject 方法后，我们可以这样实现注入：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoginActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="meta">@Inject</span></span><br><span class="line">    <span class="keyword">lateinit</span> <span class="keyword">var</span> viewModel: LoginViewModel</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        DaggerApplicationComponent.create().inject(<span class="keyword">this</span>)</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        println(viewModel.loadData())</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="构造器注入"><a href="#构造器注入" class="headerlink" title="构造器注入"></a>构造器注入</h2><p>在上面的 LoginActivity 中，如果不通过属性注入 LoginViewModel 依赖的话，还可以通过构造器注入的方式，这里需要在 <code>@Component</code> 接口内定义返回所需类(即 LoginViewModel)的实例的函数。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">ApplicationComponent</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">viewModel</span><span class="params">()</span></span>: LoginViewModel</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后在 LoginActivity 中给 viewModel 赋值：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoginActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> viewModel: LoginViewModel = DaggerApplicationComponent.create().viewModel()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        println(viewModel.loadData())</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Module"><a href="#Module" class="headerlink" title="Module"></a>Module</h1><p>除了 <code>@Inject</code> 之外，还有一种方法可告知 Dagger 如何提供类实例 —— <code>@Module</code> 和 <code>@Provides</code>。</p>
+<p>假设将上例中的 UserRemoteDataSource 构造方法改一下，其依赖于 UserService 类：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserRemoteDataSource</span> <span class="meta">@Inject</span> <span class="keyword">constructor</span></span>(<span class="keyword">private</span> <span class="keyword">val</span> userService: UserService) : DataSource &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">load</span><span class="params">()</span></span>: String = userService.load()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">UserService</span> <span class="keyword">private</span> <span class="keyword">constructor</span></span>() &#123;</span><br><span class="line">    <span class="class"><span class="keyword">class</span> <span class="title">Builder</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">build</span><span class="params">()</span></span>: UserService = UserService()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">load</span><span class="params">()</span></span>: String = <span class="string">&quot;UserService.load()&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 UserService 对外的创建方法不是通过构造函数，而是通过其 Builder 类来实例化的，那这里就不能使用 <code>@Inject</code> 来进行注入依赖了，在实际项目中这样的场景也不少，我们可以使用 <code>@Module</code> 注解来定义 Dagger 模块，使用 <code>@Provides</code> 注解定义依赖项：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Module</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NetworkModule</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Provides</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">provideUserService</span><span class="params">()</span></span>: UserService &#123;</span><br><span class="line">        <span class="keyword">return</span> UserService.Builder().build()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的 Module 注解用来告知 Dagger 这是一个 Module 类，而 Provides 注解用来告诉 Dagger 怎么创建该方法返回的类型的实例。这里如果要创建的 UserService 实例需要依赖其他对象，可以将依赖作为方法参数传入，当然该依赖也需要使用 Inject 等注解来告知 Dagger 怎么去创建它。</p>
+<h1 id="作用域限定"><a href="#作用域限定" class="headerlink" title="作用域限定"></a>作用域限定</h1><p>在上面通过 <code>DaggerApplicationComponent.create().viewModel()</code> 创建的 ViewModel 实例，同一个 DaggerApplicationComponent 对象调用多次 viewModel() 方法，Dagger 默认会创建多个不同的 ViewModel 实例。可以验证：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> component = DaggerApplicationComponent.create()</span><br><span class="line">println(component.viewModel() == component.viewModel()) <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
+
+<p>如果需要让 Dagger 中同一个 DaggerApplicationComponent 对象始终返回同一 viewModel 实例，可以使用作用域注解(<code>@Singleton</code>)<strong>将某个对象的生命周期限定为其 Component 对象的生命周期</strong>，这意味着每次获取时都会使用该依赖项的同一实例。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Singleton</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">ApplicationComponent</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">viewModel</span><span class="params">()</span></span>: LoginViewModel</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Singleton</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoginViewModel</span> <span class="meta">@Inject</span> <span class="keyword">constructor</span></span>(<span class="keyword">private</span> <span class="keyword">val</span> userRepository: UserRepository) &#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">loadData</span><span class="params">()</span></span>: String = userRepository.load()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> component = DaggerApplicationComponent.create()</span><br><span class="line">println(component.viewModel() == component.viewModel()) <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+
+<p><code>@Singleton</code> 是 <code>javax.inject</code> 软件包随附的唯一一个作用域注解，也可以创建并使用自定义作用域注解，使用方式跟 <code>@Singleton</code> 一样：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Scope</span></span><br><span class="line"><span class="meta">@MustBeDocumented</span></span><br><span class="line"><span class="meta">@Retention(value = AnnotationRetention.RUNTIME)</span></span><br><span class="line"><span class="keyword">annotation</span> <span class="class"><span class="keyword">class</span> <span class="title">MyCustomScope</span></span></span><br></pre></td></tr></table></figure>
+
+<p>也可以对 Module 中提供的依赖使用与 Component 一样的作用域注解，这样 Provides 方法中返回的依赖也就与 Component 对象有了一样的生命周期了：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Module</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">NetworkModule</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Singleton</span></span><br><span class="line">    <span class="meta">@Provides</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">provideUserService</span><span class="params">()</span></span>: UserService &#123;</span><br><span class="line">        <span class="keyword">return</span> UserService.Builder().build()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意：使用作用域注解的依赖只能在带有相同作用域注解的 Component 中使用</strong>。</p>
+<p>在 Android 中我们通常会创建一个位于 Application 类中的 Dagger 图，这样就将该图附加到应用的生命周期里了：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainApplication</span> : <span class="type">Application</span></span>() &#123;</span><br><span class="line">    <span class="keyword">val</span> applicationGraph = DaggerApplicationComponent.create()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>于是上面与该 ApplicationComponent 使用同一 <code>@Singleton</code> 注解的依赖项也将获得与其一致的生命周期，<strong>通过该 ApplicationComponent 中的方法获取到的依赖对象(applicationGraph.viewModel()等)，其生命周期将与其一致</strong>。</p>
+<p><strong>作用域限定规则</strong>：</p>
+<ul>
+<li>如果某个依赖类标记有作用域注解，该类型就只能由带有相同作用域注解的组件 Component 使用。</li>
+<li>如果某个组件 Component 标记有作用域注解，该组件就只能提供带有该注解的类型或不带注解的类型。</li>
+<li>子组件(后面会讲到)不能使用其某一父组件使用的作用域注解。</li>
+</ul>
+<h1 id="Subcomponent"><a href="#Subcomponent" class="headerlink" title="Subcomponent"></a>Subcomponent</h1><h2 id="为什么使用子组件"><a href="#为什么使用子组件" class="headerlink" title="为什么使用子组件"></a>为什么使用子组件</h2><p>上面我们在 MainApplication 应用类中创建了一个 DaggerApplicationComponent 实例，当通过这个 applicationGraph 实例去获取依赖的时候，对于使用 Singleton 注解的依赖(注意 Component 也需要用 Singleton 注解)，则会具有跟应用生命周期一致的依赖对象。</p>
+<p>如需将 LoginViewModel 的作用域限定为 LoginActivity 的生命周期，我们可以在 LoginActivity 中创建 DaggerApplicationComponent 实例属性，然后通过这个实例去获取 LoginViewModel 对象，由于此时这个 DaggerApplicationComponent 实例的生命周期跟 LoginActivity 绑定，则 LoginViewModel 的作用域也会被限定为 LoginActivity 的生命周期：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoginActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="meta">@Inject</span></span><br><span class="line">    <span class="keyword">lateinit</span> <span class="keyword">var</span> viewModel: LoginViewModel</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        DaggerApplicationComponent.create().inject(<span class="keyword">this</span>)</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        println(<span class="string">&quot;Current: <span class="variable">$viewModel</span>, <span class="subst">$&#123;viewModel.loadData()&#125;</span>&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>通过上面这个方式，可以将 LoginViewModel 的作用域限定为 LoginActivity 的生命周期，但由于 DaggerApplicationComponent 被定义为应用全局的依赖图，而这里我们所需的依赖仅是 LoginActivity 相关的，且又要限制 LoginViewModel 的作用域，为此又在 LoginActivity 中反复创建 DaggerApplicationComponent 实例，显得不那么好看。而且 LoginViewModel 的依赖应该只有登陆这些场景才会使用，可以避免将其放到应用全局的依赖图里。因此这里可以考虑使用子组件(子依赖图)，应用组件 DaggerApplicationComponent 中只放一些共有的依赖图，不同的应用场景考虑增加子图，子图存放特有应用/业务场景的依赖，如 LoginViewModle 就放在登陆子图 LoginComponent 中</strong>。</p>
+<p>子组件是继承并扩展父组件的对象图的组件，因此，父组件中提供的所有对象也将在子组件中提供，这样子组件中的对象就可以依赖于父组件提供的(公有的)对象，父组件向子组件提供的对象的作用域仍限定为父组件的生命周期。</p>
+<h2 id="创建子组件"><a href="#创建子组件" class="headerlink" title="创建子组件"></a>创建子组件</h2><p><strong>1、定义子组件</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Subcomponent</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">LoginComponent</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 定义子组件 Factory 使得 ApplicationComponent 知道如何创建 LoginComponent 的实例</span></span><br><span class="line">    <span class="meta">@Subcomponent</span>.Factory</span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">Factory</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">create</span><span class="params">()</span></span>: LoginComponent</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">inject</span><span class="params">(loginActivity: <span class="type">LoginActivity</span>)</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>2、创建子组件的模块</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Module(subcomponents = [LoginComponent::class])</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SubcomponentsModule</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>3、将声明子组件的模块添加到 ApplicationComponent 中</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Singleton</span></span><br><span class="line"><span class="meta">@Component(modules = [NetworkModule::class, SubcomponentsModule::class])</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">ApplicationComponent</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 告知 Dagger 如何创建 LoginComponent.Factory</span></span><br><span class="line">    <span class="comment">// 而 LoginComponent.Factory 会用来创建子组件 LoginComponent 实例</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">loginComponent</span><span class="params">()</span></span>: LoginComponent.Factory</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将 UserRepository 依赖放入 ApplicationComponent 图中</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">repository</span><span class="params">()</span></span>: UserRepository</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意，这里 ApplicationComponent 之前的 inject 方法删除了，因为 inject 放到了专门的登陆子组件中。<strong>增加了一个返回 UserRepository 实例的 repository() 方法，如果不加这个方法且 UserRepository 没有跟 ApplicationComponent 一样用 Singleton 注解标识的话，UserRepository 就会被包含到 LoginComponent 依赖图中，因为它被 LoginViewModel 引用了，这是目前使用它的唯一位置，而 LoginViewModel 是 LoginComponent 子组件中的依赖</strong>。现在的依赖关系如下图：</p>
+<p><img src="Dagger2%E4%BE%9D%E8%B5%96%E5%9B%BE.jpg"></p>
+<p><strong>4、使用</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoginActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="meta">@Inject</span></span><br><span class="line">    <span class="keyword">lateinit</span> <span class="keyword">var</span> viewModel: LoginViewModel</span><br><span class="line"></span><br><span class="line">    <span class="keyword">lateinit</span> <span class="keyword">var</span> loginComponent: LoginComponent</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        loginComponent = (application <span class="keyword">as</span> MainApplication).applicationGraph.loginComponent().create()</span><br><span class="line">        loginComponent.inject(<span class="keyword">this</span>)</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        println(<span class="string">&quot;Current: <span class="variable">$viewModel</span>, <span class="subst">$&#123;viewModel.loadData()&#125;</span>&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>LoginComponent 是在 Activity 的 onCreate() 方法中创建的，将随着 Activity 的销毁而被隐式销毁。这样它就具备了跟 LoginActivity 一致的生命周期了。</p>
+<h2 id="作用域限定-1"><a href="#作用域限定-1" class="headerlink" title="作用域限定"></a>作用域限定</h2><p>可以创建自定义作用域注解，并使用该作用域为 LoginComponent 和 LoginViewModel 添加注解。此时如果存在两个需要 LoginViewModel 依赖的 Fragment 页面，则我们在这两个 Fragment 中注入的 LoginViewModel 都是同一个实例(注意不能使用 Singleton 注解，因为其已经被父组件占用了)。</p>
+<p>可以将该注解命名为 ActivityScope, 这里不使用 LoginScope, 因为该注解也可以被其他蕾丝的场景(同级组件)使用。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Scope</span></span><br><span class="line"><span class="meta">@Retention(value = AnnotationRetention.RUNTIME)</span></span><br><span class="line"><span class="keyword">annotation</span> <span class="class"><span class="keyword">class</span> <span class="title">ActivityScope</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">@ActivityScope</span></span><br><span class="line"><span class="meta">@Subcomponent</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">LoginComponent</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 定义子组件 Factory 使得 ApplicationComponent 知道如何创建 LoginComponent 的实例</span></span><br><span class="line">    <span class="meta">@Subcomponent</span>.Factory</span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">Factory</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">create</span><span class="params">()</span></span>: LoginComponent</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">inject</span><span class="params">(loginActivity: <span class="type">LoginActivity</span>)</span></span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">inject</span><span class="params">(fragment: <span class="type">LoginAFragment</span>)</span></span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">inject</span><span class="params">(fragment: <span class="type">LoginBFragment</span>)</span></span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@ActivityScope</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoginViewModel</span> <span class="meta">@Inject</span> <span class="keyword">constructor</span></span>(<span class="keyword">private</span> <span class="keyword">val</span> userRepository: UserRepository) &#123; ... &#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后在这两个 Fragment 中可以注入 LoginViewModel 实例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">class LoginAFragment: Fragment() &#123;</span><br><span class="line">    @Inject</span><br><span class="line">    lateinit var loginViewModel: LoginViewModel</span><br><span class="line"></span><br><span class="line">    override fun onAttach(context: Context) &#123;</span><br><span class="line">        super.onAttach(context)</span><br><span class="line">        (activity as LoginActivity).loginComponent.inject(this)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="组件依赖"><a href="#组件依赖" class="headerlink" title="组件依赖"></a>组件依赖</h1><p>一个 Component 可以通过设置 dependencies 依赖另一个 Component 组件，然后它便可获取到所依赖的 Component 中<strong>暴露的依赖</strong>。</p>
+<p>我们首先创建一个零件组件：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Singleton</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Memory</span> <span class="meta">@Inject</span> <span class="keyword">constructor</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">toString</span><span class="params">()</span></span>: String = <span class="string">&quot;Memory&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Singleton</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cpu</span> <span class="meta">@Inject</span> <span class="keyword">constructor</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">toString</span><span class="params">()</span></span>: String = <span class="string">&quot;Cup&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Singleton</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">PartComponent</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">cup</span><span class="params">()</span></span>: Cpu</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">memory</span><span class="params">()</span></span>: Memory</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里使用 Singleton 注解将 Memory 和 Cpu 限制到 PartComponent 零件组件的作用域里。</p>
+<p>接着假设一个 Computer 类需要依赖 Cpu 和 Memory：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ActivityScope</span> <span class="comment">// 看实际场景，可加可不加</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Computer</span> <span class="meta">@Inject</span> <span class="keyword">constructor</span></span>(</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> cpu: Cpu,</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> memory: Memory</span><br><span class="line">) &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">toString</span><span class="params">()</span></span>: String = <span class="string">&quot;<span class="variable">$cpu</span> &amp; <span class="variable">$memory</span>&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后定义一个依赖 PartComponent 组件的 ComputerComponent 组件：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 需要加作用域，在新版本 Dagger 中没加作用域的话，依赖的 PartComponent 组件如果有作用域注解则会编译报错</span></span><br><span class="line"><span class="comment">// ComputerComponent (unscoped) cannot depend on scoped components</span></span><br><span class="line"><span class="meta">@ActivityScope</span></span><br><span class="line"><span class="meta">@Component(dependencies = [PartComponent::class])</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">ComputerComponent</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">inject</span><span class="params">(activity: <span class="type">MainActivity</span>)</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这里 ComputerComponent 依赖 PartComponent 组件，因此它可获取到 PartComponent 接口中暴露的依赖：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="meta">@Inject</span></span><br><span class="line">    <span class="keyword">lateinit</span> <span class="keyword">var</span> computer: Computer</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> partComponent = DaggerPartComponent.create()</span><br><span class="line">        <span class="keyword">val</span> computerComponent = DaggerComputerComponent.builder().partComponent(partComponent).build()</span><br><span class="line">        computerComponent.inject(<span class="keyword">this</span>)</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        println(computer) <span class="comment">// Cup &amp; Memory</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里我们如果将 PartComponent 接口中暴露依赖的两个方法删掉，那么 ComputerComponent 便不能访问到 Cpu 和 Memory 了，编译报错，因为它会直接尝试去找 Computer 的两个依赖，然后发现这两个依赖被 Singleton 注解标识了，而 ComputerComponent 自身是 ActivityScope 作用域的，因此编译报错(之前我们说依赖如果有作用域注解的话，其作用域注解要和组件的一致)。</p>
+<p>关于组件依赖还可举例，依旧用上面的 Cpu 和 Memory 类：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cpu</span> </span>&#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">toString</span><span class="params">()</span></span>: String = <span class="string">&quot;Cup&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Memory</span> </span>&#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">toString</span><span class="params">()</span></span>: String = <span class="string">&quot;Memory&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Module</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">PartModule</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Provides</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">provideCpu</span><span class="params">()</span></span>: Cpu = Cpu()</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Provides</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">provideMemory</span><span class="params">()</span></span>: Memory = Memory()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里我们通过 Module 的方式提供依赖。接着在 PartComponent 组件中声明模块，并暴露出获取依赖的方法。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component(modules = [PartModule::class])</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">PartComponent</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">cup</span><span class="params">()</span></span>: Cpu</span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">memory</span><span class="params">()</span></span>: Memory</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后跟上面一样让 ComputerComponent 去依赖 PartComponent 并注入 Computer，这里可以视情况增加作用域限定。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>Google 在 Jetpack 包中增加了 Hilt 组件，它是专门针对 Android 平台做的一个依赖注入库，底层依旧是基于 Dagger, 因此学习 Dagger 还是挺有必要的。Hilt 并不是对 Dagger 做了优化，而是针对 Android 开发制定了一套场景化的规则，刚学习了 Dagger 的一些用法，后续有时间接着学习一下 Hilt 及其实现原理。</p>
+<p>Dagger 的用法会比较复杂一点，这篇文章结合了我自己的一些理解和用例，讲解了一下 Dagger 的基础用法。文中内容如有错误欢迎指出，共同进步！觉得不错的留个<strong>赞</strong>再走哈~</p>
+<p>参考: <a target="_blank" rel="noopener" href="https://developer.android.com/training/dependency-injection/dagger-android">https://developer.android.com/training/dependency-injection/dagger-android</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/%E6%A1%86%E6%9E%B6/" rel="tag"># 框架</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/06/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF/" rel="prev" title="Android架构学习之路">
+      <i class="fa fa-chevron-left"></i> Android架构学习之路
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E7%A1%80%E7%94%A8%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">基础用法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Component"><span class="nav-number">3.</span> <span class="nav-text">Component</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%9E%E6%80%A7%E6%B3%A8%E5%85%A5"><span class="nav-number">3.1.</span> <span class="nav-text">属性注入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%99%A8%E6%B3%A8%E5%85%A5"><span class="nav-number">3.2.</span> <span class="nav-text">构造器注入</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Module"><span class="nav-number">4.</span> <span class="nav-text">Module</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%9C%E7%94%A8%E5%9F%9F%E9%99%90%E5%AE%9A"><span class="nav-number">5.</span> <span class="nav-text">作用域限定</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Subcomponent"><span class="nav-number">6.</span> <span class="nav-text">Subcomponent</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BD%BF%E7%94%A8%E5%AD%90%E7%BB%84%E4%BB%B6"><span class="nav-number">6.1.</span> <span class="nav-text">为什么使用子组件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E5%AD%90%E7%BB%84%E4%BB%B6"><span class="nav-number">6.2.</span> <span class="nav-text">创建子组件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%9C%E7%94%A8%E5%9F%9F%E9%99%90%E5%AE%9A-1"><span class="nav-number">6.3.</span> <span class="nav-text">作用域限定</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BB%84%E4%BB%B6%E4%BE%9D%E8%B5%96"><span class="nav-number">7.</span> <span class="nav-text">组件依赖</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">158</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">40</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">99</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
