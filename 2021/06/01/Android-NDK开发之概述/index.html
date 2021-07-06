@@ -29,7 +29,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://yoursite.com/2021/06/01/Android-NDK%E5%BC%80%E5%8F%91%E4%B9%8B%E6%A6%82%E8%BF%B0/ABI%E5%88%86%E7%B1%BB.png">
 <meta property="article:published_time" content="2021-06-01T08:51:00.000Z">
-<meta property="article:modified_time" content="2021-06-01T08:52:48.664Z">
+<meta property="article:modified_time" content="2021-07-05T12:20:28.181Z">
 <meta property="article:author" content="苍耳叔叔">
 <meta property="article:tag" content="Android">
 <meta property="article:tag" content="NDK">
@@ -220,10 +220,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2021-06-01 16:51:00 / 修改时间：16:52:48" itemprop="dateCreated datePublished" datetime="2021-06-01T16:51:00+08:00">2021-06-01</time>
+              <time title="创建时间：2021-06-01 16:51:00" itemprop="dateCreated datePublished" datetime="2021-06-01T16:51:00+08:00">2021-06-01</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-07-05 20:20:28" itemprop="dateModified" datetime="2021-07-05T20:20:28+08:00">2021-07-05</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -421,7 +427,7 @@
 <p>您可以为特定 ABI 强制安装 apk。这在测试时非常有用。请使用以下命令：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb install --abi abi-identifier path_to_apk</span><br></pre></td></tr></table></figure>
 
-<h2 id="安装自动解压原生代码"><a href="#安装自动解压原生代码" class="headerlink" title="安装自动解压原生代码"></a>安装自动解压原生代码</h2><p>安装应用时，软件包管理器服务将扫描 APK，并查找以下形式的任何共享库：</p>
+<p>安装应用时，软件包管理器服务将扫描 APK，并查找以下形式的任何共享库：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lib/&lt;primary-abi&gt;/lib&lt;name&gt;.so</span><br></pre></td></tr></table></figure>
 
 <p>如果未找到，并且您已定义辅助 ABI，该服务将扫描以下形式的共享库：</p>
@@ -431,22 +437,14 @@
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> ainfo = <span class="keyword">this</span>.applicationContext.packageManager.getApplicationInfo(</span><br><span class="line">        <span class="string">&quot;com.hearing.test&quot;</span>,</span><br><span class="line">        PackageManager.GET_SHARED_LIBRARY_FILES</span><br><span class="line">)</span><br><span class="line">Log.v(TAG, <span class="string">&quot;native library dir <span class="subst">$&#123;ainfo.nativeLibraryDir&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
 
 <p>如果根本没有共享对象文件，应用也会构建并安装，但在运行时会崩溃。</p>
-<h2 id="so库的名称和文件名"><a href="#so库的名称和文件名" class="headerlink" title="so库的名称和文件名"></a>so库的名称和文件名</h2><ul>
+<h2 id="Android中的so库"><a href="#Android中的so库" class="headerlink" title="Android中的so库"></a>Android中的so库</h2><ul>
 <li>so库的名称可任意，如hearing。</li>
 <li>so库的文件名必须以lib开头。如libhearing.so，其中lib是必要前缀，hearing才是这个库的名称。</li>
-</ul>
-<h2 id="so库文件的路径"><a href="#so库文件的路径" class="headerlink" title="so库文件的路径"></a>so库文件的路径</h2><ul>
-<li><p>在Android Studio中的路径：默认要放在模块<code>/src/&lt;SourceSet&gt;/jniLibs/&lt;ABI&gt;/</code>下。如：将so库放在<code>app/src/main/jniLibs/armeabi</code>。可在模块的build.gradle中修改配置指定so库的路径。如，将so库放在app/libs/armeabi下，并修改配置如下：</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">  ...</span><br><span class="line">  sourceSets &#123;</span><br><span class="line">    main &#123;</span><br><span class="line">      jniLibs.srcDirs = [<span class="string">&#x27;libs&#x27;</span>]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>在Android系统中的路径：<code>/data/data/&lt;应用包名&gt;/lib/</code>下。</p>
-</li>
-<li><p>在aar包中的路径：<code>jni/&lt;ABI&gt;</code>下。</p>
-</li>
-</ul>
-<h2 id="so库的代码加载"><a href="#so库的代码加载" class="headerlink" title="so库的代码加载"></a>so库的代码加载</h2><ul>
 <li>System.loadLibrary(“so库的名称”)：如System.loadLibrary(“hearing”)，会加载该应用下的libhearing.so文件。</li>
 <li>System.load(“so库文件的全路径”)：如System.load(“/data/data/com.hearing.app.demo/libhearing.so”)，会加载包名为com.hearing.app.demo的应用的libhearing.so文件。</li>
+<li>so库在Android Studio中的路径：默认要放在模块<code>/src/&lt;SourceSet&gt;/jniLibs/&lt;ABI&gt;/</code>下。如：将so库放在<code>app/src/main/jniLibs/armeabi</code>。可在模块的build.gradle中修改配置指定so库的路径。如，将so库放在app/libs/armeabi下，并修改配置如下：<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">  ...</span><br><span class="line">  sourceSets &#123;</span><br><span class="line">    main &#123;</span><br><span class="line">      jniLibs.srcDirs = [<span class="string">&#x27;libs&#x27;</span>]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>so库在Android系统中的路径：<code>/data/data/&lt;应用包名&gt;/lib/</code>下。</li>
+<li>so库在aar包中的路径：<code>jni/&lt;ABI&gt;</code>下。</li>
 </ul>
 <h2 id="so库的使用建议"><a href="#so库的使用建议" class="headerlink" title="so库的使用建议"></a>so库的使用建议</h2><ul>
 <li>理论上应该为每个ABI目录提供对应的so库。但是Android支持7种ABI，若全部支持，必然导致APK包过大。</li>
@@ -458,11 +456,28 @@
 <li>armeabi：老版本ARMv5。</li>
 </ul>
 <p>不难发现，只要提供armeabi便可兼容新/旧设备。但armeabi缺少对浮点数机器的支持，存在性能瓶颈。应该将armeabi目录中的so库拷贝一份到armeabi-v7a目录中。</p>
-<h2 id="Gradle指定ABI"><a href="#Gradle指定ABI" class="headerlink" title="Gradle指定ABI"></a>Gradle指定ABI</h2><p>默认情况下，Gradle 会针对 NDK 支持的 ABI 将您的原生库构建到单独的 .so 文件中，并将其全部打包到您的 APK 中。如果您希望 Gradle 仅构建和打包原生库的特定 ABI 配置，您可以在模块级 build.gradle 文件中使用 ndk.abiFilters 标志指定这些配置，如下所示：</p>
+<p>默认情况下，Gradle 会针对 NDK 支持的 ABI 将您的原生库构建到单独的 .so 文件中，并将其全部打包到您的 APK 中。如果您希望 Gradle 仅构建和打包原生库的特定 ABI 配置，您可以在模块级 build.gradle 文件中使用 ndk.abiFilters 标志指定这些配置，如下所示：</p>
 <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">  ...</span><br><span class="line">  defaultConfig &#123;</span><br><span class="line">    ...</span><br><span class="line">    externalNativeBuild &#123;</span><br><span class="line">      cmake &#123;...&#125;</span><br><span class="line">      <span class="comment">// or ndkBuild &#123;...&#125;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ndk &#123;</span><br><span class="line">      <span class="comment">// Specifies the ABI configurations of your native</span></span><br><span class="line">      <span class="comment">// libraries Gradle should build and package with your APK.</span></span><br><span class="line">      abiFilters <span class="string">&#x27;x86&#x27;</span>, <span class="string">&#x27;x86_64&#x27;</span>, <span class="string">&#x27;armeabi&#x27;</span>, <span class="string">&#x27;armeabi-v7a&#x27;</span>,</span><br><span class="line">                   <span class="string">&#x27;arm64-v8a&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  buildTypes &#123;...&#125;</span><br><span class="line">  externalNativeBuild &#123;...&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>在大多数情况下，您只需要在 ndk {} 块中指定 abiFilters（如上所示），因为它会指示 Gradle 构建和打包原生库的这些版本。不过，如果您希望控制 Gradle 应当构建的配置，并独立于您希望其打包到 APK 中的配置，请在 defaultConfig.externalNativeBuild.cmake {} 块（或 defaultConfig.externalNativeBuild.ndkBuild {} 块中）配置另一个 abiFilters 标志。Gradle 会构建这些 ABI 配置，不过仅会打包您在 defaultConfig.ndk{} 块中指定的配置。</p>
 <p>为了进一步降低 APK 的大小，请考虑<a target="_blank" rel="noopener" href="https://developer.android.com/studio/build/configure-apk-splits.html#configure-abi-split">配置 ABI APK 拆分</a>，而不是创建一个包含原生库所有版本的大型 APK，Gradle 会为您想要支持的每个 ABI 创建单独的 APK，并且仅打包每个 ABI 需要的文件。如果您配置 ABI 拆分，但没有像上面的代码示例一样指定 abiFilters 标志，Gradle 会构建原生库的所有受支持 ABI 版本，不过仅会打包您在 ABI 拆分配置中指定的版本。为了避免构建您不想要的原生库版本，请为 abiFilters 标志和 ABI 拆分配置提供相同的 ABI 列表。</p>
+<h1 id="静态库和动态库"><a href="#静态库和动态库" class="headerlink" title="静态库和动态库"></a>静态库和动态库</h1><p>本质上来说库是可执行代码的二进制形式，可以被操作系统载入内存执行。库可以分为两种：静态库(.a/.lib)和动态库(.so/.dll)。</p>
+<p>我们知道将一个程序编译成可执行程序的步骤是: <code>cpp, h... -&gt; 预编译 -&gt; 编译 -&gt; 汇编 -&gt; 链接 -&gt; 可执行文件</code>，动态库和静态库的区别在于链接阶段如何处理库。</p>
+<p><strong>静态库</strong></p>
+<p>链接阶段会将汇编生成的目标文件 .o 与引用的静态库一起链接打包到可执行文件中，其特点：</p>
+<ul>
+<li>对静态库的链接是在编译时期完成的。</li>
+<li>程序在运行时与函数库没有关系，移植方便。</li>
+<li>浪费空间和资源，因为所有相关的目标文件与牵涉到的函数库被链接合成一个可执行文件。</li>
+<li>静态库更新时，使用它的程序需要重新编译。</li>
+</ul>
+<p><strong>动态库</strong></p>
+<p>动态库在程序编译时不会被链接到目标代码中，直到程序运行到时才会被载入，其特点：</p>
+<ul>
+<li>动态库在程序运行时才链接载入。</li>
+<li>可以实现进程之间的资源共享(因此动态库也称为共享库)。</li>
+<li>简化某些程序升级过程，增量更新。</li>
+</ul>
 
     </div>
 
@@ -548,7 +563,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ndk-build"><span class="nav-number">2.</span> <span class="nav-text">ndk-build</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CMake"><span class="nav-number">3.</span> <span class="nav-text">CMake</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ABI"><span class="nav-number">4.</span> <span class="nav-text">ABI</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="nav-number">4.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85%E8%87%AA%E5%8A%A8%E8%A7%A3%E5%8E%8B%E5%8E%9F%E7%94%9F%E4%BB%A3%E7%A0%81"><span class="nav-number">4.2.</span> <span class="nav-text">安装自动解压原生代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#so%E5%BA%93%E7%9A%84%E5%90%8D%E7%A7%B0%E5%92%8C%E6%96%87%E4%BB%B6%E5%90%8D"><span class="nav-number">4.3.</span> <span class="nav-text">so库的名称和文件名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#so%E5%BA%93%E6%96%87%E4%BB%B6%E7%9A%84%E8%B7%AF%E5%BE%84"><span class="nav-number">4.4.</span> <span class="nav-text">so库文件的路径</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#so%E5%BA%93%E7%9A%84%E4%BB%A3%E7%A0%81%E5%8A%A0%E8%BD%BD"><span class="nav-number">4.5.</span> <span class="nav-text">so库的代码加载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#so%E5%BA%93%E7%9A%84%E4%BD%BF%E7%94%A8%E5%BB%BA%E8%AE%AE"><span class="nav-number">4.6.</span> <span class="nav-text">so库的使用建议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Gradle%E6%8C%87%E5%AE%9AABI"><span class="nav-number">4.7.</span> <span class="nav-text">Gradle指定ABI</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ndk-build"><span class="nav-number">2.</span> <span class="nav-text">ndk-build</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CMake"><span class="nav-number">3.</span> <span class="nav-text">CMake</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#ABI"><span class="nav-number">4.</span> <span class="nav-text">ABI</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="nav-number">4.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Android%E4%B8%AD%E7%9A%84so%E5%BA%93"><span class="nav-number">4.2.</span> <span class="nav-text">Android中的so库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#so%E5%BA%93%E7%9A%84%E4%BD%BF%E7%94%A8%E5%BB%BA%E8%AE%AE"><span class="nav-number">4.3.</span> <span class="nav-text">so库的使用建议</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E5%BA%93%E5%92%8C%E5%8A%A8%E6%80%81%E5%BA%93"><span class="nav-number">5.</span> <span class="nav-text">静态库和动态库</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -564,20 +579,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">159</span>
+          <span class="site-state-item-count">160</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">40</span>
+        <span class="site-state-item-count">41</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">99</span>
+        <span class="site-state-item-count">100</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

@@ -192,6 +192,205 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/27/C-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/07/27/C-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">C-学习笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-07-27 17:11:00" itemprop="dateCreated datePublished" datetime="2018-07-27T17:11:00+08:00">2018-07-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">语言</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%AD%E8%A8%80/C/" itemprop="url" rel="index"><span itemprop="name">C</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2018/07/27/C-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="C-学习笔记" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/07/27/C-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/07/27/C-%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="makefile"><a href="#makefile" class="headerlink" title="makefile"></a>makefile</h1><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">cc = gcc</span><br><span class="line">prom = multisum</span><br><span class="line">deps = <span class="variable">$(<span class="built_in">shell</span> find ./ -name &quot;*.h&quot;)</span></span><br><span class="line">src = <span class="variable">$(<span class="built_in">shell</span> find ./ -name &quot;*.c&quot;)</span></span><br><span class="line">obj = $(src:%.c=%.o)</span><br><span class="line"></span><br><span class="line"><span class="variable">$(prom)</span>: <span class="variable">$(obj)</span></span><br><span class="line">	<span class="variable">$(cc)</span> -o <span class="variable">$(prom)</span> <span class="variable">$(obj)</span> -lpthread</span><br><span class="line"></span><br><span class="line"><span class="section">%.o: %.c <span class="variable">$(deps)</span></span></span><br><span class="line">	<span class="variable">$(cc)</span> -c <span class="variable">$&lt;</span> -o <span class="variable">$@</span></span><br><span class="line"></span><br><span class="line"><span class="section">clean:</span></span><br><span class="line">	rm -rf <span class="variable">$(obj)</span> <span class="variable">$(prom)</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="线程"><a href="#线程" class="headerlink" title="线程"></a>线程</h1><h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">thread</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; <span class="number">30</span>; i++) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;This is a pthread.\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> <span class="keyword">const</span> *argv[])</span> </span>&#123;</span><br><span class="line">    <span class="keyword">pthread_t</span> id;</span><br><span class="line">    <span class="keyword">int</span> i, ret;</span><br><span class="line">    ret = pthread_create(&amp;id, <span class="literal">NULL</span>, (<span class="keyword">void</span> *) thread, <span class="literal">NULL</span>); <span class="comment">// 成功返回0，错误返回错误编号</span></span><br><span class="line">    <span class="keyword">if</span>(ret != <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span> (<span class="string">&quot;Create pthread error!\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    pthread_join(id, <span class="literal">NULL</span>);</span><br><span class="line">    <span class="keyword">for</span>(i = <span class="number">0</span>; i &lt; <span class="number">30</span>; i++) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;This is the main process.\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>pthread_t id:</p>
+</li>
+<li><p>int pthread_create(&amp;id, NULL, (void *) thread, (void *)arg):</p>
+<ol>
+<li>第一个参数为指向线程标识符的指针，第二个参数用来设置线程属性，第三个参数是线程运行函数的起始地址，最后一个参数是运行函数的参数。当创建线程成功时，函数返回0，若不为0则说明创建线程失败，常见的错误返回代码为EAGAIN和EINVAL。前者表示系统限制创建新的线程，例如线程数目过多了；后者表示第二个参数代表的线程属性值非法。创建线程成功后，新创建的线程则运行参数三和参数四确定的函数，原来的线程则继续运行下一行代码。</li>
+<li>多个参数:必须申明一个结构体来包含所有的参数，然后再传入线程函数。</li>
+</ol>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span>  <span class="title">parameter</span> &#123;</span></span><br><span class="line"><span class="keyword">int</span> size,</span><br><span class="line"><span class="keyword">int</span> count;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 然后在main函数将这个结构体指针，作为void *形参的实际参数传递</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">parameter</span> <span class="title">arg</span>;</span></span><br><span class="line">pthread_create(&amp;ntid, <span class="literal">NULL</span>, fn,&amp; (arg));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 函数中需要定义一个parameter类型的结构指针来引用这个参数 </span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">thr_fn</span><span class="params">(<span class="keyword">void</span> *arg)</span> </span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">parameter</span> *<span class="title">pstru</span>;</span></span><br><span class="line">    pstru = ( struct parameter *) arg;</span><br><span class="line">    <span class="comment">// 然后在这个函数中就可以使用指针来使用相应的变量的值了。</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>int pthread_join(id, NULL);</p>
+<p>  函数pthread_join用来等待一个线程的结束。第一个参数为被等待的线程标识符，第二个参数为一个用户定义的指针，它可以用来存储被等待线程的返回值。这个函数是一个线程阻塞的函数，调用它的函数将一直等待到被等待的线程结束为止，当函数返回时，被等待线程的资源被收回。一个线程的结束有两种途径，一种是像上面的例子一样，函数结束了，调用它的线程也就结束了；另一种方式是通过函数pthread_exit来实现。</p>
+</li>
+<li><p>void pthread_exit(arg);</p>
+<p>  唯一的参数是函数的返回代码，只要pthread_join中的第二个参数thread_return不是NULL，这个值将被传递给thread_return。</p>
+</li>
+</ul>
+<h2 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h2><ul>
+<li><p>在主线程中初始化锁为解锁状态</p>
+<p>  pthread_mutex_t mutex;<br>  pthread_mutex_init(&amp;mutex, NULL);</p>
+</li>
+<li><p>在编译时初始化锁为解锁状态</p>
+<p>  锁初始化 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;</p>
+</li>
+<li><p>访问对象时的加锁操作与解锁操作</p>
+<p>  加锁 pthread_mutex_lock(&amp;mutex)<br>  释放锁 pthread_mutex_unlock(&amp;mutex)</p>
+</li>
+</ul>
+<h2 id="信号量"><a href="#信号量" class="headerlink" title="信号量"></a>信号量</h2><p>信号量本质上是一个非负数的整数计数器，它也被用来控制对公共资源的访问。当公共资源增加的时候，调用信号量增加函数sem_post()对其进行增加，当公共资源减少的时候，调用函数sem_wait()来减少信号量。其实，我们是可以把锁当作一个0-1信号量的。</p>
+<p>在使用semaphore之前，需要先引入头文件semaphore.h</p>
+<ul>
+<li><p>初始化信号量： int sem_init(sem_t *sem, int pshared, unsigned int value);</p>
+<ul>
+<li>成功返回0，失败返回-1</li>
+<li>sem：指向信号量结构的一个指针</li>
+<li>pshared： 不是0的时候，该信号量在进程间共享，否则只能为当前进程的所有线程们共享</li>
+<li>value：信号量的初始值</li>
+</ul>
+</li>
+<li><p>信号量减1操作，当sem=0的时候该函数会堵塞 int sem_wait(sem_t *sem);</p>
+<ul>
+<li>成功返回0，失败返回-1</li>
+<li>参数</li>
+<li>sem：指向信号量的一个指针</li>
+</ul>
+</li>
+<li><p>信号量加1操作 int sem_post(sem_t *sem);</p>
+<ul>
+<li>参数与返回同上</li>
+</ul>
+</li>
+<li><p>销毁信号量 int sem_destroy(sem_t *sem);</p>
+<ul>
+<li>参数与返回同上</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;semaphore.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> MAXSIZE 10</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> <span class="built_in">stack</span>[MAXSIZE];</span><br><span class="line"><span class="keyword">int</span> size = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">sem_t</span> sem;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 生产者</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">provide_data</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">for</span> (i=<span class="number">0</span>; i&lt; MAXSIZE; i++) &#123;</span><br><span class="line">        <span class="built_in">stack</span>[i] = i;</span><br><span class="line">        sem_post(&amp;sem); <span class="comment">//为信号量加1</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 消费者</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">handle_data</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">while</span>((i = size++) &lt; MAXSIZE) &#123;</span><br><span class="line">        sem_wait(&amp;sem);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;乘法: %d X %d = %d\n&quot;</span>, <span class="built_in">stack</span>[i], <span class="built_in">stack</span>[i], <span class="built_in">stack</span>[i]*<span class="built_in">stack</span>[i]);</span><br><span class="line">        sleep(<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pthread_t</span> provider, handler;</span><br><span class="line"></span><br><span class="line">    sem_init(&amp;sem, <span class="number">0</span>, <span class="number">0</span>); <span class="comment">//信号量初始化</span></span><br><span class="line">    pthread_create(&amp;provider, <span class="literal">NULL</span>, (<span class="keyword">void</span> *)handle_data, <span class="literal">NULL</span>);</span><br><span class="line">    pthread_create(&amp;handler, <span class="literal">NULL</span>, (<span class="keyword">void</span> *)provide_data, <span class="literal">NULL</span>);</span><br><span class="line">    pthread_join(provider, <span class="literal">NULL</span>);</span><br><span class="line">    pthread_join(handler, <span class="literal">NULL</span>);</span><br><span class="line">    sem_destroy(&amp;sem); <span class="comment">//销毁信号量</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pthread.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;time.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> N = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">long</span> M = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">long</span> sum = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">long</span> count = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">pthread_mutex_t</span> mutex = PTHREAD_MUTEX_INITIALIZER;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">static</span> <span class="keyword">char</span> *fileInput = <span class="string">&quot;input.txt&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">static</span> <span class="keyword">char</span> *fileOutput = <span class="string">&quot;output.txt&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">getInput</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    FILE *pFile = fopen(fileInput, <span class="string">&quot;r&quot;</span>);</span><br><span class="line">    <span class="keyword">char</span> line[<span class="number">20</span>];</span><br><span class="line">    <span class="keyword">if</span> (pFile == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        perror(<span class="string">&quot;Error opening file&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        fseek(pFile, <span class="number">2</span>, SEEK_SET);</span><br><span class="line">        <span class="keyword">if</span> (fgets(line, <span class="number">20</span>, pFile) != <span class="literal">NULL</span>) &#123;</span><br><span class="line">            N = atoi(line);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        fseek(pFile, ftell(pFile)+<span class="number">2</span>, SEEK_SET);</span><br><span class="line">        <span class="keyword">if</span> (fgets(line, <span class="number">20</span>, pFile) != <span class="literal">NULL</span>) &#123;</span><br><span class="line">            M = atol(line);</span><br><span class="line">        &#125;</span><br><span class="line">        fclose(pFile);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setOutput</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    FILE *pFile = fopen(fileOutput, <span class="string">&quot;w&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (pFile == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        perror(<span class="string">&quot;Error opening file&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(pFile,<span class="string">&quot;%ld&quot;</span>, sum);</span><br><span class="line">        fclose(pFile);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">threadSum</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (count &lt;= M) &#123;</span><br><span class="line">        pthread_mutex_lock(&amp;mutex);</span><br><span class="line">        sum += count++;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;the thread result = %ld\n&quot;</span>, sum);</span><br><span class="line">        pthread_mutex_unlock(&amp;mutex);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> <span class="keyword">const</span> *argv[])</span> </span>&#123;</span><br><span class="line">    <span class="keyword">clock_t</span> start = clock();</span><br><span class="line">    </span><br><span class="line">    getInput();</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;N = %d\n&quot;</span>, N);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;M = %ld\n&quot;</span>, M);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> ret;</span><br><span class="line">    <span class="keyword">pthread_t</span> thread[N];</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; N; i++) &#123;</span><br><span class="line">        ret = pthread_create(&amp;thread[i], <span class="literal">NULL</span>, (<span class="keyword">void</span> *)threadSum, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>(ret != <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;create pthread-%d error!\n&quot;</span>, i);</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; N; i++) &#123;</span><br><span class="line">        pthread_join(thread[i], <span class="literal">NULL</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    setOutput();</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;the final result = %ld\n&quot;</span>, sum);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;the tatol time = %ld\n&quot;</span>, clock()-start);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="线程-1"><a href="#线程-1" class="headerlink" title="线程"></a>线程</h1><h2 id="fork"><a href="#fork" class="headerlink" title="fork"></a>fork</h2><p>fork（）会产生一个和父进程完全相同的子进程，可以认为fork后，这两个相同的虚拟地址指向的是不同的物理地址。但实际上，Linux为了提高 fork 的效率，采用了 copy-on-write 技术（写时复制），fork后，这两个虚拟地址实际上指向相同的物理地址（内存页），只有任何一个进程试图修改这个虚拟地址里的内容前，两个虚拟地址才会指向不同的物理地址（新的物理地址的内容从原物理地址中复制得到）。</p>
+<h2 id="共享内存"><a href="#共享内存" class="headerlink" title="共享内存"></a>共享内存</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/shm.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">shmat</span><span class="params">(<span class="keyword">int</span> shm_id, <span class="keyword">const</span> <span class="keyword">void</span> *shm_addr, <span class="keyword">int</span> shmflg)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">shmctl</span><span class="params">(<span class="keyword">int</span> shm_id, <span class="keyword">int</span> cmd, struct shmid_ds *buf)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">shmdt</span><span class="params">(<span class="keyword">const</span> <span class="keyword">void</span> *shm_addr)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">shmget</span><span class="params">(<span class="keyword">key_t</span> key, <span class="keyword">size_t</span> size, <span class="keyword">int</span> shmflg)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="同步互斥"><a href="#同步互斥" class="headerlink" title="同步互斥"></a>同步互斥</h2><ul>
+<li>信号量（PV）</li>
+<li>管程</li>
+</ul>
+<ol>
+<li><p>#include &lt;semaphore.h&gt;</p>
+</li>
+<li><p>sem_init函数 </p>
+<ul>
+<li>函数作用：初始化信号量 </li>
+<li>函数原型：int sem_init(sem_t *sem,int pshared, unsigned int value) </li>
+<li>参数：sem：信号量指针 </li>
+<li>Pshared：决定信号量能否在几个进程间共享，一般取0 </li>
+<li>Value：信号量的初始值 </li>
+</ul>
+</li>
+<li><p>信号的操作</p>
+<ul>
+<li>int sem_wait(sem_t *sem);    P操作   </li>
+<li>int sem_try_wait(sem_t *sem);</li>
+<li>int sempost(sem_t *sem);    V操作</li>
+<li>int sem_getvalue(sem_t *sem);</li>
+<li>int sem_destroy(sem_t *sem);    销毁信号</li>
+</ul>
+</li>
+</ol>
+<h2 id="实例-1"><a href="#实例-1" class="headerlink" title="实例"></a>实例</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;time.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/shm.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;semaphore.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PERM S_IRUSR|S_IWUSR</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">int</span> N = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">long</span> M = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">static</span> <span class="keyword">char</span> *fileInput = <span class="string">&quot;input.txt&quot;</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">static</span> <span class="keyword">char</span> *fileOutput = <span class="string">&quot;output.txt&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">    <span class="keyword">long</span> sum;</span><br><span class="line">    <span class="keyword">long</span> count;</span><br><span class="line">    <span class="keyword">sem_t</span> S;</span><br><span class="line">&#125; Process;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">getInput</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    FILE *pFile = fopen(fileInput, <span class="string">&quot;r&quot;</span>);</span><br><span class="line">    <span class="keyword">char</span> line[<span class="number">20</span>];</span><br><span class="line">    <span class="keyword">if</span> (pFile == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        perror(<span class="string">&quot;Error opening file&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        fseek(pFile, <span class="number">2</span>, SEEK_SET);</span><br><span class="line">        <span class="keyword">if</span> (fgets(line, <span class="number">20</span>, pFile) != <span class="literal">NULL</span>) &#123;</span><br><span class="line">            N = atoi(line);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        fseek(pFile, ftell(pFile)+<span class="number">2</span>, SEEK_SET);</span><br><span class="line">        <span class="keyword">if</span> (fgets(line, <span class="number">20</span>, pFile) != <span class="literal">NULL</span>) &#123;</span><br><span class="line">            M = atol(line);</span><br><span class="line">        &#125;</span><br><span class="line">        fclose(pFile);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">setOutput</span><span class="params">(<span class="keyword">long</span> result)</span> </span>&#123;</span><br><span class="line">    FILE *pFile = fopen(fileOutput, <span class="string">&quot;w&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (pFile == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        perror(<span class="string">&quot;Error opening file&quot;</span>);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(pFile,<span class="string">&quot;%ld&quot;</span>, result);</span><br><span class="line">        fclose(pFile);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> <span class="keyword">const</span> *argv[])</span> </span>&#123;</span><br><span class="line">    <span class="keyword">clock_t</span> start = clock();</span><br><span class="line">    </span><br><span class="line">    getInput();</span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;N = %d\n&quot;</span>, N);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;M = %ld\n&quot;</span>, M);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> shm_id;</span><br><span class="line">    Process *pProcess;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>((shm_id = shmget(IPC_PRIVATE, <span class="keyword">sizeof</span>(Process), PERM)) == <span class="number">-1</span>)&#123;  </span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;Create Share Memory Error.\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    pProcess = (Process *)shmat(shm_id, <span class="literal">NULL</span>, <span class="number">0</span>);</span><br><span class="line">    pProcess-&gt;sum = <span class="number">0</span>;</span><br><span class="line">    pProcess-&gt;count = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    sem_init(&amp;pProcess-&gt;S, <span class="number">0</span>, <span class="number">1</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">pid_t</span> pid;</span><br><span class="line">    <span class="keyword">int</span> status;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; N; i++) &#123;</span><br><span class="line">        pid =fork();</span><br><span class="line">        <span class="keyword">if</span> (pid == <span class="number">0</span> || pid == <span class="number">-1</span>) &#123;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span>(pid==<span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;fail to fork!\n&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span>(pid == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">while</span> (pProcess-&gt;count &lt;= M) &#123;</span><br><span class="line">            sem_wait(&amp;pProcess-&gt;S);</span><br><span class="line">            pProcess-&gt;sum += pProcess-&gt;count++;</span><br><span class="line">            <span class="built_in">printf</span>(<span class="string">&quot;the process result = %ld\n&quot;</span>, pProcess-&gt;sum);</span><br><span class="line">            sem_post(&amp;pProcess-&gt;S);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        wait(&amp;status);</span><br><span class="line"></span><br><span class="line">        sem_destroy(&amp;pProcess-&gt;S);</span><br><span class="line">        setOutput(pProcess-&gt;sum);</span><br><span class="line"></span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;the final result = %ld\n&quot;</span>, pProcess-&gt;sum);</span><br><span class="line">        <span class="built_in">printf</span>(<span class="string">&quot;the tatol time = %ld\n&quot;</span>, clock()-start);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/07/26/shell%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3270,7 +3469,7 @@ socket.close();</code></pre>
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-06-03 14:43:43" itemprop="dateModified" datetime="2021-06-03T14:43:43+08:00">2021-06-03</time>
+                <time title="修改时间：2021-07-06 11:39:20" itemprop="dateModified" datetime="2021-07-06T11:39:20+08:00">2021-07-06</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -3413,20 +3612,20 @@ socket.close();</code></pre>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">159</span>
+          <span class="site-state-item-count">160</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">40</span>
+        <span class="site-state-item-count">41</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">99</span>
+        <span class="site-state-item-count">100</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
