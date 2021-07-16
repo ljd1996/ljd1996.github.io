@@ -993,7 +993,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-06-11 15:14:41" itemprop="dateModified" datetime="2021-06-11T15:14:41+08:00">2021-06-11</time>
+                <time title="修改时间：2021-07-13 14:49:02" itemprop="dateModified" datetime="2021-07-13T14:49:02+08:00">2021-07-13</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1086,12 +1086,13 @@
 <li>View：观察ViewModel提供的属性，当其发生变化后，及时的更新UI。View仅仅应该知道如何展示数据以及发送用户的事件给ViewModel。</li>
 <li>ViewModel：ViewModel负责与Model层交互，并且还需要将Model层的数据以可观察的对象形式提供给View。该层的一个重要实现准则是将它与View分离，即ViewModel不应该知道与之交互的View。</li>
 </ul>
-<p>在MVP这类模式当中，一个事件流一般是从View开始，经过P，最后交给M进行处理。当P处理结束后，可以再通过P或者事件的方式再更改V。</p>
-<p>MVVM可以看作MVP的升级版本，View的变动，自动反映在ViewModel，反之亦然，这种行为称为双向绑定。优势如下：</p>
-<ul>
-<li>数据驱动：ViewModel只关心数据和业务逻辑，基本不需要做UI操作。双向绑定使得代码量变少，只要数据发生变化，DataBinding就能自动同步更新UI；UI发生更改，又会自动同步到数据中。</li>
-<li>低耦合：ViewModel不涉及任何UI操作和对UI控件的引用，就算把TextView改成EditText，ViewModel几乎不需要改任何代码。</li>
-</ul>
+<p><strong>上面的双向绑定 DataBinding 只是避免接口耦合的方式之一，没有它照样可以使用 MVVM 架构，比如说借用 LiveData, RxJava 等，这些工具都是基于响应式开发的原理，来替代基于接口的通信方式</strong>。</p>
+<p>在MVP这类模式当中，一个事件流一般是从View开始，经过P，最后交给M进行处理。当P处理结束后，可以通过P或者事件的方式再更改V。MVVM可以看作MVP的升级版本，ViewModel和View之间的通信不再依赖接口，而是通过响应式开发来实现各层之间的通信方式。</p>
+<p><strong>这里的响应式开发强调一种基于观察者模式的开发方式: View 订阅 ViewModel 暴露的响应式接口，接收到通知后进行相应逻辑，而 ViewModel 不再持有任何形式的 View 的引用，减少耦合，提高了可复用性</strong>。</p>
+<p>实际开发中倒是很少看到有使用 DataBinding 的，就算使用也需要注意不要在 xml 中写复杂的展示代码逻辑，而应该把这些展示逻辑写在 Kotlin/Java 代码中。</p>
+<p>一般来说 LiveData 的用法: ViewModel 对 View 层仅暴露 LiveData 接口，在 View 层不允许直接更新 LiveData。因为一旦 View 层拥有直接更新 LiveData 的能力，就无法约束 View 层进行业务处理的行为。所以可以避免使用 DataBinding 来进行双向绑定。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoginViewModel</span> : <span class="type">ViewModel</span></span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> loginRepository: LoginRepository</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> _dataLoading = MutableLiveData&lt;<span class="built_in">Boolean</span>&gt;()</span><br><span class="line">    <span class="keyword">val</span> dataLoading: LiveData&lt;<span class="built_in">Boolean</span>&gt;</span><br><span class="line">        <span class="keyword">get</span>() = _dataLoading</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <h2 id="实例-1"><a href="#实例-1" class="headerlink" title="实例"></a>实例</h2><p><strong>Model层：</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IModel</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">loadData</span><span class="params">(OnLoadListener loadListener)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">OnLoadListener</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">void</span> <span class="title">onComplete</span><span class="params">(User user)</span></span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserFetcher</span> <span class="keyword">implements</span> <span class="title">IModel</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Handler mMainHandler = <span class="keyword">new</span> Handler(Looper.getMainLooper());</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">loadData</span><span class="params">(<span class="keyword">final</span> OnLoadListener loadListener)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (loadListener != <span class="keyword">null</span>) &#123;</span><br><span class="line">            mMainHandler.postDelayed(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                    loadListener.onComplete(<span class="keyword">new</span> User(<span class="string">&quot;hearing&quot;</span>, <span class="number">22</span>));</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;, <span class="number">2000</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -1103,6 +1104,35 @@
 
 <p><strong>ViewModel层：</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserViewModel</span> <span class="keyword">extends</span> <span class="title">ViewModel</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> MutableLiveData&lt;User&gt; mUserData;</span><br><span class="line">    <span class="keyword">private</span> ObservableInt mShowProcess = <span class="keyword">new</span> ObservableInt(View.GONE);</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ObservableInt <span class="title">getShowProcess</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mShowProcess;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> LiveData&lt;User&gt; <span class="title">getUserData</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (mUserData == <span class="keyword">null</span>) &#123;</span><br><span class="line">            mUserData = <span class="keyword">new</span> MutableLiveData&lt;&gt;();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> mUserData;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">fetch</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Log.d(<span class="string">&quot;MVVM&quot;</span>, <span class="string">&quot;fetch&quot;</span>);</span><br><span class="line">        mShowProcess.set(View.VISIBLE);</span><br><span class="line">        IModel model = <span class="keyword">new</span> UserFetcher();</span><br><span class="line">        model.loadData(<span class="keyword">new</span> IModel.OnLoadListener() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onComplete</span><span class="params">(User user)</span> </span>&#123;</span><br><span class="line">                Log.d(<span class="string">&quot;MVVM&quot;</span>, <span class="string">&quot;user = &quot;</span> + user);</span><br><span class="line">                mShowProcess.set(View.GONE);</span><br><span class="line">                mUserData.setValue(user);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>一个 App 最重要的是两个角色: Model 和 View。Model 决定了 App 的数据，而 View 决定怎么展示这些数据，其他的框架或组件基本上都是用来处理这两者之间的交互关系的。因此一个 App 的架构主要需要处理两个任务：</p>
+<ul>
+<li>更新 Model, 即如何处理 View Action?</li>
+<li>更新 View, 即如何将 Model 的数据应用到 View 上?</li>
+</ul>
+<p>基于此，在 Android 上一般有如下三种常用架构：</p>
+<table>
+<thead>
+<tr>
+<th align="left">-</th>
+<th align="left">MVC</th>
+<th align="left">MVP</th>
+<th align="left">MVVM</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">更新 Model</td>
+<td align="left">View(Controller) 直接操作 Model, View 和 Model 耦合严重</td>
+<td align="left">View 通过 Presenter 操作 Model, View 与 Model 解耦</td>
+<td align="left">View 通过 ViewModel 操作 Model, View 与 Model 解耦</td>
+</tr>
+<tr>
+<td align="left">更新 View</td>
+<td align="left">View 可操作 Model, 内部更新</td>
+<td align="left">Presenter 通过接口通知 View 更新</td>
+<td align="left">Presenter 通过响应式方式通知 View 更新</td>
+</tr>
+</tbody></table>
 
       
     </div>

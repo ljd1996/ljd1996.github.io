@@ -20,12 +20,12 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="概述仓库存放代码的目录，分为本地仓库和远程仓库，本地和远程可以通过 git remote add 建立关联。 本地仓库有三大分区：  工作区 (Working Directory): 是我们编辑代码的地方 暂存区 (Stage or Index): 数据暂时存放的区域，可以在工作区和版本库之间进行数据的交流 版本库 (Commit History): 存放已经提交的数据，push 的时候就是把这个">
+  <meta name="description" content="概述仓库 存放代码的目录，分为本地仓库和远程仓库，本地和远程可以通过 git remote add 建立关联。 本地仓库有三大分区：  工作区 (Working Directory): 是我们编辑代码的地方 暂存区 (Stage or Index): 数据暂时存放的区域，可以在工作区和版本库之间进行数据的交流 版本库 (Commit History): 存放已经提交的数据，push 的时候就是把这">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Git学习笔记">
 <meta property="og:url" content="http://yoursite.com/2019/03/12/Git%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
 <meta property="og:site_name" content="苍耳的博客">
-<meta property="og:description" content="概述仓库存放代码的目录，分为本地仓库和远程仓库，本地和远程可以通过 git remote add 建立关联。 本地仓库有三大分区：  工作区 (Working Directory): 是我们编辑代码的地方 暂存区 (Stage or Index): 数据暂时存放的区域，可以在工作区和版本库之间进行数据的交流 版本库 (Commit History): 存放已经提交的数据，push 的时候就是把这个">
+<meta property="og:description" content="概述仓库 存放代码的目录，分为本地仓库和远程仓库，本地和远程可以通过 git remote add 建立关联。 本地仓库有三大分区：  工作区 (Working Directory): 是我们编辑代码的地方 暂存区 (Stage or Index): 数据暂时存放的区域，可以在工作区和版本库之间进行数据的交流 版本库 (Commit History): 存放已经提交的数据，push 的时候就是把这">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://yoursite.com/2019/03/12/Git%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/git文件生命周期.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/03/12/Git%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/reset1.png">
@@ -41,7 +41,7 @@
 <meta property="og:image" content="http://yoursite.com/2019/03/12/Git%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/rebase7.png">
 <meta property="og:image" content="http://yoursite.com/2019/03/12/Git%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/rebase8.png">
 <meta property="article:published_time" content="2019-03-12T02:51:16.000Z">
-<meta property="article:modified_time" content="2021-05-14T06:14:57.853Z">
+<meta property="article:modified_time" content="2021-07-09T07:41:15.256Z">
 <meta property="article:author" content="苍耳叔叔">
 <meta property="article:tag" content="工具">
 <meta property="article:tag" content="git">
@@ -240,7 +240,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+                <time title="修改时间：2021-07-09 15:41:15" itemprop="dateModified" datetime="2021-07-09T15:41:15+08:00">2021-07-09</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -284,15 +284,18 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><h2 id="仓库"><a href="#仓库" class="headerlink" title="仓库"></a>仓库</h2><p>存放代码的目录，分为本地仓库和远程仓库，本地和远程可以通过 git remote add 建立关联。</p>
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p><strong>仓库</strong></p>
+<p>存放代码的目录，分为本地仓库和远程仓库，本地和远程可以通过 git remote add 建立关联。</p>
 <p>本地仓库有三大分区：</p>
 <ul>
 <li>工作区 (Working Directory): 是我们编辑代码的地方</li>
 <li>暂存区 (Stage or Index): 数据暂时存放的区域，可以在工作区和版本库之间进行数据的交流</li>
 <li>版本库 (Commit History): 存放已经提交的数据，push 的时候就是把这个区域的数据推送到远程仓库</li>
 </ul>
-<h2 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h2><p>git 中的分支本质上是一个指向某个 commit 的指针。</p>
-<h2 id="文件的生命周期"><a href="#文件的生命周期" class="headerlink" title="文件的生命周期"></a>文件的生命周期</h2><p>对于 git 仓库里的每一个文件（除了 .git 目录和被 .gitignore 忽略的文件），有如下几种状态：</p>
+<p><strong>分支</strong></p>
+<p>git 中的分支本质上是一个指向某个 commit 的指针。</p>
+<p><strong>文件的生命周期</strong></p>
+<p>对于 git 仓库里的每一个文件（除了 .git 目录和被 .gitignore 忽略的文件），有如下几种状态：</p>
 <ul>
 <li>Untracked 未跟踪</li>
 <li>Unmodified 未修改</li>
@@ -419,9 +422,11 @@
 <p>此时，<code>commit e</code>已经处于无法被索引到的状态。最终e将被git的默认回收机制所回收，除非在它们被回收之前创建一个指向它们的索引。如果我们没有从<code>commit e</code>离开的话，可以这样创建一个指向e的索引：        </p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> git checkout -b develop  <span class="comment"># 创建一个develop分支，指向e，接着更新head指向分支develop，此时不再处在detached head的状态</span></span></span><br></pre></td></tr></table></figure>
 
-<h1 id="patch"><a href="#patch" class="headerlink" title="patch"></a>patch</h1><h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>如果一个软件有了新版本，我们可以完整地下载新版本的代码进行编译安装。然而，像Linux Kernel这样的大型项目，代码即使压缩，也超过70MB，每次全新下载是有相当大的代价的。然而，每次更新变动的代码可能不超过1MB，因此，我们只要能够有两个版本代码的diff的数据，应该就可以以极低的代价更新程序了。</p>
+<h1 id="patch"><a href="#patch" class="headerlink" title="patch"></a>patch</h1><p><strong>概述</strong></p>
+<p>如果一个软件有了新版本，我们可以完整地下载新版本的代码进行编译安装。然而，像Linux Kernel这样的大型项目，代码即使压缩，也超过70MB，每次全新下载是有相当大的代价的。然而，每次更新变动的代码可能不超过1MB，因此，我们只要能够有两个版本代码的diff的数据，应该就可以以极低的代价更新程序了。</p>
 <p>git提供了两种简单的patch方案。一是用git diff生成的标准patch，二是git format-patch生成的Git专用Patch。</p>
-<h2 id="git-diff生成的标准patch"><a href="#git-diff生成的标准patch" class="headerlink" title="git diff生成的标准patch"></a>git diff生成的标准patch</h2><ul>
+<p><strong>git diff生成的标准patch</strong></p>
+<ul>
 <li>最初在master(或别的分支上)</li>
 <li>新建分支修改bug： git checkout -b fix</li>
 <li>在fix分支上，提交修改内容： git commit -m “fix a bug”</li>
@@ -430,7 +435,8 @@
 <li>切换到master上合并PATCH分支：git checkout master —-&gt; git merge PATCH</li>
 </ul>
 <p>注意：无论多少个文件、多少次commit的diff，都只会产生一个patch。</p>
-<h2 id="git-format-patch生成的git专用补丁"><a href="#git-format-patch生成的git专用补丁" class="headerlink" title="git format-patch生成的git专用补丁"></a>git format-patch生成的git专用补丁</h2><ul>
+<p><strong>git format-patch生成的git专用补丁</strong></p>
+<ul>
 <li>最初在master(或别的分支上)</li>
 <li>新建分支修改bug： git checkout -b fix</li>
 <li>在fix分支上，提交修改内容： git commit -m “fix a bug”</li>
@@ -444,14 +450,17 @@
 <li>打补丁<br>  <code>patch -p1 &lt; my.patch</code></li>
 <li>取消补丁<br>  <code>patch -R -p1 &lt; my.patch</code></li>
 </ul>
-<h2 id="创建patch-文件的常用命令行"><a href="#创建patch-文件的常用命令行" class="headerlink" title="创建patch 文件的常用命令行"></a>创建patch 文件的常用命令行</h2><ul>
+<p><strong>创建patch 文件的常用命令行</strong></p>
+<ul>
 <li>某次提交（含）之前的几次提交：<code>git format-patch 【commit sha1 id】-n</code><br>  n指从sha1 id对应的commit开始算起n个提交。<br>  eg：<code>git format-patch  2a2fb4539925bfa4a141fe492d9828d030f7c8a8 -2</code></li>
 <li>某个提交的patch：<code>git format-patch 【commit sha1 id】 -1</code><br>  eg：<code>git format-patch  2a2fb4539925bfa4a141fe492d9828d030f7c8a8 -1</code></li>
 <li>某两次提交之间的所有patch:<code>git format-patch 【commit sha1 id】..【commit sha1 id】</code><br>  eg：<code>git format-patch  2a2fb4539925bfa4a141fe492d9828d030f7c8a8..89aebfcc73bdac8054be1a242598610d8ed5f3c8</code></li>
 </ul>
-<h2 id="创建diff文件的常用方法"><a href="#创建diff文件的常用方法" class="headerlink" title="创建diff文件的常用方法"></a>创建diff文件的常用方法</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git diff  【commit sha1 id】 【commit sha1 id】 &gt;  【diff文件名】</span><br><span class="line"><span class="meta">#</span><span class="bash"> eg：</span></span><br><span class="line">git diff  2a2fb4539925bfa4a141fe492d9828d030f7c8a8  89aebfcc73bdac8054be1a242598610d8ed5f3c8 &gt; patch.diff</span><br></pre></td></tr></table></figure>
+<p><strong>创建diff文件的常用方法</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git diff  【commit sha1 id】 【commit sha1 id】 &gt;  【diff文件名】</span><br><span class="line"><span class="meta">#</span><span class="bash"> eg：</span></span><br><span class="line">git diff  2a2fb4539925bfa4a141fe492d9828d030f7c8a8  89aebfcc73bdac8054be1a242598610d8ed5f3c8 &gt; patch.diff</span><br></pre></td></tr></table></figure>
 
-<h2 id="两种patch的比较"><a href="#两种patch的比较" class="headerlink" title="两种patch的比较"></a>两种patch的比较</h2><ul>
+<p><strong>两种patch的比较</strong></p>
+<ul>
 <li>兼容性：很明显，git diff生成的Patch兼容性强。如果你在修改的代码的官方版本库不是Git管理的版本库，那么你必须使用git diff生成的patch才能让你的代码被项目的维护人接受。</li>
 <li>除错功能：对于git diff生成的patch，你可以用git apply –check 查看补丁是否能够干净顺利地应用到当前分支中；如果git format-patch 生成的补丁不能打到当前分支，git am会给出提示，并协助你完成打补丁工作，你也可以使用git am -3进行三方合并。从这一点上看，两者除错功能都很强。</li>
 <li>版本库信息：由于git format-patch生成的补丁中含有这个补丁开发者的名字，因此在应用补丁时，这个名字会被记录进版本库，显然，这样做是恰当的。因此，目前使用Git的开源社区往往建议使用format-patch生成补丁。</li>
@@ -463,6 +472,16 @@
 <li>删除：首先，要在<code>.gitmodules</code>文件中删除相应配置信息。然后，执行<code>git rm –cached</code>命令将子模块所在的文件从git中删除</li>
 <li>clone带有submodule的项目：<code>git clone --recurse-submodules address</code></li>
 </ul>
+<h1 id="Git-LFS"><a href="#Git-LFS" class="headerlink" title="Git LFS"></a>Git LFS</h1><p>Git 在 clone 过程中会将仓库的整个历史记录传输到客户端，对于包涵大文件（尤其是经常被修改的大文件）的项目，初始克隆需要大量时间，因为客户端会下载每个文件的每个版本。</p>
+<p>Git LFS(Large File Storage) 是 Git 的一个扩展，用于实现 Git 对大文件的支持。它通过延迟下载大文件的相关版本来减少大文件在仓库中的影响，大文件是在 checkout 过程中下载的，而不在 clone 或 fetch 过程中下载, Git LFS 通过将仓库中的大文件替换为小指针文件来做到这一点。使用时用户不会注意到这些指针文件，因为它们是由 Git LFS 自动处理的：</p>
+<ol>
+<li>当 add 一个文件到仓库时，Git LFS 用一个指针替换其内容，并将文件内容存储在本地 Git LFS 缓存中(缓存位于 <code>.git/lfs/objects</code> 目录中)。</li>
+<li>当 push 新的提交到服务器时，新提交引用的所有 Git LFS 文件都会从本地 Git LFS 缓存传输到绑定到 Git 仓库的远程 Git LFS 存储(即 lfs 文件内容会直接从本地 Git LFS 缓存传输到远程 Git LFS 存储服务器)。</li>
+<li>当 checkout 一个包含 Git LFS 指针的提交时，指针文件将替换为本地 Git LFS 缓存中的文件，或者从远端 Git LFS 存储区下载。</li>
+</ol>
+<p>git clone 和 git pull 将明显更快，因为只下载实际 checkout 的提交所引用的大文件版本，而不是曾经存在过的文件的每一个版本。使用 Git LFS 需要一个支持 Git LFS 的托管服务器如 <a target="_blank" rel="noopener" href="https://bitbucket.org/">Bitbucket Cloud</a> 或 <a target="_blank" rel="noopener" href="https://www.atlassian.com/software/bitbucket/enterprise/data-center">Bitbucket Server</a>, 另外 GitHub 和 GitLab 也都支持 Git LFS。</p>
+<p><strong>一些用法</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 安装 git-lfs</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> brew install git-lfs</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 初始化 Git LFS, 只需运行一次，后面当 <span class="built_in">clone</span> 包含 Git LFS 内容的仓库时，Git LFS 将自动启用</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> git lfs install</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 创建一个新的 Git LFS 仓库</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> git init</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> git lfs install</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> git lfs track ... <span class="comment"># 指定要跟踪的文件</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 可以使用 git <span class="built_in">clone</span> 命令来克隆 Git LFS 仓库，当克隆包含大量 lfs 文件的仓库时显式使用 git lfs <span class="built_in">clone</span> 命令性能更好</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> git lfs <span class="built_in">clone</span> 命令不会一次下载一个 Git LFS 文件，而是等到 checkout 完成后再批量下载所有必需的 lfs 文件</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 利用并行下载的优势，并显著减少了产生的 HTTP 请求和进程的数量</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> git lfs <span class="built_in">clone</span> git@xxx.git</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 可以使用常规的 git pull 命令拉取 Git LFS 仓库，拉取完成后需要的 Git LFS 文件都会作为自动检出过程的一部分而被下载</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 如果检出因为意外原因而失败则可通过 git lfs pull 命令来下载当前所有丢失的 Gi t 内容</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> git lfs pull</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 使用 git lfs track 命令指定一个模式告诉 Git LFS 对其进行跟踪</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 运行 git lfs track 后会在仓库中发现名为 .gitattributes 的新文件，Git LFS 自动创建或更新 .gitattributes 文件</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> gitattributes 是一种 Git 机制，用于将特殊行为绑定到某些文件模式</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> git lfs track <span class="string">&quot;*.ogg&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 可以通过调用不带参数的 git lfs track 命令来显示 Git LFS 当前正在跟踪的所有模式的列表及 .gitattributes 文件</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> git lfs track</span></span><br><span class="line">Listing tracked patterns</span><br><span class="line">    *.ogg (.gitattributes)</span><br><span class="line">    *.a (lib/.gitattributes)</span><br><span class="line">Listing excluded patterns</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 可以从 .gitattributes 文件中删除相应的行或者运行 git lfs untrack 命令来停止使用 Git LFS 跟踪特定模式</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> git lfs untrack <span class="string">&quot;*.ogg&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 可以按常规方式 push 到包含 Git LFS 内容的仓库，如果传输 LFS 文件失败，推送将被终止，可以放心地重试</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> git push</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 可以使用 git lfs prune 命令从本地 Git LFS 缓存中删除文件，这将删除所有被认为是旧的本地 Git LFS 文件</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 可以使用 git lfs prune --dry-run 来测试修剪操作将产生什么效果</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 可以使用 git lfs prune --verbose --dry-run 命令精确查看哪些 Git LFS 对象将被修剪</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 可以使用 --verify-remote 选项在删除之前，检查远程 Git LFS 存储区是否具有你的 Git LFS 对象的副本，更安全</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 可以通过全局配置 lfs.pruneverifyremotealways 属性为系统永久启用 --verify-remote 选项</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> git lfs prune</span></span><br><span class="line">✔ 4 local objects, 33 retained</span><br><span class="line">Pruning 4 files, (2.1 MB)</span><br><span class="line">✔ Deleted 4 files</span><br><span class="line"><span class="meta">$</span><span class="bash"> git config --global lfs.pruneverifyremotealways <span class="literal">true</span></span></span><br></pre></td></tr></table></figure>
 
     </div>
 
@@ -548,7 +567,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%93%E5%BA%93"><span class="nav-number">1.1.</span> <span class="nav-text">仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%94%AF"><span class="nav-number">1.2.</span> <span class="nav-text">分支</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F"><span class="nav-number">1.3.</span> <span class="nav-text">文件的生命周期</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C"><span class="nav-number">2.</span> <span class="nav-text">常用操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%AB%98%E7%BA%A7%E6%93%8D%E4%BD%9C"><span class="nav-number">3.</span> <span class="nav-text">高级操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%B2%E7%AA%81%E8%A7%A3%E5%86%B3"><span class="nav-number">4.</span> <span class="nav-text">冲突解决</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#gitignore"><span class="nav-number">5.</span> <span class="nav-text">.gitignore</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Merge-amp-Rebase"><span class="nav-number">6.</span> <span class="nav-text">Merge &amp; Rebase</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%92%A4%E9%94%80rebase"><span class="nav-number">7.</span> <span class="nav-text">撤销rebase</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#detached-HEAD"><span class="nav-number">8.</span> <span class="nav-text">detached HEAD</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#patch"><span class="nav-number">9.</span> <span class="nav-text">patch</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0-1"><span class="nav-number">9.1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#git-diff%E7%94%9F%E6%88%90%E7%9A%84%E6%A0%87%E5%87%86patch"><span class="nav-number">9.2.</span> <span class="nav-text">git diff生成的标准patch</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#git-format-patch%E7%94%9F%E6%88%90%E7%9A%84git%E4%B8%93%E7%94%A8%E8%A1%A5%E4%B8%81"><span class="nav-number">9.3.</span> <span class="nav-text">git format-patch生成的git专用补丁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BApatch-%E6%96%87%E4%BB%B6%E7%9A%84%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%A1%8C"><span class="nav-number">9.4.</span> <span class="nav-text">创建patch 文件的常用命令行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAdiff%E6%96%87%E4%BB%B6%E7%9A%84%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">9.5.</span> <span class="nav-text">创建diff文件的常用方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%A4%E7%A7%8Dpatch%E7%9A%84%E6%AF%94%E8%BE%83"><span class="nav-number">9.6.</span> <span class="nav-text">两种patch的比较</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#submodule"><span class="nav-number">10.</span> <span class="nav-text">submodule</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E6%93%8D%E4%BD%9C"><span class="nav-number">2.</span> <span class="nav-text">常用操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%AB%98%E7%BA%A7%E6%93%8D%E4%BD%9C"><span class="nav-number">3.</span> <span class="nav-text">高级操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%B2%E7%AA%81%E8%A7%A3%E5%86%B3"><span class="nav-number">4.</span> <span class="nav-text">冲突解决</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#gitignore"><span class="nav-number">5.</span> <span class="nav-text">.gitignore</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Merge-amp-Rebase"><span class="nav-number">6.</span> <span class="nav-text">Merge &amp; Rebase</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%92%A4%E9%94%80rebase"><span class="nav-number">7.</span> <span class="nav-text">撤销rebase</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#detached-HEAD"><span class="nav-number">8.</span> <span class="nav-text">detached HEAD</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#patch"><span class="nav-number">9.</span> <span class="nav-text">patch</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#submodule"><span class="nav-number">10.</span> <span class="nav-text">submodule</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Git-LFS"><span class="nav-number">11.</span> <span class="nav-text">Git LFS</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 

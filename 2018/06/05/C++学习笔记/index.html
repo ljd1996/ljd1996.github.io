@@ -28,7 +28,7 @@
 <meta property="og:description" content="指针和引用指针传递参数本质上是值传递的方式，它所传递的是一个地址值。值传递的特点是被调函数对形参的任何操作都是作为局部变量进行，不会影响主调函数的实参变量的值（这里是在说实参指针本身的地址值不会变）。 而在引用传递过程中，被调函数的形式参数虽然也作为局部变量在栈中开辟了内存空间，但是这时存放的是由主调函数放进来的实参变量的地址（int &amp;a的形式）。被调函数对形参的任何操作都被处理成间接寻">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2018-06-05T10:38:27.000Z">
-<meta property="article:modified_time" content="2021-07-06T03:39:20.264Z">
+<meta property="article:modified_time" content="2021-07-16T11:35:54.811Z">
 <meta property="article:author" content="苍耳叔叔">
 <meta property="article:tag" content="C++">
 <meta name="twitter:card" content="summary">
@@ -225,7 +225,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-07-06 11:39:20" itemprop="dateModified" datetime="2021-07-06T11:39:20+08:00">2021-07-06</time>
+                <time title="修改时间：2021-07-16 19:35:54" itemprop="dateModified" datetime="2021-07-16T19:35:54+08:00">2021-07-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -318,11 +318,23 @@
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">dynamic_cast</span>&lt;new_type&gt;(expression)</span><br></pre></td></tr></table></figure>
 
 <p>new_type 必须是指针或者引用。如果转型失败会返回 null(转型对象为指针时)或抛出异常(转型对象为引用时)。dynamic_cast 会动用运行时信息(RTTI)来进行类型安全检查，因此 dynamic_cast 存在一定的效率损失。</p>
+<p><strong>reinterpret_cast</strong></p>
+<p>reinterpret_cast 用来做指针类型的转换，或者整数与指针之间的转换。实际上什么都没做，只是改变了我们对于指针指向的内容的理解。</p>
 <p><strong>const_cast</strong></p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const_cast</span>&lt;new_type&gt;(expression)</span><br></pre></td></tr></table></figure>
 
-<p>new_type 必须是指针或者引用，const_cast 用于去除除对象的 const 或者 volatile 属性。</p>
-<h1 id="智能指针"><a href="#智能指针" class="headerlink" title="智能指针"></a>智能指针</h1><p>智能指针是相对于原始指针而言的，看看两者用法的不同：</p>
+<p>new_type 必须是指针或者引用，const_cast 用于去除或添加对象的 const 属性。</p>
+<p><strong>智能指针类型转换</strong></p>
+<p><code>std::unique_ptr</code> 可以转换成 <code>std::shared_ptr</code>，反之不行：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;A&gt; <span class="title">makeA</span><span class="params">()</span></span>;</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;A&gt; a = makeA();</span><br><span class="line"></span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">unique_ptr</span>&lt;A&gt; uniq_a = makeA();</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;A&gt; shared_a = <span class="built_in">std</span>::move(uniq_a);</span><br></pre></td></tr></table></figure>
+
+<p><code>std::static_pointer_cast</code>, <code>std::dynamic_pointer_cast</code>, <code>std::reinterpret_pointer_cast</code>, <code>std::const_pointer_cast</code> 是类型转换操作符的 shared_ptr 版本：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;Fruit&gt; fruit = makeFruit();</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;Apple&gt; apple = <span class="built_in">std</span>::static_pointer_cast&lt;Apple&gt;(fruit);</span><br></pre></td></tr></table></figure>
+
+<h1 id="智能指针"><a href="#智能指针" class="headerlink" title="智能指针"></a>智能指针</h1><p>首先看看创建对象的方式：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 内存分配到栈中，C++自动调用构造函数和析构函数</span></span><br><span class="line"><span class="function">ClassName <span class="title">obj</span><span class="params">(param)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 内存分配到堆中，返回指针，需要使用 delete 操作服释放</span></span><br><span class="line">ClassName *obj = <span class="keyword">new</span> ClassName(param);</span><br></pre></td></tr></table></figure>
+
+<p>智能指针是相对于原始指针而言的，看看两者用法的不同：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">UseRawPointer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Using a raw pointer -- not recommended.</span></span><br><span class="line">    Song* pSong = <span class="keyword">new</span> Song(<span class="string">L&quot;Nothing on You&quot;</span>, <span class="string">L&quot;Bruno Mars&quot;</span>); </span><br><span class="line">    <span class="comment">// use it...</span></span><br><span class="line">    <span class="keyword">delete</span> pSong; <span class="comment">// Don&#x27;t forget to delete!</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">UseSmartPointer</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Declare a smart pointer on stack and pass it the raw pointer.</span></span><br><span class="line">    <span class="function"><span class="built_in">unique_ptr</span>&lt;Song&gt; <span class="title">song2</span><span class="params">(<span class="keyword">new</span> Song(<span class="string">L&quot;Nothing on You&quot;</span>, <span class="string">L&quot;Bruno Mars&quot;</span>))</span></span>;</span><br><span class="line">    <span class="comment">// use it...</span></span><br><span class="line">&#125;   <span class="comment">// song2 is deleted automatically here.</span></span><br></pre></td></tr></table></figure>
 
 <p>智能指针可以这样理解：将基本类型指针封装为类对象指针（这个类肯定是个模板，以适应不同基本类型的需求），并在析构函数里编写 delete 语句删除指针指向的内存空间。</p>
@@ -350,6 +362,72 @@
 <p>C++:</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> E&gt;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">List</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>：</span><br><span class="line">    <span class="keyword">virtual</span> ~List() = <span class="keyword">default</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(E e)</span> </span>= <span class="number">0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> Iterator&lt;E&gt; <span class="title">iterator</span><span class="params">()</span> <span class="keyword">const</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<h1 id="容器"><a href="#容器" class="headerlink" title="容器"></a>容器</h1><ul>
+<li>std::array: 编译时期确定长度的定长数字</li>
+<li>std::vector: 变长数组</li>
+<li>std::list: 相当于 LinkedList</li>
+<li>std::forward_list: 单向链表</li>
+<li>std::unordered_map: 相当于 HashMap</li>
+<li>std::map: 相当于 TreeMap</li>
+<li>std::stack: 栈</li>
+<li>std::queue: 队列</li>
+<li>std::deque: 双向队列</li>
+<li>std::priority_queue: 优先级队列</li>
+<li>std::unordered_set: 相当于 HashSet</li>
+<li>std::set: 相当于 TreeSet</li>
+<li>std::string: char 数组，为提供 encoding 相关的功能</li>
+</ul>
+<p><strong>迭代器</strong></p>
+<ul>
+<li>正向迭代器: <code>std::容器类名&lt;item_type&gt;::iterator</code></li>
+<li>常量正向迭代器: <code>std::容器类名&lt;item_type&gt;::const_iterator</code></li>
+<li>反向迭代器: <code>std::容器类名&lt;item_type&gt;::reverse_iterator</code></li>
+<li>常量反向迭代器: <code>std::容器类名&lt;item_type&gt;::const_reverse_iterator</code></li>
+</ul>
+<p><strong>std::vector</strong></p>
+<p>注意 <code>std::vector&lt;bool&gt;</code> 内部其实是个 bitmap 而不是一个数组，如果想使用 bool 数组可以使用 <code>std::unique_ptr&lt;bool[]&gt;</code>。</p>
+<ul>
+<li>size: 容器当前拥有的元素个数。</li>
+<li>capacity: 容器在必须分配新存储空间前可以存储的元素总数，即预分配存储空间的大小。</li>
+</ul>
+<p>resize 和 reserve 的区别：</p>
+<ul>
+<li>resize(n): 修改容器 size 为 n, 至于是否影响 capacity 取决于调整后容器 size 是否大于 capacity。如果 n 小于容器的当前的 size 则删除多出来的元素。resize(n，t) 会将所有新添加的元素初始化。</li>
+<li>reserve(n): 若容器的 capacity 小于 n 则重新分配内存空间，使得 capacity 等于 n, 如果 capacity &gt;= n 则 capacity 无变化。</li>
+</ul>
+<p>由此可见容器调用 resize() 函数后，所有的空间都已经初始化了，所以可以直接访问。而 reserve() 函数预分配出的空间没有被初始化，所以不可访问。因此可以考虑调用 reserve 方法提前申请内存空间来提高性能，避免后续重新申请新的内存空间。</p>
+<h1 id="线程与并发"><a href="#线程与并发" class="headerlink" title="线程与并发"></a>线程与并发</h1><h2 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;thread&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;log.h&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">proc</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">    LOG_I(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;子线程: %d&quot;</span>, i);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    LOG_I(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;----主线程----&quot;</span>);</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">99</span>;</span><br><span class="line">    <span class="comment">// 创建并执行线程</span></span><br><span class="line">    <span class="keyword">auto</span> th = <span class="built_in">std</span>::make_unique&lt;<span class="built_in">std</span>::thread&gt;(proc, a);</span><br><span class="line">    <span class="comment">// 得到 pthread_t</span></span><br><span class="line">    <span class="keyword">auto</span> t = th-&gt;native_handle();</span><br><span class="line">    <span class="comment">// 设置线程名</span></span><br><span class="line">    pthread_setname_np(t, <span class="string">&quot;子线程1&quot;</span>);</span><br><span class="line">    <span class="comment">// 设置优先级 pthread_setschedparam</span></span><br><span class="line">    th-&gt;join();</span><br><span class="line">    LOG_I(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;----主线程----&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>join() 和 detach() 二者都只能调用一次，使用 joinable() 方法判断，其区别：</p>
+<ul>
+<li>join: 主调线程等待被调线程终止，主调线程回收被调线程资源，并继续运行。</li>
+<li>detach: 主调线程继续运行，被调线程驻留后台执行，主调线程无法再取得被调线程的控制权，由运行时库负责清理被调线程的资源。</li>
+</ul>
+<h2 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h2><p>在类中声明成员变量 <code>std::mutex</code> 的时候通常会用 mutable 修饰，这是因为如果需要对外提供 const 成员方法，访问被 mutex 保护的成员时，需要加/解锁，这时需要对 mutex 进行修改。而 mutable 修饰符允许在 const 上下文中修改一个成员变量。</p>
+<p><strong>std::mutex</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 调用线程去锁住该互斥量，如果已经被其他线程锁住了，则阻塞，如果已经被当前线程锁住了，则死锁</span></span><br><span class="line">lock()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 释放对互斥量的所有权</span></span><br><span class="line">unlock()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 尝试锁住互斥量，如果已经被其他线程锁住了，则返回 false, 如果已经被当前线程锁住了，则死锁</span></span><br><span class="line">try_lock()</span><br></pre></td></tr></table></figure>
+
+<p><strong>std::recursive_mutex</strong></p>
+<p>与 <code>std::mutex</code> 不同的是，它允许同一个线程对互斥量多次上锁，即递归上锁(可重入?)，来获得对互斥量的多层所有权，<code>std::recursive_mutex</code> 释放互斥量时需要调用与该锁层次深度相同的 unlock() 方法。</p>
+<p><strong>std::timed_mutex</strong></p>
+<p>比 <code>std::mutex</code> 多了两个成员函数：</p>
+<ul>
+<li>try_lock_for: 接受一个时间范围，在一段时间内没获得锁则会被阻塞住。</li>
+<li>try_lock_until: 接受一个时间点，在指定时间点到来后没获得锁则会被阻塞住。</li>
+</ul>
+<p><strong>std::recursive_timed_mutex</strong></p>
+<p>顾名思义，递归型的 <code>std::timed_mutex</code> 锁。</p>
+<p><strong>std::lock_guard</strong></p>
+<p>声明一个局部的 <code>std::lock_guard</code> 对象，在其构造函数中进行加锁，在其析构函数中进行解锁。创建即加锁，作用域结束自动解锁。从而可以使用其替代 lock() 与 unlock() 过程。</p>
+<p>需要互斥访问共享资源的那段代码称为临界区，临界区范围应该尽可能的小，可以通过使用 <code>&#123;&#125;</code> 来调整作用域范围，使得互斥量在合适的地方被解锁。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="built_in">std</span>::lock_guard&lt;<span class="built_in">std</span>::mutex&gt; <span class="title">lock</span><span class="params">(mutex)</span></span>;</span><br><span class="line">    <span class="comment">// lock here</span></span><br><span class="line">    <span class="comment">// auto unlock</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>std::unique_lock</strong></p>
+<p>unique_lock 类似于 lock_guard 但用法更加丰富，同时支持 lock_guard 的原有功能。使用 lock_guard 后不能手动 lock() 和 unlock()，而 unique_lock 则可以手动控制，通过第二个参数控制初始化时是否加锁。</p>
+<p><strong>读写锁</strong></p>
+<p>可以使用 <code>std::shared_lock</code> 和 <code>std::unique_lock</code> 实现读写锁。</p>
+<h2 id="atomic-volatile"><a href="#atomic-volatile" class="headerlink" title="atomic/volatile"></a>atomic/volatile</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">volatile</span> <span class="keyword">int</span> state1;</span><br><span class="line"><span class="keyword">volatile</span> <span class="built_in">std</span>::atomic&lt;<span class="keyword">int</span>&gt; state2;</span><br></pre></td></tr></table></figure>
+
 <h1 id="关键字-amp-符号"><a href="#关键字-amp-符号" class="headerlink" title="关键字&amp;符号"></a>关键字&amp;符号</h1><h2 id="default"><a href="#default" class="headerlink" title="default"></a>default</h2><p>C++ 的类有四类特殊成员函数，它们分别是：默认构造函数、析构函数、拷贝构造函数以及拷贝赋值运算符，如果没有显式地为一个类定义某个特殊成员函数，而又需要用到该特殊成员函数时，则编译器会隐式的为这个类生成一个默认的特殊成员函数。在 C++11 标准引入了一个 default 关键字，只需在特殊成员函数声明后加上 <code>=default</code> 即可为其自动生成函数体。</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> &#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Person() = <span class="keyword">default</span>;</span><br><span class="line">    Person(<span class="keyword">int</span> age) : age(age) &#123;&#125;;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Print</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="built_in">std</span>::<span class="built_in">cout</span> &lt;&lt; <span class="string">&quot;Hello Person!&quot;</span> &lt;&lt; <span class="string">&quot;\n&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 
@@ -375,6 +453,11 @@
 <li>const 对象的成员是不可修改的，然而 const 对象通过指针维护的对象却是可以修改的。</li>
 <li>const 成员函数不可以修改对象的数据，不管对象是否具有 const 性质。然而加上 mutable 修饰符的数据成员，对于任何情况下通过任何手段都可修改，自然此时的 const 成员函数是可以修改它的。</li>
 </ul>
+<h2 id="constexpr"><a href="#constexpr" class="headerlink" title="constexpr"></a>constexpr</h2><p>const 并不能代表常量，它仅仅是对变量的一个修饰，告诉编译器这个变量只能被初始化，且不能被直接修改(实际上可以通过堆栈溢出等方式修改)。</p>
+<p>constexpr 可以用来修饰变量、函数、构造函数，一旦被 constexpr 修饰，编译器就可以大胆地将其看成编译时就能得出常量值的表达式去优化。</p>
+<p>不要定义 <code>std::string</code> 类型的常量：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Don`t do this</span></span><br><span class="line"><span class="keyword">constexpr</span> <span class="built_in">std</span>::<span class="built_in">string</span> hello = <span class="string">&quot;Hello&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Do it this way</span></span><br><span class="line"><span class="keyword">constexpr</span> <span class="keyword">char</span> hello[] = <span class="string">&quot;Hello&quot;</span>;</span><br></pre></td></tr></table></figure>
+
 <h2 id="std-optional"><a href="#std-optional" class="headerlink" title="std::optional"></a>std::optional</h2><p>使用 std::optional 表示一个可能为空的值：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">std</span>::optional&lt;Book&gt; <span class="title">makeBook</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (failed) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">std</span>::nullopt;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> Book();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -468,7 +551,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%87%E9%92%88%E5%92%8C%E5%BC%95%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">指针和引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Enum-amp-Union"><span class="nav-number">2.</span> <span class="nav-text">Enum&amp;Union</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%8B%E5%85%83%E5%87%BD%E6%95%B0%E5%92%8C%E5%8F%8B%E5%85%83%E7%B1%BB"><span class="nav-number">3.</span> <span class="nav-text">友元函数和友元类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="nav-number">4.</span> <span class="nav-text">类型转换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88"><span class="nav-number">5.</span> <span class="nav-text">智能指针</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%9B%E5%9E%8B"><span class="nav-number">6.</span> <span class="nav-text">泛型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%9B%E5%9E%8B%E6%96%B9%E6%B3%95"><span class="nav-number">6.1.</span> <span class="nav-text">泛型方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%9B%E5%9E%8B%E7%B1%BB"><span class="nav-number">6.2.</span> <span class="nav-text">泛型类</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E5%AD%97-amp-%E7%AC%A6%E5%8F%B7"><span class="nav-number">7.</span> <span class="nav-text">关键字&amp;符号</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#default"><span class="nav-number">7.1.</span> <span class="nav-text">default</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#delete"><span class="nav-number">7.2.</span> <span class="nav-text">delete</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#explicit"><span class="nav-number">7.3.</span> <span class="nav-text">explicit</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#const"><span class="nav-number">7.4.</span> <span class="nav-text">const</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#std-optional"><span class="nav-number">7.5.</span> <span class="nav-text">std::optional</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E7%A0%81%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">8.</span> <span class="nav-text">编码注意事项</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8C%87%E9%92%88%E5%92%8C%E5%BC%95%E7%94%A8"><span class="nav-number">1.</span> <span class="nav-text">指针和引用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Enum-amp-Union"><span class="nav-number">2.</span> <span class="nav-text">Enum&amp;Union</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%8B%E5%85%83%E5%87%BD%E6%95%B0%E5%92%8C%E5%8F%8B%E5%85%83%E7%B1%BB"><span class="nav-number">3.</span> <span class="nav-text">友元函数和友元类</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="nav-number">4.</span> <span class="nav-text">类型转换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88"><span class="nav-number">5.</span> <span class="nav-text">智能指针</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%9B%E5%9E%8B"><span class="nav-number">6.</span> <span class="nav-text">泛型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%9B%E5%9E%8B%E6%96%B9%E6%B3%95"><span class="nav-number">6.1.</span> <span class="nav-text">泛型方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%9B%E5%9E%8B%E7%B1%BB"><span class="nav-number">6.2.</span> <span class="nav-text">泛型类</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%B9%E5%99%A8"><span class="nav-number">7.</span> <span class="nav-text">容器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E4%B8%8E%E5%B9%B6%E5%8F%91"><span class="nav-number">8.</span> <span class="nav-text">线程与并发</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8"><span class="nav-number">8.1.</span> <span class="nav-text">简单使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%94%81"><span class="nav-number">8.2.</span> <span class="nav-text">锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#atomic-volatile"><span class="nav-number">8.3.</span> <span class="nav-text">atomic&#x2F;volatile</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B3%E9%94%AE%E5%AD%97-amp-%E7%AC%A6%E5%8F%B7"><span class="nav-number">9.</span> <span class="nav-text">关键字&amp;符号</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#default"><span class="nav-number">9.1.</span> <span class="nav-text">default</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#delete"><span class="nav-number">9.2.</span> <span class="nav-text">delete</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#explicit"><span class="nav-number">9.3.</span> <span class="nav-text">explicit</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#const"><span class="nav-number">9.4.</span> <span class="nav-text">const</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#constexpr"><span class="nav-number">9.5.</span> <span class="nav-text">constexpr</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#std-optional"><span class="nav-number">9.6.</span> <span class="nav-text">std::optional</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%96%E7%A0%81%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">10.</span> <span class="nav-text">编码注意事项</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
