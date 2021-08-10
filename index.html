@@ -192,6 +192,143 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/08/10/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%8F%AF%E9%AB%98%E4%BA%AE%E6%BB%9A%E5%8A%A8%E6%96%87%E6%9C%AC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/08/10/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%8F%AF%E9%AB%98%E4%BA%AE%E6%BB%9A%E5%8A%A8%E6%96%87%E6%9C%AC/" class="post-title-link" itemprop="url">Android自定义View-可高亮滚动文本</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-08-10 16:53:16 / 修改时间：21:18:23" itemprop="dateCreated datePublished" datetime="2021-08-10T16:53:16+08:00">2021-08-10</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/Framework/" itemprop="url" rel="index"><span itemprop="name">Framework</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/08/10/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%8F%AF%E9%AB%98%E4%BA%AE%E6%BB%9A%E5%8A%A8%E6%96%87%E6%9C%AC/" class="post-meta-item leancloud_visitors" data-flag-title="Android自定义View-可高亮滚动文本" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/08/10/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%8F%AF%E9%AB%98%E4%BA%AE%E6%BB%9A%E5%8A%A8%E6%96%87%E6%9C%AC/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/08/10/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%8F%AF%E9%AB%98%E4%BA%AE%E6%BB%9A%E5%8A%A8%E6%96%87%E6%9C%AC/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>实现效果如下图：</p>
+<ul>
+<li>能够显示指定的文本，超出的内容可滚动(自动或手动)显示</li>
+<li>高亮固定的行</li>
+<li>能够调节字体大小，高亮字体颜色，滚动速度</li>
+</ul>
+<p><img src="demo.gif"></p>
+<h1 id="自定义RecyclerView"><a href="#自定义RecyclerView" class="headerlink" title="自定义RecyclerView"></a>自定义RecyclerView</h1><p>最先想到的是这种方式，因为 RecyclerView 已经帮我们做了手动滚动逻辑，至于高亮的话可以根据数据源在 Adapter.onBindViewHolder 中设置样式：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 数据源对象</span></span><br><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">LineWord</span></span>(<span class="keyword">var</span> word: String = <span class="string">&quot;&quot;</span>, <span class="keyword">var</span> highLight: <span class="built_in">Boolean</span> = <span class="literal">false</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// ViewHolder</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LinesHolder</span></span>(itemView: View) : RecyclerView.ViewHolder(itemView) &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> lineTV = itemView.findViewById&lt;TextView&gt;(R.id.line_tv)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">bindData</span><span class="params">(line: <span class="type">LineWord</span>)</span></span> &#123;</span><br><span class="line">        lineTV.text = line.word</span><br><span class="line">        <span class="keyword">if</span> (line.highLight) &#123;</span><br><span class="line">            lineTV.setTextColor(Color.RED)</span><br><span class="line">            lineTV.typeface = Typeface.DEFAULT_BOLD</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            lineTV.setTextColor(Color.BLACK)</span><br><span class="line">            lineTV.typeface = Typeface.DEFAULT</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然而由于我们的数据源是一段文本，所以需要实现文本分割，而且由于可以动态调节字体大小，每次调节字体大小后都需要重新分割文本，相当于实现了 TextView 的功能。每次调节字体大小后都需要重新分割文本并重设 RecyclerView 的数据源，然后刷新 UI, 想想就头大。</p>
+<p>当然，如果是那种类似于歌词控件的功能，每行文字都已经切割好了，剩下的用这种自定义 RecyclerView 的方案应该挺好的。</p>
+<h1 id="自定义View"><a href="#自定义View" class="headerlink" title="自定义View"></a>自定义View</h1><p>考虑直接自定义一个全新的 View 控件来实现这个功能。当然它也要面临跟上面一样切割文本的问题，切割文本需要考虑的问题太多了，中英文，单词，逗号等，都是问题，因此这种方式其实可以跟上面一样直接 pass 掉了。但我对这个比较好奇，于是也大致写一下思路，如果是类似歌词控件的功能，那也是一种不错的实现方案。</p>
+<p>因此不考虑文本分割，直接用一个 String 列表表示数据源。</p>
+<p>这种方案的重点在于 onDraw 方法的处理，那我们可以通过定义一个偏移量 offset 来表示文本的偏移，自动滚动或手动滚动时修改这个 offset 值，然后触发 View 的重绘：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDraw</span><span class="params">(canvas: <span class="type">Canvas</span>?)</span></span> &#123;</span><br><span class="line">    <span class="keyword">super</span>.onDraw(canvas)</span><br><span class="line">    <span class="keyword">var</span> y: <span class="built_in">Float</span> = paddingTop.toFloat() + marginTop</span><br><span class="line">    <span class="keyword">val</span> x: <span class="built_in">Float</span> = paddingLeft.toFloat() + marginLeft</span><br><span class="line">    <span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">0</span> until linesData.size) &#123;</span><br><span class="line">        <span class="comment">// 计算当前行的文本的 y 轴绘制偏移</span></span><br><span class="line">        y += getTextHeight(i) + lineSpace</span><br><span class="line">        <span class="comment">// 当前是否为高亮行，从而设置不同的画笔样式</span></span><br><span class="line">        setPaintStyle(textPaint, isHighLightLine(i))</span><br><span class="line">        canvas?.drawText(linesData[i], x, y - offset, textPaint)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>自动滚动可以通过定时修改 offset 来实现，手动滚动则需要重写 onTouchEvent 方法，在 move 事件里更新 offset 并处理边界问题，最后通过 invalidateView 方法重绘。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 自动滚动</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> scrollBySmoothRunnable = <span class="keyword">object</span> : Runnable &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">run</span><span class="params">()</span></span> &#123;</span><br><span class="line">        offset += speedSmooth / FREQUENCY</span><br><span class="line">        <span class="comment">// 如果滚到了最后</span></span><br><span class="line">        <span class="keyword">if</span> (offset &gt; getLineOffsetY(linesData.size - <span class="number">1</span>)) &#123;</span><br><span class="line">            <span class="comment">// 是否循环滚动</span></span><br><span class="line">            <span class="keyword">if</span> (repeatable) &#123;</span><br><span class="line">                offset = <span class="number">0f</span></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                pauseBySmooth()</span><br><span class="line">                <span class="keyword">return</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 计算当前高亮起始行</span></span><br><span class="line">        <span class="comment">// todo</span></span><br><span class="line">        currentLine = (offset / (getTextHeight(<span class="number">0</span>) + lineSpace)).toInt()</span><br><span class="line">        invalidateView()</span><br><span class="line">        <span class="keyword">if</span> (isUserScroll) &#123;</span><br><span class="line">            <span class="comment">// 如果在手动滚动则移除自动滚动任务</span></span><br><span class="line">            pauseBySmooth()</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 发起下次任务</span></span><br><span class="line">            ViewCompat.postOnAnimationDelayed(<span class="keyword">this</span><span class="symbol">@ScrollView</span>, <span class="keyword">this</span>, (<span class="number">1000</span> / FREQUENCY).toLong())</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 手动滚动</span></span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onTouchEvent</span><span class="params">(event: <span class="type">MotionEvent</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (linesData.isEmpty()) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.onTouchEvent(event)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">when</span> (event?.action) &#123;</span><br><span class="line">        MotionEvent.ACTION_DOWN -&gt; &#123;</span><br><span class="line">            pause()</span><br><span class="line">            lastMotionY = event.y</span><br><span class="line">            isUserScroll = <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">        MotionEvent.ACTION_MOVE -&gt; &#123;</span><br><span class="line">            offset -= (event.y - lastMotionY)</span><br><span class="line">            lastMotionY = event.y</span><br><span class="line">            currentLine = (offset / (getTextHeight(<span class="number">0</span>) + lineSpace)).toInt()</span><br><span class="line">            invalidateView()</span><br><span class="line">        &#125;</span><br><span class="line">        MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -&gt; &#123;</span><br><span class="line">            isUserScroll = <span class="literal">false</span></span><br><span class="line">            start()</span><br><span class="line">            <span class="comment">// 处理边界</span></span><br><span class="line">            <span class="keyword">if</span> (offset &lt; <span class="number">0</span>) &#123;</span><br><span class="line">                currentLine = <span class="number">0</span></span><br><span class="line">                scrollToLine(<span class="number">0</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (offset &gt; getLineOffsetY(linesData.size - <span class="number">1</span>)) &#123;</span><br><span class="line">                currentLine = linesData.size - <span class="number">1</span></span><br><span class="line">                scrollToLine(linesData.size - <span class="number">1</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="自定义TextView"><a href="#自定义TextView" class="headerlink" title="自定义TextView"></a>自定义TextView</h1><p>上面的方式都只适用于文本已经被分割了的情况，如歌词控件等。对于输入数据源是一段文本的场景，我们需要处理分割逻辑，极其麻烦，因此考虑直接自定义 TextView 来实现，借用 TextView 自身的功能来处理文本分割。</p>
+<h2 id="滚动内容"><a href="#滚动内容" class="headerlink" title="滚动内容"></a>滚动内容</h2><p>接下来需要看看滚动逻辑的实现，这里可以<strong>使用 View.scrollTo() 和 View.scrollBy() 方法来实现文本的滚动。这两个方法会移动 View 的内容，但不会改变其位置，更具体而言，就是这两个方法会修改 View 中的 mScrollX 和 mScrollY 值，并触发重绘，在绘制过程中, canvas 画布会通过 canvas.translate() 方法去平移画布，然后绘制内容。至于方向，当 mScroll(X/Y) 值为负数时，则内容会向右下平移；当 mScroll(X/Y) 为正数时，则内容会向左上平移，而 View 本身的位置不变</strong>。相关的内容可以自行查看 View 绘制的源码。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 自动滚动任务</span></span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">run</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!isUserScroll &amp;&amp; scroll()) &#123;</span><br><span class="line">        <span class="comment">// 发送下一次的 scroll 任务</span></span><br><span class="line">        postDelayed(<span class="keyword">this</span>, refreshRate)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">scroll</span><span class="params">()</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">    <span class="comment">// 是否已经滚动到底部</span></span><br><span class="line">    <span class="keyword">if</span> (offset &gt;= maxBottomOffset()) &#123;</span><br><span class="line">        <span class="keyword">if</span> (isScrollRepeatable) &#123;</span><br><span class="line">            <span class="comment">// 如果开启了循环滚动，则使其滚动到顶部内容</span></span><br><span class="line">            <span class="keyword">if</span> (!isUserScroll) &#123;</span><br><span class="line">                postDelayed(&#123;</span><br><span class="line">                    scrollTo(minTopOffset())</span><br><span class="line">                    resume()</span><br><span class="line">                &#125;, <span class="number">1000</span>)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">        &#125;</span><br><span class="line">        isAutoScroll = <span class="literal">false</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 没有滚动到底部，则接着修改 offset 值，并滚动内容</span></span><br><span class="line">        offset += speed</span><br><span class="line">        scrollBy(<span class="number">0</span>, speed)</span><br><span class="line">        <span class="comment">// 设置高亮行</span></span><br><span class="line">        setupHighLightLines()</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 滚动到指定偏移 [offsetY] 位置，并高亮行</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">scrollTo</span><span class="params">(offsetY: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">    offset = offsetY</span><br><span class="line">    scrollTo(<span class="number">0</span>, offset)</span><br><span class="line">    setupHighLightLines(<span class="literal">true</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面自动滚动其实就是定时 post 一个滚动任务，并判断边界以及处理高亮逻辑。至于手动滚动，则是重写 onTouchEvent 方法，并根据手指滑动距离来修改 offset 偏移，并调用 scroll 方法处理内容滚动，然后处理滚动内容的边界。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onTouchEvent</span><span class="params">(event: <span class="type">MotionEvent</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (text.isNullOrEmpty()) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.onTouchEvent(event)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">when</span> (event?.action) &#123;</span><br><span class="line">        MotionEvent.ACTION_DOWN -&gt; &#123;</span><br><span class="line">            isUserScroll = <span class="literal">true</span></span><br><span class="line">            lastY = event.y</span><br><span class="line">            <span class="comment">// 有手动滚动则暂停自动滚动的任务</span></span><br><span class="line">            pauseOnly()</span><br><span class="line">        &#125;</span><br><span class="line">        MotionEvent.ACTION_MOVE -&gt; &#123;</span><br><span class="line">            <span class="keyword">val</span> dy = event.y - lastY</span><br><span class="line">            lastY = event.y</span><br><span class="line">            <span class="comment">// scroll 方法中会实时处理高亮行逻辑</span></span><br><span class="line">            <span class="keyword">if</span> (!scroll(-dy.toInt())) &#123;</span><br><span class="line">                <span class="comment">// 超过边界了</span></span><br><span class="line">                scrollBy(<span class="number">0</span>, -dy.toInt())</span><br><span class="line">                offset -= dy.toInt()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        MotionEvent.ACTION_UP -&gt; &#123;</span><br><span class="line">            isUserScroll = <span class="literal">false</span></span><br><span class="line">            <span class="keyword">if</span> (correctOffset()) &#123;</span><br><span class="line">                <span class="comment">// 超过边界了，则滚回去</span></span><br><span class="line">                scrollTo(offset)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (isAutoScroll) &#123;</span><br><span class="line">                <span class="comment">// 如果手动滚动前处于自动滚动状态，则手动滚动后恢复自动滚动</span></span><br><span class="line">                resume(<span class="number">400</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="高亮行"><a href="#高亮行" class="headerlink" title="高亮行"></a>高亮行</h2><p>接下来是如何处理高亮行(这里我们指定高亮第二和第三行位置)，分为两点：</p>
+<ul>
+<li>计算当前高亮行</li>
+<li>高亮指定行</li>
+</ul>
+<p><strong>计算当前高亮行</strong></p>
+<p>在之前的滚动逻辑里，我们定义了一个 offset 偏移量，并在滚动过程中实时更新它，它的作用便是用来计算高亮行位置的：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 根据 [offset] 偏移量计算当前应高亮的行</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">shouldHighLightLine</span><span class="params">()</span></span>: <span class="built_in">Int</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">if</span> (offset &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        offset / lineHeight</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// HIGH_LIGHT_LINE_START: 高亮起始行, 取 1</span></span><br><span class="line">        offset / lineHeight + HIGH_LIGHT_LINE_START</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>高亮指定行</strong></p>
+<p>在得到需要高亮的行后，我们可以通过 SpannableStringBuilder 来设置指定位置文本的样式，</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 高亮逻辑，[force] 是否强制执行高亮逻辑，否则如当前高亮行未变化则跳过高亮逻辑</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">setupHighLightLines</span><span class="params">(force: <span class="type">Boolean</span> = <span class="literal">false</span>)</span></span> &#123;</span><br><span class="line">    <span class="comment">// 计算当前高亮起始行</span></span><br><span class="line">    <span class="keyword">val</span> line = shouldHighLightLine()</span><br><span class="line">    <span class="keyword">val</span> layout = layout</span><br><span class="line">    <span class="keyword">if</span> (layout == <span class="literal">null</span> || (!force &amp;&amp; line == curHighLightLine)) &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 更新当前高亮起始行 curHighLightLine 和当前高亮的文本起始下标 curHighLightIndex</span></span><br><span class="line">    curHighLightLine = line</span><br><span class="line">    <span class="keyword">if</span> (curHighLightLine &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        curHighLightLine = <span class="number">0</span></span><br><span class="line">        curHighLightIndex = <span class="number">0</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// getLineStart 是系统方法，用来得到指定行对应的文本起始下标</span></span><br><span class="line">    <span class="comment">// 这里通过该方法可以得到应该高亮的文本的开始与结束下标</span></span><br><span class="line">    curHighLightIndex = layout.getLineStart(curHighLightLine)</span><br><span class="line">    <span class="keyword">val</span> start = layout.getLineStart(curHighLightLine)</span><br><span class="line">    <span class="comment">// HIGH_LIGHT_LINE_COUNT: 高亮行数, 默认取 2</span></span><br><span class="line">    <span class="keyword">val</span> end = <span class="keyword">if</span> (curHighLightLine + HIGH_LIGHT_LINE_COUNT &gt; lineCount) &#123;</span><br><span class="line">        layout.getLineStart(lineCount)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        layout.getLineStart(curHighLightLine + HIGH_LIGHT_LINE_COUNT)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">val</span> colorText = SpannableStringBuilder(text.toString())</span><br><span class="line">    <span class="comment">// 避免粗体导致自动换行</span></span><br><span class="line">    colorText.setSpan(</span><br><span class="line">        HighLightSpan(Typeface.DEFAULT_BOLD, SMALL_LETTER_SPACING, highLightColor),</span><br><span class="line">        start,</span><br><span class="line">        end,</span><br><span class="line">        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE</span><br><span class="line">    )</span><br><span class="line">    text = colorText</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面通过计算后得到高亮行的文本开始与结束的下标后，通过设置自定义的 HighLightSpan 样式，即可达到高亮效果：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HighLightSpan</span></span>(<span class="keyword">private</span> <span class="keyword">val</span> typeface: Typeface, <span class="keyword">private</span> <span class="keyword">val</span> spacing: <span class="built_in">Float</span>, color: <span class="built_in">Int</span>) : ForegroundColorSpan(color) &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">updateDrawState</span><span class="params">(textPaint: <span class="type">TextPaint</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.updateDrawState(textPaint)</span><br><span class="line">        textPaint.typeface = typeface</span><br><span class="line">        textPaint.letterSpacing = spacing</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意这里有个问题，由于高亮行是粗体，因此当某一行高亮后，该行的内容宽度会变长，因此可能会触发 TextView 的自动换行操作，导致高亮效果变得奇怪，因此这里的解决方式是通过设置一个比正常状态下略小的字间距 letterSpacing, 来缩短高亮行的内容宽度。也因为这个原因，这种方案暂不支持高亮行和正常行使用不同的字体大小。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>上述三种方式各有优点，可以针对不同的需求场景使用不同的方式，代码已经传到了 <a target="_blank" rel="noopener" href="https://github.com/ljd1996/ScrollTextView">github</a> 上，有更好实现方式的同学欢迎提建议~</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/07/05/Android-ffmpeg%E4%B9%8B%E5%85%A5%E9%97%A8%E6%A6%82%E8%BF%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1125,116 +1262,10 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%9F%BA%E7%A1%80/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/head.png">
-      <meta itemprop="name" content="苍耳叔叔">
-      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苍耳的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">Kotlin笔记之协程基础</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-05-19 17:37:47" itemprop="dateCreated datePublished" datetime="2021-05-19T17:37:47+08:00">2021-05-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-20 16:44:18" itemprop="dateModified" datetime="2021-05-20T16:44:18+08:00">2021-05-20</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">语言</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%AD%E8%A8%80/Kotlin/" itemprop="url" rel="index"><span itemprop="name">Kotlin</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%9F%BA%E7%A1%80/" class="post-meta-item leancloud_visitors" data-flag-title="Kotlin笔记之协程基础" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%9F%BA%E7%A1%80/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%9F%BA%E7%A1%80/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>2019 年 Google I/O 大会上宣布今后将越来越优先采用 Kotlin 进行 Android 开发，Kotlin 是一种富有表现力且简洁的编程语言，不仅可以减少常见代码错误，还可以轻松集成到现有应用中。关于 Kotlin 的基础用法可参考: <a target="_blank" rel="noopener" href="https://kotlinlang.org/">Kotlin 官方文档</a> 和 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/categories/%E8%AF%AD%E8%A8%80/Kotlin/">Kotlin笔记系列</a>。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%9F%BA%E7%A1%80/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/16/">16</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/17/">17</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -1302,7 +1333,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">160</span>
+          <span class="site-state-item-count">161</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
