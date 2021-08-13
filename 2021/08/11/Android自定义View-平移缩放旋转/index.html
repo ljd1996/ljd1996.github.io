@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述上篇文章写了几种支持 高亮展示固定行并滑动文本的自定义View, 效果如下：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android自定义View-平移缩放旋转">
+<meta property="og:url" content="http://yoursite.com/2021/08/11/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%B9%B3%E7%A7%BB%E7%BC%A9%E6%94%BE%E6%97%8B%E8%BD%AC/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述上篇文章写了几种支持 高亮展示固定行并滑动文本的自定义View, 效果如下：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ljd1996.github.io/2021/08/10/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%8F%AF%E9%AB%98%E4%BA%AE%E6%BB%9A%E5%8A%A8%E6%96%87%E6%9C%AC/demo-tv.gif">
+<meta property="og:image" content="https://ljd1996.github.io/2021/08/10/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%8F%AF%E9%AB%98%E4%BA%AE%E6%BB%9A%E5%8A%A8%E6%96%87%E6%9C%AC/demo-v.gif">
+<meta property="og:image" content="http://yoursite.com/2021/08/11/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%B9%B3%E7%A7%BB%E7%BC%A9%E6%94%BE%E6%97%8B%E8%BD%AC/fancy-demo.gif">
+<meta property="og:image" content="http://yoursite.com/2021/08/11/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%B9%B3%E7%A7%BB%E7%BC%A9%E6%94%BE%E6%97%8B%E8%BD%AC/fancy-demo.gif">
+<meta property="article:published_time" content="2021-08-11T08:45:24.000Z">
+<meta property="article:modified_time" content="2021-08-13T03:19:01.727Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="诗歌，宋词，后台，Android，Java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ljd1996.github.io/2021/08/10/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%8F%AF%E9%AB%98%E4%BA%AE%E6%BB%9A%E5%8A%A8%E6%96%87%E6%9C%AC/demo-tv.gif">
+
+<link rel="canonical" href="http://yoursite.com/2021/08/11/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%B9%B3%E7%A7%BB%E7%BC%A9%E6%94%BE%E6%97%8B%E8%BD%AC/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android自定义View-平移缩放旋转 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/08/11/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%B9%B3%E7%A7%BB%E7%BC%A9%E6%94%BE%E6%97%8B%E8%BD%AC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android自定义View-平移缩放旋转
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-08-11 16:45:24" itemprop="dateCreated datePublished" datetime="2021-08-11T16:45:24+08:00">2021-08-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-08-13 11:19:01" itemprop="dateModified" datetime="2021-08-13T11:19:01+08:00">2021-08-13</time>
+              </span>
+
+          
+            <span id="/2021/08/11/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%B9%B3%E7%A7%BB%E7%BC%A9%E6%94%BE%E6%97%8B%E8%BD%AC/" class="post-meta-item leancloud_visitors" data-flag-title="Android自定义View-平移缩放旋转" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/08/11/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%B9%B3%E7%A7%BB%E7%BC%A9%E6%94%BE%E6%97%8B%E8%BD%AC/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/08/11/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%B9%B3%E7%A7%BB%E7%BC%A9%E6%94%BE%E6%97%8B%E8%BD%AC/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>上篇文章写了几种支持 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2021/08/10/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%8F%AF%E9%AB%98%E4%BA%AE%E6%BB%9A%E5%8A%A8%E6%96%87%E6%9C%AC/">高亮展示固定行并滑动文本的自定义View</a>, 效果如下：</p>
+<a id="more"></a>
+
+<center class="half">
+    <img src="https://ljd1996.github.io/2021/08/10/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%8F%AF%E9%AB%98%E4%BA%AE%E6%BB%9A%E5%8A%A8%E6%96%87%E6%9C%AC/demo-tv.gif" width="360"/><img src="https://ljd1996.github.io/2021/08/10/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%8F%AF%E9%AB%98%E4%BA%AE%E6%BB%9A%E5%8A%A8%E6%96%87%E6%9C%AC/demo-v.gif" width="360"/>
+</center>
+
+<p>这篇文章再来写一个比较有意思的自定义 View, 我想大家在工作中应该基本上都写过类似的~一个支持手指平移，缩放，旋转的控件：</p>
+<p><img src="fancy-demo.gif"></p>
+<p>在介绍实现方案之前，先复习一下相关的知识。</p>
+<h1 id="MotionEvent"><a href="#MotionEvent" class="headerlink" title="MotionEvent"></a>MotionEvent</h1><p>在 MotionEvent 中有许多事件类型，跟这篇文章相关的事件就是手指在屏幕上滑动，与之相关的事件如下：</p>
+<ul>
+<li>ACTION_DOWN</li>
+<li>ACTION_MOVE</li>
+<li>ACTION_UP</li>
+</ul>
+<p>这个手指滑动的动作会产生一系列事件，称之为事件流: <code>ACTION_DOWN -&gt; ACTION_MOVE -&gt; ACTION_MOVE -&gt; ... -&gt; ACTION_MOVE -&gt; ACTION_UP</code>。</p>
+<p>平移控件的话便是接收到这些事件后，通过计算拿到偏移量，然后进行 translation 即可。</p>
+<p>再看看 MotionEvent 相关的两种坐标方法：</p>
+<ul>
+<li>getX/Y(): 获取触摸点距离自身 View 左/上边界的距离。因此如果控件跟随手指移动后，其 getX/Y() 方法获取的坐标值依旧是距离自身边界的距离，不会变。</li>
+<li>getRawX/Y(): 获取触摸点距离屏幕左/上边界的距离。如果控件跟随手指移动，那该方法获取的值会随之变化。</li>
+</ul>
+<h1 id="平移"><a href="#平移" class="headerlink" title="平移"></a>平移</h1><p>关于 Android 的坐标体系就不赘述了，估计大家都看过网上的那些坐标系图。这里看看 View 的几个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getWidth</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> mRight - mLeft;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getHeight</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> mBottom - mTop;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">float</span> <span class="title">getX</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> mLeft + getTranslationX();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">float</span> <span class="title">getY</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> mTop + getTranslationY();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>View 的位置及大小由 left, top, right, bottom 四个参数决定，且这四个参数都是相对于其父 View 的。另外 View.getX/Y() 方法表示 View 以其父 View 左上角为坐标原点的 x, y 值，而 getTranslationX/Y 用于平移 View, 默认为 0, 因此 x/y 默认等于 left/top。</p>
+<p>接下来介绍一下几种平移 View 的方式：</p>
+<p><strong>layout(), offsetLeftAndRight(), offsetTopAndBottom()</strong></p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">layout(left + dx, top + dy, right + dx, bottom + dy)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 相当于</span></span><br><span class="line">offsetLeftAndRight(dx)</span><br><span class="line">offsetTopAndBottom(dy)</span><br></pre></td></tr></table></figure>
+
+<p>这种方式会直接改变 View 的布局参数。</p>
+<p><strong>setX(), setY(), setTranslationX(), setTranslationY()</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setX</span><span class="params">(<span class="keyword">float</span> x)</span> </span>&#123;</span><br><span class="line">    setTranslationX(x - mLeft);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setY</span><span class="params">(<span class="keyword">float</span> y)</span> </span>&#123;</span><br><span class="line">    setTranslationY(y - mTop);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>根据上面对 x/y 和 translationX/Y 的关系，可以知道这两种方式原理是一样的。它们都会改变 View 的 translation 值，但是没有修改布局参数 left, right, top, bottom 等。</p>
+<p><strong>属性动画对于平移的操作其实也是改变的这个属性，我们知道属性动画和补间动画的一个区别就是补间动画改变了 View 的显示位置，但是事件响应区域还是在之前的地方；而属性动画除了改变了 View 的显示位置，其事件响应区域也会对应改变。这里在于对属性动画的操作，显示效果变化的原因是 canvas matrix 做了变换，而依旧能响应事件的原因是事件分发的时候也会做对应的映射，使得事件能够响应在变化后的区域</strong>。</p>
+<p><strong>scrollTo(), scrollBy()</strong></p>
+<p>这两个方法在上篇文章已经看过了，它影响的是 View 的内容，即影响画布 canvas 的位移，因此可以这样平移：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(parent <span class="keyword">as</span>? View)?.scrollBy(-dx, -dy)</span><br></pre></td></tr></table></figure>
+
+<p>它也会对应改变事件响应的区域。</p>
+<h1 id="旋转"><a href="#旋转" class="headerlink" title="旋转"></a>旋转</h1><p>旋转使用 <code>View.setRotation()</code> 方法，跟修改 translationX 一样，它也不改变布局参数 left, right, top, bottom 等，旋转的属性动画也是改变的这个属性。注意旋转后 View.getLocationOnScreen() 等返回的 View 的位置坐标还是以 View 原先左上角返回的旋转后的坐标值。</p>
+<p>跟旋转相关的有一个中心点 pivot 参数: <code>setPivotX/Y()</code>, 这个参数表示旋转的中心点，默认是 View 中心。</p>
+<h1 id="缩放"><a href="#缩放" class="headerlink" title="缩放"></a>缩放</h1><p>缩放使用 <code>View.setScaleX/Y()</code> 方法，它也不改变布局参数 left, right, top, bottom 等，因此即使缩放后看上去 View 变大或变小了，但其 getWidth() 和 getHeight() 方法返回的长宽还是不变的，而事件响应区域则变化了。</p>
+<p>同样也需要通过 <code>setPivotX/Y()</code> 设置中心点。</p>
+<h1 id="自定义View实现"><a href="#自定义View实现" class="headerlink" title="自定义View实现"></a>自定义View实现</h1><p><img src="fancy-demo.gif"></p>
+<p>具体效果在上图中可以看到，相关代码在文章末尾。这个控件有两种形式，一种是大面板，一种是收起后的小面板。</p>
+<ul>
+<li>面板的展开和收起使用缩放实现</li>
+<li>大面板顶部中间可以触摸平移，收起后小面板也可以移动</li>
+<li>Activity 固定竖屏，但是控件可以感应横竖屏，使用 View 的旋转实现</li>
+</ul>
+<h2 id="手指平移"><a href="#手指平移" class="headerlink" title="手指平移"></a>手指平移</h2><p>手指平移需要重写 onTouchEvent 方法，计算手指移动的距离，进而移动控件。这里需要根据 down 事件的坐标来判断是不是触摸到了大面板的移动按钮或者是小面板，只有这两个 View 能响应平移事件。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onTouchEvent</span><span class="params">(event: <span class="type">MotionEvent</span>?)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">    <span class="comment">// 触摸的不是拖动控件则直接返回</span></span><br><span class="line">    <span class="keyword">if</span> (event == <span class="literal">null</span> || (event.action == MotionEvent.ACTION_DOWN &amp;&amp; !touchInTransView(event) &amp;&amp; !touchInLittlePanel(event))) &#123;</span><br><span class="line">        <span class="comment">// 如果是大面板在展示，则拦截触摸事件，不交给下面的控件去响应了</span></span><br><span class="line">        <span class="keyword">return</span> inBigPanel()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (isBigDrag || touchInTransView(event)) &#123;</span><br><span class="line">        <span class="comment">// 处理大面板拖动</span></span><br><span class="line">        <span class="keyword">return</span> onBigPanelTouchEvent(event)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (isLittleDrag || touchInLittlePanel(event)) &#123;</span><br><span class="line">        <span class="comment">// 处理小面板拖动</span></span><br><span class="line">        <span class="keyword">return</span> onLittlePanelTouchEvent(event)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> inBigPanel()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来以大面板平移为例，看看实现代码：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">onBigPanelTouchEvent</span><span class="params">(event: <span class="type">MotionEvent</span>)</span></span>: <span class="built_in">Boolean</span> &#123;</span><br><span class="line">    <span class="keyword">val</span> x = event.x</span><br><span class="line">    <span class="keyword">val</span> y = event.y</span><br><span class="line">    <span class="keyword">when</span> (event.action) &#123;</span><br><span class="line">        MotionEvent.ACTION_DOWN -&gt; &#123;</span><br><span class="line">            <span class="comment">// 记录 down 的坐标</span></span><br><span class="line">            lastX = x</span><br><span class="line">            lastY = y</span><br><span class="line">            isBigDrag = <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">        MotionEvent.ACTION_MOVE -&gt; &#123;</span><br><span class="line">            <span class="comment">// 计算平移距离</span></span><br><span class="line">            <span class="keyword">val</span> dx = x - lastX</span><br><span class="line">            <span class="keyword">val</span> dy = y - lastY</span><br><span class="line">            <span class="comment">// 处理横竖屏下，平移量的计算</span></span><br><span class="line">            <span class="keyword">when</span> &#123;</span><br><span class="line">                isPortrait() -&gt; &#123;</span><br><span class="line">                    tranX += dx</span><br><span class="line">                    tranY += dy</span><br><span class="line">                &#125;</span><br><span class="line">                isLandLeft() -&gt; &#123;</span><br><span class="line">                    tranX -= dy</span><br><span class="line">                    tranY += dx</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span> -&gt; &#123;</span><br><span class="line">                    tranX += dy</span><br><span class="line">                    tranY -= dx</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 纠正边界，并平移</span></span><br><span class="line">            correctBigBorder()</span><br><span class="line">        &#125;</span><br><span class="line">        MotionEvent.ACTION_UP -&gt; &#123;</span><br><span class="line">            isBigDrag = <span class="literal">false</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意上面用的是 MotionEvent.getX/Y() 方法，这里也可以使用 MotionEvent.getRawX/Y() 方法，但是需要在每次 move 事件的时候更新 lastX/Y 值，具体原因参考上面关于这俩方法的解析。上面代码都有写注释，主要看看 correctBigBorder() 方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">correctBigBorder</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">val</span> lMax = leftMax()</span><br><span class="line">    <span class="keyword">if</span> (tranX &lt; lMax) &#123;</span><br><span class="line">        tranX = lMax</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">val</span> rMax = rightMax()</span><br><span class="line">    <span class="keyword">if</span> (tranX &gt; rMax) &#123;</span><br><span class="line">        tranX = rMax</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">val</span> tMax = topMax()</span><br><span class="line">    <span class="keyword">if</span> (tranY &lt; tMax) &#123;</span><br><span class="line">        tranY = tMax</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">val</span> bMax = bottomMax()</span><br><span class="line">    <span class="keyword">if</span> (tranY &gt; bMax) &#123;</span><br><span class="line">        tranY = bMax</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 设置 View 的 translation 属性，此处是真正平移的代码</span></span><br><span class="line">    translationX = tranX</span><br><span class="line">    translationY = tranY</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面在 move 事件的时候，需要判断是否超出了边界，超出了则纠正，然后进行 View 的平移，上面的几个边界 max 方法是在横竖屏(旋转)状态下计算出的：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 大面板滑动的左部边界</span></span><br><span class="line"><span class="comment"> * [getTranslationX] = [getX] - [getLeft]</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">leftMax</span><span class="params">()</span></span> = <span class="keyword">if</span> (isPortrait()) marginL - left <span class="keyword">else</span> (height() - width()) / <span class="number">2</span> + marginL - left</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 大面板滑动的顶部边界</span></span><br><span class="line"><span class="comment"> * [getTranslationY] = [getY] - [getTop]</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">topMax</span><span class="params">()</span></span> = <span class="keyword">if</span> (isPortrait()) marginT - top <span class="keyword">else</span> marginT - top - (height() - width()) / <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 大面板滑动的右部边界</span></span><br><span class="line"><span class="comment"> * [getTranslationX] = [getX] - [getLeft]</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">rightMax</span><span class="params">()</span></span> = maxWidth() - orientedWidth() + leftMax()</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 大面板滑动的底部边界</span></span><br><span class="line"><span class="comment"> * [getTranslationY] = [getY] - [getTop]</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">bottomMax</span><span class="params">(real: <span class="type">Boolean</span> = <span class="literal">true</span>)</span></span> = maxHeight() - orientedHeight() + topMax()</span><br></pre></td></tr></table></figure>
+
+<h2 id="横竖屏感应-旋转"><a href="#横竖屏感应-旋转" class="headerlink" title="横竖屏感应(旋转)"></a>横竖屏感应(旋转)</h2><p>由于 Activity 是固定竖屏的，因此控件需要自身感应横竖屏，然后进行旋转：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> orientationListener: OrientationEventListener <span class="keyword">by</span> lazy &#123;</span><br><span class="line">    <span class="keyword">object</span> : OrientationEventListener(context, SensorManager.SENSOR_DELAY_NORMAL) &#123;</span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onOrientationChanged</span><span class="params">(orientation: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">            <span class="keyword">val</span> cur = <span class="keyword">if</span> (orientation &gt;= <span class="number">330</span> || orientation &lt; <span class="number">30</span>) &#123;</span><br><span class="line">                <span class="comment">// 竖屏向下</span></span><br><span class="line">                Surface.ROTATION_0</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (orientation <span class="keyword">in</span> <span class="number">60</span>..<span class="number">119</span>) &#123;</span><br><span class="line">                <span class="comment">// 横屏向右</span></span><br><span class="line">                Surface.ROTATION_90</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (orientation <span class="keyword">in</span> <span class="number">150</span>..<span class="number">209</span>) &#123;</span><br><span class="line">                <span class="comment">// 竖屏向上</span></span><br><span class="line">                Surface.ROTATION_180</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (orientation <span class="keyword">in</span> <span class="number">240</span>..<span class="number">299</span>) &#123;</span><br><span class="line">                <span class="comment">// 横屏向左</span></span><br><span class="line">                Surface.ROTATION_270</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                Surface.ROTATION_0</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 没有正在展开、收起面板 &amp;&amp; 处于展开大面板状态 &amp;&amp; 有屏幕旋转</span></span><br><span class="line">            <span class="keyword">if</span> (!isFolding &amp;&amp; inBigPanel() &amp;&amp; <span class="keyword">this</span><span class="symbol">@FancyPanel</span>.orientation != cur) &#123;</span><br><span class="line">                <span class="keyword">this</span><span class="symbol">@FancyPanel</span>.orientation = cur</span><br><span class="line">                <span class="comment">// 设置旋转中心为控件中心点</span></span><br><span class="line">                pivotX = width() / <span class="number">2f</span></span><br><span class="line">                pivotY = height() / <span class="number">2f</span></span><br><span class="line">                <span class="comment">// 旋转不同的角度</span></span><br><span class="line">                rotation = <span class="keyword">when</span> &#123;</span><br><span class="line">                    isPortrait() -&gt; <span class="number">0f</span></span><br><span class="line">                    isLandLeft() -&gt; <span class="number">90f</span></span><br><span class="line">                    <span class="keyword">else</span> -&gt; <span class="number">270f</span></span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// 仅竖屏下展示收起面板的按钮</span></span><br><span class="line">                <span class="keyword">if</span> (isPortrait()) &#123;</span><br><span class="line">                    foldView.show()</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    foldView.hide()</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// 纠正边界，防止旋转后溜出屏幕</span></span><br><span class="line">                correctBigBorder()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>旋转是通过设置 rotate 属性来实现的。小面板模式下没做横竖屏旋转，如果要支持的话，需要重新计算一下对应 transX 和 transY 值，因为这会影响平移边界的计算。</p>
+<h2 id="展开收起面板-缩放"><a href="#展开收起面板-缩放" class="headerlink" title="展开收起面板(缩放)"></a>展开收起面板(缩放)</h2><p>面板的展开和收起是通过缩放 View 实现的：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 收起面板</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">fold</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (isFolding) &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">    &#125;</span><br><span class="line">    isFolding = <span class="literal">true</span></span><br><span class="line">    <span class="comment">// 纠正缩放的中心点</span></span><br><span class="line">    correctPivot(isBigPanelInLeft())</span><br><span class="line">    <span class="keyword">val</span> xScaleAnim = ObjectAnimator.ofFloat(bigPanel, <span class="string">&quot;scaleX&quot;</span>, littlePanelSize / width())</span><br><span class="line">    <span class="keyword">val</span> yScaleAnim = ObjectAnimator.ofFloat(bigPanel, <span class="string">&quot;scaleY&quot;</span>, littlePanelSize / height())</span><br><span class="line">    <span class="keyword">val</span> animSet = AnimatorSet()</span><br><span class="line">    animSet.playTogether(xScaleAnim, yScaleAnim)</span><br><span class="line">    animSet.duration = <span class="number">500</span></span><br><span class="line">    animSet.addListener(<span class="keyword">object</span> : AnimatorListenerAdapter() &#123;</span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onAnimationEnd</span><span class="params">(animation: <span class="type">Animator</span>?)</span></span> &#123;</span><br><span class="line">            <span class="comment">// 收起面板后，将小面板吸附到左/右边缘</span></span><br><span class="line">            adjustPanelAttach(isBigPanelInLeft())</span><br><span class="line">            littlePanel.show()</span><br><span class="line">            isFolding = <span class="literal">false</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">    animSet.start()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 纠正展开和收起大面板时缩放动画的中心</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">correctPivot</span><span class="params">(inLeft: <span class="type">Boolean</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (inLeft) &#123;</span><br><span class="line">        bigPanel.pivotX = <span class="number">0f</span></span><br><span class="line">        bigPanel.pivotY = <span class="number">0f</span></span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        bigPanel.pivotX = width()</span><br><span class="line">        bigPanel.pivotY = <span class="number">0f</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 自适应小面板在大面板中的偏移</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">adjustPanelAttach</span><span class="params">(inLeft: <span class="type">Boolean</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (inLeft) &#123;</span><br><span class="line">        littlePanel.x = <span class="number">0f</span></span><br><span class="line">        littlePanel.y = <span class="number">0f</span></span><br><span class="line">        x = littlePanelPadding</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        littlePanel.x = width() - littlePanelSize</span><br><span class="line">        littlePanel.y = <span class="number">0f</span></span><br><span class="line">        x = parentWidth - littlePanelPadding - width()</span><br><span class="line">    &#125;</span><br><span class="line">    tranX = x - left</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面主要有两个地方需要注意一下：</p>
+<ul>
+<li>correctPivot: 纠正展开和收起大面板时缩放动画的中心，这里根据面板靠近屏幕左侧还是右侧，将缩放中心点设置在 View 左边还是右边。</li>
+<li>adjustPanelAttach: 收起为小面板后，将面板吸附到左/右边界展示。</li>
+</ul>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>对于平移，旋转以及缩放，我们在平时开发中应该都会碰到，这篇文章通过这个控件来学习一下相关的操作，代码已经传到了 <a target="_blank" rel="noopener" href="https://github.com/ljd1996/ScrollTextView">github</a> 上，有更好实现方式的同学欢迎提建议~</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/08/10/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%8F%AF%E9%AB%98%E4%BA%AE%E6%BB%9A%E5%8A%A8%E6%96%87%E6%9C%AC/" rel="prev" title="Android自定义View-可高亮滚动文本">
+      <i class="fa fa-chevron-left"></i> Android自定义View-可高亮滚动文本
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MotionEvent"><span class="nav-number">2.</span> <span class="nav-text">MotionEvent</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B9%B3%E7%A7%BB"><span class="nav-number">3.</span> <span class="nav-text">平移</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%8B%E8%BD%AC"><span class="nav-number">4.</span> <span class="nav-text">旋转</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BC%A9%E6%94%BE"><span class="nav-number">5.</span> <span class="nav-text">缩放</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89View%E5%AE%9E%E7%8E%B0"><span class="nav-number">6.</span> <span class="nav-text">自定义View实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%8B%E6%8C%87%E5%B9%B3%E7%A7%BB"><span class="nav-number">6.1.</span> <span class="nav-text">手指平移</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%AA%E7%AB%96%E5%B1%8F%E6%84%9F%E5%BA%94-%E6%97%8B%E8%BD%AC"><span class="nav-number">6.2.</span> <span class="nav-text">横竖屏感应(旋转)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B1%95%E5%BC%80%E6%94%B6%E8%B5%B7%E9%9D%A2%E6%9D%BF-%E7%BC%A9%E6%94%BE"><span class="nav-number">6.3.</span> <span class="nav-text">展开收起面板(缩放)</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">162</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">100</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

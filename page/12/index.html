@@ -192,6 +192,740 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/04/29/C-Sharp%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/04/29/C-Sharp%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">C#学习笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-04-29 19:40:30" itemprop="dateCreated datePublished" datetime="2019-04-29T19:40:30+08:00">2019-04-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-31 18:25:01" itemprop="dateModified" datetime="2021-05-31T18:25:01+08:00">2021-05-31</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">语言</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%AD%E8%A8%80/C/" itemprop="url" rel="index"><span itemprop="name">C</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/04/29/C-Sharp%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="C#学习笔记" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/04/29/C-Sharp%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/04/29/C-Sharp%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h1><p>在Linux上编译运行C#需要安装mono(毕竟微软家的呵)，安装方式见官网。</p>
+<h1 id="程序结构"><a href="#程序结构" class="headerlink" title="程序结构"></a>程序结构</h1><p>一个 C# 程序主要包括以下部分：</p>
+<ul>
+<li>命名空间声明（Namespace declaration）</li>
+<li>一个 Class</li>
+<li>Class 方法</li>
+<li>Class 属性</li>
+<li>一个 Main 方法</li>
+<li>语句（Statements）&amp; 表达式（Expressions）</li>
+<li>注释</li>
+</ul>
+<p>实例：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">namespace</span> <span class="title">HelloWorldApplication</span> &#123;</span><br><span class="line">   <span class="keyword">class</span> <span class="title">HelloWorld</span> &#123;</span><br><span class="line">      <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">         <span class="comment">/* 我的第一个 C# 程序*/</span></span><br><span class="line">         Console.WriteLine(<span class="string">&quot;Hello World&quot;</span>);</span><br><span class="line">         Console.ReadKey();</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>编译运行：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 编译生成.exe文件</span></span><br><span class="line">mcs test.cs</span><br><span class="line"><span class="comment">// 运行.exe文件</span></span><br><span class="line">mono test.exe</span><br></pre></td></tr></table></figure>
+
+<h1 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h1><h2 id="using关键字"><a href="#using关键字" class="headerlink" title="using关键字"></a>using关键字</h2><p>using 关键字用于在程序中包含命名空间。一个程序可以包含多个 using 语句。</p>
+<h2 id="class关键字"><a href="#class关键字" class="headerlink" title="class关键字"></a>class关键字</h2><p>class 关键字用于声明一个类。</p>
+<h2 id="C-关键字"><a href="#C-关键字" class="headerlink" title="C# 关键字"></a>C# 关键字</h2><p>关键字是 C# 编译器预定义的保留字，如果想使用这些关键字作为标识符，可以在关键字前面加上 @ 字符作为前缀。</p>
+<p>在 C# 中，有些关键字在代码的上下文中有特殊的意义，如 get 和 set，这些被称为上下文关键字（contextual keywords）。下表列出了 C# 中的保留关键字（Reserved Keywords）和上下文关键字（Contextual Keywords）：</p>
+<img src="保留关键字.png"/>
+
+<img src="上下文关键字.png"/>
+
+<h1 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h1><p>在 C# 中，变量分为以下几种类型：</p>
+<ul>
+<li>值类型（Value types）</li>
+<li>引用类型（Reference types）</li>
+<li>指针类型（Pointer types）</li>
+</ul>
+<h2 id="值类型（Value-types）"><a href="#值类型（Value-types）" class="headerlink" title="值类型（Value types）"></a>值类型（Value types）</h2><p>值类型变量可以直接分配给一个值。它们是从类 System.ValueType 中派生的(<strong>结构体和枚举都是值类型</strong>)。</p>
+<img src="值类型.png"/>
+
+<p>表达式 sizeof(type) 产生以字节为单位存储对象或类型的存储尺寸。</p>
+<h3 id="struct"><a href="#struct" class="headerlink" title="struct"></a>struct</h3><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> Books &#123;</span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">string</span> title;</span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">string</span> author;</span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">string</span> subject;</span><br><span class="line">   <span class="keyword">public</span> <span class="keyword">int</span> book_id;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>C# 中的结构有以下特点：</p>
+<ul>
+<li>结构可带有方法、字段、索引、属性、运算符方法和事件。</li>
+<li>结构可定义构造函数，但不能定义析构函数。但是，您不能为结构定义默认的构造函数。默认的构造函数是自动定义的，且不能被改变。</li>
+<li>与类不同，结构不能继承其他的结构或类。</li>
+<li>结构不能作为其他结构或类的基础结构。</li>
+<li>结构可实现一个或多个接口。</li>
+<li>结构成员不能指定为 abstract、virtual 或 protected。</li>
+<li>当使用 New 操作符创建一个结构对象时，会调用适当的构造函数来创建结构。与类不同，结构可以不使用 New 操作符即可被实例化。</li>
+<li>如果不使用 New 操作符，只有在所有的字段都被初始化之后，字段才被赋值，对象才被使用。</li>
+<li>类是引用类型，结构是值类型。</li>
+<li>结构不支持继承。</li>
+<li>结构不能声明默认的构造函数。</li>
+</ul>
+<h3 id="enum"><a href="#enum" class="headerlink" title="enum"></a>enum</h3><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> &lt;enum_name&gt; &#123;</span><br><span class="line">    enumeration list </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>enum_name 指定枚举的类型名称。</li>
+<li>enumeration list 是一个用逗号分隔的标识符列表。</li>
+</ul>
+<p>枚举列表中的每个符号代表一个整数值，一个比它前面的符号大的整数值。默认情况下，第一个枚举符号的值是 0.例如：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">EnumTest</span> &#123;</span><br><span class="line">    <span class="keyword">enum</span> Day &#123; Sun, Mon, Tue, Wed, Thu, Fri, Sat &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">        <span class="keyword">int</span> x = (<span class="keyword">int</span>)Day.Sun;</span><br><span class="line">        <span class="keyword">int</span> y = (<span class="keyword">int</span>)Day.Fri;</span><br><span class="line">        Console.WriteLine(<span class="string">&quot;Sun = &#123;0&#125;&quot;</span>, x);</span><br><span class="line">        Console.WriteLine(<span class="string">&quot;Fri = &#123;0&#125;&quot;</span>, y);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="引用类型（Reference-types）"><a href="#引用类型（Reference-types）" class="headerlink" title="引用类型（Reference types）"></a>引用类型（Reference types）</h2><p>引用类型不包含存储在变量中的实际数据，但它们包含对变量的引用。换句话说，它们指的是一个内存位置。使用多个变量时，引用类型可以指向一个内存位置。如果内存位置的数据是由一个变量改变的，其他变量会自动反映这种值的变化。内置的 引用类型有：object、dynamic 和 string。</p>
+<h3 id="对象（Object）类型"><a href="#对象（Object）类型" class="headerlink" title="对象（Object）类型"></a>对象（Object）类型</h3><p>对象（Object）类型 是 C# 通用类型系统（Common Type System - CTS）中所有数据类型的终极基类。Object 是 System.Object 类的别名。所以对象（Object）类型可以被分配任何其他类型（值类型、引用类型、预定义类型或用户自定义类型）的值。但是，在分配值之前，需要先进行类型转换。</p>
+<p>当一个值类型转换为对象类型时，则被称为 装箱；另一方面，当一个对象类型转换为值类型时，则被称为 拆箱。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">object</span> obj;</span><br><span class="line">obj = <span class="number">100</span>; <span class="comment">// 这是装箱</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="动态（Dynamic）类型"><a href="#动态（Dynamic）类型" class="headerlink" title="动态（Dynamic）类型"></a>动态（Dynamic）类型</h3><p>可以存储任何类型的值在动态数据类型变量中。这些变量的类型检查是在运行时发生的。声明动态类型的语法：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">dynamic</span> &lt;variable_name&gt; = <span class="keyword">value</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 例如：</span></span><br><span class="line"><span class="keyword">dynamic</span> d = <span class="number">20</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>动态类型与对象类型相似，但是对象类型变量的类型检查是在编译时发生的，而动态类型变量的类型检查是在运行时发生的。</strong></p>
+<h3 id="字符串（String）类型"><a href="#字符串（String）类型" class="headerlink" title="字符串（String）类型"></a>字符串（String）类型</h3><p>字符串（String）类型允许您给变量分配任何字符串值。字符串（String）类型是 System.String 类的别名。它是从对象（Object）类型派生的。字符串（String）类型的值可以通过两种形式进行分配：引号和@引号(称作”逐字字符串”，将转义字符<code>\</code>当作普通字符对待)。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">string</span> str = <span class="string">@&quot;C:\Windows&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 等价于：</span></span><br><span class="line"><span class="keyword">string</span> str = <span class="string">&quot;C:\\Windows&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// @ 字符串中可以任意换行，换行符及缩进空格都计算在字符串长度之内。</span></span><br><span class="line"><span class="keyword">string</span> str = <span class="string">@&quot;&lt;script type=&quot;&quot;text/javascript&quot;&quot;&gt;</span></span><br><span class="line"><span class="string">    &lt;!--</span></span><br><span class="line"><span class="string">    --&gt;</span></span><br><span class="line"><span class="string">&lt;/script&gt;&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="指针类型（Pointer-types）"><a href="#指针类型（Pointer-types）" class="headerlink" title="指针类型（Pointer types）"></a>指针类型（Pointer types）</h2><p>指针类型变量存储另一种类型的内存地址。C# 中的指针与 C 或 C++ 中的指针有相同的功能。声明指针类型的语法：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">type* identifier;</span><br><span class="line"><span class="comment">// 例如：</span></span><br><span class="line"><span class="keyword">char</span>* cptr;</span><br><span class="line"><span class="keyword">int</span>* iptr;</span><br></pre></td></tr></table></figure>
+
+<h2 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h2><ul>
+<li>隐式类型转换:这些转换是 C# 默认的以安全方式进行的转换, 不会导致数据丢失。例如，从小的整数类型转换为大的整数类型，从派生类转换为基类。</li>
+<li>显式类型转换:显式类型转换(方法：(type)value)，即强制类型转换。显式转换需要强制转换运算符，而且强制转换会造成数据丢失。</li>
+</ul>
+<p>C#提供了下列内置的类型转换方法：</p>
+<table>
+<thead>
+<tr>
+<th align="left">方法</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">ToBoolean</td>
+<td align="left">如果可能的话，把类型转换为布尔型。</td>
+</tr>
+<tr>
+<td align="left">ToByte</td>
+<td align="left">把类型转换为字节类型。</td>
+</tr>
+<tr>
+<td align="left">ToChar</td>
+<td align="left">如果可能的话，把类型转换为单个 Unicode 字符类型。</td>
+</tr>
+<tr>
+<td align="left">ToDateTime</td>
+<td align="left">把类型（整数或字符串类型）转换为 日期-时间 结构。</td>
+</tr>
+<tr>
+<td align="left">ToDecimal</td>
+<td align="left">把浮点型或整数类型转换为十进制类型。</td>
+</tr>
+<tr>
+<td align="left">ToDouble</td>
+<td align="left">把类型转换为双精度浮点型。</td>
+</tr>
+<tr>
+<td align="left">ToInt16</td>
+<td align="left">把类型转换为 16 位整数类型。</td>
+</tr>
+<tr>
+<td align="left">ToInt32</td>
+<td align="left">把类型转换为 32 位整数类型。</td>
+</tr>
+<tr>
+<td align="left">ToInt64</td>
+<td align="left">把类型转换为 64 位整数类型。</td>
+</tr>
+<tr>
+<td align="left">ToSbyte</td>
+<td align="left">把类型转换为有符号字节类型。</td>
+</tr>
+<tr>
+<td align="left">ToSingle</td>
+<td align="left">把类型转换为小浮点数类型。</td>
+</tr>
+<tr>
+<td align="left">ToString</td>
+<td align="left">把类型转换为字符串类型。</td>
+</tr>
+<tr>
+<td align="left">ToType</td>
+<td align="left">把类型转换为指定类型。</td>
+</tr>
+<tr>
+<td align="left">ToUInt16</td>
+<td align="left">把类型转换为 16 位无符号整数类型。</td>
+</tr>
+<tr>
+<td align="left">ToUInt32</td>
+<td align="left">把类型转换为 32 位无符号整数类型。</td>
+</tr>
+<tr>
+<td align="left">ToUInt64</td>
+<td align="left">把类型转换为 64 位无符号整数类型。</td>
+</tr>
+</tbody></table>
+<h1 id="变量和常量"><a href="#变量和常量" class="headerlink" title="变量和常量"></a>变量和常量</h1><h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><p>变量定义的语法：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;data_type&gt; &lt;variable_list&gt;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="常量"><a href="#常量" class="headerlink" title="常量"></a>常量</h2><h3 id="整数常量"><a href="#整数常量" class="headerlink" title="整数常量"></a>整数常量</h3><p>整数常量可以是十进制、八进制或十六进制的常量。</p>
+<ul>
+<li>前缀：指定基数，0x 或 0X 表示十六进制，0 表示八进制，没有前缀则表示十进制。</li>
+<li>后缀：可以是 U 和 L 的组合，其中，U 和 L 分别表示 unsigned 和 long。后缀可以是大写或者小写，多个后缀以任意顺序进行组合。</li>
+</ul>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">212</span>         <span class="comment">/* 合法 */</span></span><br><span class="line"><span class="number">215u</span>        <span class="comment">/* 合法 */</span></span><br><span class="line"><span class="number">0xFee</span>L      <span class="comment">/* 合法 */</span></span><br><span class="line"><span class="number">078</span>         <span class="comment">/* 非法：8 不是一个八进制数字 */</span></span><br><span class="line"><span class="number">032U</span>U       <span class="comment">/* 非法：不能重复后缀 */</span></span><br><span class="line"></span><br><span class="line"><span class="number">85</span>         <span class="comment">/* 十进制 */</span></span><br><span class="line"><span class="number">0213</span>       <span class="comment">/* 八进制 */</span></span><br><span class="line"><span class="number">0x4b</span>       <span class="comment">/* 十六进制 */</span></span><br><span class="line"><span class="number">30</span>         <span class="comment">/* int */</span></span><br><span class="line"><span class="number">30u</span>        <span class="comment">/* 无符号 int */</span></span><br><span class="line"><span class="number">30l</span>        <span class="comment">/* long */</span></span><br><span class="line"><span class="number">30u</span>l       <span class="comment">/* 无符号 long */</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="浮点常量"><a href="#浮点常量" class="headerlink" title="浮点常量"></a>浮点常量</h3><p>一个浮点常量是由整数部分、小数点、小数部分和指数部分组成。可以使用小数形式或者指数形式来表示浮点常量。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">3.14159</span>       <span class="comment">/* 合法 */</span></span><br><span class="line"><span class="number">314159E-5</span>L    <span class="comment">/* 合法 */</span></span><br><span class="line"><span class="number">510</span>E          <span class="comment">/* 非法：不完全指数 */</span></span><br><span class="line"><span class="number">210f</span>          <span class="comment">/* 非法：没有小数或指数 */</span></span><br><span class="line">.e55          <span class="comment">/* 非法：缺少整数或小数 */</span></span><br></pre></td></tr></table></figure>
+
+<p>使用小数形式表示时，必须包含小数点、指数或同时包含两者。使用指数形式表示时，必须包含整数部分、小数部分或同时包含两者。有符号的指数是用 e 或 E 表示的。</p>
+<h3 id="字符常量"><a href="#字符常量" class="headerlink" title="字符常量"></a>字符常量</h3><p>字符常量括在单引号里.</p>
+<h3 id="字符串常量"><a href="#字符串常量" class="headerlink" title="字符串常量"></a>字符串常量</h3><p>字符串常量是括在双引号 “” 里，或者是括在 @”” 里。字符串常量包含的字符与字符常量相似，可以是：普通字符、转义序列和通用字符.</p>
+<h3 id="定义常量"><a href="#定义常量" class="headerlink" title="定义常量"></a>定义常量</h3><p>常量是使用 const 关键字来定义的 。定义一个常量的语法如下：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> &lt;data_type&gt; &lt;constant_name&gt; = <span class="keyword">value</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Console"><a href="#Console" class="headerlink" title="Console"></a>Console</h2><p>System 命名空间中的 Console 类提供了一个函数 ReadLine()，用于接收来自用户的输入，并把它存储到一个变量中。提供了WriteLine()方法用于输出至控制台。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> num;</span><br><span class="line">num = Convert.ToInt32(Console.ReadLine());</span><br><span class="line">Console.WriteLine(<span class="string">&quot;test &#123;0&#125;&quot;</span>, num);</span><br></pre></td></tr></table></figure>
+
+<p>函数 Convert.ToInt32() 把用户输入的数据转换为 int 数据类型，因为 Console.ReadLine() 只接受字符串格式的数据。</p>
+<h1 id="集合（Collection）"><a href="#集合（Collection）" class="headerlink" title="集合（Collection）"></a>集合（Collection）</h1><table>
+<thead>
+<tr>
+<th align="left">类</th>
+<th align="left">描述和用法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">动态数组（ArrayList）</td>
+<td align="left">它代表了可被单独索引的对象的有序集合。<br>它基本上可以替代一个数组。但是，与数组不同的是，您可以使用索引在指定的位置添加和移除项目，动态数组会自动重新调整它的大小。它也允许在列表中进行动态内存分配、增加、搜索、排序各项。</td>
+</tr>
+<tr>
+<td align="left">哈希表（Hashtable）</td>
+<td align="left">它使用键来访问集合中的元素。<br>当使用键访问元素时，则使用哈希表，而且您可以识别一个有用的键值。哈希表中的每一项都有一个键/值对。键用于访问集合中的项目。</td>
+</tr>
+<tr>
+<td align="left">排序列表（SortedList）</td>
+<td align="left">它可以使用键和索引来访问列表中的项。<br>排序列表是数组和哈希表的组合。它包含一个可使用键或索引访问各项的列表。如果您使用索引访问各项，则它是一个动态数组（ArrayList），如果您使用键访问各项，则它是一个哈希表（Hashtable）。集合中的各项总是按键值排序。</td>
+</tr>
+<tr>
+<td align="left">堆栈（Stack）</td>
+<td align="left">它代表了一个后进先出的对象集合。<br>当需要对各项进行后进先出的访问时，则使用堆栈。当您在列表中添加一项，称为推入元素，当您从列表中移除一项时，称为弹出元素。</td>
+</tr>
+<tr>
+<td align="left">队列（Queue）</td>
+<td align="left">它代表了一个先进先出的对象集合。<br>当需要对各项进行先进先出的访问时，则使用队列。当您在列表中添加一项，称为入队，当您从列表中移除一项时，称为出队。</td>
+</tr>
+<tr>
+<td align="left">点阵列（BitArray）</td>
+<td align="left">它代表了一个使用值 1 和 0 来表示的二进制数组。<br>当需要存储位，但是事先不知道位数时，则使用点阵列。您可以使用整型索引从点阵列集合中访问各项，索引从零开始。</td>
+</tr>
+</tbody></table>
+<h1 id="运算符"><a href="#运算符" class="headerlink" title="运算符"></a>运算符</h1><p>运算符大多和Java类似，以下举出几个不一样的：</p>
+<table>
+<thead>
+<tr>
+<th align="left">运算符</th>
+<th align="left">描述</th>
+<th align="left">实例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">sizeof()</td>
+<td align="left">返回数据类型的大小。</td>
+<td align="left">sizeof(int)，将返回 4.</td>
+</tr>
+<tr>
+<td align="left">typeof()</td>
+<td align="left">返回 class 的类型。</td>
+<td align="left">typeof(StreamReader);</td>
+</tr>
+<tr>
+<td align="left">&amp;</td>
+<td align="left">返回变量的地址。</td>
+<td align="left">&a; 将得到变量的实际地址。</td>
+</tr>
+<tr>
+<td align="left">*</td>
+<td align="left">变量的指针。</td>
+<td align="left">*a; 将指向一个变量。</td>
+</tr>
+<tr>
+<td align="left">is</td>
+<td align="left">判断对象是否为某一类型。</td>
+<td align="left">if( Ford is Car) // 检查 Ford 是否是 Car 类的一个对象。</td>
+</tr>
+<tr>
+<td align="left">as</td>
+<td align="left">强制转换，即使转换失败也不会抛出异常。</td>
+<td align="left">Object obj = new StringReader(“Hello”);</td>
+</tr>
+<tr>
+<td align="left">StringReader r = obj as StringReader;</td>
+<td align="left"></td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<h1 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h1><table>
+<thead>
+<tr>
+<th align="left">语句</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">if 语句</td>
+<td align="left">一个 if 语句 由一个布尔表达式后跟一个或多个语句组成。</td>
+</tr>
+<tr>
+<td align="left">if…else 语句</td>
+<td align="left">一个 if 语句 后可跟一个可选的 else 语句，else 语句在布尔表达式为假时执行。</td>
+</tr>
+<tr>
+<td align="left">switch 语句    一个</td>
+<td align="left">switch 语句允许测试一个变量等于多个值时的情况。</td>
+</tr>
+<tr>
+<td align="left">? :</td>
+<td align="left">三元判断运算符</td>
+</tr>
+<tr>
+<td align="left">while 循环</td>
+<td align="left">当给定条件为真时，重复语句或语句组。它会在执行循环主体之前测试条件。</td>
+</tr>
+<tr>
+<td align="left">for/foreach 循环</td>
+<td align="left">多次执行一个语句序列，简化管理循环变量的代码。(如：foreach (int i in array))</td>
+</tr>
+<tr>
+<td align="left">do…while 循环</td>
+<td align="left">除了它是在循环主体结尾测试条件外，其他与 while 语句类似。</td>
+</tr>
+</tbody></table>
+<h1 id="可空类型（Nullable）"><a href="#可空类型（Nullable）" class="headerlink" title="可空类型（Nullable）"></a>可空类型（Nullable）</h1><p>C# 提供了一个特殊的数据类型: Nullable 类型（可空类型），可空类型可以表示其基础值类型正常范围内的值，再加上一个 null 值。</p>
+<p>在处理数据库和其他包含可能未赋值的元素的数据类型时，将 null 赋值给数值类型或布尔型的功能特别有用。例如，数据库中的布尔型字段可以存储值 true 或 false，或者，该字段也可以未定义。声明一个 nullable 类型（可空类型）的语法如下：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt; data_type&gt; ? &lt;variable_name&gt; = <span class="literal">null</span>;</span><br></pre></td></tr></table></figure>
+
+<p>实例:</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">namespace</span> <span class="title">CalculatorApplication</span> &#123;</span><br><span class="line">   <span class="keyword">class</span> <span class="title">NullablesAtShow</span> &#123;</span><br><span class="line">      <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">         <span class="keyword">int</span>? num1 = <span class="literal">null</span>;</span><br><span class="line">         <span class="keyword">int</span>? num2 = <span class="number">45</span>;</span><br><span class="line">         <span class="keyword">double</span>? num3 = <span class="keyword">new</span> <span class="keyword">double</span>?();</span><br><span class="line">         <span class="keyword">double</span>? num4 = <span class="number">3.14157</span>;</span><br><span class="line">         </span><br><span class="line">         <span class="keyword">bool</span>? boolval = <span class="keyword">new</span> <span class="keyword">bool</span>?();</span><br><span class="line"></span><br><span class="line">         <span class="comment">// 显示值</span></span><br><span class="line">         </span><br><span class="line">         Console.WriteLine(<span class="string">&quot;显示可空类型的值： &#123;0&#125;, &#123;1&#125;, &#123;2&#125;, &#123;3&#125;&quot;</span>, </span><br><span class="line">                            num1, num2, num3, num4);</span><br><span class="line">         Console.WriteLine(<span class="string">&quot;一个可空的布尔值： &#123;0&#125;&quot;</span>, boolval);</span><br><span class="line">         Console.ReadLine();</span><br><span class="line"></span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Null-合并运算符（-）"><a href="#Null-合并运算符（-）" class="headerlink" title="Null 合并运算符（??）"></a>Null 合并运算符（??）</h2><p>Null 合并运算符用于定义可空类型和引用类型的默认值。Null 合并运算符为类型转换定义了一个预设值，以防可空类型的值为 Null。Null 合并运算符把操作数类型隐式转换为另一个可空（或不可空）的值类型的操作数的类型。如果第一个操作数的值为 null，则运算符返回第二个操作数的值，否则返回第一个操作数的值。下面的实例演示了这点：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">namespace</span> <span class="title">CalculatorApplication</span> &#123;</span><br><span class="line">   <span class="keyword">class</span> <span class="title">NullablesAtShow</span> &#123;</span><br><span class="line">         </span><br><span class="line">      <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">         </span><br><span class="line">         <span class="keyword">double</span>? num1 = <span class="literal">null</span>;</span><br><span class="line">         <span class="keyword">double</span>? num2 = <span class="number">3.14157</span>;</span><br><span class="line">         <span class="keyword">double</span> num3;</span><br><span class="line">         num3 = num1 ?? <span class="number">5.34</span>;      <span class="comment">// num1 如果为空值则返回 5.34</span></span><br><span class="line">         Console.WriteLine(<span class="string">&quot;num3 的值： &#123;0&#125;&quot;</span>, num3);</span><br><span class="line">         num3 = num2 ?? <span class="number">5.34</span>;</span><br><span class="line">         Console.WriteLine(<span class="string">&quot;num3 的值： &#123;0&#125;&quot;</span>, num3);</span><br><span class="line">         Console.ReadLine();</span><br><span class="line"></span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="访问修饰符"><a href="#访问修饰符" class="headerlink" title="访问修饰符"></a>访问修饰符</h1><p>一个 访问修饰符 定义了一个类成员的范围和可见性。C# 支持的访问修饰符如下所示：</p>
+<ul>
+<li>public：所有对象都可以访问；</li>
+<li>private：对象本身在对象内部可以访问；</li>
+<li>protected：只有该类对象及其子类对象可以访问</li>
+<li>internal：同一个程序集的对象可以访问；</li>
+<li>protected internal：访问限于当前程序集或派生自包含类的类型。</li>
+</ul>
+<p>类的默认访问标识符是 internal，成员的默认访问标识符是 private。</p>
+<h2 id="public-访问修饰符"><a href="#public-访问修饰符" class="headerlink" title="public 访问修饰符"></a>public 访问修饰符</h2><p>public 访问修饰符允许一个类将其成员变量和成员函数暴露给其他的函数和对象。任何公有成员可以被外部的类访问。</p>
+<h2 id="private-访问修饰符"><a href="#private-访问修饰符" class="headerlink" title="private 访问修饰符"></a>private 访问修饰符</h2><p>private 访问修饰符允许一个类将其成员变量和成员函数对其他的函数和对象进行隐藏。只有同一个类中的函数可以访问它的私有成员。即使是类的实例也不能访问它的私有成员。</p>
+<h2 id="protected-访问修饰符"><a href="#protected-访问修饰符" class="headerlink" title="protected 访问修饰符"></a>protected 访问修饰符</h2><p>protected 访问修饰符允许子类访问它的基类的成员变量和成员函数。这样有助于实现继承。</p>
+<h2 id="internal-访问修饰符"><a href="#internal-访问修饰符" class="headerlink" title="internal 访问修饰符"></a>internal 访问修饰符</h2><p>internal 访问修饰符允许一个类将其成员变量和成员函数暴露给当前程序中的其他函数和对象。换句话说，带有 internal 访问修饰符的任何成员可以被定义在该成员所定义的应用程序内的任何类或方法访问。</p>
+<h2 id="protected-internal-访问修饰符"><a href="#protected-internal-访问修饰符" class="headerlink" title="protected internal 访问修饰符"></a>protected internal 访问修饰符</h2><p>protected internal 访问修饰符允许在本类,派生类或者包含该类的程序集中访问。这也被用于实现继承。</p>
+<h1 id="class"><a href="#class" class="headerlink" title="class"></a>class</h1><p><strong>析构函数不能继承或重载。</strong></p>
+<h2 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h2><p>C#不支持多重继承，同Java一样也需要接口来实现，继承语法：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;访问修饰符符&gt; <span class="keyword">class</span> &lt;基类&gt; &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">class</span> &lt;派生类&gt; : &lt;基类&gt; &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>父类对象应在子类对象创建之前被创建，可以在成员初始化列表中进行父类的初始化(base类似于Java中的super)：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">Rectangle</span> &#123;</span><br><span class="line">    <span class="comment">// 成员变量</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">double</span> length;</span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">double</span> width;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Rectangle</span>(<span class="params"><span class="keyword">double</span> l, <span class="keyword">double</span> w</span>)</span> &#123;</span><br><span class="line">        length = l;</span><br><span class="line">        width = w;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Display</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Tabletop</span> : <span class="title">Rectangle</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">double</span> cost;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Tabletop</span>(<span class="params"><span class="keyword">double</span> l, <span class="keyword">double</span> w</span>) : <span class="title">base</span>(<span class="params">l, w</span>)</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Display</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">        <span class="keyword">base</span>.Display();</span><br><span class="line">        Console.WriteLine(<span class="string">&quot;成本： &#123;0&#125;&quot;</span>, GetCost());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">ExecuteRectangle</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">        Tabletop t = <span class="keyword">new</span> Tabletop(<span class="number">4.5</span>, <span class="number">7.5</span>);</span><br><span class="line">        t.Display();</span><br><span class="line">        Console.ReadLine();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="多态"><a href="#多态" class="headerlink" title="多态"></a>多态</h2><p>在面向对象编程范式中，多态性往往表现为”<strong>一个接口，多个功能</strong>“。</p>
+<ul>
+<li>静态多态性中，函数的响应是在编译时发生的;</li>
+<li>动态多态性中，函数的响应是在运行时发生的。</li>
+</ul>
+<h3 id="静态多态性"><a href="#静态多态性" class="headerlink" title="静态多态性"></a>静态多态性</h3><p>在编译时，函数和对象的连接机制被称为早期绑定，也被称为静态绑定。C# 提供了两种技术来实现静态多态性。分别为：</p>
+<ul>
+<li>函数重载</li>
+<li>运算符重载</li>
+</ul>
+<h3 id="动态多态性"><a href="#动态多态性" class="headerlink" title="动态多态性"></a>动态多态性</h3><p>动态多态性是通过 抽象类 和 虚方法 实现的。</p>
+<p>C# 允许使用关键字 abstract 创建抽象类，用于提供接口的部分类的实现。当一个派生类继承自该抽象类时，实现即完成。抽象类包含抽象方法，抽象方法可被派生类实现。派生类具有更专业的功能。下面是有关抽象类的一些规则：</p>
+<ul>
+<li>不能创建一个抽象类的实例。</li>
+<li>不能在一个抽象类外部声明一个抽象方法。</li>
+<li>通过在类定义前面放置关键字 <strong>sealed</strong>，可以将类声明为密封类。当一个类被声明为 sealed 时，它不能被继承。抽象类不能被声明为 sealed。</li>
+</ul>
+<p>实例：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">namespace</span> <span class="title">PolymorphismApplication</span> &#123;</span><br><span class="line">   <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title">Shape</span> &#123;</span><br><span class="line">       <span class="function"><span class="keyword">abstract</span> <span class="keyword">public</span> <span class="keyword">int</span> <span class="title">area</span>(<span class="params"></span>)</span>;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">class</span> <span class="title">Rectangle</span>:  <span class="title">Shape</span> &#123;</span><br><span class="line">      <span class="keyword">private</span> <span class="keyword">int</span> length;</span><br><span class="line">      <span class="keyword">private</span> <span class="keyword">int</span> width;</span><br><span class="line">      </span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="title">Rectangle</span>(<span class="params"> <span class="keyword">int</span> a=<span class="number">0</span>, <span class="keyword">int</span> b=<span class="number">0</span></span>)</span> &#123;</span><br><span class="line">         length = a;</span><br><span class="line">         width = b;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">int</span> <span class="title">area</span> (<span class="params"></span>)</span> &#123; </span><br><span class="line">         Console.WriteLine(<span class="string">&quot;Rectangle 类的面积：&quot;</span>);</span><br><span class="line">         <span class="keyword">return</span> (width * length); </span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">class</span> <span class="title">RectangleTester</span> &#123;</span><br><span class="line">      <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">         Rectangle r = <span class="keyword">new</span> Rectangle(<span class="number">10</span>, <span class="number">7</span>);</span><br><span class="line">         <span class="keyword">double</span> a = r.area();</span><br><span class="line">         Console.WriteLine(<span class="string">&quot;面积： &#123;0&#125;&quot;</span>,a);</span><br><span class="line">         Console.ReadKey();</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当有一个定义在类中的函数需要在继承类中实现时，可以使用虚方法。虚方法是使用关键字 virtual 声明的。虚方法可以在不同的继承类中有不同的实现。对虚方法的调用是在运行时发生的。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">namespace</span> <span class="title">PolymorphismApplication</span> &#123;</span><br><span class="line">   <span class="keyword">class</span> <span class="title">Shape</span>  &#123;</span><br><span class="line">      <span class="keyword">protected</span> <span class="keyword">int</span> width, height;</span><br><span class="line"></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="title">Shape</span>(<span class="params"> <span class="keyword">int</span> a=<span class="number">0</span>, <span class="keyword">int</span> b=<span class="number">0</span></span>)</span> &#123;</span><br><span class="line">         width = a;</span><br><span class="line">         height = b;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">area</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">         Console.WriteLine(<span class="string">&quot;父类的面积：&quot;</span>);</span><br><span class="line">         <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">class</span> <span class="title">Rectangle</span>: <span class="title">Shape</span> &#123;</span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="title">Rectangle</span>(<span class="params"> <span class="keyword">int</span> a=<span class="number">0</span>, <span class="keyword">int</span> b=<span class="number">0</span></span>): <span class="title">base</span>(<span class="params">a, b</span>)</span> &#123;</span><br><span class="line"></span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">int</span> <span class="title">area</span> (<span class="params"></span>)</span> &#123;</span><br><span class="line">         Console.WriteLine(<span class="string">&quot;Rectangle 类的面积：&quot;</span>);</span><br><span class="line">         <span class="keyword">return</span> (width * height); </span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">class</span> <span class="title">Triangle</span>: <span class="title">Shape</span> &#123;</span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="title">Triangle</span>(<span class="params"><span class="keyword">int</span> a = <span class="number">0</span>, <span class="keyword">int</span> b = <span class="number">0</span></span>): <span class="title">base</span>(<span class="params">a, b</span>)</span> &#123;</span><br><span class="line">      </span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">int</span> <span class="title">area</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">         Console.WriteLine(<span class="string">&quot;Triangle 类的面积：&quot;</span>);</span><br><span class="line">         <span class="keyword">return</span> (width * height / <span class="number">2</span>); </span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">class</span> <span class="title">Caller</span> &#123;</span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">CallArea</span>(<span class="params">Shape sh</span>)</span> &#123;</span><br><span class="line">         <span class="keyword">int</span> a;</span><br><span class="line">         a = sh.area();</span><br><span class="line">         Console.WriteLine(<span class="string">&quot;面积： &#123;0&#125;&quot;</span>, a);</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">class</span> <span class="title">Tester</span> &#123;</span><br><span class="line">      </span><br><span class="line">      <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">         Caller c = <span class="keyword">new</span> Caller();</span><br><span class="line">         Rectangle r = <span class="keyword">new</span> Rectangle(<span class="number">10</span>, <span class="number">7</span>);</span><br><span class="line">         Triangle t = <span class="keyword">new</span> Triangle(<span class="number">10</span>, <span class="number">5</span>);</span><br><span class="line">         c.CallArea(r);</span><br><span class="line">         c.CallArea(t);</span><br><span class="line">         Console.ReadKey();</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意：<strong>override重写的属性必须是virtual、abstract或override</strong>。</p>
+<h1 id="interface"><a href="#interface" class="headerlink" title="interface"></a>interface</h1><p>类似于Java。</p>
+<h1 id="namespace"><a href="#namespace" class="headerlink" title="namespace"></a>namespace</h1><p>在一个命名空间中声明的类的名称与另一个命名空间中声明的相同的类的名称不冲突。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">namespace_name</span> &#123;</span><br><span class="line">   <span class="comment">// 代码声明</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可通过namespace_name.item_name方式调用命名空间中的item。使用 using 命名空间指令，这样在使用的时候就不用在前面加上命名空间名称。</p>
+<h1 id="预处理器指令"><a href="#预处理器指令" class="headerlink" title="预处理器指令"></a>预处理器指令</h1><p>预处理器指令指导编译器在实际编译开始之前对信息进行预处理。</p>
+<p>所有的预处理器指令都是以 # 开始。且在一行上，只有空白字符可以出现在预处理器指令之前。预处理器指令不是语句，所以它们不以分号（;）结束。</p>
+<p>C# 编译器没有一个单独的预处理器，但是，指令被处理时就像是有一个单独的预处理器一样。在 C# 中，预处理器指令用于在条件编译中起作用。与 C 和 C++ 不同的是，它们不是用来创建宏。一个预处理器指令必须是该行上的唯一指令。</p>
+<table>
+<thead>
+<tr>
+<th align="left">预处理器指令</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">#define</td>
+<td align="left">它用于定义一系列成为符号的字符。</td>
+</tr>
+<tr>
+<td align="left">#undef</td>
+<td align="left">它用于取消定义符号。</td>
+</tr>
+<tr>
+<td align="left">#if</td>
+<td align="left">它用于测试符号是否为真。</td>
+</tr>
+<tr>
+<td align="left">#else</td>
+<td align="left">它用于创建复合条件指令，与 #if 一起使用。</td>
+</tr>
+<tr>
+<td align="left">#elif</td>
+<td align="left">它用于创建复合条件指令。</td>
+</tr>
+<tr>
+<td align="left">#endif</td>
+<td align="left">指定一个条件指令的结束。</td>
+</tr>
+<tr>
+<td align="left">#line</td>
+<td align="left">它可以让您修改编译器的行数以及（可选地）输出错误和警告的文件名。</td>
+</tr>
+<tr>
+<td align="left">#error</td>
+<td align="left">它允许从代码的指定位置生成一个错误。</td>
+</tr>
+<tr>
+<td align="left">#warning</td>
+<td align="left">它允许从代码的指定位置生成一级警告。</td>
+</tr>
+<tr>
+<td align="left">#region</td>
+<td align="left">它可以让您在使用 Visual Studio Code Editor 的大纲特性时，指定一个可展开或折叠的代码块。</td>
+</tr>
+<tr>
+<td align="left">#endregion</td>
+<td align="left">它标识着 #region 块的结束。</td>
+</tr>
+</tbody></table>
+<h1 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h1><ul>
+<li>try：一个 try 块标识了一个将被激活的特定的异常的代码块。后跟一个或多个 catch 块。</li>
+<li>catch：程序通过异常处理程序捕获异常。catch 关键字表示异常的捕获。</li>
+<li>finally：finally 块用于执行给定的语句，不管异常是否被抛出都会执行。例如，如果您打开一个文件，不管是否出现异常文件都要被关闭。</li>
+<li>throw：当问题出现时，程序抛出一个异常。使用 throw 关键字来完成。</li>
+</ul>
+<p>C# 中的异常类主要是直接或间接地派生于 System.Exception 类。System.ApplicationException 和 System.SystemException 类是派生于 System.Exception 类的异常类。</p>
+<ul>
+<li>System.ApplicationException 类支持由应用程序生成的异常。所以程序员定义的异常都应派生自该类。</li>
+<li>System.SystemException 类是所有预定义的系统异常的基类。</li>
+</ul>
+<h1 id="反射（Reflection）"><a href="#反射（Reflection）" class="headerlink" title="反射（Reflection）"></a>反射（Reflection）</h1><h1 id="委托（Delegate）"><a href="#委托（Delegate）" class="headerlink" title="委托（Delegate）"></a>委托（Delegate）</h1><p>委托是存有对某个方法的引用的一种引用类型变量。引用可在运行时被改变。委托特别用于实现事件和回调方法。所有的委托都派生自 System.Delegate 类。</p>
+<h2 id="声明委托"><a href="#声明委托" class="headerlink" title="声明委托"></a>声明委托</h2><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">delegate</span> &lt;<span class="keyword">return</span> type&gt; &lt;<span class="keyword">delegate</span>-name&gt; &lt;parameter list&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 下面的委托可被用于引用任何一个带有一个单一的 string 参数的方法，并返回一个 int 类型变量</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">delegate</span> <span class="keyword">int</span> <span class="title">MyDelegate</span> (<span class="params"><span class="keyword">string</span> s</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="实例化委托"><a href="#实例化委托" class="headerlink" title="实例化委托"></a>实例化委托</h2><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">delegate</span> <span class="keyword">void</span> <span class="title">printString</span>(<span class="params"><span class="keyword">string</span> s</span>)</span>;</span><br><span class="line">...</span><br><span class="line">printString ps1 = <span class="keyword">new</span> printString(WriteToScreen);</span><br><span class="line">printString ps2 = <span class="keyword">new</span> printString(WriteToFile);</span><br></pre></td></tr></table></figure>
+
+<h2 id="委托的多播"><a href="#委托的多播" class="headerlink" title="委托的多播"></a>委托的多播</h2><p>委托对象可使用 “+” 运算符进行合并。一个合并委托调用它所合并的两个委托。只有相同类型的委托可被合并。”-“ 运算符可用于从合并的委托中移除组件委托。</p>
+<p>使用委托的这个有用的特点，可以创建一个委托被调用时要调用的方法的调用列表。这被称为委托的 多播（multicasting），也叫组播。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">delegate</span> <span class="keyword">int</span> <span class="title">NumberChanger</span>(<span class="params"><span class="keyword">int</span> n</span>)</span>;</span><br><span class="line"><span class="keyword">namespace</span> <span class="title">DelegateAppl</span> &#123;</span><br><span class="line">   <span class="keyword">class</span> <span class="title">TestDelegate</span> &#123;</span><br><span class="line">      <span class="keyword">static</span> <span class="keyword">int</span> num = <span class="number">10</span>;</span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">AddNum</span>(<span class="params"><span class="keyword">int</span> p</span>)</span> &#123;</span><br><span class="line">         num += p;</span><br><span class="line">         <span class="keyword">return</span> num;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">MultNum</span>(<span class="params"><span class="keyword">int</span> q</span>)</span> &#123;</span><br><span class="line">         num *= q;</span><br><span class="line">         <span class="keyword">return</span> num;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getNum</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">         <span class="keyword">return</span> num;</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">         <span class="comment">// 创建委托实例</span></span><br><span class="line">         NumberChanger nc;</span><br><span class="line">         NumberChanger nc1 = <span class="keyword">new</span> NumberChanger(AddNum);</span><br><span class="line">         NumberChanger nc2 = <span class="keyword">new</span> NumberChanger(MultNum);</span><br><span class="line">         nc = nc1;</span><br><span class="line">         nc += nc2;</span><br><span class="line">         <span class="comment">// 调用多播</span></span><br><span class="line">         nc(<span class="number">5</span>);</span><br><span class="line">         Console.WriteLine(<span class="string">&quot;Value of Num: &#123;0&#125;&quot;</span>, getNum()); <span class="comment">// 75</span></span><br><span class="line">         Console.ReadKey();</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="事件（Event）"><a href="#事件（Event）" class="headerlink" title="事件（Event）"></a>事件（Event）</h1><ul>
+<li>发布器（publisher） 是一个包含事件和委托定义的对象。事件和委托之间的联系也定义在这个对象中。发布器（publisher）类的对象调用这个事件，并通知其他的对象。</li>
+<li>订阅器（subscriber） 是一个接受事件并提供事件处理程序的对象。在发布器（publisher）类中的委托调用订阅器（subscriber）类中的方法（事件处理程序）。</li>
+</ul>
+<h2 id="声明事件"><a href="#声明事件" class="headerlink" title="声明事件"></a>声明事件</h2><p>在类的内部声明事件，首先必须声明该事件的委托类型。例如：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">delegate</span> <span class="keyword">void</span> <span class="title">BoilerLogHandler</span>(<span class="params"><span class="keyword">string</span> status</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<p>然后，声明事件本身，使用 event 关键字：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 基于上面的委托定义事件</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">event</span> BoilerLogHandler BoilerEventLog;</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码定义了一个名为 BoilerLogHandler 的委托和一个名为 BoilerEventLog 的事件，该事件在生成的时候会调用委托。</p>
+<h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">SimpleEvent</span> &#123;</span><br><span class="line">  <span class="keyword">using</span> System;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/***********发布器类***********/</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">EventTest</span></span><br><span class="line">  &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> <span class="keyword">value</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">delegate</span> <span class="keyword">void</span> <span class="title">NumManipulationHandler</span>(<span class="params"></span>)</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">event</span> NumManipulationHandler ChangeNum;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">OnNumChanged</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (ChangeNum != <span class="literal">null</span>) &#123;</span><br><span class="line">        ChangeNum(); <span class="comment">/* 事件被触发 */</span></span><br><span class="line">      &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        Console.WriteLine( <span class="string">&quot;event not fire&quot;</span> );</span><br><span class="line">        Console.ReadKey(); <span class="comment">/* 回车继续 */</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">EventTest</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">      <span class="keyword">int</span> n = <span class="number">5</span>;</span><br><span class="line">      SetValue(n);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">SetValue</span>(<span class="params"><span class="keyword">int</span> n</span>)</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="keyword">value</span> != n) &#123;</span><br><span class="line">        <span class="keyword">value</span> = n;</span><br><span class="line">        OnNumChanged();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/***********订阅器类***********/</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">subscribEvent</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">printf</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">      Console.WriteLine( <span class="string">&quot;event fire&quot;</span> );</span><br><span class="line">      Console.ReadKey(); <span class="comment">/* 回车继续 */</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/***********触发***********/</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">MainClass</span> &#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">      EventTest e = <span class="keyword">new</span> EventTest(); <span class="comment">/* 实例化对象,第一次没有触发事件 */</span></span><br><span class="line">      subscribEvent v = <span class="keyword">new</span> subscribEvent(); <span class="comment">/* 实例化对象 */</span></span><br><span class="line">      e.ChangeNum += <span class="keyword">new</span> EventTest.NumManipulationHandler(v.printf); <span class="comment">/* 注册 */</span></span><br><span class="line">      e.SetValue(<span class="number">7</span>);</span><br><span class="line">      e.SetValue(<span class="number">11</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 当上面的代码被编译和执行时，它会产生下列结果：</span></span><br><span class="line"><span class="keyword">event</span> not fire</span><br><span class="line"><span class="keyword">event</span> fire</span><br><span class="line"><span class="keyword">event</span> fire</span><br></pre></td></tr></table></figure>
+
+<h1 id="泛型（Generic）"><a href="#泛型（Generic）" class="headerlink" title="泛型（Generic）"></a>泛型（Generic）</h1><p>使用泛型是一种增强程序功能的技术，具体表现在以下几个方面：</p>
+<ul>
+<li>它有助于最大限度地重用代码、保护类型的安全以及提高性能。</li>
+<li>可以创建泛型集合类。.NET 框架类库在 System.Collections.Generic 命名空间中包含了一些新的泛型集合类。可以使用这些泛型集合类来替代 System.Collections 中的集合类。</li>
+<li>可以创建自己的泛型接口、泛型类、泛型方法、泛型事件和泛型委托。</li>
+<li>可以对泛型类进行约束以访问特定数据类型的方法。</li>
+<li>关于泛型数据类型中使用的类型的信息可在运行时通过使用反射获取。</li>
+</ul>
+<h2 id="泛型类"><a href="#泛型类" class="headerlink" title="泛型类"></a>泛型类</h2><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">GenericApplication</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">MyGenericArray</span>&lt;<span class="title">T</span>&gt; &#123;</span><br><span class="line">        <span class="keyword">private</span> T[] array;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">MyGenericArray</span>(<span class="params"><span class="keyword">int</span> size</span>)</span> &#123;</span><br><span class="line">            array = <span class="keyword">new</span> T[size + <span class="number">1</span>];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> T <span class="title">getItem</span>(<span class="params"><span class="keyword">int</span> index</span>)</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> array[index];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setItem</span>(<span class="params"><span class="keyword">int</span> index, T <span class="keyword">value</span></span>)</span> &#123;</span><br><span class="line">            array[index] = <span class="keyword">value</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">           </span><br><span class="line">    <span class="keyword">class</span> <span class="title">Tester</span> &#123;</span><br><span class="line">        <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">            <span class="comment">// 声明一个整型数组</span></span><br><span class="line">            MyGenericArray&lt;<span class="keyword">int</span>&gt; intArray = <span class="keyword">new</span> MyGenericArray&lt;<span class="keyword">int</span>&gt;(<span class="number">5</span>);</span><br><span class="line">            <span class="comment">// 设置值</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> c = <span class="number">0</span>; c &lt; <span class="number">5</span>; c++) &#123;</span><br><span class="line">                intArray.setItem(c, c*<span class="number">5</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 获取值</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> c = <span class="number">0</span>; c &lt; <span class="number">5</span>; c++) &#123;</span><br><span class="line">                Console.Write(intArray.getItem(c) + <span class="string">&quot; &quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            Console.WriteLine();</span><br><span class="line">            <span class="comment">// 声明一个字符数组</span></span><br><span class="line">            MyGenericArray&lt;<span class="keyword">char</span>&gt; charArray = <span class="keyword">new</span> MyGenericArray&lt;<span class="keyword">char</span>&gt;(<span class="number">5</span>);</span><br><span class="line">            <span class="comment">// 设置值</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> c = <span class="number">0</span>; c &lt; <span class="number">5</span>; c++) &#123;</span><br><span class="line">                charArray.setItem(c, (<span class="keyword">char</span>)(c+<span class="number">97</span>));</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 获取值</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> c = <span class="number">0</span>; c &lt; <span class="number">5</span>; c++) &#123;</span><br><span class="line">                Console.Write(charArray.getItem(c) + <span class="string">&quot; &quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            Console.WriteLine();</span><br><span class="line">            Console.ReadKey();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="泛型方法"><a href="#泛型方法" class="headerlink" title="泛型方法"></a>泛型方法</h2><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">GenericMethodAppl</span> &#123;</span><br><span class="line">    <span class="keyword">class</span> <span class="title">Program</span> &#123;</span><br><span class="line">        <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Swap</span>&lt;<span class="title">T</span>&gt;(<span class="params"><span class="keyword">ref</span> T lhs, <span class="keyword">ref</span> T rhs</span>)</span> &#123;</span><br><span class="line">            T temp;</span><br><span class="line">            temp = lhs;</span><br><span class="line">            lhs = rhs;</span><br><span class="line">            rhs = temp;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">            <span class="keyword">int</span> a, b;</span><br><span class="line">            <span class="keyword">char</span> c, d;</span><br><span class="line">            a = <span class="number">10</span>;</span><br><span class="line">            b = <span class="number">20</span>;</span><br><span class="line">            c = <span class="string">&#x27;I&#x27;</span>;</span><br><span class="line">            d = <span class="string">&#x27;V&#x27;</span>;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 在交换之前显示值</span></span><br><span class="line">            Console.WriteLine(<span class="string">&quot;Int values before calling swap:&quot;</span>);</span><br><span class="line">            Console.WriteLine(<span class="string">&quot;a = &#123;0&#125;, b = &#123;1&#125;&quot;</span>, a, b);</span><br><span class="line">            Console.WriteLine(<span class="string">&quot;Char values before calling swap:&quot;</span>);</span><br><span class="line">            Console.WriteLine(<span class="string">&quot;c = &#123;0&#125;, d = &#123;1&#125;&quot;</span>, c, d);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 调用 swap</span></span><br><span class="line">            Swap&lt;<span class="keyword">int</span>&gt;(<span class="keyword">ref</span> a, <span class="keyword">ref</span> b);</span><br><span class="line">            Swap&lt;<span class="keyword">char</span>&gt;(<span class="keyword">ref</span> c, <span class="keyword">ref</span> d);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 在交换之后显示值</span></span><br><span class="line">            Console.WriteLine(<span class="string">&quot;Int values after calling swap:&quot;</span>);</span><br><span class="line">            Console.WriteLine(<span class="string">&quot;a = &#123;0&#125;, b = &#123;1&#125;&quot;</span>, a, b);</span><br><span class="line">            Console.WriteLine(<span class="string">&quot;Char values after calling swap:&quot;</span>);</span><br><span class="line">            Console.WriteLine(<span class="string">&quot;c = &#123;0&#125;, d = &#123;1&#125;&quot;</span>, c, d);</span><br><span class="line">            Console.ReadKey();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="泛型委托"><a href="#泛型委托" class="headerlink" title="泛型委托"></a>泛型委托</h2><p>可以通过类型参数定义泛型委托。例如：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">delegate</span> T <span class="title">NumberChanger</span>&lt;<span class="title">T</span>&gt;(<span class="params">T n</span>)</span>;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">delegate</span> T <span class="title">NumberChanger</span>&lt;<span class="title">T</span>&gt;(<span class="params">T n</span>)</span>;</span><br><span class="line"><span class="keyword">namespace</span> <span class="title">GenericDelegateAppl</span> &#123;</span><br><span class="line">    <span class="keyword">class</span> <span class="title">TestDelegate</span> &#123;</span><br><span class="line">        <span class="keyword">static</span> <span class="keyword">int</span> num = <span class="number">10</span>;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">AddNum</span>(<span class="params"><span class="keyword">int</span> p</span>)</span> &#123;</span><br><span class="line">            num += p;</span><br><span class="line">            <span class="keyword">return</span> num;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">MultNum</span>(<span class="params"><span class="keyword">int</span> q</span>)</span> &#123;</span><br><span class="line">            num *= q;</span><br><span class="line">            <span class="keyword">return</span> num;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getNum</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> num;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">            <span class="comment">// 创建委托实例</span></span><br><span class="line">            NumberChanger&lt;<span class="keyword">int</span>&gt; nc1 = <span class="keyword">new</span> NumberChanger&lt;<span class="keyword">int</span>&gt;(AddNum);</span><br><span class="line">            NumberChanger&lt;<span class="keyword">int</span>&gt; nc2 = <span class="keyword">new</span> NumberChanger&lt;<span class="keyword">int</span>&gt;(MultNum);</span><br><span class="line">            <span class="comment">// 使用委托对象调用方法</span></span><br><span class="line">            nc1(<span class="number">25</span>);</span><br><span class="line">            Console.WriteLine(<span class="string">&quot;Value of Num: &#123;0&#125;&quot;</span>, getNum());</span><br><span class="line">            nc2(<span class="number">5</span>);</span><br><span class="line">            Console.WriteLine(<span class="string">&quot;Value of Num: &#123;0&#125;&quot;</span>, getNum());</span><br><span class="line">            Console.ReadKey();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Lambda表达式"><a href="#Lambda表达式" class="headerlink" title="Lambda表达式"></a>Lambda表达式</h1><h2 id="1、表达式Lambda"><a href="#1、表达式Lambda" class="headerlink" title="1、表达式Lambda"></a>1、表达式Lambda</h2><p>表达式位于 =&gt; 运算符右侧的 lambda 表达式称为“表达式 lambda”。 表达式 lambda 会返回表达式的结果，并采用以下基本形式：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(input parameters) =&gt; expression</span><br></pre></td></tr></table></figure>
+
+<p>仅当 lambda 只有一个输入参数时，括号才是可选的；否则括号是必需的。括号内的两个或更多输入参数使用逗号加以分隔；有时，编译器难以或无法推断输入类型，如果出现这种情况，可以按以下示例中所示方式显式指定类型：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">int</span> x, <span class="keyword">string</span> s) =&gt; s.Length &gt; x</span><br></pre></td></tr></table></figure>
+
+<p>使用空括号指定零个输入参数：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">() =&gt; SomeMethod()</span><br></pre></td></tr></table></figure>
+
+<h2 id="2、语句Lambda"><a href="#2、语句Lambda" class="headerlink" title="2、语句Lambda"></a>2、语句Lambda</h2><p>当lambda表达式中，有多个语句时，写成如下形式：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(input parameters) =&gt; &#123;statement;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">delegate</span> <span class="keyword">void</span> <span class="title">TestDelegate</span>(<span class="params"><span class="keyword">string</span> s</span>)</span>;</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line">TestDelegate myDel = n =&gt; &#123;</span><br><span class="line">  <span class="keyword">string</span> s = n + <span class="string">&quot; &quot;</span> + <span class="string">&quot;World&quot;</span>;</span><br><span class="line">  Console.WriteLine(s); </span><br><span class="line">&#125;;</span><br><span class="line">myDel(<span class="string">&quot;Hello&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h1 id="线程"><a href="#线程" class="headerlink" title="线程"></a>线程</h1><h2 id="Thread类"><a href="#Thread类" class="headerlink" title="Thread类"></a>Thread类</h2><p>Thread类的常用属性：</p>
+<table>
+<thead>
+<tr>
+<th align="left">属性</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">CurrentContext</td>
+<td align="left">获取线程正在其中执行的当前上下文。</td>
+</tr>
+<tr>
+<td align="left">CurrentCulture</td>
+<td align="left">获取或设置当前线程的区域性。</td>
+</tr>
+<tr>
+<td align="left">CurrentPrinciple</td>
+<td align="left">获取或设置线程的当前负责人（对基于角色的安全性而言）。</td>
+</tr>
+<tr>
+<td align="left">CurrentThread</td>
+<td align="left">获取当前正在运行的线程。</td>
+</tr>
+<tr>
+<td align="left">CurrentUICulture</td>
+<td align="left">获取或设置资源管理器使用的当前区域性以便在运行时查找区域性特定的资源。</td>
+</tr>
+<tr>
+<td align="left">ExecutionContext</td>
+<td align="left">获取一个 ExecutionContext 对象，该对象包含有关当前线程的各种上下文的信息。</td>
+</tr>
+<tr>
+<td align="left">IsAlive</td>
+<td align="left">获取一个值，该值指示当前线程的执行状态。</td>
+</tr>
+<tr>
+<td align="left">IsBackground</td>
+<td align="left">获取或设置一个值，该值指示某个线程是否为后台线程。</td>
+</tr>
+<tr>
+<td align="left">IsThreadPoolThread</td>
+<td align="left">获取一个值，该值指示线程是否属于托管线程池。</td>
+</tr>
+<tr>
+<td align="left">ManagedThreadId</td>
+<td align="left">获取当前托管线程的唯一标识符。</td>
+</tr>
+<tr>
+<td align="left">Name</td>
+<td align="left">获取或设置线程的名称。</td>
+</tr>
+<tr>
+<td align="left">Priority</td>
+<td align="left">获取或设置一个值，该值指示线程的调度优先级。</td>
+</tr>
+<tr>
+<td align="left">ThreadState</td>
+<td align="left">获取一个值，该值包含当前线程的状态。</td>
+</tr>
+</tbody></table>
+<p>Thread类的常用方法：</p>
+<table>
+<thead>
+<tr>
+<th align="left">序号</th>
+<th align="left">方法名 &amp; 描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">1</td>
+<td align="left">public void Abort()<br>在调用此方法的线程上引发 ThreadAbortException，以开始终止此线程的过程。调用此方法通常会终止线程。</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">public static LocalDataStoreSlot AllocateDataSlot()<br>在所有的线程上分配未命名的数据槽。为了获得更好的性能，请改用以 ThreadStaticAttribute 属性标记的字段。</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">public static LocalDataStoreSlot AllocateNamedDataSlot( string name) <br>在所有线程上分配已命名的数据槽。为了获得更好的性能，请改用以 ThreadStaticAttribute 属性标记的字段。</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">public static void BeginCriticalRegion()<br>通知主机执行将要进入一个代码区域，在该代码区域内线程中止或未经处理的异常的影响可能会危害应用程序域中的其他任务。</td>
+</tr>
+<tr>
+<td align="left">5</td>
+<td align="left">public static void BeginThreadAffinity()<br>通知主机托管代码将要执行依赖于当前物理操作系统线程的标识的指令。</td>
+</tr>
+<tr>
+<td align="left">6</td>
+<td align="left">public static void EndCriticalRegion()<br>通知主机执行将要进入一个代码区域，在该代码区域内线程中止或未经处理的异常仅影响当前任务。</td>
+</tr>
+<tr>
+<td align="left">7</td>
+<td align="left">public static void EndThreadAffinity()<br>通知主机托管代码已执行完依赖于当前物理操作系统线程的标识的指令。</td>
+</tr>
+<tr>
+<td align="left">8</td>
+<td align="left">public static void FreeNamedDataSlot(string name)<br>为进程中的所有线程消除名称与槽之间的关联。为了获得更好的性能，请改用以 ThreadStaticAttribute 属性标记的字段。</td>
+</tr>
+<tr>
+<td align="left">9</td>
+<td align="left">public static Object GetData( LocalDataStoreSlot slot ) <br>在当前线程的当前域中从当前线程上指定的槽中检索值。为了获得更好的性能，请改用以 ThreadStaticAttribute 属性标记的字段。</td>
+</tr>
+<tr>
+<td align="left">10</td>
+<td align="left">public static AppDomain GetDomain()<br>返回当前线程正在其中运行的当前域。</td>
+</tr>
+<tr>
+<td align="left">11</td>
+<td align="left">public static AppDomain GetDomainID()<br>返回唯一的应用程序域标识符。</td>
+</tr>
+<tr>
+<td align="left">12</td>
+<td align="left">public static LocalDataStoreSlot GetNamedDataSlot( string name ) <br>查找已命名的数据槽。为了获得更好的性能，请改用以 ThreadStaticAttribute 属性标记的字段。</td>
+</tr>
+<tr>
+<td align="left">13</td>
+<td align="left">public void Interrupt()<br>中断处于 WaitSleepJoin 线程状态的线程。</td>
+</tr>
+<tr>
+<td align="left">14</td>
+<td align="left">public void Join()<br>在继续执行标准的 COM 和 SendMessage 消息泵处理期间，阻塞调用线程，直到某个线程终止为止。此方法有不同的重载形式。</td>
+</tr>
+<tr>
+<td align="left">15</td>
+<td align="left">public static void MemoryBarrier()<br>按如下方式同步内存存取：执行当前线程的处理器在对指令重新排序时，不能采用先执行 MemoryBarrier 调用之后的内存存取，再执行 MemoryBarrier 调用之前的内存存取的方式。</td>
+</tr>
+<tr>
+<td align="left">16</td>
+<td align="left">public static void ResetAbort()<br>取消为当前线程请求的 Abort。</td>
+</tr>
+<tr>
+<td align="left">17</td>
+<td align="left">public static void SetData( LocalDataStoreSlot slot, Object data ) <br>在当前正在运行的线程上为此线程的当前域在指定槽中设置数据。为了获得更好的性能，请改用以 ThreadStaticAttribute 属性标记的字段。</td>
+</tr>
+<tr>
+<td align="left">18</td>
+<td align="left">public void Start()<br>开始一个线程。</td>
+</tr>
+<tr>
+<td align="left">19</td>
+<td align="left">public static void Sleep( int millisecondsTimeout ) <br>让线程暂停一段时间。</td>
+</tr>
+<tr>
+<td align="left">20</td>
+<td align="left">public static void SpinWait( int iterations ) <br>导致线程等待由 iterations 参数定义的时间量。</td>
+</tr>
+<tr>
+<td align="left">21</td>
+<td align="left">public static byte VolatileRead( ref byte address )<br>public static double VolatileRead( ref double address )<br>public static int VolatileRead( ref int address )<br>public static Object VolatileRead( ref Object address ) <br>读取字段值。无论处理器的数目或处理器缓存的状态如何，该值都是由计算机的任何处理器写入的最新值。此方法有不同的重载形式。这里只给出了一些形式。</td>
+</tr>
+<tr>
+<td align="left">22</td>
+<td align="left">public static void VolatileWrite( ref byte address, byte value )<br>public static void VolatileWrite( ref double address, double value )<br>public static void VolatileWrite( ref int address, int value )<br>public static void VolatileWrite( ref Object address, Object value ) <br>立即向字段写入一个值，以使该值对计算机中的所有处理器都可见。此方法有不同的重载形式。这里只给出了一些形式。</td>
+</tr>
+<tr>
+<td align="left">23</td>
+<td align="left">public static bool Yield()<br>导致调用线程执行准备好在当前处理器上运行的另一个线程。由操作系统选择要执行的线程。</td>
+</tr>
+</tbody></table>
+<h2 id="创建线程"><a href="#创建线程" class="headerlink" title="创建线程"></a>创建线程</h2><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Threading;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">MultithreadingApplication</span> &#123;</span><br><span class="line">    <span class="keyword">class</span> <span class="title">ThreadCreationProgram</span> &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">CallToChildThread</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">            Console.WriteLine(<span class="string">&quot;Child thread starts&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">            ThreadStart childref = <span class="keyword">new</span> ThreadStart(CallToChildThread);</span><br><span class="line">            Console.WriteLine(<span class="string">&quot;In Main: Creating the Child thread&quot;</span>);</span><br><span class="line">            Thread childThread = <span class="keyword">new</span> Thread(childref);</span><br><span class="line">            childThread.Start();</span><br><span class="line">            Console.ReadKey();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 结果：</span></span><br><span class="line">In Main: Creating the Child thread</span><br><span class="line">Child thread starts</span><br></pre></td></tr></table></figure>
+
+<h2 id="管理线程"><a href="#管理线程" class="headerlink" title="管理线程"></a>管理线程</h2><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Threading;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">MultithreadingApplication</span> &#123;</span><br><span class="line">    <span class="keyword">class</span> <span class="title">ThreadCreationProgram</span> &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">CallToChildThread</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">            Console.WriteLine(<span class="string">&quot;Child thread starts&quot;</span>);</span><br><span class="line">            <span class="comment">// 线程暂停 5000 毫秒</span></span><br><span class="line">            <span class="keyword">int</span> sleepfor = <span class="number">5000</span>; </span><br><span class="line">            Console.WriteLine(<span class="string">&quot;Child Thread Paused for &#123;0&#125; seconds&quot;</span>, </span><br><span class="line">                              sleepfor / <span class="number">1000</span>);</span><br><span class="line">            Thread.Sleep(sleepfor);</span><br><span class="line">            Console.WriteLine(<span class="string">&quot;Child thread resumes&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">            ThreadStart childref = <span class="keyword">new</span> ThreadStart(CallToChildThread);</span><br><span class="line">            Console.WriteLine(<span class="string">&quot;In Main: Creating the Child thread&quot;</span>);</span><br><span class="line">            Thread childThread = <span class="keyword">new</span> Thread(childref);</span><br><span class="line">            childThread.Start();</span><br><span class="line">            Console.ReadKey();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 结果：</span></span><br><span class="line">In Main: Creating the Child thread</span><br><span class="line">Child thread starts</span><br><span class="line">Child Thread Paused <span class="keyword">for</span> <span class="number">5</span> seconds</span><br><span class="line">Child thread resumes</span><br></pre></td></tr></table></figure>
+
+<h2 id="销毁线程"><a href="#销毁线程" class="headerlink" title="销毁线程"></a>销毁线程</h2><p>Abort() 方法用于销毁线程。通过抛出 ThreadAbortException 在运行时中止线程。这个异常不能被捕获，如果有 finally 块，控制会被送至 finally 块。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Threading;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">MultithreadingApplication</span> &#123;</span><br><span class="line">    <span class="keyword">class</span> <span class="title">ThreadCreationProgram</span> &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">CallToChildThread</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                Console.WriteLine(<span class="string">&quot;Child thread starts&quot;</span>);</span><br><span class="line">                <span class="comment">// 计数到 10</span></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> counter = <span class="number">0</span>; counter &lt;= <span class="number">10</span>; counter++) &#123;</span><br><span class="line">                    Thread.Sleep(<span class="number">500</span>);</span><br><span class="line">                    Console.WriteLine(counter);</span><br><span class="line">                &#125;</span><br><span class="line">                Console.WriteLine(<span class="string">&quot;Child Thread Completed&quot;</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (ThreadAbortException e) &#123;</span><br><span class="line">                Console.WriteLine(<span class="string">&quot;Thread Abort Exception&quot;</span>);</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                Console.WriteLine(<span class="string">&quot;Couldn&#x27;t catch the Thread Exception&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span> &#123;</span><br><span class="line">            ThreadStart childref = <span class="keyword">new</span> ThreadStart(CallToChildThread);</span><br><span class="line">            Console.WriteLine(<span class="string">&quot;In Main: Creating the Child thread&quot;</span>);</span><br><span class="line">            Thread childThread = <span class="keyword">new</span> Thread(childref);</span><br><span class="line">            childThread.Start();</span><br><span class="line">            <span class="comment">// 停止主线程一段时间</span></span><br><span class="line">            Thread.Sleep(<span class="number">2000</span>);</span><br><span class="line">            <span class="comment">// 现在中止子线程</span></span><br><span class="line">            Console.WriteLine(<span class="string">&quot;In Main: Aborting the Child thread&quot;</span>);</span><br><span class="line">            childThread.Abort();</span><br><span class="line">            Console.ReadKey();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 结果：</span></span><br><span class="line">In Main: Creating the Child thread</span><br><span class="line">Child thread starts</span><br><span class="line"><span class="number">0</span></span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line">In Main: Aborting the Child thread</span><br><span class="line">Thread Abort Exception</span><br><span class="line">Couldn<span class="string">&#x27;t catch the Thread Exception </span></span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/12/Git%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2306,201 +3040,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/04/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/head.png">
-      <meta itemprop="name" content="苍耳叔叔">
-      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苍耳的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/01/04/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">分布式系统学习笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-01-04 12:40:42" itemprop="dateCreated datePublished" datetime="2019-01-04T12:40:42+08:00">2019-01-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%90%8E%E5%8F%B0/" itemprop="url" rel="index"><span itemprop="name">后台</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2019/01/04/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="分布式系统学习笔记" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2019/01/04/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/01/04/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>分布式系统（Distributed System）是由一组通过网络进行通信、为了完成共同的任务而协调工作的计算机节点组成的系统。分布式系统的出现是为了用廉价的、普通的机器完成单个计算机无法完成的计算、存储任务。<strong>其目的是利用更多的机器，处理更多的数据</strong>。</p>
-<p>为了性能的提升，当单个节点的处理能力无法满足日益增长的计算、存储任务，且硬件的提升高昂到得不偿失的时候，我们才考虑用分布式系统。因为分布式系统要解决的问题本身就是和单机系统一样的，而由于分布式系统多节点、通过网络通信的拓扑结构，会引入很多单机系统没有的问题，为了解决这些问题又会引入更多的机制、协议，带来更多的问题。</p>
-<p>Partition和Replication是解决分布式系统问题的一个组合，很多具体的问题都可以用这个思路去解决。当然也会引入更多的问题，比如为了可用性与可靠性保证，引用了冗余（复制集）。有了冗余，又需要考虑各个副本间的一致性问题。正如CAP、FLP等理论，在分布式系统中，没有最佳的选择，只有最合适的选择。</p>
-<p>分布式系统的挑战：</p>
-<ol>
-<li>异构的机器与网络：分布式系统中的机器配置不一样，其上运行的服务也可能由不同的语言、架构实现，因此处理能力也不一样；节点间通过网络连接，而不同网络运营商提供的网络的带宽、延时、丢包率又不一样。</li>
-<li>节点故障：当节点数目达到一定规模时，出故障的概率就变高了。分布式系统需要保证故障发生的时候，系统仍然是可用的。</li>
-<li>不可靠的网络：节点间通过网络通信，而网络是不可靠的。</li>
-</ol>
-<p>分布式系统特性与衡量标准：</p>
-<ol>
-<li>透明性：分布式系统的最高境界是用户根本感知不到这是一个分布式系统。</li>
-<li>可扩展性</li>
-<li>可用性与可靠性</li>
-<li>高性能</li>
-<li>一致性</li>
-</ol>
-<p>一个大型网站包含诸多组件，每一个组件都是一个分布式系统，比如分布式存储就是一个分布式系统，消息队列就是一个分布式系统。</p>
-<p>一些概念：</p>
-<ul>
-<li><p>负载均衡：</p>
-<ul>
-<li>Nginx</li>
-<li>LVS</li>
-</ul>
-</li>
-<li><p>webserver：</p>
-<ul>
-<li>Java：Tomcat，Apache，Jboss</li>
-<li>Python：gunicorn、uwsgi、twisted、webpy、tornado</li>
-</ul>
-</li>
-<li><p>service：　　</p>
-<ul>
-<li>SOA、微服务、spring boot，django</li>
-</ul>
-</li>
-<li><p>容器：</p>
-<ul>
-<li>docker，kubernetes</li>
-</ul>
-</li>
-<li><p>cache：</p>
-<ul>
-<li>memcache、redis等</li>
-</ul>
-</li>
-<li><p>协调中心：</p>
-<ul>
-<li>zookeeper、etcd等</li>
-</ul>
-</li>
-<li><p>rpc框架：</p>
-<ul>
-<li>grpc、dubbo、brpc</li>
-</ul>
-</li>
-<li><p>消息队列：</p>
-<ul>
-<li>kafka、rabbitMQ、rocketMQ、QSP</li>
-</ul>
-</li>
-<li><p>实时数据平台：</p>
-<ul>
-<li>storm、akka</li>
-</ul>
-</li>
-<li><p>离线数据平台：</p>
-<ul>
-<li>hadoop、spark</li>
-</ul>
-</li>
-<li><p>dbproxy：</p>
-<ul>
-<li>cobar也是阿里开源的，在阿里系中使用也非常广泛，是关系型数据库的sharding + replica 代理</li>
-</ul>
-</li>
-<li><p>db：</p>
-<ul>
-<li>mysql、oracle、MongoDB、HBase</li>
-</ul>
-</li>
-<li><p>搜索：</p>
-<ul>
-<li>elasticsearch、solr</li>
-</ul>
-</li>
-<li><p>日志：</p>
-<ul>
-<li>rsyslog、elk、flume</li>
-</ul>
-</li>
-</ul>
-<h1 id="请求过程"><a href="#请求过程" class="headerlink" title="请求过程"></a>请求过程</h1><p>用户使用Web、APP、SDK等通过HTTP、TCP连接到系统。在分布式系统中，为了高并发、高可用，一般都是多个节点提供相同的服务，所以需要考虑负载均衡。</p>
-<p>通过负载均衡找到一个节点后，接下来就是真正处理用户的请求了，请求有可能简单，也有可能很复杂。如果有缓存，则需要考虑分布式缓存，如果缓存没有命中，那么需要去数据库拉取数据。</p>
-<p>假设服务A需要调用服务B的服务，首先两个节点需要通信，网络通信都是建立在TCP/IP协议的基础上，但是，每个应用都手写socket是一件冗杂、低效的事情，因此需要应用层的封装，因此有了HTTP、FTP等各种应用层协议。当系统愈加复杂，提供大量的http接口也是一件困难的事情。因此，有了更进一步的抽象，那就是RPC。</p>
-<p>一个请求可能包含诸多操作，即在服务A上做一些操作，然后在服务B上做另一些操作，这就涉及到分布式事务的问题。</p>
-<p>分布式系统中有大量的服务，每个服务又是多个节点组成，一个服务要想找到另一个服务的某个节点就需要服务注册与发现了。</p>
-<p>用户请求操作会产生一些数据、日志等信息，其他一些系统可能会对这些消息感兴趣，这里就抽象出了两个概念，消息的生产者与消费者。那么生产者怎么讲消息发送给消费者呢，RPC并不是一个很好的选择，因为RPC肯定得指定消息发给谁，但实际的情况是生产者并不清楚、也不关心谁会消费这个消息，这个时候就需要消息队列了。</p>
-<p>上面提到，用户操作会产生一些数据，这就催生了分布式计算平台用来处理这些海量的数据。</p>
-<p>最后，用户的操作完成之后，用户的数据需要持久化，但数据量很大，大到按个节点无法存储，这时就需要分布式存储。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2572,7 +3111,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">161</span>
+          <span class="site-state-item-count">162</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
