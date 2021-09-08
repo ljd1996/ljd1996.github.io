@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.2.0">
+<meta name="generator" content="Hexo 5.4.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -188,6 +188,117 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/09/07/Android-SurfaceView-GLSurfaceView-TextureView%E6%A6%82%E8%BF%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/09/07/Android-SurfaceView-GLSurfaceView-TextureView%E6%A6%82%E8%BF%B0/" class="post-title-link" itemprop="url">Android-SurfaceView,GLSurfaceView,TextureView概述</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-09-07 18:12:40" itemprop="dateCreated datePublished" datetime="2021-09-07T18:12:40+08:00">2021-09-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-09-08 14:12:57" itemprop="dateModified" datetime="2021-09-08T14:12:57+08:00">2021-09-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/Framework/" itemprop="url" rel="index"><span itemprop="name">Framework</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/09/07/Android-SurfaceView-GLSurfaceView-TextureView%E6%A6%82%E8%BF%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Android-SurfaceView,GLSurfaceView,TextureView概述" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/09/07/Android-SurfaceView-GLSurfaceView-TextureView%E6%A6%82%E8%BF%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/09/07/Android-SurfaceView-GLSurfaceView-TextureView%E6%A6%82%E8%BF%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>这篇文章介绍一下 SurfaceView, GLSurfaceView 以及 TextureView 的基础用法及一些区别。</p>
+<ul>
+<li>SurfaceView: View 的子类，但不与宿主 Window 共享 Surface, 而是有自己独立的 Surface, 且可以在一个独立的线程中进行绘制，因此 SurfaceView 一般用来实现比较复杂的图像或动画/视频的显示。可以参考 <a target="_blank" rel="noopener" href="https://juejin.cn/post/6897029276752625671">Android双缓存与SurfaceView</a>。由于其内容是绘制在一个独立的 Surface 上，因此无法用 scrollTo/By 等方法去移动操作 Canvas 里的内容，但是可对整个 View 进行平移，缩放，旋转等变换操作。</li>
+<li>GLSurfaceView: 基于 SurfaceView 再次进行扩展，在 SurfaceView 基础上封装了 EGL 环境管理以及 Render 线程，专门为 OpenGl 显示渲染使用。参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/08/19/Android-OpenGL-ES%E7%AC%94%E8%AE%B0/">Android-OpenGL-ES笔记</a>。</li>
+<li>TextrueView: Android 4.0 后引入 TextureView, 它将 SurfaceTexture 和 View 结合到了一起。与 SurfaceView 相比，它并没有创建一个单独的 Surface 来绘制，解决了 SurfaceView 无法在 Canvas 内容上做动画的问题。另外 TextureView 必须在硬件加速开启的窗口中使用。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/09/07/Android-SurfaceView-GLSurfaceView-TextureView%E6%A6%82%E8%BF%B0/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -1142,106 +1253,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%BC%82%E5%B8%B8%E4%B8%8E%E5%8F%96%E6%B6%88/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/head.png">
-      <meta itemprop="name" content="苍耳叔叔">
-      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苍耳的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%BC%82%E5%B8%B8%E4%B8%8E%E5%8F%96%E6%B6%88/" class="post-title-link" itemprop="url">Kotlin笔记之协程异常与取消</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-              
-
-              <time title="创建时间：2021-05-19 17:38:18 / 修改时间：18:01:10" itemprop="dateCreated datePublished" datetime="2021-05-19T17:38:18+08:00">2021-05-19</time>
-            </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">语言</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%AD%E8%A8%80/Kotlin/" itemprop="url" rel="index"><span itemprop="name">Kotlin</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%BC%82%E5%B8%B8%E4%B8%8E%E5%8F%96%E6%B6%88/" class="post-meta-item leancloud_visitors" data-flag-title="Kotlin笔记之协程异常与取消" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%BC%82%E5%B8%B8%E4%B8%8E%E5%8F%96%E6%B6%88/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%BC%82%E5%B8%B8%E4%B8%8E%E5%8F%96%E6%B6%88/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="父子协程"><a href="#父子协程" class="headerlink" title="父子协程"></a>父子协程</h1><p>协程之间存在父子关系，以下面代码为例：</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/05/19/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%8D%8F%E7%A8%8B%E5%BC%82%E5%B8%B8%E4%B8%8E%E5%8F%96%E6%B6%88/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1313,7 +1324,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">162</span>
+          <span class="site-state-item-count">163</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

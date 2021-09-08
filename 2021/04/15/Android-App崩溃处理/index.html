@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.2.0">
+<meta name="generator" content="Hexo 5.4.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -275,7 +275,7 @@
 
       
         <h1 id="异常崩溃原因"><a href="#异常崩溃原因" class="headerlink" title="异常崩溃原因"></a>异常崩溃原因</h1><p>在 Zygote 进程 fork 出 App 进程后，会调用 zygoteInit 方法，其中会执行 ActivityThread.main() 方法，在此之前会通过 Thread.setDefaultUncaughtExceptionHandler 方法设置 App 的默认异常处理器(打印异常，并终止进程)。</p>
-<a id="more"></a>
+<span id="more"></span>
 
 <p>当 App 某个线程中发生异常后，会调用到 ThreadGroup 的 uncaughtException 方法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">uncaughtException</span><span class="params">(Thread t, Throwable e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (parent != <span class="keyword">null</span>) &#123;</span><br><span class="line">        parent.uncaughtException(t, e);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        Thread.UncaughtExceptionHandler ueh =</span><br><span class="line">            Thread.getDefaultUncaughtExceptionHandler();</span><br><span class="line">        <span class="keyword">if</span> (ueh != <span class="keyword">null</span>) &#123;</span><br><span class="line">            ueh.uncaughtException(t, e);</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (!(e <span class="keyword">instanceof</span> ThreadDeath)) &#123;</span><br><span class="line">            System.err.print(<span class="string">&quot;Exception in thread \&quot;&quot;</span></span><br><span class="line">                                + t.getName() + <span class="string">&quot;\&quot; &quot;</span>);</span><br><span class="line">            e.printStackTrace(System.err);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -387,7 +387,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">162</span>
+          <span class="site-state-item-count">163</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

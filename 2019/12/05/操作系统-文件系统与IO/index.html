@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.2.0">
+<meta name="generator" content="Hexo 5.4.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -319,7 +319,7 @@
 <p>机械硬盘在不同位置读写时，磁头要来回运动，在同一个地方连续写入一段数据时效率更高，随机乱序读写时效率很低。而闪存不用，随机读写和顺序读写几乎没有速度区别。</p>
 <p>普通U盘单个闪存芯片的读写速度无法及得上机械硬盘，而固态硬盘实际是闪存整列，利用多个闪存并行读写来达到甚至超过机械硬盘的读写速度，并行的闪存数无上限，读写速度、容量与闪存芯片数成正比，但价格也成正比。</p>
 <p>固态硬盘除了速度高，还有功耗低、无噪音、低故障率的优点。理论上闪存有写次数限制，以目前技术来说同一个位置写超过3000次就会失效并故障，但固态硬盘采用不同于机械硬盘的写入策略，将写入操作平均分摊在整个空间内，所以在普通家用中几乎不会有些写坏的那一天，这也是固态硬盘与普通闪存的本质区别。</p>
-<h1 id="文件系统的实现"><a href="#文件系统的实现" class="headerlink" title="文件系统的实现"></a>文件系统的实现</h1><h2 id="文件系统布局"><a href="#文件系统布局" class="headerlink" title="文件系统布局"></a>文件系统布局</h2><p>文件系统存放在磁盘上。多数磁盘划分为一个或多个分区，每个分区中有一个独立的文件系统。磁盘的0号扇区称为<strong>主引导记录(Master Boot Record，MBR)**，用来引导计算机。在MBR的结尾是</strong>分区表<strong>。该表给出了毎个分区的起始和结束地址。表中的一个分区被标记为</strong>活动分区<strong>。在计算机被引导时，BIOS读入并执行MBR。MBR做的第一件事是确定活动分区，读入它的第一个块，称为</strong>引导块**(boot block)，并执行之。引导块中的程序将装载该分区中的操作系统。为统一起见，毎个分区都从一个引导块开始，即使它不含有一个可启动的操作系统。不过，未来这个分区也许会有一个操作系统的。</p>
+<h1 id="文件系统的实现"><a href="#文件系统的实现" class="headerlink" title="文件系统的实现"></a>文件系统的实现</h1><h2 id="文件系统布局"><a href="#文件系统布局" class="headerlink" title="文件系统布局"></a>文件系统布局</h2><p>文件系统存放在磁盘上。多数磁盘划分为一个或多个分区，每个分区中有一个独立的文件系统。磁盘的0号扇区称为<strong>主引导记录(Master Boot Record，MBR)<strong>，用来引导计算机。在MBR的结尾是</strong>分区表</strong>。该表给出了毎个分区的起始和结束地址。表中的一个分区被标记为<strong>活动分区</strong>。在计算机被引导时，BIOS读入并执行MBR。MBR做的第一件事是确定活动分区，读入它的第一个块，称为<strong>引导块</strong>(boot block)，并执行之。引导块中的程序将装载该分区中的操作系统。为统一起见，毎个分区都从一个引导块开始，即使它不含有一个可启动的操作系统。不过，未来这个分区也许会有一个操作系统的。</p>
 <p>一个可能的文件系统布局如下：</p>
 <p><img src="%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E5%B8%83%E5%B1%80.jpg" alt="文件系统布局"></p>
 <ul>
@@ -460,7 +460,7 @@
 <li>用户级I/O软件</li>
 </ul>
 <h1 id="ioctl"><a href="#ioctl" class="headerlink" title="ioctl"></a>ioctl</h1><p>ioctl是设备驱动程序中对设备的I/O通道进行管理的函数，即对设备的一些特性进行控制，例如串口的传输波特率等。其函数原型如下：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int ioctl(int fd, ind cmd, ...)；</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">ioctl</span><span class="params">(<span class="keyword">int</span> fd, ind cmd, ...)</span>；</span></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>fd：用户程序打开设备时使用open函数返回的文件描述符</li>
@@ -569,7 +569,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">162</span>
+          <span class="site-state-item-count">163</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

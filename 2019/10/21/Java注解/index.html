@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.2.0">
+<meta name="generator" content="Hexo 5.4.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -280,7 +280,7 @@
 <li>编译时注解：通过注解处理器在编译期动态处理相关逻辑</li>
 </ul>
 <p>使用代码自动生成，一是为了提高编码的效率，二是避免在运行期大量使用反射，通过在编译期利用反射生成辅助类和方法以供运行时使用。</p>
-<a id="more"></a>
+<span id="more"></span>
 
 <h1 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h1><p>Java 提供了 4 种注解负责新注解的创建：</p>
 <ol>
@@ -590,15 +590,13 @@
 <li><p>可以在javac命令后通过-A参数指定选项；</p>
 </li>
 <li><p>对于Android工程，可以在gradle文件中配置选项参数值</p>
-  <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">        javaCompileOptions &#123;</span><br><span class="line">            annotationProcessorOptions &#123;</span><br><span class="line">                arguments = [ <span class="attr">hearingCustomAnnotation :</span> <span class="string">&#x27;xxx&#x27;</span> ]</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-</li>
+  <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">        javaCompileOptions &#123;</span><br><span class="line">            annotationProcessorOptions &#123;</span><br><span class="line">                arguments = [ <span class="attr">hearingCustomAnnotation :</span> <span class="string">&#x27;xxx&#x27;</span> ]</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 </ul>
 <p>在注解处理器中重写getSupportedOptions方法指定支持的选项参数名称。通过getOptions方法获取选项参数值。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String CUSTOM_ANNOTATION = <span class="string">&quot;hearingCustomAnnotation&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">process</span><span class="params">(Set&lt;? extends TypeElement&gt; annotations, RoundEnvironment roundEnv)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">try</span> &#123;</span><br><span class="line">       String resultPath = processingEnv.getOptions().get(CUSTOM_ANNOTATION);</span><br><span class="line">       <span class="keyword">if</span> (resultPath == <span class="keyword">null</span>) &#123;</span><br><span class="line">           <span class="comment">// ...</span></span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">       &#125;</span><br><span class="line">       <span class="comment">// ...</span></span><br><span class="line">   &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">       e.printStackTrace();</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Set&lt;String&gt; <span class="title">getSupportedOptions</span><span class="params">()</span> </span>&#123;</span><br><span class="line">   <span class="keyword">return</span> Collections.singleton(CUSTOM_ANNOTATION);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h1 id="process"><a href="#process" class="headerlink" title="process"></a>process</h1><p>process方法提供了两个参数，第一个是我们请求处理注解类型的集合（也就是我们通过重写getSupportedAnnotationTypes方法所指定的注解类型），第二个是有关当前和上一次循环的信息的环境。返回值表示这些注解是否由此 Processor 声明，如果返回 true，则这些注解已声明并且不要求后续 Processor 处理它们；如果返回 false，则这些注解未声明并且可能要求后续 Processor 处理它们。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">boolean</span> <span class="title">process</span><span class="params">(Set&lt;? extends TypeElement&gt; annotations,</span></span></span><br><span class="line"><span class="function"><span class="params">                                RoundEnvironment roundEnv)</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">boolean</span> <span class="title">process</span><span class="params">(Set&lt;? extends TypeElement&gt; annotations,</span></span></span><br><span class="line"><span class="params"><span class="function">                                RoundEnvironment roundEnv)</span></span></span><br></pre></td></tr></table></figure>
 
 <h1 id="RoundEnvironment"><a href="#RoundEnvironment" class="headerlink" title="RoundEnvironment"></a>RoundEnvironment</h1><p>我们可以通过RoundEnvironment接口获取注解元素。process方法会提供一个实现RoundEnvironment接口的对象。</p>
 <table>
@@ -769,7 +767,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">162</span>
+          <span class="site-state-item-count">163</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

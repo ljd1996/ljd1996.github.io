@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.2.0">
+<meta name="generator" content="Hexo 5.4.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -303,7 +303,7 @@
 </tr>
 </tbody></table>
 <p>事务可以开始于：DEFERRED、MMEDIATE或EXCLUSIVE。事务类型在BEGIN命令中指定：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span> [ <span class="keyword">DEFERRED</span> | <span class="keyword">IMMEDIATE</span> | EXCLUSIVE ] <span class="keyword">TRANSACTION</span>;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span> [ DEFERRED <span class="operator">|</span> IMMEDIATE <span class="operator">|</span> EXCLUSIVE ] TRANSACTION;</span><br></pre></td></tr></table></figure>
 
 <p>一个DEFERRED事务不获取任何锁(直到它需要锁的时候)，BEGIN语句本身也不会做什么事情——它开始于UNLOCK状态。默认情况下就 是这样的，如果仅仅用BEGIN开始一个事务，那么事务就是DEFERRED的，同时它不会获取任何锁；当对数据库进行第一次读操作时，它会获取 SHARED锁；同样，当进行第一次写操作时，它会获取RESERVED锁。</p>
 <p>由BEGIN开始的IMMEDIATE事务会尝试获取RESERVED锁。如果成功，BEGIN IMMEDIATE保证没有别的连接可以写数据库。但是，别的连接可以对数据库进行读操作；但是，RESERVED锁会阻止其它连接的BEGIN IMMEDIATE或者BEGIN EXCLUSIVE命令，当其它连接执行上述命令时，会返回SQLITE_BUSY错误。这时你就可以对数据库进行修改操作了，但是你还不能提交，当你 COMMIT时，会返回SQLITE_BUSY错误，这意味着还有其它的读事务没有完成，得等它们执行完后才能提交事务。</p>
@@ -470,7 +470,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">162</span>
+          <span class="site-state-item-count">163</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

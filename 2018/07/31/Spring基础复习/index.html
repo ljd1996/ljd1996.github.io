@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.2.0">
+<meta name="generator" content="Hexo 5.4.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -315,7 +315,8 @@
 
 2、BeanNameAware、BeanFactoryAware、ApplicationContextAware的作用范围的Bean范围，即仅仅对实现了该接口的指定Bean有效，所有其使用方法是在要使用该功能的Bean自己来实现该接口。
 
-3、第8点与第9点所述的两个初始化方法作用是一样的，我们完全可以使用其中的一种即可，一般情况我们使用第9点所述的方式，尽量少的去来Bean中实现某些接口，保持其独立性，低耦合性，尽量不要与Spring代码耦合在一起。第12和第13也是如此。</code></pre>
+3、第8点与第9点所述的两个初始化方法作用是一样的，我们完全可以使用其中的一种即可，一般情况我们使用第9点所述的方式，尽量少的去来Bean中实现某些接口，保持其独立性，低耦合性，尽量不要与Spring代码耦合在一起。第12和第13也是如此。
+</code></pre>
 <ul>
 <li><p>applicationConfig.ml 中使用反射方式在 IOC 容器中创建 Bean。</p>
 </li>
@@ -391,11 +392,9 @@
 </li>
 <li><p>ORM框架</p>
 <p>  Object Relational Mapping，对象-关系映射。项目中的业务实体有两种表现形式：对象和关系数据，即在内存中表现为对象，在数据库中表现为关系数据。</p>
-<ul>
-<li><p>为什么需要ORM框架</p>
-<p>因为对象之间可以存在关联和继承关系，但是在数据库中，关系数据无法表达多对多关联和继承关系。（ps：在数据库原理中，会把逻辑上的多对多转换为多个一对关系才能实现）因此，对象和关系（业务实体的两种表现形式）想要映射正确，项目系统一般以中间件的形式，即持久层框架。</p>
 </li>
-</ul>
+<li><p>为什么需要ORM框架</p>
+<p> 因为对象之间可以存在关联和继承关系，但是在数据库中，关系数据无法表达多对多关联和继承关系。（ps：在数据库原理中，会把逻辑上的多对多转换为多个一对关系才能实现）因此，对象和关系（业务实体的两种表现形式）想要映射正确，项目系统一般以中间件的形式，即持久层框架。</p>
 </li>
 <li><p>Hibernate的特点</p>
 <ul>
@@ -525,7 +524,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">162</span>
+          <span class="site-state-item-count">163</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

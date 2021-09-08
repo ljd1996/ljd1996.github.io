@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.2.0">
+<meta name="generator" content="Hexo 5.4.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -274,7 +274,7 @@
         <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Dagger 的名字取自有向无环图 DAG (directed acyclic graph)，因为程序里的依赖关系拼接起来就是一个或者多个有向无环图。</p>
 <p>首先理解一下什么是依赖注入。一个类 UserRepository 中有一个 UserRemoteDataSource 类型的属性, 那 UserRemoteDataSource 便是 UserRepository 的依赖，初始化这个依赖可以有两种方法，一种是在类内部自己初始化，另一种是由外部初始化(即是依赖注入，关键在于初始化是谁做的)。</p>
 <p>这种由外部初始化的方式都可以叫做依赖注入，而 Dagger 则为依赖注入提供了一种更简单的方式。</p>
-<a id="more"></a>
+<span id="more"></span>
 
 <h1 id="基础用法"><a href="#基础用法" class="headerlink" title="基础用法"></a>基础用法</h1><p>接下来用 Dagger2 实现如下图所示的依赖关系：</p>
 <p><img src="%E4%BE%9D%E8%B5%96%E7%A4%BA%E4%BE%8B%E5%9B%BE.png"></p>
@@ -366,7 +366,7 @@
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Scope</span></span><br><span class="line"><span class="meta">@Retention(value = AnnotationRetention.RUNTIME)</span></span><br><span class="line"><span class="keyword">annotation</span> <span class="class"><span class="keyword">class</span> <span class="title">ActivityScope</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">@ActivityScope</span></span><br><span class="line"><span class="meta">@Subcomponent</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">LoginComponent</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 定义子组件 Factory 使得 ApplicationComponent 知道如何创建 LoginComponent 的实例</span></span><br><span class="line">    <span class="meta">@Subcomponent</span>.Factory</span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">Factory</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">create</span><span class="params">()</span></span>: LoginComponent</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">inject</span><span class="params">(loginActivity: <span class="type">LoginActivity</span>)</span></span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">inject</span><span class="params">(fragment: <span class="type">LoginAFragment</span>)</span></span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">inject</span><span class="params">(fragment: <span class="type">LoginBFragment</span>)</span></span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@ActivityScope</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoginViewModel</span> <span class="meta">@Inject</span> <span class="keyword">constructor</span></span>(<span class="keyword">private</span> <span class="keyword">val</span> userRepository: UserRepository) &#123; ... &#125;</span><br></pre></td></tr></table></figure>
 
 <p>然后在这两个 Fragment 中可以注入 LoginViewModel 实例：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">class LoginAFragment: Fragment() &#123;</span><br><span class="line">    @Inject</span><br><span class="line">    lateinit var loginViewModel: LoginViewModel</span><br><span class="line"></span><br><span class="line">    override fun onAttach(context: Context) &#123;</span><br><span class="line">        super.onAttach(context)</span><br><span class="line">        (activity as LoginActivity).loginComponent.inject(this)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">class LoginAFragment: Fragment() &#123;</span><br><span class="line">    @Inject</span><br><span class="line">    lateinit var loginViewModel: LoginViewModel</span><br><span class="line"></span><br><span class="line">    override fun onAttach(context: Context) &#123;</span><br><span class="line">        super.onAttach(context)</span><br><span class="line">        (activity as LoginActivity).loginComponent.inject(this)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h1 id="组件依赖"><a href="#组件依赖" class="headerlink" title="组件依赖"></a>组件依赖</h1><p>一个 Component 可以通过设置 dependencies 依赖另一个 Component 组件，然后它便可获取到所依赖的 Component 中<strong>暴露的依赖</strong>。</p>
 <p>我们首先创建一个零件组件：</p>
@@ -494,7 +494,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">162</span>
+          <span class="site-state-item-count">163</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

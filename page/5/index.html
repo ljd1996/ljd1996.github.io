@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.2.0">
+<meta name="generator" content="Hexo 5.4.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -188,6 +188,113 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/16/Android-SPI%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/09/16/Android-SPI%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">Android-SPI笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-09-16 17:35:03" itemprop="dateCreated datePublished" datetime="2020-09-16T17:35:03+08:00">2020-09-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-06-16 16:25:18" itemprop="dateModified" datetime="2021-06-16T16:25:18+08:00">2021-06-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">架构</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/09/16/Android-SPI%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Android-SPI笔记" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/09/16/Android-SPI%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/09/16/Android-SPI%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>SPI(Service Provider Interface, 服务提供方接口)，服务通常是指一个接口或者一个抽象类，服务提供方是对这个接口或者抽象类的具体实现，由第三方来实现接口提供具体的服务。通过解耦服务与其具体实现类，使得程序的可扩展性大大增强，甚至可插拔。基于服务的注册与发现机制，服务提供者向系统注册服务，服务使用者通过查找发现服务，可以达到服务的提供与使用的分离。</p>
+<p>可以将 SPI 应用到 Android 组件化中，很少直接使用 SPI，不过可基于它来扩展其功能，简化使用步骤。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/09/16/Android-SPI%E7%AC%94%E8%AE%B0/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -1163,114 +1270,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/30/Android-Binder%E5%8E%9F%E7%90%86%E4%BA%8C-ServiceManager/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/head.png">
-      <meta itemprop="name" content="苍耳叔叔">
-      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苍耳的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/06/30/Android-Binder%E5%8E%9F%E7%90%86%E4%BA%8C-ServiceManager/" class="post-title-link" itemprop="url">Android-Binder原理二-ServiceManager</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-06-30 20:20:15" itemprop="dateCreated datePublished" datetime="2020-06-30T20:20:15+08:00">2020-06-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/Binder/" itemprop="url" rel="index"><span itemprop="name">Binder</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2020/06/30/Android-Binder%E5%8E%9F%E7%90%86%E4%BA%8C-ServiceManager/" class="post-meta-item leancloud_visitors" data-flag-title="Android-Binder原理二-ServiceManager" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/06/30/Android-Binder%E5%8E%9F%E7%90%86%E4%BA%8C-ServiceManager/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/06/30/Android-Binder%E5%8E%9F%E7%90%86%E4%BA%8C-ServiceManager/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>注：本文基于Android 9.0源码，为了文章的简洁性，引用源码的地方可能有所删减。</p>
-<p>ServiceManager是Binder IPC通信过程中的守护进程，本身也是一个Binder服务，但并没有采用libbinder中的多线程模型来与Binder驱动通信，而是自行编写了binder.c直接和Binder驱动来通信，并且只有一个循环binder_loop来进行读取和处理事务，这样的好处是简单而高效。</p>
-<p>ServiceManager本身工作相对简单，其功能：查询和注册服务。对于Binder IPC通信过程中，其实更多的情形是BpBinder和BBinder之间的通信，比如ActivityManagerProxy和ActivityManagerService之间的通信等。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/06/30/Android-Binder%E5%8E%9F%E7%90%86%E4%BA%8C-ServiceManager/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1342,7 +1341,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">162</span>
+          <span class="site-state-item-count">163</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.2.0">
+<meta name="generator" content="Hexo 5.4.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -188,6 +188,123 @@
 
           <div class="content index posts-expand">
             
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/" class="post-title-link" itemprop="url">Android性能优化之包体积优化</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-27 17:41:20" itemprop="dateCreated datePublished" datetime="2020-11-27T17:41:20+08:00">2020-11-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" itemprop="url" rel="index"><span itemprop="name">性能优化</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/" class="post-meta-item leancloud_visitors" data-flag-title="Android性能优化之包体积优化" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>一个APK实际上就是一个压缩文件，解压后可以看到通常包含如下几种类型的文件或文件夹：</p>
+<ul>
+<li>classes.dex源码；</li>
+<li>编译生成的二进制资源文件resources.arsc；</li>
+<li>res资源文件夹；</li>
+<li>assets文件夹；</li>
+<li>lib库文件夹；</li>
+<li>AndroidManifest.xml清单文件；</li>
+<li>依赖关系配置文件project.properties；</li>
+<li>代码混淆配置文件proguard.cfg；</li>
+<li>签名信息文件META-INF等。</li>
+</ul>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -1160,113 +1277,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/16/Android-SPI%E7%AC%94%E8%AE%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/head.png">
-      <meta itemprop="name" content="苍耳叔叔">
-      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苍耳的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/09/16/Android-SPI%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">Android-SPI笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-09-16 17:35:03" itemprop="dateCreated datePublished" datetime="2020-09-16T17:35:03+08:00">2020-09-16</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-06-16 16:25:18" itemprop="dateModified" datetime="2021-06-16T16:25:18+08:00">2021-06-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">架构</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2020/09/16/Android-SPI%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Android-SPI笔记" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/09/16/Android-SPI%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/09/16/Android-SPI%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>SPI(Service Provider Interface, 服务提供方接口)，服务通常是指一个接口或者一个抽象类，服务提供方是对这个接口或者抽象类的具体实现，由第三方来实现接口提供具体的服务。通过解耦服务与其具体实现类，使得程序的可扩展性大大增强，甚至可插拔。基于服务的注册与发现机制，服务提供者向系统注册服务，服务使用者通过查找发现服务，可以达到服务的提供与使用的分离。</p>
-<p>可以将 SPI 应用到 Android 组件化中，很少直接使用 SPI，不过可基于它来扩展其功能，简化使用步骤。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/09/16/Android-SPI%E7%AC%94%E8%AE%B0/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1338,7 +1348,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">162</span>
+          <span class="site-state-item-count">163</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

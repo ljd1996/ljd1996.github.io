@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.2.0">
+<meta name="generator" content="Hexo 5.4.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
@@ -284,9 +284,7 @@
 <li>可省略return关键字，默认用最后一个表达式为返回</li>
 <li>使用命名的参数初始化beans和默认的构造器：<code>new Server(name: &quot;Obelix&quot;, cluster: aCluster)</code></li>
 <li>Groovy里的<code>is()</code>方法等同于Java里的<code>==</code>，Groovy中的<code>==</code>是更智能的<code>equals()</code></li>
-<li>在同一个bean中使用with()来重复某一个操作:  <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Java</span></span><br><span class="line">server.name = application.name</span><br><span class="line">server.status = status</span><br><span class="line">server.sessionCount = <span class="number">3</span></span><br><span class="line">server.start()</span><br><span class="line">server.stop()</span><br><span class="line"></span><br><span class="line"><span class="comment">// Groovy</span></span><br><span class="line">server.with &#123;</span><br><span class="line">    name = application.name</span><br><span class="line">    status = status</span><br><span class="line">    sessionCount = <span class="number">3</span></span><br><span class="line">    start()</span><br><span class="line">    stop()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-</li>
+<li>在同一个bean中使用with()来重复某一个操作:  <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Java</span></span><br><span class="line">server.name = application.name</span><br><span class="line">server.status = status</span><br><span class="line">server.sessionCount = <span class="number">3</span></span><br><span class="line">server.start()</span><br><span class="line">server.stop()</span><br><span class="line"></span><br><span class="line"><span class="comment">// Groovy</span></span><br><span class="line">server.with &#123;</span><br><span class="line">    name = application.name</span><br><span class="line">    status = status</span><br><span class="line">    sessionCount = <span class="number">3</span></span><br><span class="line">    start()</span><br><span class="line">    stop()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 </ul>
 <h1 id="基本语法"><a href="#基本语法" class="headerlink" title="基本语法"></a>基本语法</h1><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span> &#123;</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">void</span> main(String[] args) &#123;</span><br><span class="line">        println(<span class="string">&#x27;Hello World.&#x27;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -964,7 +962,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">162</span>
+          <span class="site-state-item-count">163</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
