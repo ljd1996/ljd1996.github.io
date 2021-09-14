@@ -192,6 +192,264 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/15/%E5%90%8E%E5%8F%B0%E5%BC%80%E5%8F%91%E7%90%86%E8%AE%BA%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/06/15/%E5%90%8E%E5%8F%B0%E5%BC%80%E5%8F%91%E7%90%86%E8%AE%BA%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">后台开发理论笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-06-15 16:12:32" itemprop="dateCreated datePublished" datetime="2018-06-15T16:12:32+08:00">2018-06-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%90%8E%E5%8F%B0/" itemprop="url" rel="index"><span itemprop="name">后台</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2018/06/15/%E5%90%8E%E5%8F%B0%E5%BC%80%E5%8F%91%E7%90%86%E8%AE%BA%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="后台开发理论笔记" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/06/15/%E5%90%8E%E5%8F%B0%E5%BC%80%E5%8F%91%E7%90%86%E8%AE%BA%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/06/15/%E5%90%8E%E5%8F%B0%E5%BC%80%E5%8F%91%E7%90%86%E8%AE%BA%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p><font color="#990000">内容来源于网上</font></p>
+<h1 id="同步-异步-阻塞-非阻塞"><a href="#同步-异步-阻塞-非阻塞" class="headerlink" title="同步/异步,阻塞/非阻塞"></a>同步/异步,阻塞/非阻塞</h1><h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>同步/异步主要针对C端.</p>
+<ul>
+<li><p>同步</p>
+<p>  所谓同步，就是在c端发出一个功能调用时，在没有得到结果之前，该调用就不返回。也就是必须一件一件事做,等前一件做完了才能做下一件事。同步，就是我客户端（c端调用者）调用一个功能，该功能没有结束前，我（c端调用者）死等结果。</p>
+</li>
+<li><p>异步</p>
+<p>  异步的概念和同步相对。当c端一个异步过程调用发出后，调用者不能立刻得到结果。实际处理这个调用的部件在完成后，通过状态、通知和回调来通知调用者。就是我（c端调用者）调用一个功能，不需要知道该功能结果，该功能有结果后通知我（c端调用者）即回调通知。</p>
+</li>
+</ul>
+<p>阻塞/非阻塞主要针对S端.</p>
+<ul>
+<li><p>阻塞</p>
+<p>  阻塞调用是指调用结果返回之前，当前线程会被挂起（线程进入非可执行状态，在这个状态下，cpu不会给线程分配时间片，即线程暂停运行）。函数只有在得到结果之后才会返回。就是调用我（s端被调用者，函数），我（s端被调用者，函数）没有接收完数据或者没有得到结果之前，我不会返回。</p>
+</li>
+<li><p>非阻塞</p>
+<p>  非阻塞和阻塞的概念相对应，指在不能立刻得到结果之前，该函数不会阻塞当前线程，而会立刻返回。就是调用我（s端被调用者，函数），我（s端被调用者，函数）立即返回，通过select通知调用者.</p>
+</li>
+</ul>
+<p>同步异步是作用在程序外部的，线程/进程是一直激活是否完成后才返回；阻塞和非阻塞是作用在IO网络函数内部的，外部的线程/进程进入睡眠或马上返回尽管得不到结果.</p>
+<p>Node.js中的描述:</p>
+<p>线程在执行中如果遇到磁盘读写或网络通信（统称为I/O 操作），通常要耗费较长的时间，这时操作系统会剥夺这个线程的CPU控制权，使其暂停执行，同时将资源让给其他的工作线程，这种线程调度方式称为<strong>阻塞</strong>。当I/O 操作完毕时，操作系统将这个线程的阻塞状态解除，恢复其对CPU的控制权，令其继续执行。这种I/O 模式就是通常的同步式I/O（Synchronous I/O）或阻塞式I/O （Blocking I/O）。  </p>
+<p>相应地，异步式I/O （Asynchronous I/O）或非阻塞式I/O （Non-blocking I/O）则针对所有I/O 操作不采用阻塞的策略。当线程遇到I/O 操作时，不会以阻塞的方式等待I/O 操作的完成或数据的返回，而只是将I/O 请求发送给操作系统，继续执行下一条语句。当操作系统完成I/O 操作时，以事件的形式通知执行I/O 操作的线程，线程会在特定时候处理这个事件。为了处理异步I/O，线程必须有事件循环，不断地检查有没有未处理的事件，依次予以处理。</p>
+<p>阻塞模式下，一个线程只能处理一项任务，要想提高吞吐量必须通过多线程。而非阻塞模式下，一个线程永远在执行计算操作，<span style="color:#ff0000;">这个线程所使用的CPU 核心利用率永远是100%</span>，I/O 以事件的方式通知。<span style="color:#ff0000;"></p>
+<p>在阻塞模式下，多线程往往能提高系统吞吐量，因为一个线程阻塞时还有其他线程在工作，多线程可以让CPU 资源不被阻塞中的线程浪费。</span>而在非阻塞模式下，线程不会被I/O 阻塞，永远在利用CPU。多线程带来的好处仅仅是在多核CPU 的情况下利用更多的核，而Node.js的单线程也能带来同样的好处。这就是为什么Node.js 使用了单线程、非阻塞的事件编程模式。  </p>
+<h2 id="I-O模型"><a href="#I-O模型" class="headerlink" title="I/O模型"></a>I/O模型</h2><ol>
+<li><p>阻塞I/O（blocking I/O）</p>
+</li>
+<li><p>非阻塞I/O （nonblocking I/O）</p>
+</li>
+<li><p>I/O复用(select 和poll) （I/O multiplexing）</p>
+</li>
+<li><p>信号驱动I/O （signal driven I/O (SIGIO)）</p>
+</li>
+<li><p>异步I/O （asynchronous I/O (the POSIX aio_functions)）</p>
+<p> 前四种都是同步，只有最后一种才是异步IO。</p>
+</li>
+</ol>
+<h3 id="阻塞I-O模型"><a href="#阻塞I-O模型" class="headerlink" title="阻塞I/O模型"></a>阻塞I/O模型</h3><p>简介：进程会一直阻塞，直到数据拷贝完成</p>
+<p>应用程序调用一个IO函数，导致应用程序阻塞，等待数据准备好。如果数据没有准备好，一直等待.数据准备好了，从内核拷贝到用户空间,IO函数返回成功指示。</p>
+<p>当使用socket()函数和WSASocket()函数创建套接字时，默认的套接字都是阻塞的。这意味着当调用Windows Sockets API不能立即完成时，线程处于等待状态，直到操作完成。</p>
+<img src="后台开发理论笔记/阻塞IO.png"/>
+
+<p>将可能阻塞套接字的Windows Sockets API调用分为以下四种:</p>
+<ol>
+<li>输入操作： recv()、recvfrom()、WSARecv()和WSARecvfrom()函数。以阻塞套接字为参数调用该函数接收数据。如果此时套接字缓冲区内没有数据可读，则调用线程在数据到来前一直睡眠。</li>
+<li>输出操作： send()、sendto()、WSASend()和WSASendto()函数。以阻塞套接字为参数调用该函数发送数据。如果套接字缓冲区没有可用空间，线程会一直睡眠，直到有空间。</li>
+<li>接受连接：accept()和WSAAcept()函数。以阻塞套接字为参数调用该函数，等待接受对方的连接请求。如果此时没有连接请求，线程就会进入睡眠状态。</li>
+<li>外出连接：connect()和WSAConnect()函数。对于TCP连接，客户端以阻塞套接字为参数，调用该函数向服务器发起连接。该函数在收到服务器的应答前，不会返回。这意味着TCP连接总会等待至少到服务器的一次往返时间。</li>
+</ol>
+<p>使用阻塞模式的套接字，开发网络程序比较简单，容易实现。当希望能够立即发送和接收数据，且处理的套接字数量比较少的情况下，使用阻塞模式来开发网络程序比较合适。</p>
+<p>应对多客户机的网络应用，最简单的解决方式是在服务器端使用多线程（或多进程）。多线程（或多进程）的目的是让每个连接都拥有独立的线程（或进程），这样任何一个连接的阻塞都不会影响其他的连接。</p>
+<p>具体使用多进程还是多线程，并没有一个特定的模式。传统意义上，进程的开销要远远大于线程，所以，如果需要同时为较多的客户机提供服务，则不推荐使用多进程；如果单个服务执行体需要消耗较多的 CPU 资源，譬如需要进行大规模或长时间的数据运算或文件访问，则进程较为安全。通常，使用 pthread_create () 创建新线程，fork() 创建新进程。</p>
+<p>多线程/进程服务器同时为多个客户机提供应答服务。模型如下：</p>
+<img src="后台开发理论笔记/阻塞IO-多线程.png"/>
+
+<p>主线程持续等待客户端的连接请求，如果有连接，则创建新线程，并在新线程中提供为前例同样的问答服务。</p>
+<p>如果要同时响应成百上千路的连接请求，则无论多线程还是多进程都会严重占据系统资源，降低系统对外界响应效率，而线程与进程本身也更容易进入假死状态。</p>
+<p>由此可能会考虑使用“线程池”或“连接池”。“线程池”旨在减少创建和销毁线程的频率，其维持一定合理数量的线程，并让空闲的线程重新承担新的执行任务。“连接池”维持连接的缓存池，尽量重用已有的连接、减少创建和关闭连接的频率。这两种技术都可以很好的降低系统开销，都被广泛应用很多大型系统，如apache，mysql数据库等。</p>
+<p>但是，“线程池”和“连接池”技术也只是在一定程度上缓解了频繁调用 IO 接口带来的资源占用。而且，所谓“池”始终有其上限，当请求大大超过上限时，“池”构成的系统对外界的响应并不比没有池的时候效果好多少。所以使用“池”必须考虑其面临的响应规模，并根据响应规模调整“池”的大小。</p>
+<h3 id="非阻塞IO模型"><a href="#非阻塞IO模型" class="headerlink" title="非阻塞IO模型"></a>非阻塞IO模型</h3><p>简介：非阻塞IO通过进程反复调用IO函数（多次系统调用，并马上返回）；在数据拷贝的过程中，进程是阻塞的；</p>
+<p>我们把一个SOCKET接口设置为非阻塞就是告诉内核，当所请求的I/O操作无法完成时，不要将进程睡眠，而是返回一个错误。这样我们的I/O操作函数将不断的测试数据是否已经准备好，如果没有准备好，继续测试，直到数据准备好为止。在这个不断测试的过程中，会大量的占用CPU的时间。</p>
+<p>把SOCKET设置为非阻塞模式，即通知系统内核：在调用Windows Sockets API时，不要让线程睡眠，而应该让函数立即返回。在返回时，该函数返回一个错误代码。图所示，一个非阻塞模式套接字多次调用recv()函数的过程。前三次调用recv()函数时，内核数据还没有准备好。因此，该函数立即返回WSAEWOULDBLOCK错误代码。第四次调用recv()函数时，数据已经准备好，被复制到应用程序的缓冲区中，recv()函数返回成功指示，应用程序开始处理数据。</p>
+<img src="后台开发理论笔记/非阻塞IO.png"/>
+
+<h3 id="IO复用模型"><a href="#IO复用模型" class="headerlink" title="IO复用模型"></a>IO复用模型</h3><p>简介：主要是select和epoll；对一个IO端口，两次调用，两次返回，比阻塞IO并没有什么优越性；关键是能实现同时对多个IO端口进行监听；</p>
+<p>I/O复用模型会用到select、poll、epoll函数，这几个函数也会使进程阻塞，但是和阻塞I/O所不同的的，这两个函数可以同时阻塞多个I/O操作。而且可以同时对多个读操作，多个写操作的I/O函数进行检测，直到有数据可读或可写时，才真正调用I/O操作函数。</p>
+<img src="后台开发理论笔记/IO复用.png"/>
+
+<h3 id="信号驱动IO"><a href="#信号驱动IO" class="headerlink" title="信号驱动IO"></a>信号驱动IO</h3><p>简介：两次调用，两次返回；</p>
+<p>首先我们允许套接口进行信号驱动I/O,并安装一个信号处理函数，进程继续运行并不阻塞。当数据准备好时，进程会收到一个SIGIO信号，可以在信号处理函数中调用I/O操作函数处理数据。</p>
+<img src="后台开发理论笔记/信号驱动IO.png"/>
+
+<h3 id="异步IO模型"><a href="#异步IO模型" class="headerlink" title="异步IO模型"></a>异步IO模型</h3><p>简介：数据拷贝的时候进程无需阻塞。</p>
+<p>当一个异步过程调用发出后，调用者不能立刻得到结果。实际处理这个调用的部件在完成后，通过状态、通知和回调来通知调用者的输入输出操作</p>
+<img src="后台开发理论笔记/异步IO.png"/>
+
+
+<h3 id="5种IO模型的比较"><a href="#5种IO模型的比较" class="headerlink" title="5种IO模型的比较"></a>5种IO模型的比较</h3><img src="后台开发理论笔记/IO模型比较.png"/>
+
+<h2 id="select、poll、epoll简介"><a href="#select、poll、epoll简介" class="headerlink" title="select、poll、epoll简介"></a>select、poll、epoll简介</h2><p>epoll跟select都能提供多路I/O复用的解决方案。在现在的Linux内核里有都能够支持，其中epoll是Linux所特有，而select则应该是POSIX所规定，一般操作系统均有实现</p>
+<h3 id="select"><a href="#select" class="headerlink" title="select"></a>select</h3><p>select本质上是通过设置或者检查存放fd标志位的数据结构来进行下一步处理。这样所带来的缺点是：</p>
+<ol>
+<li><p>单个进程可监视的fd数量被限制，即能监听端口的大小有限。</p>
+</li>
+<li><p>对socket进行扫描时是线性扫描，即采用轮询的方法，效率较低：</p>
+<p> 当套接字比较多的时候，每次select()都要通过遍历FD_SETSIZE个Socket来完成调度,不管哪个Socket是活跃的,都遍历一遍。这会浪费很多CPU时间。如果能给套接字注册某个回调函数，当他们活跃时，自动完成相关操作，那就避免了轮询，这正是epoll与kqueue做的。</p>
+</li>
+<li><p>需要维护一个用来存放大量fd的数据结构，这样会使得用户空间和内核空间在传递该结构时复制开销大</p>
+</li>
+</ol>
+<h3 id="poll"><a href="#poll" class="headerlink" title="poll"></a>poll</h3><p>poll本质上和select没有区别，它将用户传入的数组拷贝到内核空间，然后查询每个fd对应的设备状态，如果设备就绪则在设备等待队列中加入一项并继续遍历，如果遍历完所有fd后没有发现就绪设备，则挂起当前进程，直到设备就绪或者主动超时，被唤醒后它又要再次遍历fd。这个过程经历了多次无谓的遍历。</p>
+<p>它没有最大连接数的限制，原因是它是基于链表来存储的，但是同样有一个缺点：</p>
+<ol>
+<li>大量的fd的数组被整体复制于用户态和内核地址空间之间，而不管这样的复制是不是有意义。</li>
+<li>poll还有一个特点是“水平触发”，如果报告了fd后，没有被处理，那么下次poll时会再次报告该fd。</li>
+</ol>
+<h3 id="epoll"><a href="#epoll" class="headerlink" title="epoll"></a>epoll</h3><p>epoll支持水平触发和边缘触发，最大的特点在于边缘触发，它只告诉进程哪些fd刚刚变为就需态，并且只会通知一次。还有一个特点是，epoll使用“事件”的就绪通知方式，通过epoll_ctl注册fd，一旦该fd就绪，内核就会采用类似callback的回调机制来激活该fd，epoll_wait便可以收到通知</p>
+<p>epoll的优点：</p>
+<ol>
+<li>没有最大并发连接的限制，能打开的FD的上限远大于1024（1G的内存上能监听约10万个端口）；</li>
+<li>效率提升，不是轮询的方式，不会随着FD数目的增加效率下降。只有活跃可用的FD才会调用callback函数；即Epoll最大的优点就在于它只管你“活跃”的连接，而跟连接总数无关，因此在实际的网络环境中，Epoll的效率就会远远高于select和poll。</li>
+<li>内存拷贝，利用mmap()文件映射内存加速与内核空间的消息传递；即epoll使用mmap减少复制开销。</li>
+</ol>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ol>
+<li>表面上看epoll的性能最好，但是在连接数少并且连接都十分活跃的情况下，select和poll的性能可能比epoll好，毕竟epoll的通知机制需要很多函数回调。</li>
+<li>select低效是因为每次它都需要轮询。但低效也是相对的，视情况而定，也可通过良好的设计改善.</li>
+</ol>
+<h1 id="CAP"><a href="#CAP" class="headerlink" title="CAP"></a>CAP</h1><ul>
+<li>Consistency</li>
+<li>Availability</li>
+<li>Partition tolerance</li>
+</ul>
+<p>CAP定理: CAP三个指标不可能同时做到.</p>
+<h2 id="Partition-tolerance"><a href="#Partition-tolerance" class="headerlink" title="Partition tolerance"></a>Partition tolerance</h2><p>Partition tolerance 中文叫做”分区容错”。大多数分布式系统都分布在多个子网络。每个子网络就叫做一个区（partition）。分区容错的意思是，区间通信可能失败。比如，一台服务器放在中国，另一台服务器放在美国，这就是两个区，它们之间可能无法通信。</p>
+<p>G1 和 G2 是两台跨区的服务器。G1 向 G2 发送一条消息，G2 可能无法收到。系统设计的时候，必须考虑到这种情况。一般来说，分区容错无法避免，因此可以认为 CAP 的 P 总是成立。CAP 定理告诉我们，剩下的 C 和 A 无法同时做到。</p>
+<h2 id="Consistency"><a href="#Consistency" class="headerlink" title="Consistency"></a>Consistency</h2><p>Consistency 中文叫做”一致性”。意思是，写操作之后的读操作，必须返回该值。</p>
+<p>举例来说，某条记录是 v0，用户向 G1 发起一个写操作，将其改为 v1。接下来，用户的读操作就会得到 v1。这就叫一致性。问题是，用户有可能向 G2 发起读操作，由于 G2 的值没有发生变化，因此返回的是 v0。G1 和 G2 读操作的结果不一致，这就不满足一致性了。为了让 G2 也能变为 v1，就要在 G1 写操作的时候，让 G1 向 G2 发送一条消息，要求 G2 也改成 v1。这样的话，用户向 G2 发起读操作，也能得到 v1。</p>
+<h2 id="Availability"><a href="#Availability" class="headerlink" title="Availability"></a>Availability</h2><p>Availability 中文叫做”可用性”，意思是只要收到用户的请求，服务器就必须给出回应。</p>
+<p>用户可以选择向 G1 或 G2 发起读操作。不管是哪台服务器，只要收到请求，就必须告诉用户，到底是 v0 还是 v1，否则就不满足可用性。</p>
+<h2 id="C和A的矛盾"><a href="#C和A的矛盾" class="headerlink" title="C和A的矛盾"></a>C和A的矛盾</h2><p>一致性和可用性因为可能通信失败（即出现分区容错）所以会产生矛盾。</p>
+<ul>
+<li>如果保证 G2 的一致性，那么 G1 必须在写操作时，锁定 G2 的读操作和写操作。只有数据同步后，才能重新开放读写。锁定期间，G2 不能读写，没有可用性。</li>
+<li>如果保证 G2 的可用性，那么势必不能锁定 G2，所以一致性不成立。</li>
+</ul>
+<p>综上所述，G2 无法同时做到一致性和可用性。系统设计时只能选择一个目标。如果追求一致性，那么无法保证所有节点的可用性；如果追求所有节点的可用性，那就没法做到一致性。</p>
+<h1 id="高性能并发"><a href="#高性能并发" class="headerlink" title="高性能并发"></a>高性能并发</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><ul>
+<li>业务数据库:数据水平分割(分区分表分库)、读写分离</li>
+<li>业务应用:逻辑代码优化(算法优化)、公共数据缓存</li>
+<li>应用服务器:反向静态代理、配置优化、负载均衡(apache分发，多tomcat实例),集群,分布式,微服务.</li>
+<li>系统环境:JVM调优</li>
+<li>页面优化:减少页面连接数、页面尺寸瘦身</li>
+</ul>
+<p>通用措施：</p>
+<ol>
+<li>动态资源和静态资源分离；</li>
+<li>CDN；</li>
+<li>负载均衡；</li>
+<li>分布式缓存；</li>
+<li>数据库读写分离或数据切分（垂直或水平）；</li>
+<li>服务分布式部署。</li>
+</ol>
+<h2 id="动静分离"><a href="#动静分离" class="headerlink" title="动静分离"></a>动静分离</h2><p>动静分离是将网站静态资源（HTML，JavaScript，CSS，img等文件）与后台应用分开部署，提高用户访问静态代码的速度，降低对后台应用访问。</p>
+<p>动静分离的一种做法是将静态资源部署在nginx上，后台项目部署到应用服务器上，根据一定规则静态资源的请求全部请求nginx服务器，达到动静分离的目标。</p>
+<h1 id="跨域"><a href="#跨域" class="headerlink" title="跨域"></a>跨域</h1><p>浏览器从一个域名的网页去请求另一个域名的资源时，域名、端口、协议任一不同，都是跨域.</p>
+<p>域名：</p>
+<ul>
+<li>主域名不同 <a target="_blank" rel="noopener" href="http://www.baidu.com/index.html">http://www.baidu.com/index.html</a> –&gt;<a target="_blank" rel="noopener" href="http://www.sina.com/test.js">http://www.sina.com/test.js</a> </li>
+<li>子域名不同 <a target="_blank" rel="noopener" href="http://www.666.baidu.com/index.html">http://www.666.baidu.com/index.html</a> –&gt;<a target="_blank" rel="noopener" href="http://www.555.baidu.com/test.js">http://www.555.baidu.com/test.js</a> </li>
+<li>域名和域名ip <a target="_blank" rel="noopener" href="http://www.baidu.com/index.html">http://www.baidu.com/index.html</a> –&gt;<a target="_blank" rel="noopener" href="http://180.149.132.47/test.js">http://180.149.132.47/test.js</a> </li>
+</ul>
+<p>端口：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://www.baidu.com:8080/index.html%E2%80%93&gt;">http://www.baidu.com:8080/index.html–&gt;</a> <a target="_blank" rel="noopener" href="http://www.baidu.com:8081/test.js">http://www.baidu.com:8081/test.js</a> </li>
+</ul>
+<p>协议：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://www.baidu.com:8080/index.html%E2%80%93&gt;">http://www.baidu.com:8080/index.html–&gt;</a> <a target="_blank" rel="noopener" href="https://www.baidu.com:8080/test.js">https://www.baidu.com:8080/test.js</a> </li>
+</ul>
+<p>备注：</p>
+<ul>
+<li>端口和协议的不同，只能通过后台来解决 </li>
+<li>localhost和127.0.0.1虽然都指向本机，但也属于跨域</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/11/JVM%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1584,7 +1842,7 @@ socket.close();
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">163</span>
+          <span class="site-state-item-count">164</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

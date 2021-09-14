@@ -192,6 +192,402 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/27/Linux%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/08/27/Linux%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">Linux笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-08-27 17:55:01" itemprop="dateCreated datePublished" datetime="2019-08-27T17:55:01+08:00">2019-08-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/OS/" itemprop="url" rel="index"><span itemprop="name">OS</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/08/27/Linux%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Linux笔记" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/08/27/Linux%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/08/27/Linux%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h1><h2 id="多条命令执行结果不输出到终端"><a href="#多条命令执行结果不输出到终端" class="headerlink" title="多条命令执行结果不输出到终端"></a>多条命令执行结果不输出到终端</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 使用;分隔的多条命令执行结果之间互不干扰</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ls;lls;ls</span></span><br><span class="line">Downloads  termux-packages</span><br><span class="line">zsh: command not found: lls</span><br><span class="line">Downloads  termux-packages</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 使用&amp;&amp;分割的多条命令后一条会在前一条命令执行成功后才执行</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ls&amp;&amp;lls&amp;&amp;ls</span></span><br><span class="line">Downloads  termux-packages</span><br><span class="line">zsh: command not found: lls</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 使用cmd &gt; /dev/null 2&gt;&amp;1将输出重定向到null，即不输出到终端</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 使用<span class="keyword">if</span> [ $? -ne 0 ]; <span class="keyword">then</span> <span class="built_in">echo</span> 1; <span class="keyword">else</span> <span class="built_in">echo</span> 0;<span class="keyword">fi</span>;可以得到上一条命令的执行结果（$?表示上一条命令的执行结果）</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ls &gt; /dev/null 2&gt;&amp;1;<span class="keyword">if</span> [ $? -ne 0 ]; <span class="keyword">then</span> <span class="built_in">echo</span> 1; <span class="keyword">else</span> <span class="built_in">echo</span> 0;<span class="keyword">fi</span>;</span></span><br><span class="line">0</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 使用&#123;&#125;包裹起来的多条命令</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> &#123;ls&amp;&amp;ls&amp;&amp;ls&#125; &gt; /dev/null 2&gt;&amp;1;<span class="keyword">if</span> [ $? -ne 0 ]; <span class="keyword">then</span> <span class="built_in">echo</span> 1; <span class="keyword">else</span> <span class="built_in">echo</span> 0;<span class="keyword">fi</span>;</span></span><br><span class="line">0</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> <span class="built_in">echo</span>指定-e参数可开启转移，添加/c可不换行输出</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">echo</span> -e <span class="string">&quot;please input a value:\c&quot;</span>;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="后台运行"><a href="#后台运行" class="headerlink" title="后台运行"></a>后台运行</h2><p>当用户注销（logout）或者网络断开时，终端会收到 HUP（hangup）信号从而关闭其所有子进程。因此，解决办法有两种途径：</p>
+<ul>
+<li>让进程忽略 HUP 信号；</li>
+<li>让进程运行在新的会话里从而成为不属于此终端的子进程。</li>
+</ul>
+<h3 id="nohup"><a href="#nohup" class="headerlink" title="nohup"></a>nohup</h3><p>nohup 的用途就是让提交的命令忽略 hangup 信号，一般我们可在结尾加上”&amp;”来将命令同时放入后台运行，也可用”&gt;filename 2&gt;&amp;1”来更改缺省的重定向文件名。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> nohup ping www.baidu.com &amp;</span></span><br><span class="line">[1] 3059</span><br><span class="line">nohup: appending output to &#x27;nohup.out&#x27;</span><br><span class="line"><span class="meta">$</span><span class="bash"> ps -ef |grep 3059</span></span><br><span class="line">root      3059   984  0 21:06 pts/3    00:00:00 ping www.baidu.com</span><br><span class="line">root      3067   984  0 21:06 pts/3    00:00:00 grep 3059</span><br></pre></td></tr></table></figure>
+
+<h3 id="setsid"><a href="#setsid" class="headerlink" title="setsid"></a>setsid</h3><p>换个角度思考，如果我们的进程不属于接受 HUP 信号的终端的子进程，那么自然也就不会受到 HUP 信号的影响了。setsid 就能做到这一点。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> setsid ping www.baidu.com</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ps -ef |grep www.baidu.com</span></span><br><span class="line">root     31094     1  0 07:28 ?        00:00:00 ping www.baidu.com</span><br><span class="line">root     31102 29217  0 07:29 pts/4    00:00:00 grep www.baidu.com</span><br></pre></td></tr></table></figure>
+
+<p>进程 ID(PID)为31094，而它的父 ID（PPID）为1（即为 init 进程 ID），并不是当前终端的进程 ID。</p>
+<h3 id="amp"><a href="#amp" class="headerlink" title="&amp;"></a>&amp;</h3><p>将一个或多个命名包含在<code>()</code>中就能让这些命令在子 shell 中运行中，从而扩展出很多有趣的功能。</p>
+<p>当我们将<code>&amp;</code>也放入<code>()</code>内之后，就会发现所提交的作业并不在作业列表中，也就是说，是无法通过jobs来查看的。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> (ping www.baidu.com &amp;)</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ps -ef |grep www.baidu.com</span></span><br><span class="line">root     16270     1  0 14:13 pts/4    00:00:00 ping www.baidu.com</span><br><span class="line">root     16278 15362  0 14:13 pts/4    00:00:00 grep www.baidu.com</span><br></pre></td></tr></table></figure>
+
+<p>从上例中可以看出，新提交的进程的父 ID（PPID）为1（init 进程的 PID），并不是当前终端的进程 ID。因此并不属于当前终端的子进程，从而也就不会受到当前终端的 HUP 信号的影响了。</p>
+<h2 id="查看进程"><a href="#查看进程" class="headerlink" title="查看进程"></a>查看进程</h2><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><ul>
+<li>VSS - Virtual Set Size 虚拟耗用内存（包含共享库占用的内存），一个进程总共可访问的地址空间。其大小还包括了可能不在RAM中的内存（比如虽然malloc分配了空间，但尚未写入）。 VSS 很少被用于判断一个进程的真实内存使用量。</li>
+<li>RSS - Resident Set Size 实际使用物理内存（包含共享库占用的内存），一个进程在RAM中真实存储的总内存。但是RSS还是可能会造成误导，因为它仅仅表示该进程所使用的所有共享库的大小，它不管有多少个进程使用该共享库，该共享库仅被加载到内存一次。所以RSS并不能准确反映单进程的内存占用情况。 </li>
+<li>PSS - Proportional Set Size 实际使用的物理内存（比例分配共享库占用的内存），按比例表示使用的共享库， 例如：如果有三个进程都使用了一个共享库，共占用了30页内存。那么PSS将认为每个进程分别占用该共享库10页的大小。 PSS是非常有用的数据，因为系统中所有进程的PSS都相加的话，就刚好反映了系统中的总共占用的内存。 而当一个进程被销毁之后， 其占用的共享库那部分比例的PSS，将会再次按比例分配给余下使用该库的进程。这样PSS可能会造成一点的误导，因为当一个进程被销毁后，PSS不能准确地表示返回给全局系统的内存（the memory returned to the overall system）。</li>
+<li>USS - Unique Set Size 进程独自占用的物理内存（不包含共享库占用的内存），一个进程所占用的私有内存。即该进程独占的内存。 USS是非常非常有用的数据，因为它反映了运行一个特定进程真实的边际成本（增量成本）。当一个进程被销毁后，USS是真实返回给系统的内存。当进程中存在一个可疑的内存泄露时，USS是最佳观察数据。</li>
+</ul>
+<p>一般来说内存占用大小有如下规律：VSS &gt;= RSS &gt;= PSS &gt;= USS</p>
+<h3 id="free"><a href="#free" class="headerlink" title="free"></a>free</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> free -h</span></span><br><span class="line">       total       used        free      shared  buff/cache   available</span><br><span class="line">Mem:   7.9G        6.6G        1.0G         17M        223M        1.1G</span><br><span class="line">Swap:  19G         566M         19G                                    </span><br></pre></td></tr></table></figure>
+
+<h3 id="top"><a href="#top" class="headerlink" title="top"></a>top</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 得到进程的pid</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> pidof sleep</span></span><br><span class="line">602</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> top指定查看PID</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> top -p 602</span></span><br><span class="line">top - 11:01:36 up 23 min,  0 users,  load average: 0.52, 0.58, 0.59</span><br><span class="line">Tasks:   1 total,   0 running,   1 sleeping,   0 stopped,   0 zombie</span><br><span class="line"><span class="meta">%</span><span class="bash">Cpu(s):  0.7 us,  0.9 sy,  0.0 ni, 98.2 id,  0.0 wa,  0.2 hi,  0.0 si,  0.0 st</span></span><br><span class="line">KiB Mem :  8266588 total,  2224708 free,  5812528 used,   229352 buff/cache</span><br><span class="line">KiB Swap: 20680852 total, 19784620 free,   896232 used.  2320328 avail Mem</span><br><span class="line"></span><br><span class="line">PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND</span><br><span class="line">602 hearing   15 42+   13956    808    688 S   0.0  0.0   0:00.01 sleep</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> top查看某些指定的PID</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> top -p 602,666,1001</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>键入 <code>P</code> 按照CPU排序输出</li>
+<li>键入 <code>M</code> 按照内存排序输出</li>
+</ul>
+<h3 id="ps"><a href="#ps" class="headerlink" title="ps"></a>ps</h3><p>ps是显示瞬间进程的状态，并不动态连续；如果想对进程进行实时监控应该用top命令。如果输出较多可以结合less命令和管道来使用，即 <code>ps -ef | less</code> 。</p>
+<ul>
+<li>-A：所有的进程均显示出来，与 -e 具有同样的效用</li>
+<li>-a：显示现行终端机下的所有进程，包括其他用户的进程</li>
+<li>-u：以用户为主的进程状态/以针对用户的格式输出</li>
+<li>-x：通常与 a 这个参数一起使用，可列出较完整信息</li>
+<li>-l：较长、较详细的将该PID 的的信息列出；</li>
+<li>-j：工作的格式 (jobs format)</li>
+<li>-f：做一个更为完整的输出。</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 根据CPU使用率来升序排序</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ps -aux --sort -pcpu | less</span></span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 根据内存使用率来升序排序</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ps -aux --sort -pmem | less</span></span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 合并命令，并通过管道显示前10个结果</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ps -aux --sort -pcpu,+pmem | head -n 10</span></span><br></pre></td></tr></table></figure>
+
+<p>可以使用 <code>-C</code> 参数查看指定进程的信息：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ps -f -C sleep</span></span><br><span class="line">UID        PID  PPID  C STIME TTY          TIME CMD</span><br><span class="line">hearing    348     7  0 10:45 tty1     00:00:00 sleep 555</span><br></pre></td></tr></table></figure>
+
+<p>也可以结合<code>watch</code>命令实时查看信息：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 每秒执行一次ps -aux --sort -pmem, -pcpu</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> watch -n 1 <span class="string">&#x27;ps -aux --sort -pmem, -pcpu&#x27;</span></span></span><br></pre></td></tr></table></figure>
+
+<h3 id="proc"><a href="#proc" class="headerlink" title="proc"></a>proc</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> cat /proc/<span class="variable">$pid</span>/status</span></span><br><span class="line">Name:	main</span><br><span class="line">State:	S (sleeping)</span><br><span class="line">Tgid:	24154</span><br><span class="line">Pid:	24154</span><br><span class="line">PPid:	1</span><br><span class="line">TracerPid:	0</span><br><span class="line">Uid:	2000	2000	2000	2000</span><br><span class="line">Gid:	2000	2000	2000	2000</span><br><span class="line">FDSize:	32</span><br><span class="line">Groups:	1004 1007 1011 1015 1028 3001 3002 3003 3006</span><br><span class="line">VmPeak:	  777484 kB</span><br><span class="line">VmSize:	  777484 kB</span><br><span class="line">VmLck:	       0 kB</span><br><span class="line">VmPin:	       0 kB</span><br><span class="line">VmHWM:	   26960 kB</span><br><span class="line">VmRSS:	   26960 kB</span><br><span class="line">VmData:	   11680 kB</span><br><span class="line">VmStk:	    8192 kB</span><br><span class="line">VmExe:	      12 kB</span><br><span class="line">VmLib:	   52812 kB</span><br><span class="line">VmPTE:	     134 kB</span><br><span class="line">VmSwap:	       0 kB</span><br><span class="line">Threads:	13</span><br><span class="line">SigQ:	0/6947</span><br><span class="line">SigPnd:	0000000000000000</span><br><span class="line">ShdPnd:	0000000000000000</span><br><span class="line">SigBlk:	0000000000001204</span><br><span class="line">SigIgn:	0000000000000001</span><br><span class="line">SigCgt:	00000002000094f8</span><br><span class="line">CapInh:	0000000000000000</span><br><span class="line">CapPrm:	0000000000000000</span><br><span class="line">CapEff:	0000000000000000</span><br><span class="line">CapBnd:	00000000000000c0</span><br><span class="line">Seccomp:	0</span><br><span class="line">Cpus_allowed:	f</span><br><span class="line">Cpus_allowed_list:	0-3</span><br><span class="line">voluntary_ctxt_switches:	18</span><br><span class="line">nonvoluntary_ctxt_switches:	76</span><br></pre></td></tr></table></figure>
+
+<h3 id="Android"><a href="#Android" class="headerlink" title="Android"></a>Android</h3><h4 id="procrank"><a href="#procrank" class="headerlink" title="procrank"></a>procrank</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">rocrank</span><br><span class="line">  PID      Vss      Rss      Pss      Uss  cmdline</span><br><span class="line"> 1078   59840K   59708K   42125K   39344K  com.csr.BTApp</span><br><span class="line"> 2683   59124K   59040K   37960K   33032K  com.android.launcher</span><br><span class="line"> 1042   51572K   51488K   35686K   33604K  android.process.acore</span><br><span class="line">  782   32808K   32748K   16775K   14716K  system_server</span><br><span class="line">  667   20560K   17560K   12739K    8940K  /system/bin/surfaceflinger</span><br><span class="line">  851   30124K   30036K   12085K    7996K  com.android.systemui</span><br><span class="line"> 2999   27680K   27596K    9929K    7040K  com.baidu.input</span><br><span class="line">  959   20764K   20676K    5522K    3788K  com.android.phone</span><br><span class="line"> 3468   21892K   21800K    4591K    1920K  com.apical.dreamthemetime</span><br><span class="line">  982   19880K   19792K    4438K    2644K  com.csr.csrservices</span><br><span class="line">  668   19592K   19480K    3525K    1360K  zygote</span><br><span class="line">  670    2960K    2960K    2407K    2356K  /system/bin/mediaserver</span><br><span class="line">  663    1784K    1784K    1209K    1116K  /system/bin/synergy_service</span><br><span class="line">  756    3404K    1348K    1133K    1124K  /usr/bin/gpsexe</span><br><span class="line">  669    1468K    1468K     959K     928K  /system/bin/drmserver</span><br><span class="line">  675     692K     692K     692K     692K  /bin/sh</span><br><span class="line"> 3482     656K     652K     456K     444K  procrank</span><br><span class="line">    1     164K     164K     144K     144K  /init</span><br><span class="line">                          ------   ------  ------</span><br><span class="line">                         195031K  163724K  TOTAL</span><br><span class="line"></span><br><span class="line">RAM: 480380K total, 3624K free, 732K buffers, 299788K cached, 264844K shmem, 7632K slab</span><br></pre></td></tr></table></figure>
+
+<h4 id="dumpsys"><a href="#dumpsys" class="headerlink" title="dumpsys"></a>dumpsys</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">dumpsys [options]</span><br><span class="line">        meminfo 显示内存信息</span><br><span class="line">        cpuinfo 显示CPU信息</span><br><span class="line">        account 显示accounts信息</span><br><span class="line">        activity 显示所有的activities的信息</span><br><span class="line">        window 显示键盘，窗口和它们的关系</span><br><span class="line">        wifi 显示wifi信息</span><br></pre></td></tr></table></figure>
+
+<p>可以在其后通过包名或者进程pid展示指定进程的信息。</p>
+<h1 id="UNIX与Linux"><a href="#UNIX与Linux" class="headerlink" title="UNIX与Linux"></a>UNIX与Linux</h1><p>Linux 是一个类似 Unix 的操作系统（类UNIX系统），Unix 要早于 Linux，Linux 的初衷就是要替代 UNIX，并在功能和用户体验上进行优化，所以 Linux 模仿了 UNIX（但并没有抄袭 UNIX 的源码），使得 Linux 在外观和交互上与 UNIX 非常类似。</p>
+<p>二者的区别：</p>
+<ul>
+<li>UNIX 系统大多是与硬件配套的，也就是说，大多数 UNIX 系统如 AIX、HP-UX 等是无法安装在 x86 服务器和个人计算机上的，而 Linux 则可以运行在多种硬件平台上；</li>
+<li>UNIX 是商业软件，而 Linux 是开源软件，是免费、公开源代码的。</li>
+</ul>
+<p>UNIX/Linux系统结构：可以粗糙地抽象为 3 个层次：底层是 UNIX/Linux 操作系统，即系统内核（Kernel）；中间层是 Shell 层，即命令解释层；高层则是应用层。</p>
+<ol>
+<li>内核层：内核层是 UNIX/Linux 系统的核心和基础，它直接附着在硬件平台之上，控制和管理系统内各种资源（硬件资源和软件资源），有效地组织进程的运行，从而扩展硬件的功能，提高资源的利用效率，为用户提供方便、高效、安全、可靠的应用环境。Linux 内核由如下几部分组成：内存管理、进程管理、设备驱动程序、文件系统和网络管理等。</li>
+<li>Shell层：Shell 层是与用户直接交互的界面。用户可以在提示符下输入命令行，由 Shell 解释执行并输出相应结果或者有关信息，所以我们也把 Shell 称作命令解释器，利用系统提供的丰富命令可以快捷而简便地完成许多工作。目前主要有下列版本的shell：<ul>
+<li>Bourne Shell(sh)：贝尔实验室开发的 　</li>
+<li>Bourne Again Shell(bash)：GNU操作系统上默认的shell，大部分linux的发行套件使用的都是这种shell</li>
+<li>Korn Shell：是对Bourne SHell的发展，在大部分内容上与Bourne Shell兼容</li>
+<li>C Shell：是SUN公司Shell的BSD版本</li>
+</ul>
+</li>
+<li>应用层：应用层提供基于 X Window 协议的图形环境。X Window 协议定义了一个系统所必须具备的功能，可系统能满足此协议及符合 X 协会其他的规范，便可称为 X Window。</li>
+</ol>
+<h1 id="Linux内核与发行版"><a href="#Linux内核与发行版" class="headerlink" title="Linux内核与发行版"></a>Linux内核与发行版</h1><p>Linux内核是计算机操作系统的核心。一个完整的 Linux发行版包括了内核与一些其他与文件相关的操作，用户管理系统，和软件包管理器等一系列软件。每个工具都是整个系统的一小部分。这些工具通常都是一个个独立的项目，有相应的开发者来开发及维护。</p>
+<p>Linux的众多发行版可能是基于不同的内核版本的。例如：流行的 RHEL6发行版是基于很老但是很稳定的 2.6.32 版本的Linux内核的。其他的一些发行版可能会很快的更新以适应最新的内核版本。需要特别注意的一点是，内核并不是一个非此即彼的命题，例如RHEL6就在2.6.32的内核中引进了新版本内核的许多改进。</p>
+<p>各发行版提供的其他基本工具和组成部分还有包括以下的内容：C/C++编译器，gdbdebugger 调试工具，核心系统库应用程序，用于在屏幕上绘图的底层接口以及高级的桌面环境，以及供安装和更新包括内核在内的众多组建的系统</p>
+<p>Debian是包括Ubuntu在内许多发行版的上游，而Ubuntu又是Linux Mint及其他发行版的上游。Debian在服务器和桌面电脑领域都有着广泛的应用。Debian是一个纯开源计划并着重在一个关键点上，稳定性。它同时也提供了最大的和完整的软件仓库给用户。</p>
+<h1 id="Android与Linux"><a href="#Android与Linux" class="headerlink" title="Android与Linux"></a>Android与Linux</h1><ul>
+<li>Android采用Linux作为内核</li>
+<li>Android对Linux内核做了修改，目的是适应在移动设备上使用</li>
+<li>Android开始作为Linux的一个分支，后来由于无法并入Linux的主开发树，已被Linux Kernel小组从开发树中删除</li>
+</ul>
+<p>Android是在Linux内核基础上运行的，提供的核心系统服务包括安全、内存管理、进程管理、网络组和驱动模型等内容。在硬件层和系统中其他软件之间添加了硬件抽象层（HAL），严格上来说Android不算是Linux系统</p>
+<p>Android内核是有标准的Linux内核修改而来的，继承了Linux内核的诸多优点，保留了Linux内核的主题框架，同时Android按照移动设备的要求，在文件系统、内存管理、进程间通信机智和电源管理方面进行了修改，添加了相关的驱动程序和必要的新功能。Android在很大程度上保留了Linux的基本架构。</p>
+<h1 id="GNU"><a href="#GNU" class="headerlink" title="GNU"></a>GNU</h1><p>GPL：GNU通用公共许可协议（英语：GNU General Public License，缩写GNU GPL 或 GPL），是被广泛使用的自由软件许可证，给予了终端用户运行、学习、共享和修改软件的自由。</p>
+<p>GNU是一个自由的操作系统，其内容软件完全以GPL方式发布。这个操作系统是GNU计划的主要目标，名称来自GNU’s Not Unix!的递归缩写，因为GNU的设计类似Unix，但它不包含具著作权的Unix代码。GNU的创始人，理查德·马修·斯托曼，将GNU视为“达成社会目的技术方法”。</p>
+<p>作为操作系统，GNU的发展仍未完成，其中最大的问题是具有完备功能的内核尚未被开发成功。GNU的内核，称为Hurd，是自由软件基金会发展的重点，但是其发展尚未成熟。在实际使用上，多半使用Linux内核、FreeBSD等替代方案，作为系统核心，其中主要的操作系统是Linux的发行版。Linux操作系统包涵了Linux内核与其他自由软件项目中的GNU组件和软件，可以被称为GNU/Linux。</p>
+<p>GNU/Linux命名争议，是在自由及开放源代码软件社群成员内的，关于是应该把使用GNU软件与Linux内核组合之操作系统称为“GNU/Linux”还是“Linux”的争议。</p>
+<p>GNU/Linux这一名称是由自由软件基金会的创立者与GNU计划的发起人理查德·斯托曼所提出的。GNU的开发者与其支持者，希望以该名称来作为此操作系统的正式名称。他们认为，此操作系统，包括了GNU系统软件包与Linux kernel，使用GNU/Linux这个名称，可以良好概括它的主要内容。况且，GNU项目原本就是以发展一个自由的操作系统为远程项目，但迟迟没有完成。而Linux kernel的出现刚好可以补足这个缺口。</p>
+<p>Linux内核本身并不是GNU计划的一部分，GNU/Linux这个名称在Linux社群中并没有得到一致认同。一些发行版社群例如Debian采用了GNU/Linux这一名称，但许多Linux社群中的成员认为使用Linux这一名称是更好的，为此提出了数项理由，主张Linux这个名称朗朗上口，且在公众与媒体中更为通用。Linux内核项目的发起人林纳斯·托瓦兹（Linus Torvalds）偏好于使用Linux，但对于GNU/Linux这个名字并不强烈反感。</p>
+<h1 id="一切皆文件"><a href="#一切皆文件" class="headerlink" title="一切皆文件"></a>一切皆文件</h1><h2 id="描述"><a href="#描述" class="headerlink" title="描述"></a>描述</h2><p>linux/unix下的哲学核心思想是<strong>一切皆文件</strong>。它指的是，对所有文件（目录、字符设备、块设备、套接字、打印机、进程、线程、管道等）操作，读写都可用<code>fopen()/fclose()/fwrite()/fread()</code>等函数进行处理，屏蔽了硬件的区别，所有设备都抽象成文件，提供统一的接口给用户，虽然类型各不相同，但是对其提供的却是同一套操作界面，更进一步，对文件的操作也可以跨文件系统执行。</p>
+<p>操作一个已经打开的文件：使用文件描述符（file descriptor），简称fd，它是一个对应某个已经打开的文件的索引（非负整数）。</p>
+<p>Windows的内部实现也近似于“一切皆文件”的思想，当然，这一切都只在内核里才有，下载一个WinObj这软件就可以看到，Windows上各种设备、分区、虚拟对象都是挂载到根“\”下的，通过这个树可以访问各种设备、驱动、文件系统等。</p>
+<p>Windows与Linux不同的就是把这些对象又重新封装了一层WindowsAPI，对外以设备、盘符、文件等等表现出来，重新封装WindowsAPI的目的是为了兼容性，而设备、盘符、文件这些是为了让普通用户更好理解。</p>
+<h2 id="文件类型"><a href="#文件类型" class="headerlink" title="文件类型"></a>文件类型</h2><p><img src="Linux%E6%96%87%E4%BB%B6%E7%B1%BB%E5%9E%8B.png" alt="Linux文件类型"></p>
+<h1 id="Inode"><a href="#Inode" class="headerlink" title="Inode"></a>Inode</h1><h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>inode是一个重要概念，是理解Unix/Linux文件系统和硬盘储存的基础。</p>
+<p>文件储存在硬盘上，硬盘的最小存储单位叫做”扇区”（Sector）。每个扇区储存512字节（相当于0.5KB）。操作系统读取硬盘的时候，不会一个个扇区地读取，这样效率太低，而是一次性连续读取多个扇区，即一次性读取一个”块”（block）。这种由多个扇区组成的”块”，是文件存取的最小单位。”块”的大小，最常见的是4KB，即连续八个 sector组成一个 block。</p>
+<p>文件数据都储存在”块”中，那么很显然，我们还必须找到一个地方储存文件的元信息，比如文件的创建者、文件的创建日期、文件的大小等等。这种储存文件元信息的区域就叫做inode，中文译名为”索引节点”。每一个文件都有对应的inode，里面包含了与该文件有关的一些信息。</p>
+<h2 id="inode的内容"><a href="#inode的内容" class="headerlink" title="inode的内容"></a>inode的内容</h2><p>inode包含文件的元信息，具体来说有以下内容：</p>
+<ul>
+<li>文件的字节数</li>
+<li>文件拥有者的User ID</li>
+<li>文件的Group ID</li>
+<li>文件的读、写、执行权限</li>
+<li>文件的时间戳，共有三个：ctime指inode上一次变动的时间，mtime指文件内容上一次变动的时间，atime指文件上一次打开的时间。</li>
+<li>链接数，即有多少文件名指向这个inode</li>
+<li>文件数据block的位置</li>
+</ul>
+<p>可以用stat命令，查看某个文件的inode信息：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">stat</span> README.md</span></span><br><span class="line">  File: README.md</span><br><span class="line">  Size: 15              Blocks: 0          IO Block: 4096   regular file</span><br><span class="line">Device: fh/15d  Inode: 30680772461790950  Links: 1</span><br><span class="line">Access: (0777/-rwxrwxrwx)  Uid: ( 1000/ hearing)   Gid: ( 1000/ hearing)</span><br><span class="line">Access: 2019-08-16 20:56:58.121431000 +0800</span><br><span class="line">Modify: 2019-08-16 20:56:58.121431000 +0800</span><br><span class="line">Change: 2019-08-16 20:56:58.121431000 +0800</span><br><span class="line"> Birth: -</span><br></pre></td></tr></table></figure>
+
+<p>总之，除了文件名以外的所有文件信息，都存在inode之中。至于为什么没有文件名，下文会有详细解释。</p>
+<h2 id="inode的大小"><a href="#inode的大小" class="headerlink" title="inode的大小"></a>inode的大小</h2><p>inode也会消耗硬盘空间，所以硬盘格式化的时候，操作系统自动将硬盘分成两个区域。一个是数据区，存放文件数据；另一个是inode区（inode table），存放inode所包含的信息。</p>
+<p>每个inode节点的大小，一般是128字节或256字节。inode节点的总数，在格式化时就给定，一般是每1KB或每2KB就设置一个inode。假定在一块1GB的硬盘中，每个inode节点的大小为128字节，每1KB就设置一个inode，那么inode table的大小就会达到128MB，占整块硬盘的12.8%。</p>
+<p>查看每个硬盘分区的inode总数和已经使用的数量，可以使用<code>df -i</code>命令。</p>
+<p>查看每个inode节点的大小，可以用如下命令：<code>sudo dumpe2fs -h /dev/hda | grep &quot;Inode size&quot;</code></p>
+<p>由于每个文件都必须有一个inode，因此有可能发生inode已经用光，但是硬盘还未存满的情况。这时，就无法在硬盘上创建新文件。</p>
+<h2 id="inode号码"><a href="#inode号码" class="headerlink" title="inode号码"></a>inode号码</h2><p>每个inode都有一个号码，操作系统用inode号码来识别不同的文件。Unix/Linux系统内部不使用文件名，而使用inode号码来识别文件。对于系统来说，文件名只是inode号码便于识别的别称或者绰号。</p>
+<p>表面上，用户通过文件名，打开文件。实际上，系统内部这个过程分成三步：首先，系统找到这个文件名对应的inode号码；其次，通过inode号码，获取inode信息；最后，根据inode信息，找到文件数据所在的block，读出数据。</p>
+<p>使用ls -i命令，可以看到文件名对应的inode号码：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ls -i README.md</span></span><br><span class="line">30680772461790950 README.md</span><br></pre></td></tr></table></figure>
+
+<h2 id="目录文件"><a href="#目录文件" class="headerlink" title="目录文件"></a>目录文件</h2><p>Unix/Linux系统中，目录（directory）也是一种文件。打开目录，实际上就是打开目录文件。</p>
+<p>目录文件的结构非常简单，就是一系列目录项（dirent）的列表。每个目录项，由两部分组成：所包含文件的文件名，以及该文件名对应的inode号码。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> ls命令只列出目录文件中的所有文件名：</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ls</span></span><br><span class="line">HybridAccessory  README.md  _config.yml  db.json  gulpfile.js  node_modules  package-lock.json  package.json  scaffolds  source  themes</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> ls -i命令列出整个目录文件，即文件名和inode号码：</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ls -i</span></span><br><span class="line">  281474976845551 HybridAccessory   5348024557503872 db.json         281474976858064 package-lock.json    281474976858853 source</span><br><span class="line">30680772461790950 README.md          281474976845560 gulpfile.js     281474976858065 package.json         281474976859117 themes</span><br><span class="line"> 1125899906905575 _config.yml        281474976845561 node_modules    281474976858849 scaffolds</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> ls -l命令列出文件的详细信息：</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ls -l</span></span><br><span class="line">total 280</span><br><span class="line">drwxrwxrwx 1 hearing hearing   4096 Jul 22 14:06 HybridAccessory</span><br><span class="line">-rwxrwxrwx 1 hearing hearing     15 Aug 16 20:56 README.md</span><br><span class="line">-rwxrwxrwx 1 hearing hearing   2189 Aug 19 12:34 _config.yml</span><br><span class="line">-rwxrwxrwx 1 hearing hearing    174 Aug 27 17:55 db.json</span><br><span class="line">-rwxrwxrwx 1 hearing hearing   1596 Jul 22 14:06 gulpfile.js</span><br><span class="line">drwxrwxrwx 1 hearing hearing   4096 Jul 22 14:06 node_modules</span><br><span class="line">-rwxrwxrwx 1 hearing hearing 277830 Jul 22 14:06 package-lock.json</span><br><span class="line">-rwxrwxrwx 1 hearing hearing    686 Jul 22 14:06 package.json</span><br><span class="line">drwxrwxrwx 1 hearing hearing   4096 Jul 22 14:06 scaffolds</span><br><span class="line">drwxrwxrwx 1 hearing hearing   4096 Jul 29 11:35 source</span><br><span class="line">drwxrwxrwx 1 hearing hearing   4096 Aug 16 20:51 themes</span><br></pre></td></tr></table></figure>
+
+<p>目录文件的读权限（r）和写权限（w），都是针对目录文件本身。由于目录文件内只有文件名和inode号码，所以如果只有读权限，只能获取文件名，无法获取其他信息，因为其他信息都储存在inode节点中，而读取inode节点内的信息需要目录文件的执行权限（x）。</p>
+<p>查看目录大小：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> du -h --max-depth=1</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> du -h -d 1</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="硬链接"><a href="#硬链接" class="headerlink" title="硬链接"></a>硬链接</h2><p>一般情况下，文件名和inode号码是”一一对应”关系，每个inode号码对应一个文件名。但是，Unix/Linux系统允许，多个文件名指向同一个inode号码。</p>
+<p>这意味着，可以用不同的文件名访问同样的内容；对文件内容进行修改，会影响到所有文件名；但是，删除一个文件名，不影响另一个文件名的访问。这种情况就被称为”硬链接”（hard link）。</p>
+<p>ln命令可以创建硬链接：<code>ln 源文件 目标文件</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ls -li</span></span><br><span class="line">total 0</span><br><span class="line">16044073672577795 drwxrwxrwx 1 hearing hearing 4096 Aug 27 18:07 test</span><br><span class="line">14918173765727074 -rw-rw-rw- 1 hearing hearing    0 Aug 27 18:06 test.txt</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ln test.txt test1</span></span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ls -li</span></span><br><span class="line">total 0</span><br><span class="line">16044073672577795 drwxrwxrwx 1 hearing hearing 4096 Aug 27 18:07 test</span><br><span class="line">14918173765727074 -rw-rw-rw- 2 hearing hearing    0 Aug 27 18:06 test.txt</span><br><span class="line">14918173765727074 -rw-rw-rw- 2 hearing hearing    0 Aug 27 18:06 test1</span><br></pre></td></tr></table></figure>
+
+<p>运行上面这条命令以后，源文件与目标文件的inode号码相同，都指向同一个inode。inode信息中有一项叫做”链接数”，记录指向该inode的文件名总数，这时就会增加1。反过来，删除一个文件名，就会使得inode节点中的”链接数”减1。当这个值减到0，表明没有文件名指向这个inode，系统就会回收这个inode号码，以及其所对应block区域。</p>
+<p>创建目录时，默认会生成两个目录项：”.”和”..”。前者的inode号码就是当前目录的inode号码，等同于当前目录的”硬链接”；后者的inode号码就是当前目录的父目录的inode号码，等同于父目录的”硬链接”。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ls -ai</span></span><br><span class="line"> 9570149208327005 .   1970324837227736 ..  16044073672577795 test   4785074604151560 test2</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ls -i ../</span></span><br><span class="line"> 9570149208327005 Downloads</span><br></pre></td></tr></table></figure>
+
+<p>目录不能创建硬链接（hard link not allowed for directory）。</p>
+<h2 id="软链接-快捷方式"><a href="#软链接-快捷方式" class="headerlink" title="软链接(快捷方式)"></a>软链接(快捷方式)</h2><p>文件A和文件B的inode号码虽然不一样，但是文件A的内容是文件B的路径。读取文件A时，系统会自动将访问者导向文件B。因此，无论打开哪一个文件，最终读取的都是文件B。这时，文件A就称为文件B的”软链接”（soft link）或者”符号链接（symbolic link）。</p>
+<p>这意味着，文件A依赖于文件B而存在，如果删除了文件B，打开文件A就会报错：”No such file or directory”。这是软链接与硬链接最大的不同：文件A指向文件B的文件名，而不是文件B的inode号码，文件B的inode”链接数”不会因此发生变化。</p>
+<p>ln -s命令可以创建软链接：<code>ln -s 源文文件或目录 目标文件或目录</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ln -s test2 test1</span></span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ls -l</span></span><br><span class="line">total 0</span><br><span class="line">drwxrwxrwx 1 hearing hearing 4096 Aug 27 18:07 test</span><br><span class="line">lrwxrwxrwx 1 hearing hearing    5 Aug 27 18:17 test1 -&gt; test2</span><br><span class="line">-rw-rw-rw- 1 hearing hearing    5 Aug 27 18:09 test2</span><br></pre></td></tr></table></figure>
+
+<h2 id="inode的特殊作用"><a href="#inode的特殊作用" class="headerlink" title="inode的特殊作用"></a>inode的特殊作用</h2><p>由于inode号码与文件名分离，这种机制导致了一些Unix/Linux系统特有的现象。</p>
+<ol>
+<li>有时，文件名包含特殊字符，无法正常删除。这时，直接删除inode节点，就能起到删除文件的作用。</li>
+<li>移动文件或重命名文件，只是改变文件名，不影响inode号码。</li>
+<li>打开一个文件以后，系统就以inode号码来识别这个文件，不再考虑文件名。因此，通常来说，系统无法从inode号码得知文件名。</li>
+</ol>
+<p>第3点使得软件更新变得简单，可以在不关闭软件的情况下进行更新，不需要重启。因为系统通过inode号码，识别运行中的文件，不通过文件名。更新的时候，新版文件以同样的文件名，生成一个新的inode，不会影响到运行中的文件。等到下一次运行这个软件的时候，文件名就自动指向新版文件，旧版文件的inode则被回收。</p>
+<h1 id="文件描述符"><a href="#文件描述符" class="headerlink" title="文件描述符"></a>文件描述符</h1><h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p>文件描述符在形式上是一个非负整数。实际上，它是一个索引值，指向内核为每一个进程所维护的该进程打开文件的记录表。当程序打开一个现有文件或者创建一个新文件时，内核向进程返回一个文件描述符。在程序设计中，一些涉及底层的程序编写往往会围绕着文件描述符展开。</p>
+<p>Linux 系统中，把一切都看做是文件，当进程打开现有文件或创建新文件时，内核向进程返回一个文件描述符，文件描述符就是内核为了高效管理已被打开的文件所创建的索引，用来指向被打开的文件，所有执行I/O操作的系统调用都会通过文件描述符。</p>
+<h2 id="文件描述符、文件、进程间的关系"><a href="#文件描述符、文件、进程间的关系" class="headerlink" title="文件描述符、文件、进程间的关系"></a>文件描述符、文件、进程间的关系</h2><p>1.描述：</p>
+<ul>
+<li>每个文件描述符会与一个打开的文件相对应</li>
+<li>不同的文件描述符也可能指向同一个文件</li>
+<li>相同的文件可以被不同的进程打开，也可以在同一个进程被多次打开</li>
+</ul>
+<p>2.系统为维护文件描述符，建立了三个表</p>
+<ul>
+<li>进程级的文件描述符表</li>
+<li>系统级的文件描述符表</li>
+<li>文件系统的i-node表 </li>
+</ul>
+<img src="文件描述符.png"/>
+
+<img src="三个表的关系.png"/>
+
+<ul>
+<li>在进程A中，文件描述符1和30都指向了同一个打开的文件句柄（#23），这可能是该进程多次对执行打开操作</li>
+<li>进程A中的文件描述符2和进程B的文件描述符2都指向了同一个打开的文件句柄（#73），这种情况有几种可能，1.进程A和进程B可能是父子进程关系;2.进程A和进程B打开了同一个文件，且文件描述符相同（低概率事件=_=）；3.A、B中某个进程通过UNIX域套接字将一个打开的文件描述符传递给另一个进程。</li>
+<li>进程A的描述符0和进程B的描述符3分别指向不同的打开文件句柄，但这些句柄均指向i-node表的相同条目（#1936），换言之，指向同一个文件。发生这种情况是因为每个进程各自对同一个文件发起了打开请求。同一个进程两次打开同一个文件，也会发生类似情况。</li>
+</ul>
+<h2 id="文件描述符限制"><a href="#文件描述符限制" class="headerlink" title="文件描述符限制"></a>文件描述符限制</h2><p>“文件描述符”也是一种资源，系统中的每个进程都需要有“文件描述符”才能进行一些操作。</p>
+<img src="文件描述符限制.png"/>
+
+<p>永久修改用户级限制时有三种设置类型：</p>
+<ul>
+<li>soft 指的是当前系统生效的设置值</li>
+<li>hard 指的是系统中所能设定的最大值</li>
+<li><code>-</code> 指的是同时设置了 soft 和 hard 的值</li>
+</ul>
+<h2 id="检查某个进程的文件描述符相关内容"><a href="#检查某个进程的文件描述符相关内容" class="headerlink" title="检查某个进程的文件描述符相关内容"></a>检查某个进程的文件描述符相关内容</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 查看指定进程的限制：在 Max open files 那一行，可以看到当前设置中最大文件描述符的数量为1024</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> cat /proc/803/limits</span></span><br><span class="line">Limit                     Soft Limit           Hard Limit           Units</span><br><span class="line">Max cpu time              unlimited            unlimited            seconds</span><br><span class="line">Max file size             unlimited            unlimited            bytes</span><br><span class="line">Max data size             unlimited            unlimited            bytes</span><br><span class="line">Max stack size            8388608              unlimited            bytes</span><br><span class="line">Max core file size        0                    unlimited            bytes</span><br><span class="line">Max resident set          unlimited            unlimited            bytes</span><br><span class="line">Max processes             8041                 8041                 processes</span><br><span class="line">Max open files            1024                 4096                 files</span><br><span class="line">Max locked memory         65536                65536                bytes</span><br><span class="line">Max address space         unlimited            unlimited            bytes</span><br><span class="line">Max file locks            unlimited            unlimited            locks</span><br><span class="line">Max pending signals       8041                 8041                 signals</span><br><span class="line">Max msgqueue size         819200               819200               bytes</span><br><span class="line">Max nice priority         40                   40</span><br><span class="line">Max realtime priority     0                    0</span><br><span class="line">Max realtime timeout      unlimited            unlimited            us</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 查看该进程占用了多少个文件描述符</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ll /proc/803/fd | wc -l</span></span><br><span class="line">5</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ll /proc/803/fd</span></span><br><span class="line">total 0</span><br><span class="line">lrwx------ 1 hearing hearing 0 Aug 27 20:14 0 -&gt; /dev/tty3</span><br><span class="line">lrwx------ 1 hearing hearing 0 Aug 27 20:14 1 -&gt; /dev/tty3</span><br><span class="line">lrwx------ 1 hearing hearing 0 Aug 27 20:14 10 -&gt; /dev/tty3</span><br><span class="line">lrwx------ 1 hearing hearing 0 Aug 27 20:14 2 -&gt; /dev/tty3</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>实际应用过程中，如果出现“Too many open files” , 可以通过增大进程可用的文件描述符数量来解决，但往往故事不会这样结束，很多时候，并不是因为进程可用的文件描述符过少，而是因为程序bug，打开了大量的文件连接（web连接也会占用文件描述符）而没有释放。程序申请的资源在用完后及时释放，才是解决“Too many open files”的根本之道。</p>
+<h1 id="证书-amp-CA"><a href="#证书-amp-CA" class="headerlink" title="证书&amp;CA"></a>证书&amp;CA</h1><ul>
+<li>证书（“digital certificate”或“public key certificate”）：它是用来证明某某东西确实是某某东西的东西</li>
+<li>CA（Certificate Authority）：证书授权中心，负责管理和签发证书的第三方机构</li>
+<li>CA 证书：就是CA颁发的证书</li>
+</ul>
+<h1 id="apt-amp-dpkg"><a href="#apt-amp-dpkg" class="headerlink" title="apt&amp;dpkg"></a>apt&amp;dpkg</h1><h2 id="概述-2"><a href="#概述-2" class="headerlink" title="概述"></a>概述</h2><p>在Linux平台下使用源代码进行软件编译可以具有定制化的设置，但对于Linux distribution的发行商来说，毕竟不是每个人都会进行源代码编译的，这个问题将会严重的影响linux平台上软件的发行与推广。</p>
+<p>为了解决上述的问题，厂商先在他们的系统上面编译好了用户所需要的软件，然后将这个编译好并可执行的软件直接发布给用户安装。不同的 Linux 发行版使用不同的打包系统，一般而言，大多数发行版分别属于两大包管理技术阵营：Debian 的”.deb”，和 Red Hat的”.rpm”。</p>
+<h2 id="dpkg"><a href="#dpkg" class="headerlink" title="dpkg"></a>dpkg</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>dpkg - package manager for Debian。dpkg是Debian的一个底层包管理工具，主要用于对已下载到本地和已安装的软件包进行管理。</p>
+<p>通过dpkg的机制，Debian提供的软件就能够简单的安装起来，同时能提供安装后的软件信息，只要派生于Debian的其它Linux distributions大多使用dpkg这个机制来管理，包括B2D，Ubuntu，Deepin等。</p>
+<h3 id="deb软件包名规则"><a href="#deb软件包名规则" class="headerlink" title="deb软件包名规则"></a>deb软件包名规则</h3><p>格式为：<code>Package_Version-Build_Architecture.deb</code>，如：nano_1.3.10-2_i386.deb：</p>
+<ul>
+<li>软件包名称(Package Name): nano</li>
+<li>版本(Version Number):1.3.10</li>
+<li>修订号(Build Number):2</li>
+<li>平台(Architecture):i386</li>
+</ul>
+<h3 id="dpkg软件包相关文件"><a href="#dpkg软件包相关文件" class="headerlink" title="dpkg软件包相关文件"></a>dpkg软件包相关文件</h3><ul>
+<li>/etc/dpkg/dpkg.cfg：dpkg包管理软件的配置文件【Configuration file with default options】</li>
+<li>/var/log/dpkg.log：dpkg包管理软件的日志文件【Default log file (see /etc/dpkg/dpkg.cfg(5) and option –log)】</li>
+<li>/var/lib/dpkg/available：存放系统所有安装过的软件包信息【List of available packages.】</li>
+<li>/var/lib/dpkg/status：存放系统现在所有安装软件的状态信息</li>
+<li>/var/lib/dpkg/info：记安装软件包控制目录的控制信息文件</li>
+</ul>
+<h3 id="dpkg数据库"><a href="#dpkg数据库" class="headerlink" title="dpkg数据库"></a>dpkg数据库</h3><p>dpkg 使用文本文件作为数据库来维护系统中软件，包括文件清单, 依赖关系, 软件状态, 等等详细的内容，通常在 /var/lib/dpkg 目录下。通常在 status 文件中存储软件状态和控制信息。在 info/ 目录下备份控制文件，并在其下的 .list 文件中记录安装文件清单，其下的 .mdasums 保存文件的 MD5 编码。</p>
+<h3 id="使用手册"><a href="#使用手册" class="headerlink" title="使用手册"></a>使用手册</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 安装软件包，必须是deb包的完整名称。（软件的安装可被拆分为两个对立的过程“解包”和“配置”）</span></span><br><span class="line">dpkg -i package-name.deb</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> “解包”：解开软件包到系统目录但不配置,如果和-R一起使用，参数可以是一个目录</span></span><br><span class="line">dpkg --unpack package-name.deb</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> “配置”：配置软件包</span></span><br><span class="line">dpkg --configure package-name.deb</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 列出 deb 包的内容</span></span><br><span class="line">dpkg -c package-name.deb</span><br></pre></td></tr></table></figure>
+
+<p>安装相关选项：</p>
+<ul>
+<li>-R：递归地指向特定目录的所有安装包，可以结合-i, -A, –install, –unpack 与 –avail一起使用</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> --remove，移除软件包，但保留其配置文件</span></span><br><span class="line">dpkg -r package-name</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> --purge，清除软件包的所有文件（removes everything，including conffiles）</span></span><br><span class="line">dpkg -P package-name</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> --list, 查看系统中软件包名符合pattern模式的软件包</span></span><br><span class="line">dpkg -l package-name-pattern</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> --listfiles, 查看package-name对应的软件包安装的文件及目录</span></span><br><span class="line">dpkg -L package-name</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> --print-avail, 显示包的具体信息</span></span><br><span class="line">dpkg -p package-name</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> --status, 查看package-name（已安装）对应的软件包信息</span></span><br><span class="line">dpkg -s package-name</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> --search，从已经安装的软件包中查找包含filename的软件包名称 （Tip：也可使用子命令dpkg-query来进行查询操作）</span></span><br><span class="line">dpkg -S filename-search-pattern</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 解包</span></span><br><span class="line">dpkg -X pkg.deb</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 例：列出系统上安装的与dpkg相关的软件包</span></span><br><span class="line">dpkg -l \*dpkg*</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 例：查看dpkg软件包安装到系统中的文件</span></span><br><span class="line">dpkg -L dpkg</span><br></pre></td></tr></table></figure>
+
+<h2 id="apt"><a href="#apt" class="headerlink" title="apt"></a>apt</h2><h3 id="apt简介"><a href="#apt简介" class="headerlink" title="apt简介"></a>apt简介</h3><p>虽然我们在使用dpkg时，已经解决掉了软件安装过程中的大量问题，但是当依赖关系不满足时，仍然需要手动解决，而apt这个工具解决了这样的问题，linux distribution 先将软件放置到对应的服务器中，然后分析软件的依赖关系，并且记录下来，然后当客户端有安装软件需求时，通过清单列表与本地的dpkg以存在的软件数据相比较，就能从网络端获取所有需要的具有依赖属性的软件了。</p>
+<h3 id="工作原理"><a href="#工作原理" class="headerlink" title="工作原理"></a>工作原理</h3><p>Debian 采用集中式的软件仓库机制，将各式各样的软件包分门别类地存放在软件仓库中，进行有效地组织和管理。然后，将软件仓库置于许许多多的镜像服务器中，并保持基本一致。这样，所有的 Debian 用户随时都能获得最新版本的安装软件包。因此，对于用户，这些镜像服务器就是他们的软件源（Reposity）</p>
+<p>然而，由于每位用户所处的网络环境不同，不可能随意地访问各镜像站点。为了能够有选择地访问，在 Debian 系统中，使用软件源配置文件/etc/apt/sources.list列出最合适访问的镜像站点地址。</p>
+<p><code>apt udpate</code>过程：</p>
+<ol>
+<li>执行apt-get update</li>
+<li>程序分析/etc/apt/sources.list</li>
+<li>自动连网寻找list中对应的Packages/Sources/Release列表文件，如果有更新则下载之，存入/var/lib/apt/lists/目录</li>
+<li>然后 apt-get install 相应的包，下载并安装。</li>
+</ol>
+<p>用户可以使用“apt-get update”命令刷新软件源，建立更新软件包列表。它会扫描每一个软件源服务器，并为该服务器所具有软件包资源建立索引文件，存放在本地的/var/lib/apt/lists/目录中。使用apt执行安装、更新操作时，都将依据这些索引文件，向软件源服务器申请资源。</p>
+<h3 id="apt相关文件"><a href="#apt相关文件" class="headerlink" title="apt相关文件"></a>apt相关文件</h3><ul>
+<li>var/lib/dpkg/available 文件的内容是软件包的描述信息, 该软件包括当前系统所使用的Debian 安装源中的所有软件包，其中包括当前系统中已安装的和未安装的软件包.</li>
+<li>/etc/apt/sources.list 记录软件源的地址（当你执行 sudo apt-get install xxx 时，Ubuntu 就去这些站点下载软件包到本地并执行安装）</li>
+<li>/var/cache/apt/archives 已经下载到的软件包都放在这里（用 apt-get install 安装软件时，软件包的临时存放路径）</li>
+<li>/var/lib/apt/lists 使用apt-get update命令会从/etc/apt/sources.list中下载软件列表，并保存到该目录</li>
+</ul>
+<h3 id="创建apt软件源"><a href="#创建apt软件源" class="headerlink" title="创建apt软件源"></a>创建apt软件源</h3><h4 id="概述-3"><a href="#概述-3" class="headerlink" title="概述"></a>概述</h4><p>以下是我搭建的软件源目录结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">hearing/</span><br><span class="line">├── bootstraps</span><br><span class="line">│   ├── bootstrap-aarch64</span><br><span class="line">│   ├── bootstrap-aarch64.zip</span><br><span class="line">│   ├── bootstrap-arm.zip</span><br><span class="line">│   ├── bootstrap-i686.zip</span><br><span class="line">│   └── bootstrap-x86_64.zip</span><br><span class="line">├── repository</span><br><span class="line">│   ├── dists</span><br><span class="line">│   |    └── stable</span><br><span class="line">│   |       ├── InRelease</span><br><span class="line">│   |       ├── main</span><br><span class="line">│   |       │   ├── binary-aarch64</span><br><span class="line">│   |       │   │   └── Packages</span><br><span class="line">│   |       │   ├── binary-all</span><br><span class="line">│   |       │   │   └── Packages</span><br><span class="line">│   |       │   ├── binary-arm</span><br><span class="line">│   |       │   │   └── Packages</span><br><span class="line">│   |       │   ├── binary-i686</span><br><span class="line">│   |       │   │   └── Packages</span><br><span class="line">│   |       │   └── binary-x86_64</span><br><span class="line">│   |       │       └── Packages</span><br><span class="line">│   |       ├── Release</span><br><span class="line">|   |       ├── Release.gpg</span><br><span class="line">|   |       └── repo.asc</span><br><span class="line">│   └── pool</span><br><span class="line">│       ├── aarch64</span><br><span class="line">│       |   ├── xxx.deb</span><br><span class="line">│       ├── all</span><br><span class="line">│       |   ├── xxx.deb</span><br><span class="line">│       ├── arm</span><br><span class="line">│       |   ├── xxx.deb</span><br><span class="line">│       ├── i686</span><br><span class="line">│       |   ├── xxx.deb</span><br><span class="line">│       └── x86_64</span><br><span class="line">│           ├── xxx.deb</span><br><span class="line">└── tmp</span><br><span class="line">    ├── xxx.tar.gz</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>bootstraps目录下放的是最终编译成功的zip文件</li>
+<li>repository是自己制作的软件仓库</li>
+<li>tmp放置的是上一步编译中下载失败的一些依赖</li>
+</ul>
+<h4 id="引用"><a href="#引用" class="headerlink" title="引用"></a>引用</h4><p>根据<code>https://wiki.debian.org/DebianRepository/Setup</code>中的说法，仓库分为两种，一种比较简单的是trivial archive，而另外一种复杂的仓库称为official archive。在一个official archive中，典型特征是顶层有个 dists 目录和 pool 目录。这样的好处是:</p>
+<ul>
+<li>将所有类型CPU的包列表(Packages或者Packages.gz文件)放在一个文件里面，这样每个机器要获取的包列表就比较小。</li>
+<li>不同套件/不同CPU可共用的deb包（主要是那些 _all.deb）和源代码包，也只在 pool/all目录下存放一份。</li>
+<li>源代码包(.dsc，orig.tar.xz)有路径存放，这样 dget / apt source 可以取到源代码包。</li>
+</ul>
+<p>对应的<code>/etc/apt/sources.list</code>配置如下:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">deb http://192.168.56.47:80/hearing/repository stable main</span><br></pre></td></tr></table></figure>
+
+<p>配置软件源的格式为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">deb|deb-src uri distribution [component1] [component2] [...]</span><br></pre></td></tr></table></figure>
+
+<h4 id="生成Packages"><a href="#生成Packages" class="headerlink" title="生成Packages"></a>生成Packages</h4><p>Packages文件包括每个deb包的位置，描述，版本等信息，生成命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">dpkg-scanpackages all/ /dev/null| gzip -9c &gt; dists/stable/main/binary-all/Packages.gz</span><br><span class="line">dpkg-scanpackages all/ /dev/null| &gt; dists/stable/main/binary-all/Packages</span><br></pre></td></tr></table></figure>
+
+<h4 id="生成Release"><a href="#生成Release" class="headerlink" title="生成Release"></a>生成Release</h4><p>Release文件里面包含了 Packages 等文件的大小和校验和(包含MD5/SHA1/SHA256/SHA512 多种值)，如果这个文件里面所描述的 Packages 大小与校验和与实际读取到的文件不一致，apt 会拒绝这个仓库。生成命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-ftparchive release $dir &gt; Release</span><br></pre></td></tr></table></figure>
+
+<h4 id="生成Release-gpg-和-InRelease-文件"><a href="#生成Release-gpg-和-InRelease-文件" class="headerlink" title="生成Release.gpg 和 InRelease 文件"></a>生成Release.gpg 和 InRelease 文件</h4><p>Release.gpg 是一个签名文件，随同 Release 一起出现的，比较老的客户端只认这两个文件，而 InRelease 是内嵌签名的（也就是说，将原来 Release 的内容和 Release.gpg 的内容揉到一起了，注意这里不是简单地拼到一起），新的客户端才支持这个这个文件，观察一下 Debian 和 Ubuntu 的仓库 ( <a target="_blank" rel="noopener" href="http://mirrors.ustc.edu.cn/debian/dists/jessie/">http://mirrors.ustc.edu.cn/debian/dists/jessie/</a>, <a target="_blank" rel="noopener" href="http://mirrors.ustc.edu.cn/ubuntu/dists/xenial/">http://mirrors.ustc.edu.cn/ubuntu/dists/xenial/</a> ) ，可以看到 Debian 的仓库只有 Release 和 Release.gpg 这两个文件，而 Ubuntu 仓库里面这三个文件都有。</p>
+<p>如何生成这两个文件：</p>
+<ul>
+<li>生成自己的gpg key: <code>gpg --list-keys || gpg --gen-key</code></li>
+<li>生成Release.gpg: <code>gpg --armor --detach-sign --sign -o Release.gpg Release</code></li>
+<li>生成InRelease: <code>gpg --clearsign -o InRelease Release</code></li>
+</ul>
+<h4 id="导入公钥"><a href="#导入公钥" class="headerlink" title="导入公钥"></a>导入公钥</h4><p>当运行<code>apt update</code>的时候，会出现警告：<code>The following signatures couldn&#39;t be verified because the public key is not available: NO_PUBKEY 722D2AFAD8BAD548</code>。</p>
+<p>也就是说 InRelease / Release.gpg 虽然签名了，但由于这个签名所用的公钥没有被接受，因此还是不能正常使用，有三种解决方法：</p>
+<ol>
+<li><p>服务端将公钥导出，然后提供给客户端导入：</p>
+ <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 导出</span></span><br><span class="line">gpg --export --armor 722D2AFAD8BAD548 -o my-repo.gpg-key.asc</span><br><span class="line"><span class="meta"></span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 导入</span></span><br><span class="line">sudo apt-key add my-repo.gpg-key.asc</span><br></pre></td></tr></table></figure></li>
+<li><p>客户端在执行<code>apt update</code>的时候，添加<code>--allow-insecure-repositories</code>选项；在执行<code>apt install pkg</code>的时候，添加<code>--allow-unauthenticated</code>选项。</p>
+</li>
+<li><p>用户修改仓库的配置，改为<code>deb [trusted=yes] http://192.168.56.47:80/hearing/repository stable main</code></p>
+</li>
+</ol>
+<h3 id="使用手册-1"><a href="#使用手册-1" class="headerlink" title="使用手册"></a>使用手册</h3><ol>
+<li>apt-get update 更新源</li>
+<li>apt-get dist-upgrade 升级系统到相应的发行版(根据 source.list 的配置)</li>
+<li>apt-get upgrade 更新所有已经安装的软件包</li>
+<li>apt-get install package_name 安装软件包(加上 –reinstall重新安装)，apt-get install package_name=version 安装指定版本的软件包</li>
+<li>apt-get remove package_name 卸载一个已安装的软件包（保留配置文件）</li>
+<li>apt-get purge package_name 移除软件包（删除配置信息）或apt-get –purge remove packagename</li>
+<li>apt-get check 检查是否有损坏的依赖</li>
+<li>apt-get autoclean：删除你已经删掉的软件（定期运行这个命令来清除那些已经卸载的软件包的.deb文件。通过这种方式，可以释放大量的磁盘空间。可以使用apt-get<br>clean以释放更多空间。这个命令会将已安装软件包裹的.deb文件一并删除）</li>
+<li>apt-get clean 把安装的软件的备份也删除，不过这样不会影响软件的使用</li>
+</ol>
+<p>apt-cache对APT的程序包缓存执行各种操作。apt-cache不会操纵系统状态，但会提供操作以从包元数据中搜索并生成输出。</p>
+<ol>
+<li>apt-cache depends packagename 了解使用依赖</li>
+<li>apt-cache rdepends packagename 是查看该包被哪些包依赖</li>
+<li>apt-cache search packagename 搜索包</li>
+<li>apt-cache show packagename 获取包的相关信息，如说明、大小、版本等</li>
+<li>apt-cache showpkg packagename 显示软件包的大致信息</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/08/27/Termux%E8%A7%A3%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3695,304 +4091,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/23/Java%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3%E7%AC%94%E8%AE%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/head.png">
-      <meta itemprop="name" content="苍耳叔叔">
-      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苍耳的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/07/23/Java%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">Java编程思想笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-07-23 14:24:51" itemprop="dateCreated datePublished" datetime="2019-07-23T14:24:51+08:00">2019-07-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">语言</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%AD%E8%A8%80/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2019/07/23/Java%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Java编程思想笔记" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2019/07/23/Java%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/07/23/Java%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="考虑使用静态工厂方法替代构造方法"><a href="#考虑使用静态工厂方法替代构造方法" class="headerlink" title="考虑使用静态工厂方法替代构造方法"></a>考虑使用静态工厂方法替代构造方法</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Boolean <span class="title">valueOf</span><span class="params">(<span class="keyword">boolean</span> b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> b ? Boolean.TRUE : Boolean.FALSE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="使用Builder模式替代参数过多的构造器"><a href="#使用Builder模式替代参数过多的构造器" class="headerlink" title="使用Builder模式替代参数过多的构造器"></a>使用Builder模式替代参数过多的构造器</h1><p>当类构造器的参数过多时，容易导致程序由于参数传递顺序等问题产生一些难以调试的Bug，因此有一种解决方法是JavaBeans模式，这种模式通过提供一个无参的构造器，然后通过一系列的setter方法去设置对象的属性，这种模式有两个缺点：</p>
-<ul>
-<li>代码冗长</li>
-<li>由于构造方法在多次调用中被分割，所以在构造过程中 JavaBean 可能处于不一致的状态。一个相关的缺点是，JavaBeans 模式排除了让类不可变的可能性，并且需要增加工作以确保线程安全。</li>
-</ul>
-<p>另一种解决方式是Builder模式，通过在类中提供一个通常是static类型的Builder类，代码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Builder Pattern</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NutritionFacts</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> servingSize;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> servings;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> calories;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> fat;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> sodium;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> carbohydrate;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Builder</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Required parameters</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> servingSize;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> servings;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Optional parameters - initialized to default values</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> calories      = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> fat           = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> sodium        = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> carbohydrate  = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Builder</span><span class="params">(<span class="keyword">int</span> servingSize, <span class="keyword">int</span> servings)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.servingSize = servingSize;</span><br><span class="line">            <span class="keyword">this</span>.servings    = servings;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">calories</span><span class="params">(<span class="keyword">int</span> val)</span> </span>&#123; </span><br><span class="line">            calories = val;      </span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">fat</span><span class="params">(<span class="keyword">int</span> val)</span> </span>&#123; </span><br><span class="line">           fat = val;           </span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">sodium</span><span class="params">(<span class="keyword">int</span> val)</span> </span>&#123; </span><br><span class="line">           sodium = val;        </span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">this</span>; </span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">carbohydrate</span><span class="params">(<span class="keyword">int</span> val)</span> </span>&#123; </span><br><span class="line">           carbohydrate = val;  </span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">this</span>; </span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> NutritionFacts <span class="title">build</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> NutritionFacts(<span class="keyword">this</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">NutritionFacts</span><span class="params">(Builder builder)</span> </span>&#123;</span><br><span class="line">        servingSize  = builder.servingSize;</span><br><span class="line">        servings     = builder.servings;</span><br><span class="line">        calories     = builder.calories;</span><br><span class="line">        fat          = builder.fat;</span><br><span class="line">        sodium       = builder.sodium;</span><br><span class="line">        carbohydrate = builder.carbohydrate;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">NutritionFacts cocaCola = <span class="keyword">new</span> NutritionFacts.Builder(<span class="number">240</span>, <span class="number">8</span>)</span><br><span class="line">    .calories(<span class="number">100</span>).sodium(<span class="number">35</span>).carbohydrate(<span class="number">27</span>).build();</span><br></pre></td></tr></table></figure>
-
-<p>总而言之，当设计类的构造方法或静态工厂的参数超过几个时，Builder 模式是一个不错的选择，特别是如果许多参数是可选的或相同类型的。客户端代码比使用伸缩构造方法（telescoping constructors）更容易读写，并且 builder 比 JavaBeans 更安全。</p>
-<h1 id="使用私有构造方法执行非实例化"><a href="#使用私有构造方法执行非实例化" class="headerlink" title="使用私有构造方法执行非实例化"></a>使用私有构造方法执行非实例化</h1><p>对于一些只包含静态方法和静态属性的类，可以采用私有构造方法防止该类被继承，从而执行非实例化。</p>
-<h1 id="消除过期的对象引用"><a href="#消除过期的对象引用" class="headerlink" title="消除过期的对象引用"></a>消除过期的对象引用</h1><ul>
-<li><p>内存泄漏原因之一：集合类</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Can you spot the &quot;memory leak&quot;?</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Stack</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Object[] elements;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> size = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DEFAULT_INITIAL_CAPACITY = <span class="number">16</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Stack</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        elements = <span class="keyword">new</span> Object[DEFAULT_INITIAL_CAPACITY];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">push</span><span class="params">(Object e)</span> </span>&#123;</span><br><span class="line">        ensureCapacity();</span><br><span class="line">        elements[size++] = e;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 内存泄漏</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">pop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (size == <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> EmptyStackException();</span><br><span class="line">        <span class="keyword">return</span> elements[--size];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 修改版本</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">pop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (size == <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> EmptyStackException();</span><br><span class="line">        Object result = elements[--size];</span><br><span class="line">        elements[size] = <span class="keyword">null</span>; <span class="comment">// Eliminate obsolete reference</span></span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * Ensure space for at least one more element, roughly</span></span><br><span class="line"><span class="comment">    * doubling the capacity each time the array needs to grow.</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">ensureCapacity</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (elements.length == size)</span><br><span class="line">            elements = Arrays.copyOf(elements, <span class="number">2</span> * size + <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li><p>内存泄漏原因之二：缓存。可以使用WeakHashMap来避免。</p>
-</li>
-<li><p>内存泄漏原因之三：监听器等回调方法。</p>
-</li>
-</ul>
-<h1 id="避免使用Finalizer和Cleaner-Java-9-机制"><a href="#避免使用Finalizer和Cleaner-Java-9-机制" class="headerlink" title="避免使用Finalizer和Cleaner(Java 9)机制"></a>避免使用Finalizer和Cleaner(Java 9)机制</h1><h1 id="使用-try-with-resources-语句替代-try-finally"><a href="#使用-try-with-resources-语句替代-try-finally" class="headerlink" title="使用 try-with-resources 语句替代 try-finally"></a>使用 try-with-resources 语句替代 try-finally</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> Exception();</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>如上语句中，只会捕获finally中的异常。为了防止该问题的出现可以使用try-with-resources，这是Java 7的一个特性，Java 类库和第三方类库中的许多类和接口现在都实现或继承了AutoCloseable接口。如果你编写的类表示必须关闭的资源，那么这个类也应该实现 AutoCloseable 接口。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">AutoCloseable</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>因此建议使用如下方式关闭资源：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// try-with-resources - the the best way to close resources!</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> String <span class="title">firstLineOfFile</span><span class="params">(String path)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> (BufferedReader br = <span class="keyword">new</span> BufferedReader(</span><br><span class="line">           <span class="keyword">new</span> FileReader(path))) &#123;</span><br><span class="line">       <span class="keyword">return</span> br.readLine();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// try-with-resources on multiple resources - short and sweet</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">copy</span><span class="params">(String src, String dst)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> (InputStream   in = <span class="keyword">new</span> FileInputStream(src);</span><br><span class="line">         OutputStream out = <span class="keyword">new</span> FileOutputStream(dst)) &#123;</span><br><span class="line">        <span class="keyword">byte</span>[] buf = <span class="keyword">new</span> <span class="keyword">byte</span>[BUFFER_SIZE];</span><br><span class="line">        <span class="keyword">int</span> n;</span><br><span class="line">        <span class="keyword">while</span> ((n = in.read(buf)) &gt;= <span class="number">0</span>)</span><br><span class="line">            out.write(buf, <span class="number">0</span>, n);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>如果调用 readLine 和（不可见）close 方法都抛出异常，则后一个异常将被抑制（suppressed），而不是前者。 事实上，为了保留你真正想看到的异常，可能会抑制多个异常。 这些抑制的异常没有被抛弃， 而是打印在堆栈跟踪中，并标注为被抑制了。 你也可以使用 getSuppressed 方法以编程方式访问它们，该方法在 Java 7 中已添加到的 Throwable 中。</p>
-<p>可以在 try-with-resources 语句中添加 catch 子句，就像在常规的 try-finally 语句中一样。这允许你处理异常，而不会在另一层嵌套中污染代码:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// try-with-resources with a catch clause</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> String <span class="title">firstLineOfFile</span><span class="params">(String path, String defaultVal)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> (BufferedReader br = <span class="keyword">new</span> BufferedReader(</span><br><span class="line">           <span class="keyword">new</span> FileReader(path))) &#123;</span><br><span class="line">        <span class="keyword">return</span> br.readLine();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        <span class="keyword">return</span> defaultVal;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="重写equals方法"><a href="#重写equals方法" class="headerlink" title="重写equals方法"></a>重写equals方法</h1><p>重写equals方法必须遵守相应的规则：</p>
-<ul>
-<li>自反性： 对于任何非空引用 x，x.equals(x) 必须返回 true。</li>
-<li>对称性： 对于任何非空引用 x 和 y，如果且仅当 y.equals(x) 返回 true 时 x.equals(y) 必须返回 true。</li>
-<li>传递性： 对于任何非空引用 x、y、z，如果 x.equals(y) 返回 true，y.equals(z) 返回 true，则 x.equals(z) 必须返回 true。</li>
-<li>一致性： 对于任何非空引用 x 和 y，如果在 equals 比较中使用的信息没有修改，则 x.equals(y) 的多次调用必须始终返回 true 或始终返回 false。</li>
-<li>对于任何非空引用 x，x.equals(null) 必须返回 false。</li>
-<li>重写equals方法一定要重写hashCode方法。</li>
-</ul>
-<p>equals方法与hashCode方法有几个约定：</p>
-<ul>
-<li>当在一个应用程序执行过程中，如果在 equals 方法比较中没有修改任何信息，在一个对象上重复调用 hashCode 方法时，它必须始终返回相同的值。从一个应用程序到另一个应用程序的每一次执行返回的值可以是不一致的。</li>
-<li>如果两个对象根据 equals(Object) 方法比较是相等的，那么在两个对象上调用 hashCode 就必须产生的结果是相同的整数。</li>
-<li>如果两个对象根据 equals(Object) 方法比较并不相等，则不要求在每个对象上调用 hashCode 都必须产生不同的结果。 但是，程序员应该意识到，为不相等的对象生成不同的结果可能会提高散列表（hash tables）的性能。</li>
-</ul>
-<p>当不重写 hashCode 时，所违反第二个关键条款是：相等的对象必须具有相等的哈希码（ hash codes）。 </p>
-<h1 id="始终重写toString方法"><a href="#始终重写toString方法" class="headerlink" title="始终重写toString方法"></a>始终重写toString方法</h1><h1 id="谨慎地重写clone方法"><a href="#谨慎地重写clone方法" class="headerlink" title="谨慎地重写clone方法"></a>谨慎地重写clone方法</h1><h1 id="考虑实现Comparable接口"><a href="#考虑实现Comparable接口" class="headerlink" title="考虑实现Comparable接口"></a>考虑实现Comparable接口</h1><h1 id="使类和成员的可访问性最小化"><a href="#使类和成员的可访问性最小化" class="headerlink" title="使类和成员的可访问性最小化"></a>使类和成员的可访问性最小化</h1><ul>
-<li>private —— 该成员只能在声明它的顶级类内访问。</li>
-<li>package-private —— 成员可以从被声明的包中的任何类中访问。从技术上讲，如果没有指定访问修饰符（接口成员除外，它默认是公共的），这是默认访问级别。</li>
-<li>protected —— 成员可以从被声明的类的子类中访问（会受一些限制 [JLS, 6.6.2]），以及它声明的包中的任何类。</li>
-<li>public —— 该成员可以从任何地方被访问。</li>
-</ul>
-<h1 id="最小化可变性"><a href="#最小化可变性" class="headerlink" title="最小化可变性"></a>最小化可变性</h1><p>不可变类简单来说是它的实例不能被修改的类。包含在每个实例中的所有信息在对象的生命周期中是固定的，因此不会观察到任何变化。Java平台类库包含许多不可变的类，包括 String 类，基本类型包装类以及 BigInteger 类和 BigDecimal 类。</p>
-<p>不可变类比可变类更容易设计，实现和使用。他们不太容易出错，更安全。除非有充分的理由使类成为可变类，否则类应该是不可变的。要使一个类不可变，需要遵循以下五条规则：</p>
-<ul>
-<li>不要提供修改对象状态的方法。</li>
-<li>确保这个类不能被继承。</li>
-<li>把所有属性设置为 final。</li>
-<li>把所有的属性设置为 private。</li>
-<li>确保对任何可变组件的互斥访问。如果你的类有任何引用可变对象的属性，请确保该类的客户端无法获得对这些对象的引用。切勿将这样的属性初始化为客户端提供的对象引用，或从访问方法返回属性。在构造方法，访问方法和 readObject 方法中进行防御性拷贝。</li>
-</ul>
-<p>不可变的特点：</p>
-<ul>
-<li>不可变对象本质上是线程安全的; 它们不需要同步</li>
-<li>不仅可以共享不可变的对象，而且可以共享内部信息</li>
-<li>不可变对象为其他对象提供了很好的构件</li>
-<li>不可变对象提供了免费的原子失败机制</li>
-<li>不可变类的主要缺点是对于每个不同的值都需要一个单独的对象</li>
-</ul>
-<p>为了保证不变性，一个类不得允许子类化，这可以通过使类用 final 修饰，但是还有另外一个更灵活的选择：可以使其所有的构造方法私有或包级私有，并添加公共静态工厂，而不是公共构造方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Immutable class with static factories instead of constructors</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Complex</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">double</span> re;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">double</span> im;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Complex</span><span class="params">(<span class="keyword">double</span> re, <span class="keyword">double</span> im)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.re = re;</span><br><span class="line">        <span class="keyword">this</span>.im = im;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Complex <span class="title">valueOf</span><span class="params">(<span class="keyword">double</span> re, <span class="keyword">double</span> im)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Complex(re, im);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ... <span class="comment">// Remainder unchanged</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>总而言之，坚决不要为每个属性编写一个 get 方法后再编写一个对应的 set 方法。 除非有充分的理由使类成为可变类，否则类应该是不可变的。 不可变类提供了许多优点，唯一的缺点是在某些情况下可能会出现性能问题。 </p>
-<h1 id="组合优于继承（装饰器模式）"><a href="#组合优于继承（装饰器模式）" class="headerlink" title="组合优于继承（装饰器模式）"></a>组合优于继承（装饰器模式）</h1><p>继承打破了封装，换句话说，一个子类依赖于其父类的实现细节来保证其正确的功能。 父类的实现可能会从发布版本不断变化，如果是这样，子类可能会被破坏，即使它的代码没有任何改变。 因此，一个子类必须与其超类一起更新而变化，除非父类的作者为了继承的目的而专门设计它，并对应有文档的说明。</p>
-<p>为了具体说明，假设有一个使用 HashSet 的程序，为了调整程序的性能，需要查询 HashSet ，从创建它之后已经添加了多少个元素，为了提供这个功能，编写了一个 HashSet 变体，它保留了尝试元素插入的数量，并导出了这个插入数量的一个访问方法，HashSet 类包含两个添加元素的方法，分别是 add 和 addAll，所以我们重写这两个方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Broken - Inappropriate use of inheritance!</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InstrumentedHashSet</span>&lt;<span class="title">E</span>&gt; <span class="keyword">extends</span> <span class="title">HashSet</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// The number of attempted element insertions</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> addCount = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">InstrumentedHashSet</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">InstrumentedHashSet</span><span class="params">(<span class="keyword">int</span> initCap, <span class="keyword">float</span> loadFactor)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(initCap, loadFactor);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">        addCount++;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.add(e);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">addAll</span><span class="params">(Collection&lt;? extends E&gt; c)</span> </span>&#123;</span><br><span class="line">        addCount += c.size();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.addAll(c);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAddCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> addCount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>此时的addAll方法会出现一个问题，因为在其内又调用了add方法，因此计数器叠加了两次。</p>
-<p>为了解决这个问题，可以使用组合替代继承。给新类增加一个私有属性，该属性是现有类的实例引用，这种设计被称为组合。因此可以这样修改上述功能代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ForwardingSet</span>&lt;<span class="title">E</span>&gt; <span class="keyword">implements</span> <span class="title">Set</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Set&lt;E&gt; s;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ForwardingSet</span><span class="params">(Set&lt;E&gt; s)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.s = s;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">clear</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        s.clear();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">contains</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.contains(o);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isEmpty</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.isEmpty();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">size</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.size();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Iterator&lt;E&gt; <span class="title">iterator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.iterator();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.add(e);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">remove</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.remove(o);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">containsAll</span><span class="params">(Collection&lt;?&gt; c)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.containsAll(c);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">addAll</span><span class="params">(Collection&lt;? extends E&gt; c)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.addAll(c);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">removeAll</span><span class="params">(Collection&lt;?&gt; c)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.removeAll(c);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">retainAll</span><span class="params">(Collection&lt;?&gt; c)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.retainAll(c);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Object[] toArray() &#123;</span><br><span class="line">        <span class="keyword">return</span> s.toArray();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> &lt;T&gt; T[] toArray(T[] a) &#123;</span><br><span class="line">        <span class="keyword">return</span> s.toArray(a);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.equals(o);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.hashCode();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InstrumentedSet</span>&lt;<span class="title">E</span>&gt; <span class="keyword">extends</span> <span class="title">ForwardingSet</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> addCount = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">InstrumentedSet</span><span class="params">(Set&lt;E&gt; s)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(s);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">        addCount++;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.add(e);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">addAll</span><span class="params">(Collection&lt;? extends E&gt; c)</span> </span>&#123;</span><br><span class="line">        addCount += c.size();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.addAll(c);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAddCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> addCount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>InstrumentedSet 类被称为包装类，因为每个 InstrumentedSet 实例都包含（“包装”）另一个 Set 实例。 这也被称为装饰器模式，因为 InstrumentedSet 类通过添加计数功能来“装饰”一个集合。</p>
-<p>总之，继承是强大的，但它是有问题的，因为它违反封装。 只有在子类和父类之间存在真正的子类型关系时才适用。 即使如此，如果子类与父类不在同一个包中，并且父类不是为继承而设计的，继承可能会导致脆弱性。 为了避免这种脆弱性，使用合成和转发代替继承，特别是如果存在一个合适的接口来实现包装类。 包装类不仅比子类更健壮，而且更强大。</p>
-<h1 id="接口优于抽象类"><a href="#接口优于抽象类" class="headerlink" title="接口优于抽象类"></a>接口优于抽象类</h1><p>接口通过包装类模式确保安全的，强大的功能增强成为可能。如果使用抽象类来定义类型，那么只能继承，生成的类比包装类更脆弱。</p>
-<h1 id="接口仅用来定义类型"><a href="#接口仅用来定义类型" class="headerlink" title="接口仅用来定义类型"></a>接口仅用来定义类型</h1><h1 id="使用静态成员类而不是非静态类"><a href="#使用静态成员类而不是非静态类" class="headerlink" title="使用静态成员类而不是非静态类"></a>使用静态成员类而不是非静态类</h1><p>如果声明了一个不需要访问宿主实例的成员类，应该使它成为一个静态成员类，而不是非静态的成员类，因为非静态内部类的每个实例都会有一个隐藏的外部引用给它的宿主实例，如前所述，存储这个引用需要占用时间和空间；更严重的是可能会导致即使宿主类在满足垃圾回收的条件时却仍然驻留在内存中，由此产生的内存泄漏可能是灾难性的，由于引用是不可见的，所以通常难以检测到。</p>
-<h1 id="将源文件限制为单个顶级类"><a href="#将源文件限制为单个顶级类" class="headerlink" title="将源文件限制为单个顶级类"></a>将源文件限制为单个顶级类</h1><p>虽然 Java 编译器允许在单个源文件中定义多个顶级类，但这样做没有任何好处，并且存在重大风险。风险源于在源文件中定义多个顶级类使得为类提供多个定义成为可能，使用哪个定义会受到源文件传递给编译器的顺序的影响。</p>
-<h1 id="不要使用原始类型"><a href="#不要使用原始类型" class="headerlink" title="不要使用原始类型"></a>不要使用原始类型</h1><table>
-<thead>
-<tr>
-<th align="center">术语</th>
-<th align="center">中文含义</th>
-<th align="center">举例</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">Parameterized type</td>
-<td align="center">参数化类型</td>
-<td align="center">List&lt;String&gt;</td>
-</tr>
-<tr>
-<td align="center">Actual type parameter</td>
-<td align="center">实际类型参数</td>
-<td align="center">String</td>
-</tr>
-<tr>
-<td align="center">Generic type</td>
-<td align="center">泛型类型</td>
-<td align="center">List&lt;E&gt;</td>
-</tr>
-<tr>
-<td align="center">Formal type parameter</td>
-<td align="center">形式类型参数</td>
-<td align="center">E</td>
-</tr>
-<tr>
-<td align="center">Unbounded wildcard type</td>
-<td align="center">无限制通配符类型</td>
-<td align="center">List&lt;?&gt;</td>
-</tr>
-<tr>
-<td align="center">Raw type</td>
-<td align="center">原始类型</td>
-<td align="center">List</td>
-</tr>
-<tr>
-<td align="center">Bounded type parameter</td>
-<td align="center">限制类型参数</td>
-<td align="center">&lt;E extends Number&gt;</td>
-</tr>
-<tr>
-<td align="center">Recursive type bound</td>
-<td align="center">递归类型限制</td>
-<td align="center">&lt;T extends Comparable&lt;T&gt;&gt;</td>
-</tr>
-<tr>
-<td align="center">Bounded wildcard type</td>
-<td align="center">限制通配符类型</td>
-<td align="center">List&lt;? extends Number&gt;</td>
-</tr>
-<tr>
-<td align="center">Generic method</td>
-<td align="center">泛型方法</td>
-<td align="center">static &lt;E&gt; List&lt;E&gt; asList(E[] a)</td>
-</tr>
-<tr>
-<td align="center">Type token</td>
-<td align="center">类型令牌</td>
-<td align="center">String.class</td>
-</tr>
-</tbody></table>
-<h1 id="列表优于数组"><a href="#列表优于数组" class="headerlink" title="列表优于数组"></a>列表优于数组</h1><p>数组是协变的（covariant），这意味着如果 Sub 是 Super 的子类型，则数组类型 Sub[] 是数组类型 Super[] 的子类型；相比之下，泛型是不变的（invariant），对于任何两种不同的类型 Type1 和 Type2，List<Type1> 既不是 List<Type2> 的子类型也不是父类型。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Fails at runtime!</span></span><br><span class="line">Object[] objectArray = <span class="keyword">new</span> Long[<span class="number">1</span>];</span><br><span class="line">objectArray[<span class="number">0</span>] = <span class="string">&quot;I don&#x27;t fit in&quot;</span>; <span class="comment">// Throws ArrayStoreException</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Won&#x27;t compile!</span></span><br><span class="line">List&lt;Object&gt; ol = <span class="keyword">new</span> ArrayList&lt;Long&gt;(); <span class="comment">// Incompatible types</span></span><br><span class="line">ol.add(<span class="string">&quot;I don&#x27;t fit in&quot;</span>);</span><br></pre></td></tr></table></figure>
-
-<h1 id="优先考虑泛型"><a href="#优先考虑泛型" class="headerlink" title="优先考虑泛型"></a>优先考虑泛型</h1><h1 id="使用限定通配符来增加API的灵活性"><a href="#使用限定通配符来增加API的灵活性" class="headerlink" title="使用限定通配符来增加API的灵活性"></a>使用限定通配符来增加API的灵活性</h1><h1 id="使用枚举类型替代整型常量"><a href="#使用枚举类型替代整型常量" class="headerlink" title="使用枚举类型替代整型常量"></a>使用枚举类型替代整型常量</h1><h1 id="注解优于命名模式"><a href="#注解优于命名模式" class="headerlink" title="注解优于命名模式"></a>注解优于命名模式</h1><p>如下实例：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Anonymous class instance as a function object - obsolete!</span></span><br><span class="line">Collections.sort(words, <span class="keyword">new</span> Comparator&lt;String&gt;() &#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(String s1, String s2)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Integer.compare(s1.length(), s2.length());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
-<p>可以修改为：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Lambda expression as function object (replaces anonymous class)</span></span><br><span class="line">Collections.sort(words, (s1, s2) -&gt; Integer.compare(s1.length(), s2.length()));</span><br></pre></td></tr></table></figure>
-
-<p>另一个实例，在枚举中：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Enum type with constant-specific class bodies &amp; data </span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">enum</span> <span class="title">Operation</span> </span>&#123;</span><br><span class="line">    PLUS(<span class="string">&quot;+&quot;</span>) &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">apply</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">double</span> y)</span> </span>&#123; <span class="keyword">return</span> x + y; &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    MINUS(<span class="string">&quot;-&quot;</span>) &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">apply</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">double</span> y)</span> </span>&#123; <span class="keyword">return</span> x - y; &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    TIMES(<span class="string">&quot;*&quot;</span>) &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">apply</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">double</span> y)</span> </span>&#123; <span class="keyword">return</span> x * y; &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    DIVIDE(<span class="string">&quot;/&quot;</span>) &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">apply</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">double</span> y)</span> </span>&#123; <span class="keyword">return</span> x / y; &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String symbol;</span><br><span class="line"></span><br><span class="line">    Operation(String symbol) &#123; <span class="keyword">this</span>.symbol = symbol; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> symbol; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">double</span> <span class="title">apply</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">double</span> y)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>DoubleBinaryOperator 接口是 java.util.function 中许多预定义的函数接口之一，它表示一个函数，它接受两个 double 类型参数并返回 double 类型的结果。因此可以修改上述枚举如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">enum</span> <span class="title">Operation</span> </span>&#123;</span><br><span class="line">    PLUS  (<span class="string">&quot;+&quot;</span>, (x, y) -&gt; x + y),</span><br><span class="line">    MINUS (<span class="string">&quot;-&quot;</span>, (x, y) -&gt; x - y),</span><br><span class="line">    TIMES (<span class="string">&quot;*&quot;</span>, (x, y) -&gt; x * y),</span><br><span class="line">    DIVIDE(<span class="string">&quot;/&quot;</span>, (x, y) -&gt; x / y);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String symbol;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> DoubleBinaryOperator op;</span><br><span class="line"></span><br><span class="line">    Operation(String symbol, DoubleBinaryOperator op) &#123;</span><br><span class="line">        <span class="keyword">this</span>.symbol = symbol;</span><br><span class="line">        <span class="keyword">this</span>.op = op;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> symbol; &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">apply</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">double</span> y)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> op.applyAsDouble(x, y);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>lambda 没有名称和文档; 如果计算不是自解释的，或者超过几行，则不要将其放入 lambda 表达式中。 一行代码对于 lambda 说是理想的，三行代码是合理的最大值。</p>
-<p>Lambda 仅限于函数式接口，它不能获取对自身的引用。</p>
-<h1 id="通过接口引用对象"><a href="#通过接口引用对象" class="headerlink" title="通过接口引用对象"></a>通过接口引用对象</h1><h1 id="明智地进行优化"><a href="#明智地进行优化" class="headerlink" title="明智地进行优化"></a>明智地进行优化</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">不要去计较效率上的一些小小的得失，在 97% 的情况下，不成熟的优化才是一切问题的根源。</span><br><span class="line">    —Donald E. Knuth [Knuth74]</span><br></pre></td></tr></table></figure>
-
-<h1 id="对可恢复的情况使用受检异常，对编程错误使用运行时异常"><a href="#对可恢复的情况使用受检异常，对编程错误使用运行时异常" class="headerlink" title="对可恢复的情况使用受检异常，对编程错误使用运行时异常"></a>对可恢复的情况使用受检异常，对编程错误使用运行时异常</h1><p>对于可恢复的情况，要抛出受检异常；对于程序错误，就要抛出运行时异常。不确定是否可恢复，就抛出为受检异常。不要定义任何既不是受检异常也不是运行异常的抛出类型。要在受检异常上提供方法，以便协助程序恢复。</p>
-<p>但是要避免不必要的使用受检异常。</p>
-<h1 id="抛出与抽象对应的异常"><a href="#抛出与抽象对应的异常" class="headerlink" title="抛出与抽象对应的异常"></a>抛出与抽象对应的异常</h1><p>为了避免方法抛出的异常和它所执行的任务没有任何关系，我们可以在程序中进行异常转译：<strong>更高层的实现应该捕获低层的异常，同时抛出可以按照高层抽象进行解释的异常</strong>，如下所示：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">get</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">    ListIterator&lt;E&gt; i = listIterator(index);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">return</span>(i.next() );</span><br><span class="line">    &#125; <span class="keyword">catch</span> (NoSuchElementException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfBoundsException(<span class="string">&quot;Index: &quot;</span> + index);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>如果不能阻止或者处理来自更低层的异常，一般的做法是使用异常转译，只有在低层方法的规范碰巧可以保证“它所抛出的所有异常对于更高层也是合适的”情况下，才可以将异常从低层传播到高层。异常链对高层和低层异常都提供了最佳的功能：它允许抛出适当的高层异常，同时又能捕获低层的原因进行失败分析。</p>
-<h1 id="保持失败原子性"><a href="#保持失败原子性" class="headerlink" title="保持失败原子性"></a>保持失败原子性</h1><p>当对象抛出异常之后，通常我们期望这个对象仍然保持在一种定义良好的可用状态之中，即使失败是发生在执行某个操作的过程中间。对于受检异常而言，这尤为重要，因为调用者期望能从这种异常中进行恢复。一般而言，失败的方法调用应该使对象保持在被调用之前的状态，具有这种属性的方法被称为具有失败原子性 （failure atomic）。</p>
-<p>有几种途径可以实现这种效果：</p>
-<ol>
-<li><p>设计不可变的对象。如果一个操作失败了，它可能会阻止创建新的对象，但是永远也不会使已有的对象保持在不一致的状态之中，因为当每个对象被创建之后它就处于一致的状态之中，以后也不会再发生变化。</p>
-</li>
-<li><p>在可变对象上执行操作时，获得失败原子性最常见的办法是，在执行操作之前检查参数的有效性，这可以使得在对象的状态被修改之前，先抛出适当的异常。如下代码所示：</p>
- <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">pop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> ( size == <span class="number">0</span> )</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> EmptyStackException();</span><br><span class="line">    Object result = elements[--size];</span><br><span class="line">    elements[size] = <span class="keyword">null</span>; <span class="comment">/* Eliminate obsolete reference */</span></span><br><span class="line">    <span class="keyword">return</span>(result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p> 另一种类似的方式是：调整计算处理过程的顺序，使得任何可能会失败的计算部分都在对象状态被修改之前发生。</p>
-</li>
-<li><p>在对象的一份临时拷贝上执行操作，当操作完成之后再用临时拷贝中的结果代替对象的内容。</p>
-</li>
-<li><p>编写一段恢复代码 （recovery code），由它来拦截操作过程中发生的失败，以及便对象回滚到操作开始之前的状态上，这种办法主要用于永久性的（基于磁盘的）数据结构。</p>
-</li>
-</ol>
-<p>总而言之，作为方法规范的一部分，它产生的任何异常都应该让对象保持在调用该方法之前的状态。如果违反这条规则， API 文档就应该清楚地指明对象将会处于什么样的状态。遗憾的是，大量现有的 API 文档都未能做到这一点。</p>
-<h1 id="不要忽略异常"><a href="#不要忽略异常" class="headerlink" title="不要忽略异常"></a>不要忽略异常</h1><p>如果选择忽略异常，catch 块中应该包含一条注释，说明为什么可以这么做。</p>
-<h1 id="谨慎地使用延迟初始化"><a href="#谨慎地使用延迟初始化" class="headerlink" title="谨慎地使用延迟初始化"></a>谨慎地使用延迟初始化</h1><h1 id="考虑使用自定义的序列化形式"><a href="#考虑使用自定义的序列化形式" class="headerlink" title="考虑使用自定义的序列化形式"></a>考虑使用自定义的序列化形式</h1><h1 id="移位运算比乘除法快"><a href="#移位运算比乘除法快" class="headerlink" title="移位运算比乘除法快"></a>移位运算比乘除法快</h1><ul>
-<li>从效率上看，使用移位指令有更高的效率，因为移位指令占2个机器周期，而乘除法指令占4个机器周期。</li>
-<li>从硬件上看，移位对硬件而言更容易实现。</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -4064,7 +4162,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">163</span>
+          <span class="site-state-item-count">164</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

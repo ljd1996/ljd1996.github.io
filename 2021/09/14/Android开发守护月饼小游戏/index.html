@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述重阳已过，中秋将至，想起农村老家，这个季节到了晚上，偶尔会比较凉爽，甚至有些凉意。不禁想吟词一首： 1234      定风波·湖村晚        苍耳叔叔湖面蒹葭荡影重，黄昏渐映水寒清。远处人家声影乱，亲唤，小童归去老村惊。月上枝头双戏景，微冷，农家秋月夜燃灯。灯影幢幢人影瘦，浊酒，菜花香入梦回轻。  好吧，这其实是一篇技术文章。周末闲来没事，看到了掘金的中秋投稿活动，正好写个“守护月饼”">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android开发守护月饼小游戏">
+<meta property="og:url" content="http://yoursite.com/2021/09/14/Android%E5%BC%80%E5%8F%91%E5%AE%88%E6%8A%A4%E6%9C%88%E9%A5%BC%E5%B0%8F%E6%B8%B8%E6%88%8F/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述重阳已过，中秋将至，想起农村老家，这个季节到了晚上，偶尔会比较凉爽，甚至有些凉意。不禁想吟词一首： 1234      定风波·湖村晚        苍耳叔叔湖面蒹葭荡影重，黄昏渐映水寒清。远处人家声影乱，亲唤，小童归去老村惊。月上枝头双戏景，微冷，农家秋月夜燃灯。灯影幢幢人影瘦，浊酒，菜花香入梦回轻。  好吧，这其实是一篇技术文章。周末闲来没事，看到了掘金的中秋投稿活动，正好写个“守护月饼”">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/ljd1996/MoonGame/blob/master/game.gif">
+<meta property="article:published_time" content="2021-09-14T02:32:22.000Z">
+<meta property="article:modified_time" content="2021-09-14T07:07:51.744Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="实战">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/ljd1996/MoonGame/blob/master/game.gif">
+
+<link rel="canonical" href="http://yoursite.com/2021/09/14/Android%E5%BC%80%E5%8F%91%E5%AE%88%E6%8A%A4%E6%9C%88%E9%A5%BC%E5%B0%8F%E6%B8%B8%E6%88%8F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android开发守护月饼小游戏 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/09/14/Android%E5%BC%80%E5%8F%91%E5%AE%88%E6%8A%A4%E6%9C%88%E9%A5%BC%E5%B0%8F%E6%B8%B8%E6%88%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android开发守护月饼小游戏
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-09-14 10:32:22 / 修改时间：15:07:51" itemprop="dateCreated datePublished" datetime="2021-09-14T10:32:22+08:00">2021-09-14</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E5%AE%9E%E6%88%98/" itemprop="url" rel="index"><span itemprop="name">实战</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2021/09/14/Android%E5%BC%80%E5%8F%91%E5%AE%88%E6%8A%A4%E6%9C%88%E9%A5%BC%E5%B0%8F%E6%B8%B8%E6%88%8F/" class="post-meta-item leancloud_visitors" data-flag-title="Android开发守护月饼小游戏" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2021/09/14/Android%E5%BC%80%E5%8F%91%E5%AE%88%E6%8A%A4%E6%9C%88%E9%A5%BC%E5%B0%8F%E6%B8%B8%E6%88%8F/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2021/09/14/Android%E5%BC%80%E5%8F%91%E5%AE%88%E6%8A%A4%E6%9C%88%E9%A5%BC%E5%B0%8F%E6%B8%B8%E6%88%8F/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>重阳已过，中秋将至，想起农村老家，这个季节到了晚上，偶尔会比较凉爽，甚至有些凉意。不禁想吟词一首：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">      定风波·湖村晚</span><br><span class="line">        苍耳叔叔</span><br><span class="line">湖面蒹葭荡影重，黄昏渐映水寒清。远处人家声影乱，亲唤，小童归去老村惊。</span><br><span class="line">月上枝头双戏景，微冷，农家秋月夜燃灯。灯影幢幢人影瘦，浊酒，菜花香入梦回轻。</span><br></pre></td></tr></table></figure>
+
+<p>好吧，这其实是一篇技术文章。周末闲来没事，看到了掘金的中秋投稿活动，正好写个“守护月饼”的小游戏来玩玩，游戏名和游戏 UI 都是我瞎扯的~直接上效果图：</p>
+<span id="more"></span>
+
+<p><img src="https://github.com/ljd1996/MoonGame/blob/master/game.gif"></p>
+<p>UI布局方面懒得吐槽了，让一个开发来思考这个问题简直噩梦(😂)，里面的色值，样式，布局换了又换，随着视觉效果的越来越诡异，我只好恋恋不舍地放弃了 UI 上的修改。</p>
+<p>这个小游戏底部会不停出现一些大小随机的老鼠，然后过一会后自动消失，自动消失后上方的月饼会被吃掉对应老鼠体积的一部分，点击老鼠可以增加月饼对应的体积，延长寿命。目前一共设置了 15 关，每一关都设置了 20s 倒计时，在时间内月饼未被吃光则视为胜利！在通关后会有<strong>神秘奖品</strong>哦~中间的 Banner 广告是瞎加的，不然看上去 UI (我自己)感觉底部的老鼠区域太大了不协调。</p>
+<p>接下来看看游戏实现，源码使用 MVVM 架构，github 链接在文末，欢迎 star~</p>
+<h1 id="吃月饼控件"><a href="#吃月饼控件" class="headerlink" title="吃月饼控件"></a>吃月饼控件</h1><h2 id="月饼MoonView"><a href="#月饼MoonView" class="headerlink" title="月饼MoonView"></a>月饼MoonView</h2><p>首先看看顶部这个月饼控件的实现，其实本来一开始是想做“守护月亮”，网上查了查月亮阴晴阳缺的代码，看到是用xxx曲线，椭圆画的，毕业到两年，学霸也无言，我觉得大可不必，还是别去挑战这些数学问题了吧，已经过了争狠斗勇的年纪了(Doge)，所以把月亮换成了月饼，用俩月饼来实现这个被吃掉的效果，一个是“正常”月饼，另一个是跟背景色一样的月饼，通过用这个白色的月饼左右移动，来遮挡住正常的月饼，实现视觉上被吃掉的效果。</p>
+<p>首先看下月饼 View 的实现：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MoonView</span> <span class="meta">@JvmOverloads</span> <span class="keyword">constructor</span></span>(</span><br><span class="line">    context: Context, attrs: AttributeSet? = <span class="literal">null</span>, defStyleAttr: <span class="built_in">Int</span> = <span class="number">0</span></span><br><span class="line">) : View(context, attrs, defStyleAttr) &#123;</span><br><span class="line">    <span class="comment">// 半径</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> radius = SizeUtil.dp2px(<span class="number">30f</span>)</span><br><span class="line">    <span class="comment">// 颜色</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> color = Color.BLUE</span><br><span class="line">    <span class="comment">// 绘制的文本</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> text = <span class="string">&quot;&quot;</span></span><br><span class="line">    <span class="comment">// 圆的画笔</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> moonPaint = Paint(Paint.ANTI_ALIAS_FLAG)</span><br><span class="line">    <span class="comment">// 文本画笔</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> textPaint = TextPaint()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 省略了初始化和 onMeasure 方法</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 画圆和文本</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDraw</span><span class="params">(canvas: <span class="type">Canvas</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onDraw(canvas)</span><br><span class="line">        <span class="keyword">val</span> padding = (measuredWidth - radius * <span class="number">2</span>) / <span class="number">2f</span></span><br><span class="line">        canvas?.drawCircle(padding + radius, padding + radius, radius.toFloat(), moonPaint)</span><br><span class="line">        <span class="keyword">if</span> (text.isNotEmpty()) &#123;</span><br><span class="line">            <span class="keyword">val</span> fontMetrics = textPaint.fontMetricsInt</span><br><span class="line">            canvas?.drawText(</span><br><span class="line">                text,</span><br><span class="line">                radius + padding,</span><br><span class="line">                radius + padding - (fontMetrics.bottom + fontMetrics.top) / <span class="number">2</span>,</span><br><span class="line">                textPaint</span><br><span class="line">            )</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个自定义 View 其实很简单，就是画了个实心圆，然后中心画上文本。这里其实可以直接用一张月饼的图片，也可以用月饼的 emoji 等，不过中心写上“月饼”的文字是不是最直白！</p>
+<h2 id="吃月饼MoonEatView"><a href="#吃月饼MoonEatView" class="headerlink" title="吃月饼MoonEatView"></a>吃月饼MoonEatView</h2><p>接着就是通过上面的月饼 MoonView 控件来实现这个吃月饼控件。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MoonEatView</span> <span class="meta">@JvmOverloads</span> <span class="keyword">constructor</span></span>(</span><br><span class="line">    context: Context, attrs: AttributeSet? = <span class="literal">null</span>, defStyleAttr: <span class="built_in">Int</span> = <span class="number">0</span></span><br><span class="line">) : ConstraintLayout(context, attrs, defStyleAttr) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 正常月饼</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> moonView: MoonView</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 用来遮挡正常月饼的 mask 月饼</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> maskView: MoonView</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// mask 月饼的移动量</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> maskTranX: <span class="built_in">Float</span> = <span class="number">0f</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面定义了两个月饼：一个正常显示的月饼 moonView，另一个是遮挡的背景色月饼 maskView，通过移动 maskView 来实现被吃效果：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">translateMask</span><span class="params">(tranX: <span class="type">Float</span>)</span></span> &#123;</span><br><span class="line">    maskTranX += tranX</span><br><span class="line">    <span class="keyword">if</span> (maskTranX &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        maskTranX = <span class="number">0f</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (maskTranX &gt; moonView.width) &#123;</span><br><span class="line">        maskTranX = moonView.width.toFloat()</span><br><span class="line">    &#125;</span><br><span class="line">    maskView.animate().translationX(maskTranX).setDuration(<span class="number">100</span>).setListener(<span class="keyword">object</span> : AnimatorListenerAdapter() &#123;</span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onAnimationEnd</span><span class="params">(animation: <span class="type">Animator</span>?)</span></span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (maskAll()) &#123;</span><br><span class="line">                <span class="comment">// 如果全部被吃掉了，则回调监听器</span></span><br><span class="line">                onMaskListener?.onMaskAll()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;).start()</span><br><span class="line">    <span class="comment">// 根据被吃的大小，展示不同的月饼色</span></span><br><span class="line">    modifyMoonColor()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面都有注释，就不详细介绍代码逻辑了。在下面的老鼠控件消失后，会计算对应应该吃掉或增加的月饼偏移量，然后设置给 MoonEatView, 来实现这个效果。</p>
+<h1 id="老鼠控件"><a href="#老鼠控件" class="headerlink" title="老鼠控件"></a>老鼠控件</h1><h2 id="老鼠MouseView"><a href="#老鼠MouseView" class="headerlink" title="老鼠MouseView"></a>老鼠MouseView</h2><p>考虑单个老鼠控件的特点：展示一段时间后消失，如果是自动消失则回调 onDismiss 监听方法，如果是点击后消失，则应该回调 onClick 监听方法，注意这些回调方法都应该在游戏正在进行的时候才执行。</p>
+<p>因此 MouseView 需要持有其所在的容器 ViewGroup 的引用，用来添加移除老鼠 View 自身，并用来判断游戏是否在进行：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MouseView</span> <span class="keyword">constructor</span></span>(</span><br><span class="line">    context: Context,</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> goneInterval: <span class="built_in">Long</span>,  <span class="comment">// 超时自动消失的时间，用来控制不同关卡的难度</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> container: OperateLayout,</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> listener: OnMouseListener?</span><br><span class="line">) : AppCompatImageView(context, <span class="literal">null</span>, <span class="number">0</span>), Runnable &#123;</span><br><span class="line">    <span class="keyword">init</span> &#123;</span><br><span class="line">        setImageDrawable(</span><br><span class="line">            AppCompatResources.getDrawable(</span><br><span class="line">                context, <span class="keyword">when</span> (Random.nextInt(<span class="number">3</span>)) &#123;</span><br><span class="line">                    <span class="number">0</span> -&gt; R.drawable.mouse1</span><br><span class="line">                    <span class="number">1</span> -&gt; R.drawable.mouse2</span><br><span class="line">                    <span class="keyword">else</span> -&gt; R.drawable.mouse3</span><br><span class="line">                &#125;</span><br><span class="line">            )</span><br><span class="line">        )</span><br><span class="line">        <span class="comment">// 设置点击后移除自身，并移除超时自动消失的任务</span></span><br><span class="line">        setOnClickListener &#123;</span><br><span class="line">            removeCallbacks(<span class="keyword">this</span>)</span><br><span class="line">            container.removeView(<span class="keyword">this</span>)</span><br><span class="line">            <span class="keyword">if</span> (container.isRunning) &#123;</span><br><span class="line">                listener?.onClick(size())</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 超时自动消失的任务</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">run</span><span class="params">()</span></span> &#123;</span><br><span class="line">        container.removeView(<span class="keyword">this</span>)</span><br><span class="line">        <span class="keyword">if</span> (container.isRunning) &#123;</span><br><span class="line">            listener?.onDismiss(size())</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 展示自身，并发送一个超时自动消失的任务</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">show</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">val</span> size = mouseSize()</span><br><span class="line">        <span class="comment">// 随机大小，随机位置</span></span><br><span class="line">        <span class="keyword">val</span> params = FrameLayout.LayoutParams(size, size)</span><br><span class="line">        params.leftMargin = Random.nextInt(<span class="number">0</span>, max(container.width - size, <span class="number">1</span>))</span><br><span class="line">        params.topMargin = Random.nextInt(<span class="number">0</span>, max(container.height - size, <span class="number">1</span>))</span><br><span class="line">        container.addView(<span class="keyword">this</span>, params)</span><br><span class="line">        postDelayed(<span class="keyword">this</span>, goneInterval)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面代码都有注释，逻辑比较清晰，这里用了一个 goneInterval 属性来控制不同关卡的难度，这个参数表示老鼠超时多久没被点击后会自动消失。</p>
+<h2 id="老鼠容器OperateLayout"><a href="#老鼠容器OperateLayout" class="headerlink" title="老鼠容器OperateLayout"></a>老鼠容器OperateLayout</h2><p>OperateLayout 就是游戏底部的控件，它在开始游戏后用来控制老鼠的出现和消失，同时将老鼠的点击消失和自动消失回调给外部，其内有三个属性参数：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 同时生成的 View 数</span></span><br><span class="line"><span class="keyword">var</span> countOnce = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 生成 View 的间隔速度</span></span><br><span class="line"><span class="keyword">var</span> speed = <span class="number">1000L</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 游戏是否进行中</span></span><br><span class="line"><span class="keyword">var</span> isRunning = <span class="literal">false</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">set</span></span><br></pre></td></tr></table></figure>
+
+<p>countOnce 和 speed 用来控制关卡游戏难度，isRunning 表示游戏是否在进行。然后就是游戏开始的逻辑了：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">start</span><span class="params">(listener: <span class="type">MouseView</span>.<span class="type">OnMouseListener</span>)</span></span> &#123;</span><br><span class="line">    <span class="keyword">this</span>.onMouseListener = listener</span><br><span class="line">    <span class="keyword">this</span>.isRunning = <span class="literal">true</span></span><br><span class="line">    removeAllViews()</span><br><span class="line">    <span class="comment">// 发送一个任务，会执行下面的 run 方法</span></span><br><span class="line">    post(<span class="keyword">this</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">run</span><span class="params">()</span></span> &#123;</span><br><span class="line">    repeat(countOnce) &#123; <span class="comment">// 生成 countOnce 数量的老鼠</span></span><br><span class="line">        <span class="keyword">if</span> (!isRunning) &#123;</span><br><span class="line">            <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">val</span> mouseView = MouseView(</span><br><span class="line">            context,</span><br><span class="line">            goneInterval = speed,</span><br><span class="line">            container = <span class="keyword">this</span>,</span><br><span class="line">            listener = onMouseListener</span><br><span class="line">        )</span><br><span class="line">        <span class="comment">// 调用老鼠的 show 方法来展示</span></span><br><span class="line">        mouseView.show()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 发送延时任务，一段时间后接着生成老鼠</span></span><br><span class="line">    postDelayed(<span class="keyword">this</span>, speed)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面注释比较清晰，这个控件主要就是用来生成老鼠，以及将玩家的点击或者漏过事件通知给外部调用者，将老鼠的自动展示和消失逻辑封装在内部。</p>
+<h1 id="游戏Activity"><a href="#游戏Activity" class="headerlink" title="游戏Activity"></a>游戏Activity</h1><p>最后就是游戏的主 MainActivity 实现了，在这里会把上面的控件都组合起来，实现游戏功能。游戏的布局文件就不贴了，布局效果如上的 Gif 图。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">AppCompatActivity</span></span>() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="comment">// ... 初始化 View</span></span><br><span class="line">        initData()</span><br><span class="line">        initListener()</span><br><span class="line">        initObserver()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面主要有三个方法，先看 initData 方法：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="function"><span class="keyword">fun</span> <span class="title">initData</span><span class="params">()</span></span> &#123;</span><br><span class="line">    gameViewModel.initData(<span class="keyword">this</span>)</span><br><span class="line">    bannerView.isScrollRepeatable = <span class="literal">true</span></span><br><span class="line">    bannerView.highLightColor = Color.GRAY</span><br><span class="line">    bannerView.setContentText(bannerViewModel.getBannerText())</span><br><span class="line">    bannerView.resume(<span class="number">100</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">GameViewModel</span> : <span class="type">ViewModel</span></span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> _level: MutableLiveData&lt;<span class="built_in">Int</span>&gt; = MutableLiveData(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">val</span> level: LiveData&lt;<span class="built_in">Int</span>&gt; = _level</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">initData</span><span class="params">(context: <span class="type">Context</span>)</span></span> &#123;</span><br><span class="line">        _level.value = getLevel(context)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>首先 gameViewModel.initData() 方法用来在 ViewModel 中初始化当前的关卡是第几关，简单实现，当前关卡是用 SP 存储的。然后就是初始化 Banner 控件了，这个 Banner 控件我在之前的自定义 View 文章中有写过，直接拿来用: <a target="_blank" rel="noopener" href="https://juejin.cn/post/6995026905137152036">有意思的自定义View | 高亮滚动文本</a>, <a target="_blank" rel="noopener" href="https://juejin.cn/post/6995792048620208159">有意思的自定义View | 手指平移缩放旋转</a>。</p>
+<p>接着在 initListener 方法中初始化监听器，具体代码可以看文章末贴出的 GitHub 链接，这里在“开始游戏”的点击事件里，会先判断当前关卡是不是已经通关了，通关则会提醒是否跳转神秘奖品页面，否则会调用 startGame() 开始游戏。</p>
+<p>至于 initObserver 方法则是监听 gameViewModel.level 这个 LiveData 的数据，用来展示当前关卡。</p>
+<p>最后再看下游戏开始的方法实现：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// startGame()</span></span><br><span class="line">operateLayout.start(<span class="keyword">object</span> : MouseView.OnMouseListener &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onClick</span><span class="params">(size: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">        moonEatLayout.translateMask(-maskTranslate(size))</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDismiss</span><span class="params">(size: <span class="type">Int</span>)</span></span> &#123;</span><br><span class="line">        moonEatLayout.translateMask(maskTranslate(size))</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br><span class="line">moonEatLayout.onMaskListener = <span class="keyword">object</span> : MoonEatView.OnMaskListener &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onMaskAll</span><span class="params">()</span></span> &#123;</span><br><span class="line">        stopGame()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到游戏开始就是调用了 OperateLayout.start() 方法，底部开始老鼠的出现和消失，然后在其回调方法中调用 MoonEatLayout.translateMask() 方法来控制月饼的被吃掉和增多效果。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>看了一圈下来，其实游戏实现是比较简单的，重要的是啊，蹭蹭中秋的热气，图个吉利！</p>
+<p>总结一下这个小游戏的逻辑是：开始游戏后，底部老鼠控件 OperateLayout.start() 会控制老鼠的出现和消失，老鼠的点击消失和自动消失会触发对应的回调，在回调方法里通过计算偏移量，然后设置给 MoonEatLayout 吃月饼控件来实现吃月饼的效果。</p>
+<p>游戏一个设置了 15 关，通关后有<strong>神秘奖品</strong>哦~</p>
+<p>附上 <a target="_blank" rel="noopener" href="https://github.com/ljd1996/MoonGame/blob/master/app/release/app-release.apk">apk链接</a>, 有兴趣的可以试试，<a target="_blank" rel="noopener" href="https://github.com/ljd1996/MoonGame">GitHub源码链接</a>在这，欢迎点赞, star~</p>
+<p>重九刚过，远在异乡的各种飘们是否想家呢？再来一首词fs一下吧~</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">      渔歌子·重九</span><br><span class="line">        苍耳叔叔</span><br><span class="line">陌上闲枝半过秋，重阳当饮酒难休。</span><br><span class="line">杯入曲，晚归悠。炊烟袅袅正秋收。</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/%E5%AE%9E%E6%88%98/" rel="tag"># 实战</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/09/07/Android-SurfaceView-GLSurfaceView-TextureView%E6%A6%82%E8%BF%B0/" rel="prev" title="Android-SurfaceView,GLSurfaceView,TextureView概述">
+      <i class="fa fa-chevron-left"></i> Android-SurfaceView,GLSurfaceView,TextureView概述
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%83%E6%9C%88%E9%A5%BC%E6%8E%A7%E4%BB%B6"><span class="nav-number">2.</span> <span class="nav-text">吃月饼控件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%88%E9%A5%BCMoonView"><span class="nav-number">2.1.</span> <span class="nav-text">月饼MoonView</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%83%E6%9C%88%E9%A5%BCMoonEatView"><span class="nav-number">2.2.</span> <span class="nav-text">吃月饼MoonEatView</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%80%81%E9%BC%A0%E6%8E%A7%E4%BB%B6"><span class="nav-number">3.</span> <span class="nav-text">老鼠控件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%80%81%E9%BC%A0MouseView"><span class="nav-number">3.1.</span> <span class="nav-text">老鼠MouseView</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%80%81%E9%BC%A0%E5%AE%B9%E5%99%A8OperateLayout"><span class="nav-number">3.2.</span> <span class="nav-text">老鼠容器OperateLayout</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B8%B8%E6%88%8FActivity"><span class="nav-number">4.</span> <span class="nav-text">游戏Activity</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">164</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">100</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
