@@ -192,589 +192,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/07/23/Java%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3%E7%AC%94%E8%AE%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/head.png">
-      <meta itemprop="name" content="苍耳叔叔">
-      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苍耳的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/07/23/Java%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">Java编程思想笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-07-23 14:24:51" itemprop="dateCreated datePublished" datetime="2019-07-23T14:24:51+08:00">2019-07-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">语言</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AF%AD%E8%A8%80/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2019/07/23/Java%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Java编程思想笔记" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2019/07/23/Java%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/07/23/Java%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="考虑使用静态工厂方法替代构造方法"><a href="#考虑使用静态工厂方法替代构造方法" class="headerlink" title="考虑使用静态工厂方法替代构造方法"></a>考虑使用静态工厂方法替代构造方法</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Boolean <span class="title">valueOf</span><span class="params">(<span class="keyword">boolean</span> b)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> b ? Boolean.TRUE : Boolean.FALSE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="使用Builder模式替代参数过多的构造器"><a href="#使用Builder模式替代参数过多的构造器" class="headerlink" title="使用Builder模式替代参数过多的构造器"></a>使用Builder模式替代参数过多的构造器</h1><p>当类构造器的参数过多时，容易导致程序由于参数传递顺序等问题产生一些难以调试的Bug，因此有一种解决方法是JavaBeans模式，这种模式通过提供一个无参的构造器，然后通过一系列的setter方法去设置对象的属性，这种模式有两个缺点：</p>
-<ul>
-<li>代码冗长</li>
-<li>由于构造方法在多次调用中被分割，所以在构造过程中 JavaBean 可能处于不一致的状态。一个相关的缺点是，JavaBeans 模式排除了让类不可变的可能性，并且需要增加工作以确保线程安全。</li>
-</ul>
-<p>另一种解决方式是Builder模式，通过在类中提供一个通常是static类型的Builder类，代码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Builder Pattern</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">NutritionFacts</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> servingSize;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> servings;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> calories;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> fat;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> sodium;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> carbohydrate;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Builder</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Required parameters</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> servingSize;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> servings;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Optional parameters - initialized to default values</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> calories      = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> fat           = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> sodium        = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> carbohydrate  = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Builder</span><span class="params">(<span class="keyword">int</span> servingSize, <span class="keyword">int</span> servings)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">this</span>.servingSize = servingSize;</span><br><span class="line">            <span class="keyword">this</span>.servings    = servings;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">calories</span><span class="params">(<span class="keyword">int</span> val)</span> </span>&#123; </span><br><span class="line">            calories = val;      </span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">fat</span><span class="params">(<span class="keyword">int</span> val)</span> </span>&#123; </span><br><span class="line">           fat = val;           </span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">sodium</span><span class="params">(<span class="keyword">int</span> val)</span> </span>&#123; </span><br><span class="line">           sodium = val;        </span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">this</span>; </span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">carbohydrate</span><span class="params">(<span class="keyword">int</span> val)</span> </span>&#123; </span><br><span class="line">           carbohydrate = val;  </span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">this</span>; </span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> NutritionFacts <span class="title">build</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> NutritionFacts(<span class="keyword">this</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">NutritionFacts</span><span class="params">(Builder builder)</span> </span>&#123;</span><br><span class="line">        servingSize  = builder.servingSize;</span><br><span class="line">        servings     = builder.servings;</span><br><span class="line">        calories     = builder.calories;</span><br><span class="line">        fat          = builder.fat;</span><br><span class="line">        sodium       = builder.sodium;</span><br><span class="line">        carbohydrate = builder.carbohydrate;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">NutritionFacts cocaCola = <span class="keyword">new</span> NutritionFacts.Builder(<span class="number">240</span>, <span class="number">8</span>)</span><br><span class="line">    .calories(<span class="number">100</span>).sodium(<span class="number">35</span>).carbohydrate(<span class="number">27</span>).build();</span><br></pre></td></tr></table></figure>
-
-<p>总而言之，当设计类的构造方法或静态工厂的参数超过几个时，Builder 模式是一个不错的选择，特别是如果许多参数是可选的或相同类型的。客户端代码比使用伸缩构造方法（telescoping constructors）更容易读写，并且 builder 比 JavaBeans 更安全。</p>
-<h1 id="使用私有构造方法执行非实例化"><a href="#使用私有构造方法执行非实例化" class="headerlink" title="使用私有构造方法执行非实例化"></a>使用私有构造方法执行非实例化</h1><p>对于一些只包含静态方法和静态属性的类，可以采用私有构造方法防止该类被继承，从而执行非实例化。</p>
-<h1 id="消除过期的对象引用"><a href="#消除过期的对象引用" class="headerlink" title="消除过期的对象引用"></a>消除过期的对象引用</h1><ul>
-<li><p>内存泄漏原因之一：集合类</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Can you spot the &quot;memory leak&quot;?</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Stack</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> Object[] elements;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> size = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> DEFAULT_INITIAL_CAPACITY = <span class="number">16</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Stack</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        elements = <span class="keyword">new</span> Object[DEFAULT_INITIAL_CAPACITY];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">push</span><span class="params">(Object e)</span> </span>&#123;</span><br><span class="line">        ensureCapacity();</span><br><span class="line">        elements[size++] = e;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 内存泄漏</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">pop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (size == <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> EmptyStackException();</span><br><span class="line">        <span class="keyword">return</span> elements[--size];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 修改版本</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">pop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (size == <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> EmptyStackException();</span><br><span class="line">        Object result = elements[--size];</span><br><span class="line">        elements[size] = <span class="keyword">null</span>; <span class="comment">// Eliminate obsolete reference</span></span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * Ensure space for at least one more element, roughly</span></span><br><span class="line"><span class="comment">    * doubling the capacity each time the array needs to grow.</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">ensureCapacity</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (elements.length == size)</span><br><span class="line">            elements = Arrays.copyOf(elements, <span class="number">2</span> * size + <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>内存泄漏原因之二：缓存。可以使用WeakHashMap来避免。</p>
-</li>
-<li><p>内存泄漏原因之三：监听器等回调方法。</p>
-</li>
-</ul>
-<h1 id="避免使用Finalizer和Cleaner-Java-9-机制"><a href="#避免使用Finalizer和Cleaner-Java-9-机制" class="headerlink" title="避免使用Finalizer和Cleaner(Java 9)机制"></a>避免使用Finalizer和Cleaner(Java 9)机制</h1><h1 id="使用-try-with-resources-语句替代-try-finally"><a href="#使用-try-with-resources-语句替代-try-finally" class="headerlink" title="使用 try-with-resources 语句替代 try-finally"></a>使用 try-with-resources 语句替代 try-finally</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> Exception();</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>如上语句中，只会捕获finally中的异常。为了防止该问题的出现可以使用try-with-resources，这是Java 7的一个特性，Java 类库和第三方类库中的许多类和接口现在都实现或继承了AutoCloseable接口。如果你编写的类表示必须关闭的资源，那么这个类也应该实现 AutoCloseable 接口。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">AutoCloseable</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>因此建议使用如下方式关闭资源：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// try-with-resources - the the best way to close resources!</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> String <span class="title">firstLineOfFile</span><span class="params">(String path)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> (BufferedReader br = <span class="keyword">new</span> BufferedReader(</span><br><span class="line">           <span class="keyword">new</span> FileReader(path))) &#123;</span><br><span class="line">       <span class="keyword">return</span> br.readLine();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// try-with-resources on multiple resources - short and sweet</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">copy</span><span class="params">(String src, String dst)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> (InputStream   in = <span class="keyword">new</span> FileInputStream(src);</span><br><span class="line">         OutputStream out = <span class="keyword">new</span> FileOutputStream(dst)) &#123;</span><br><span class="line">        <span class="keyword">byte</span>[] buf = <span class="keyword">new</span> <span class="keyword">byte</span>[BUFFER_SIZE];</span><br><span class="line">        <span class="keyword">int</span> n;</span><br><span class="line">        <span class="keyword">while</span> ((n = in.read(buf)) &gt;= <span class="number">0</span>)</span><br><span class="line">            out.write(buf, <span class="number">0</span>, n);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>如果调用 readLine 和（不可见）close 方法都抛出异常，则后一个异常将被抑制（suppressed），而不是前者。 事实上，为了保留你真正想看到的异常，可能会抑制多个异常。 这些抑制的异常没有被抛弃， 而是打印在堆栈跟踪中，并标注为被抑制了。 你也可以使用 getSuppressed 方法以编程方式访问它们，该方法在 Java 7 中已添加到的 Throwable 中。</p>
-<p>可以在 try-with-resources 语句中添加 catch 子句，就像在常规的 try-finally 语句中一样。这允许你处理异常，而不会在另一层嵌套中污染代码:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// try-with-resources with a catch clause</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> String <span class="title">firstLineOfFile</span><span class="params">(String path, String defaultVal)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> (BufferedReader br = <span class="keyword">new</span> BufferedReader(</span><br><span class="line">           <span class="keyword">new</span> FileReader(path))) &#123;</span><br><span class="line">        <span class="keyword">return</span> br.readLine();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        <span class="keyword">return</span> defaultVal;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="重写equals方法"><a href="#重写equals方法" class="headerlink" title="重写equals方法"></a>重写equals方法</h1><p>重写equals方法必须遵守相应的规则：</p>
-<ul>
-<li>自反性： 对于任何非空引用 x，x.equals(x) 必须返回 true。</li>
-<li>对称性： 对于任何非空引用 x 和 y，如果且仅当 y.equals(x) 返回 true 时 x.equals(y) 必须返回 true。</li>
-<li>传递性： 对于任何非空引用 x、y、z，如果 x.equals(y) 返回 true，y.equals(z) 返回 true，则 x.equals(z) 必须返回 true。</li>
-<li>一致性： 对于任何非空引用 x 和 y，如果在 equals 比较中使用的信息没有修改，则 x.equals(y) 的多次调用必须始终返回 true 或始终返回 false。</li>
-<li>对于任何非空引用 x，x.equals(null) 必须返回 false。</li>
-<li>重写equals方法一定要重写hashCode方法。</li>
-</ul>
-<p>equals方法与hashCode方法有几个约定：</p>
-<ul>
-<li>当在一个应用程序执行过程中，如果在 equals 方法比较中没有修改任何信息，在一个对象上重复调用 hashCode 方法时，它必须始终返回相同的值。从一个应用程序到另一个应用程序的每一次执行返回的值可以是不一致的。</li>
-<li>如果两个对象根据 equals(Object) 方法比较是相等的，那么在两个对象上调用 hashCode 就必须产生的结果是相同的整数。</li>
-<li>如果两个对象根据 equals(Object) 方法比较并不相等，则不要求在每个对象上调用 hashCode 都必须产生不同的结果。 但是，程序员应该意识到，为不相等的对象生成不同的结果可能会提高散列表（hash tables）的性能。</li>
-</ul>
-<p>当不重写 hashCode 时，所违反第二个关键条款是：相等的对象必须具有相等的哈希码（ hash codes）。 </p>
-<h1 id="始终重写toString方法"><a href="#始终重写toString方法" class="headerlink" title="始终重写toString方法"></a>始终重写toString方法</h1><h1 id="谨慎地重写clone方法"><a href="#谨慎地重写clone方法" class="headerlink" title="谨慎地重写clone方法"></a>谨慎地重写clone方法</h1><h1 id="考虑实现Comparable接口"><a href="#考虑实现Comparable接口" class="headerlink" title="考虑实现Comparable接口"></a>考虑实现Comparable接口</h1><h1 id="使类和成员的可访问性最小化"><a href="#使类和成员的可访问性最小化" class="headerlink" title="使类和成员的可访问性最小化"></a>使类和成员的可访问性最小化</h1><ul>
-<li>private —— 该成员只能在声明它的顶级类内访问。</li>
-<li>package-private —— 成员可以从被声明的包中的任何类中访问。从技术上讲，如果没有指定访问修饰符（接口成员除外，它默认是公共的），这是默认访问级别。</li>
-<li>protected —— 成员可以从被声明的类的子类中访问（会受一些限制 [JLS, 6.6.2]），以及它声明的包中的任何类。</li>
-<li>public —— 该成员可以从任何地方被访问。</li>
-</ul>
-<h1 id="最小化可变性"><a href="#最小化可变性" class="headerlink" title="最小化可变性"></a>最小化可变性</h1><p>不可变类简单来说是它的实例不能被修改的类。包含在每个实例中的所有信息在对象的生命周期中是固定的，因此不会观察到任何变化。Java平台类库包含许多不可变的类，包括 String 类，基本类型包装类以及 BigInteger 类和 BigDecimal 类。</p>
-<p>不可变类比可变类更容易设计，实现和使用。他们不太容易出错，更安全。除非有充分的理由使类成为可变类，否则类应该是不可变的。要使一个类不可变，需要遵循以下五条规则：</p>
-<ul>
-<li>不要提供修改对象状态的方法。</li>
-<li>确保这个类不能被继承。</li>
-<li>把所有属性设置为 final。</li>
-<li>把所有的属性设置为 private。</li>
-<li>确保对任何可变组件的互斥访问。如果你的类有任何引用可变对象的属性，请确保该类的客户端无法获得对这些对象的引用。切勿将这样的属性初始化为客户端提供的对象引用，或从访问方法返回属性。在构造方法，访问方法和 readObject 方法中进行防御性拷贝。</li>
-</ul>
-<p>不可变的特点：</p>
-<ul>
-<li>不可变对象本质上是线程安全的; 它们不需要同步</li>
-<li>不仅可以共享不可变的对象，而且可以共享内部信息</li>
-<li>不可变对象为其他对象提供了很好的构件</li>
-<li>不可变对象提供了免费的原子失败机制</li>
-<li>不可变类的主要缺点是对于每个不同的值都需要一个单独的对象</li>
-</ul>
-<p>为了保证不变性，一个类不得允许子类化，这可以通过使类用 final 修饰，但是还有另外一个更灵活的选择：可以使其所有的构造方法私有或包级私有，并添加公共静态工厂，而不是公共构造方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Immutable class with static factories instead of constructors</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Complex</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">double</span> re;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">double</span> im;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Complex</span><span class="params">(<span class="keyword">double</span> re, <span class="keyword">double</span> im)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.re = re;</span><br><span class="line">        <span class="keyword">this</span>.im = im;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Complex <span class="title">valueOf</span><span class="params">(<span class="keyword">double</span> re, <span class="keyword">double</span> im)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Complex(re, im);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    ... <span class="comment">// Remainder unchanged</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>总而言之，坚决不要为每个属性编写一个 get 方法后再编写一个对应的 set 方法。 除非有充分的理由使类成为可变类，否则类应该是不可变的。 不可变类提供了许多优点，唯一的缺点是在某些情况下可能会出现性能问题。 </p>
-<h1 id="组合优于继承（装饰器模式）"><a href="#组合优于继承（装饰器模式）" class="headerlink" title="组合优于继承（装饰器模式）"></a>组合优于继承（装饰器模式）</h1><p>继承打破了封装，换句话说，一个子类依赖于其父类的实现细节来保证其正确的功能。 父类的实现可能会从发布版本不断变化，如果是这样，子类可能会被破坏，即使它的代码没有任何改变。 因此，一个子类必须与其超类一起更新而变化，除非父类的作者为了继承的目的而专门设计它，并对应有文档的说明。</p>
-<p>为了具体说明，假设有一个使用 HashSet 的程序，为了调整程序的性能，需要查询 HashSet ，从创建它之后已经添加了多少个元素，为了提供这个功能，编写了一个 HashSet 变体，它保留了尝试元素插入的数量，并导出了这个插入数量的一个访问方法，HashSet 类包含两个添加元素的方法，分别是 add 和 addAll，所以我们重写这两个方法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Broken - Inappropriate use of inheritance!</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InstrumentedHashSet</span>&lt;<span class="title">E</span>&gt; <span class="keyword">extends</span> <span class="title">HashSet</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// The number of attempted element insertions</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> addCount = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">InstrumentedHashSet</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">InstrumentedHashSet</span><span class="params">(<span class="keyword">int</span> initCap, <span class="keyword">float</span> loadFactor)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(initCap, loadFactor);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">        addCount++;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.add(e);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">addAll</span><span class="params">(Collection&lt;? extends E&gt; c)</span> </span>&#123;</span><br><span class="line">        addCount += c.size();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.addAll(c);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAddCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> addCount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>此时的addAll方法会出现一个问题，因为在其内又调用了add方法，因此计数器叠加了两次。</p>
-<p>为了解决这个问题，可以使用组合替代继承。给新类增加一个私有属性，该属性是现有类的实例引用，这种设计被称为组合。因此可以这样修改上述功能代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ForwardingSet</span>&lt;<span class="title">E</span>&gt; <span class="keyword">implements</span> <span class="title">Set</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Set&lt;E&gt; s;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ForwardingSet</span><span class="params">(Set&lt;E&gt; s)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.s = s;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">clear</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        s.clear();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">contains</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.contains(o);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isEmpty</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.isEmpty();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">size</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.size();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Iterator&lt;E&gt; <span class="title">iterator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.iterator();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.add(e);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">remove</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.remove(o);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">containsAll</span><span class="params">(Collection&lt;?&gt; c)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.containsAll(c);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">addAll</span><span class="params">(Collection&lt;? extends E&gt; c)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.addAll(c);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">removeAll</span><span class="params">(Collection&lt;?&gt; c)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.removeAll(c);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">retainAll</span><span class="params">(Collection&lt;?&gt; c)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.retainAll(c);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Object[] toArray() &#123;</span><br><span class="line">        <span class="keyword">return</span> s.toArray();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> &lt;T&gt; T[] toArray(T[] a) &#123;</span><br><span class="line">        <span class="keyword">return</span> s.toArray(a);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.equals(o);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.hashCode();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> s.toString();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InstrumentedSet</span>&lt;<span class="title">E</span>&gt; <span class="keyword">extends</span> <span class="title">ForwardingSet</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> addCount = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">InstrumentedSet</span><span class="params">(Set&lt;E&gt; s)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(s);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">        addCount++;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.add(e);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span> <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">addAll</span><span class="params">(Collection&lt;? extends E&gt; c)</span> </span>&#123;</span><br><span class="line">        addCount += c.size();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.addAll(c);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAddCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> addCount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>InstrumentedSet 类被称为包装类，因为每个 InstrumentedSet 实例都包含（“包装”）另一个 Set 实例。 这也被称为装饰器模式，因为 InstrumentedSet 类通过添加计数功能来“装饰”一个集合。</p>
-<p>总之，继承是强大的，但它是有问题的，因为它违反封装。 只有在子类和父类之间存在真正的子类型关系时才适用。 即使如此，如果子类与父类不在同一个包中，并且父类不是为继承而设计的，继承可能会导致脆弱性。 为了避免这种脆弱性，使用合成和转发代替继承，特别是如果存在一个合适的接口来实现包装类。 包装类不仅比子类更健壮，而且更强大。</p>
-<h1 id="接口优于抽象类"><a href="#接口优于抽象类" class="headerlink" title="接口优于抽象类"></a>接口优于抽象类</h1><p>接口通过包装类模式确保安全的，强大的功能增强成为可能。如果使用抽象类来定义类型，那么只能继承，生成的类比包装类更脆弱。</p>
-<h1 id="接口仅用来定义类型"><a href="#接口仅用来定义类型" class="headerlink" title="接口仅用来定义类型"></a>接口仅用来定义类型</h1><h1 id="使用静态成员类而不是非静态类"><a href="#使用静态成员类而不是非静态类" class="headerlink" title="使用静态成员类而不是非静态类"></a>使用静态成员类而不是非静态类</h1><p>如果声明了一个不需要访问宿主实例的成员类，应该使它成为一个静态成员类，而不是非静态的成员类，因为非静态内部类的每个实例都会有一个隐藏的外部引用给它的宿主实例，如前所述，存储这个引用需要占用时间和空间；更严重的是可能会导致即使宿主类在满足垃圾回收的条件时却仍然驻留在内存中，由此产生的内存泄漏可能是灾难性的，由于引用是不可见的，所以通常难以检测到。</p>
-<h1 id="将源文件限制为单个顶级类"><a href="#将源文件限制为单个顶级类" class="headerlink" title="将源文件限制为单个顶级类"></a>将源文件限制为单个顶级类</h1><p>虽然 Java 编译器允许在单个源文件中定义多个顶级类，但这样做没有任何好处，并且存在重大风险。风险源于在源文件中定义多个顶级类使得为类提供多个定义成为可能，使用哪个定义会受到源文件传递给编译器的顺序的影响。</p>
-<h1 id="不要使用原始类型"><a href="#不要使用原始类型" class="headerlink" title="不要使用原始类型"></a>不要使用原始类型</h1><table>
-<thead>
-<tr>
-<th align="center">术语</th>
-<th align="center">中文含义</th>
-<th align="center">举例</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">Parameterized type</td>
-<td align="center">参数化类型</td>
-<td align="center">List&lt;String&gt;</td>
-</tr>
-<tr>
-<td align="center">Actual type parameter</td>
-<td align="center">实际类型参数</td>
-<td align="center">String</td>
-</tr>
-<tr>
-<td align="center">Generic type</td>
-<td align="center">泛型类型</td>
-<td align="center">List&lt;E&gt;</td>
-</tr>
-<tr>
-<td align="center">Formal type parameter</td>
-<td align="center">形式类型参数</td>
-<td align="center">E</td>
-</tr>
-<tr>
-<td align="center">Unbounded wildcard type</td>
-<td align="center">无限制通配符类型</td>
-<td align="center">List&lt;?&gt;</td>
-</tr>
-<tr>
-<td align="center">Raw type</td>
-<td align="center">原始类型</td>
-<td align="center">List</td>
-</tr>
-<tr>
-<td align="center">Bounded type parameter</td>
-<td align="center">限制类型参数</td>
-<td align="center">&lt;E extends Number&gt;</td>
-</tr>
-<tr>
-<td align="center">Recursive type bound</td>
-<td align="center">递归类型限制</td>
-<td align="center">&lt;T extends Comparable&lt;T&gt;&gt;</td>
-</tr>
-<tr>
-<td align="center">Bounded wildcard type</td>
-<td align="center">限制通配符类型</td>
-<td align="center">List&lt;? extends Number&gt;</td>
-</tr>
-<tr>
-<td align="center">Generic method</td>
-<td align="center">泛型方法</td>
-<td align="center">static &lt;E&gt; List&lt;E&gt; asList(E[] a)</td>
-</tr>
-<tr>
-<td align="center">Type token</td>
-<td align="center">类型令牌</td>
-<td align="center">String.class</td>
-</tr>
-</tbody></table>
-<h1 id="列表优于数组"><a href="#列表优于数组" class="headerlink" title="列表优于数组"></a>列表优于数组</h1><p>数组是协变的（covariant），这意味着如果 Sub 是 Super 的子类型，则数组类型 Sub[] 是数组类型 Super[] 的子类型；相比之下，泛型是不变的（invariant），对于任何两种不同的类型 Type1 和 Type2，List<Type1> 既不是 List<Type2> 的子类型也不是父类型。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Fails at runtime!</span></span><br><span class="line">Object[] objectArray = <span class="keyword">new</span> Long[<span class="number">1</span>];</span><br><span class="line">objectArray[<span class="number">0</span>] = <span class="string">&quot;I don&#x27;t fit in&quot;</span>; <span class="comment">// Throws ArrayStoreException</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// Won&#x27;t compile!</span></span><br><span class="line">List&lt;Object&gt; ol = <span class="keyword">new</span> ArrayList&lt;Long&gt;(); <span class="comment">// Incompatible types</span></span><br><span class="line">ol.add(<span class="string">&quot;I don&#x27;t fit in&quot;</span>);</span><br></pre></td></tr></table></figure>
-
-<h1 id="优先考虑泛型"><a href="#优先考虑泛型" class="headerlink" title="优先考虑泛型"></a>优先考虑泛型</h1><h1 id="使用限定通配符来增加API的灵活性"><a href="#使用限定通配符来增加API的灵活性" class="headerlink" title="使用限定通配符来增加API的灵活性"></a>使用限定通配符来增加API的灵活性</h1><h1 id="使用枚举类型替代整型常量"><a href="#使用枚举类型替代整型常量" class="headerlink" title="使用枚举类型替代整型常量"></a>使用枚举类型替代整型常量</h1><h1 id="注解优于命名模式"><a href="#注解优于命名模式" class="headerlink" title="注解优于命名模式"></a>注解优于命名模式</h1><p>如下实例：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Anonymous class instance as a function object - obsolete!</span></span><br><span class="line">Collections.sort(words, <span class="keyword">new</span> Comparator&lt;String&gt;() &#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compare</span><span class="params">(String s1, String s2)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Integer.compare(s1.length(), s2.length());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
-<p>可以修改为：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Lambda expression as function object (replaces anonymous class)</span></span><br><span class="line">Collections.sort(words, (s1, s2) -&gt; Integer.compare(s1.length(), s2.length()));</span><br></pre></td></tr></table></figure>
-
-<p>另一个实例，在枚举中：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Enum type with constant-specific class bodies &amp; data </span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">enum</span> <span class="title">Operation</span> </span>&#123;</span><br><span class="line">    PLUS(<span class="string">&quot;+&quot;</span>) &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">apply</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">double</span> y)</span> </span>&#123; <span class="keyword">return</span> x + y; &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    MINUS(<span class="string">&quot;-&quot;</span>) &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">apply</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">double</span> y)</span> </span>&#123; <span class="keyword">return</span> x - y; &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    TIMES(<span class="string">&quot;*&quot;</span>) &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">apply</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">double</span> y)</span> </span>&#123; <span class="keyword">return</span> x * y; &#125;</span><br><span class="line">    &#125;,</span><br><span class="line"></span><br><span class="line">    DIVIDE(<span class="string">&quot;/&quot;</span>) &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">apply</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">double</span> y)</span> </span>&#123; <span class="keyword">return</span> x / y; &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String symbol;</span><br><span class="line"></span><br><span class="line">    Operation(String symbol) &#123; <span class="keyword">this</span>.symbol = symbol; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> symbol; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">double</span> <span class="title">apply</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">double</span> y)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>DoubleBinaryOperator 接口是 java.util.function 中许多预定义的函数接口之一，它表示一个函数，它接受两个 double 类型参数并返回 double 类型的结果。因此可以修改上述枚举如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">enum</span> <span class="title">Operation</span> </span>&#123;</span><br><span class="line">    PLUS  (<span class="string">&quot;+&quot;</span>, (x, y) -&gt; x + y),</span><br><span class="line">    MINUS (<span class="string">&quot;-&quot;</span>, (x, y) -&gt; x - y),</span><br><span class="line">    TIMES (<span class="string">&quot;*&quot;</span>, (x, y) -&gt; x * y),</span><br><span class="line">    DIVIDE(<span class="string">&quot;/&quot;</span>, (x, y) -&gt; x / y);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String symbol;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> DoubleBinaryOperator op;</span><br><span class="line"></span><br><span class="line">    Operation(String symbol, DoubleBinaryOperator op) &#123;</span><br><span class="line">        <span class="keyword">this</span>.symbol = symbol;</span><br><span class="line">        <span class="keyword">this</span>.op = op;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> symbol; &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">double</span> <span class="title">apply</span><span class="params">(<span class="keyword">double</span> x, <span class="keyword">double</span> y)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> op.applyAsDouble(x, y);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>lambda 没有名称和文档; 如果计算不是自解释的，或者超过几行，则不要将其放入 lambda 表达式中。 一行代码对于 lambda 说是理想的，三行代码是合理的最大值。</p>
-<p>Lambda 仅限于函数式接口，它不能获取对自身的引用。</p>
-<h1 id="通过接口引用对象"><a href="#通过接口引用对象" class="headerlink" title="通过接口引用对象"></a>通过接口引用对象</h1><h1 id="明智地进行优化"><a href="#明智地进行优化" class="headerlink" title="明智地进行优化"></a>明智地进行优化</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">不要去计较效率上的一些小小的得失，在 97% 的情况下，不成熟的优化才是一切问题的根源。</span><br><span class="line">    —Donald E. Knuth [Knuth74]</span><br></pre></td></tr></table></figure>
-
-<h1 id="对可恢复的情况使用受检异常，对编程错误使用运行时异常"><a href="#对可恢复的情况使用受检异常，对编程错误使用运行时异常" class="headerlink" title="对可恢复的情况使用受检异常，对编程错误使用运行时异常"></a>对可恢复的情况使用受检异常，对编程错误使用运行时异常</h1><p>对于可恢复的情况，要抛出受检异常；对于程序错误，就要抛出运行时异常。不确定是否可恢复，就抛出为受检异常。不要定义任何既不是受检异常也不是运行异常的抛出类型。要在受检异常上提供方法，以便协助程序恢复。</p>
-<p>但是要避免不必要的使用受检异常。</p>
-<h1 id="抛出与抽象对应的异常"><a href="#抛出与抽象对应的异常" class="headerlink" title="抛出与抽象对应的异常"></a>抛出与抽象对应的异常</h1><p>为了避免方法抛出的异常和它所执行的任务没有任何关系，我们可以在程序中进行异常转译：<strong>更高层的实现应该捕获低层的异常，同时抛出可以按照高层抽象进行解释的异常</strong>，如下所示：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">get</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">    ListIterator&lt;E&gt; i = listIterator(index);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">return</span>(i.next() );</span><br><span class="line">    &#125; <span class="keyword">catch</span> (NoSuchElementException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfBoundsException(<span class="string">&quot;Index: &quot;</span> + index);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>如果不能阻止或者处理来自更低层的异常，一般的做法是使用异常转译，只有在低层方法的规范碰巧可以保证“它所抛出的所有异常对于更高层也是合适的”情况下，才可以将异常从低层传播到高层。异常链对高层和低层异常都提供了最佳的功能：它允许抛出适当的高层异常，同时又能捕获低层的原因进行失败分析。</p>
-<h1 id="保持失败原子性"><a href="#保持失败原子性" class="headerlink" title="保持失败原子性"></a>保持失败原子性</h1><p>当对象抛出异常之后，通常我们期望这个对象仍然保持在一种定义良好的可用状态之中，即使失败是发生在执行某个操作的过程中间。对于受检异常而言，这尤为重要，因为调用者期望能从这种异常中进行恢复。一般而言，失败的方法调用应该使对象保持在被调用之前的状态，具有这种属性的方法被称为具有失败原子性 （failure atomic）。</p>
-<p>有几种途径可以实现这种效果：</p>
-<ol>
-<li><p>设计不可变的对象。如果一个操作失败了，它可能会阻止创建新的对象，但是永远也不会使已有的对象保持在不一致的状态之中，因为当每个对象被创建之后它就处于一致的状态之中，以后也不会再发生变化。</p>
-</li>
-<li><p>在可变对象上执行操作时，获得失败原子性最常见的办法是，在执行操作之前检查参数的有效性，这可以使得在对象的状态被修改之前，先抛出适当的异常。如下代码所示：</p>
- <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">pop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> ( size == <span class="number">0</span> )</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> EmptyStackException();</span><br><span class="line">    Object result = elements[--size];</span><br><span class="line">    elements[size] = <span class="keyword">null</span>; <span class="comment">/* Eliminate obsolete reference */</span></span><br><span class="line">    <span class="keyword">return</span>(result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p> 另一种类似的方式是：调整计算处理过程的顺序，使得任何可能会失败的计算部分都在对象状态被修改之前发生。</p>
-</li>
-<li><p>在对象的一份临时拷贝上执行操作，当操作完成之后再用临时拷贝中的结果代替对象的内容。</p>
-</li>
-<li><p>编写一段恢复代码 （recovery code），由它来拦截操作过程中发生的失败，以及便对象回滚到操作开始之前的状态上，这种办法主要用于永久性的（基于磁盘的）数据结构。</p>
-</li>
-</ol>
-<p>总而言之，作为方法规范的一部分，它产生的任何异常都应该让对象保持在调用该方法之前的状态。如果违反这条规则， API 文档就应该清楚地指明对象将会处于什么样的状态。遗憾的是，大量现有的 API 文档都未能做到这一点。</p>
-<h1 id="不要忽略异常"><a href="#不要忽略异常" class="headerlink" title="不要忽略异常"></a>不要忽略异常</h1><p>如果选择忽略异常，catch 块中应该包含一条注释，说明为什么可以这么做。</p>
-<h1 id="谨慎地使用延迟初始化"><a href="#谨慎地使用延迟初始化" class="headerlink" title="谨慎地使用延迟初始化"></a>谨慎地使用延迟初始化</h1><h1 id="考虑使用自定义的序列化形式"><a href="#考虑使用自定义的序列化形式" class="headerlink" title="考虑使用自定义的序列化形式"></a>考虑使用自定义的序列化形式</h1><h1 id="移位运算比乘除法快"><a href="#移位运算比乘除法快" class="headerlink" title="移位运算比乘除法快"></a>移位运算比乘除法快</h1><ul>
-<li>从效率上看，使用移位指令有更高的效率，因为移位指令占2个机器周期，而乘除法指令占4个机器周期。</li>
-<li>从硬件上看，移位对硬件而言更容易实现。</li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/04/30/asp-net-core%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/head.png">
-      <meta itemprop="name" content="苍耳叔叔">
-      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苍耳的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/04/30/asp-net-core%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">asp.net-core学习笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-04-30 10:58:29" itemprop="dateCreated datePublished" datetime="2019-04-30T10:58:29+08:00">2019-04-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%90%8E%E5%8F%B0/" itemprop="url" rel="index"><span itemprop="name">后台</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%90%8E%E5%8F%B0/Asp/" itemprop="url" rel="index"><span itemprop="name">Asp</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2019/04/30/asp-net-core%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="asp.net-core学习笔记" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2019/04/30/asp-net-core%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/04/30/asp-net-core%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><table>
-<thead>
-<tr>
-<th align="left">ASP.NET Core</th>
-<th align="left">ASP.NET 4.x</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">针对 Windows、macOS 或 Linux 进行生成</td>
-<td align="left">针对 Windows 进行生成</td>
-</tr>
-<tr>
-<td align="left">Razor 页面 是在 ASP.NET Core 2.x 及更高版本中创建 Web UI 时建议使用的方法。</td>
-<td align="left">使用 Web 窗体、SignalR、MVC、Web API、WebHooks 或网页</td>
-</tr>
-<tr>
-<td align="left">每个计算机多个版本</td>
-<td align="left">每个计算机一个版本</td>
-</tr>
-<tr>
-<td align="left">使用 C# 或 F# 通过 Visual Studio、Visual Studio for Mac 或 Visual Studio Code 进行开发</td>
-<td align="left">使用 C#、VB 或 F# 通过 Visual Studio 进行开发</td>
-</tr>
-<tr>
-<td align="left">比 ASP.NET 4.x 性能更高</td>
-<td align="left">良好的性能</td>
-</tr>
-<tr>
-<td align="left">选择 .NET Framework 或 .NET Core 运行时</td>
-<td align="left">使用 .NET Framework 运行时</td>
-</tr>
-</tbody></table>
-<h1 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h1><h2 id="依赖注入"><a href="#依赖注入" class="headerlink" title="依赖注入"></a>依赖注入</h2><h3 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h3><ul>
-<li>使用接口抽象化依赖关系实现。</li>
-<li>注册服务容器中的依赖关系，ASP.NET Core 提供了一个内置的服务容器 IServiceProvider，服务已在应用的 Startup.ConfigureServices 方法中注册。</li>
-<li>将服务注入到使用它的类的构造函数中，框架负责创建依赖关系的实例，并在不再需要时对其进行处理。</li>
-</ul>
-<p>实例：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">IMyDependency</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function">Task <span class="title">WriteMessage</span>(<span class="params"><span class="keyword">string</span> message</span>)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">MyDependency</span> : <span class="title">IMyDependency</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> ILogger&lt;MyDependency&gt; _logger;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyDependency</span>(<span class="params">ILogger&lt;MyDependency&gt; logger</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        _logger = logger;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Task <span class="title">WriteMessage</span>(<span class="params"><span class="keyword">string</span> message</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        _logger.LogInformation(</span><br><span class="line">            <span class="string">&quot;MyDependency.WriteMessage called. Message: &#123;MESSAGE&#125;&quot;</span>, </span><br><span class="line">            message);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> Task.FromResult(<span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 注册</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ConfigureServices</span>(<span class="params">IServiceCollection services</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);</span><br><span class="line"></span><br><span class="line">    services.AddScoped&lt;IMyDependency, MyDependency&gt;();</span><br><span class="line">    services.AddTransient&lt;IOperationTransient, Operation&gt;();</span><br><span class="line">    services.AddScoped&lt;IOperationScoped, Operation&gt;();</span><br><span class="line">    services.AddSingleton&lt;IOperationSingleton, Operation&gt;();</span><br><span class="line">    services.AddSingleton&lt;IOperationSingletonInstance&gt;(<span class="keyword">new</span> Operation(Guid.Empty));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// OperationService depends on each of the other Operation types.</span></span><br><span class="line">    services.AddTransient&lt;OperationService, OperationService&gt;();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>MyDependency 在其构造函数中请求 ILogger<TCategoryName>，以链式方式使用依赖关系注入并不罕见，每个请求的依赖关系相应地请求其自己的依赖关系，容器解析图中的依赖关系并返回完全解析的服务。</p>
-<h3 id="服务生存期"><a href="#服务生存期" class="headerlink" title="服务生存期"></a>服务生存期</h3><h4 id="暂时"><a href="#暂时" class="headerlink" title="暂时"></a>暂时</h4><p>暂时生存期服务是每次从服务容器进行请求时创建的，这种生存期适合轻量级、无状态的服务。</p>
-<h4 id="作用域（Scoped）"><a href="#作用域（Scoped）" class="headerlink" title="作用域（Scoped）"></a>作用域（Scoped）</h4><p>作用域生存期服务以每个客户端请求（连接）一次的方式创建。</p>
-<p>警告：在中间件内使用有作用域的服务时，请将该服务注入至 Invoke 或 InvokeAsync 方法，请不要通过构造函数注入进行注入，因为它会强制服务的行为与单一实例类似。</p>
-<h4 id="单例"><a href="#单例" class="headerlink" title="单例"></a>单例</h4><p>单一实例生存期服务是在第一次请求时（或者在运行 ConfigureServices 并且使用服务注册指定实例时）创建的，每个后续请求都使用相同的实例，如果应用需要单一实例行为，建议允许服务容器管理服务的生存期，不要实现单一实例设计模式并提供用户代码来管理对象在类中的生存期。</p>
-<p>警告：从单一实例解析有作用域的服务很危险，当处理后续请求时，它可能会导致服务处于不正确的状态。</p>
-<h1 id="Razor页面"><a href="#Razor页面" class="headerlink" title="Razor页面"></a>Razor页面</h1><h2 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 新建Razor页面项目</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> dotnet new webapp -o RazorPagesMovie</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 本地部署</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> dotnet run</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 输出</span></span><br><span class="line">: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[0]</span><br><span class="line">      User profile is available. Using &#x27;/home/hearing/.aspnet/DataProtection-Keys&#x27; as key repository; keys will not be encrypted at rest.</span><br><span class="line">Hosting environment: Development</span><br><span class="line">Content root path: /home/hearing/WorkSpace/asp/hello</span><br><span class="line">Now listening on: https://localhost:5001</span><br><span class="line">Now listening on: http://localhost:5000</span><br></pre></td></tr></table></figure>
-
-<p>项目文件：</p>
-<ul>
-<li>Pages 文件夹：包含 Razor 页面和支持文件。 每个 Razor 页面都是一对文件：<ul>
-<li>一个 .cshtml 文件，其中包含使用 Razor 语法的 C＃ 代码的 HTML 标记。</li>
-<li>一个 .cshtml.cs 文件，其中包含处理页面事件的 C# 代码。</li>
-<li>支持文件的名称以下划线开头。例如，_Layout.cshtml 文件可配置所有页面通用的 UI 元素。 此文件设置页面顶部的导航菜单和页面底部的版权声明。</li>
-</ul>
-</li>
-<li>wwwroot文件夹：包含静态文件，如 HTML 文件、JavaScript 文件和 CSS 文件。</li>
-<li>appsettings.json：包含配置数据，如连接字符串。</li>
-<li>Program.cs：包含程序的入口点。</li>
-<li>Startup.cs：包含配置应用行为的代码，例如，是否需要同意 cookie。 有关更多信息，请参见ASP.NET Core 中的应用启动。</li>
-</ul>
-<h1 id="MVC"><a href="#MVC" class="headerlink" title="MVC"></a>MVC</h1><h2 id="入门-1"><a href="#入门-1" class="headerlink" title="入门"></a>入门</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 新建Razor页面项目</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> dotnet new mvc -o MvcHello</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 本地部署</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> dotnet run</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 输出</span></span><br><span class="line">: Microsoft.AspNetCore.DataProtection.KeyManagement.XmlKeyManager[0]</span><br><span class="line">      User profile is available. Using &#x27;/home/hearing/.aspnet/DataProtection-Keys&#x27; as key repository; keys will not be encrypted at rest.</span><br><span class="line">Hosting environment: Development</span><br><span class="line">Content root path: /home/hearing/WorkSpace/asp/MvcHello</span><br><span class="line">Now listening on: https://localhost:5001</span><br><span class="line">Now listening on: http://localhost:5000</span><br></pre></td></tr></table></figure>
-
-<p>目录结构：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">MvcHello</span><br><span class="line">├── appsettings.Development.json</span><br><span class="line">├── appsettings.json</span><br><span class="line">├── bin</span><br><span class="line">│   └── Debug</span><br><span class="line">│       └── netcoreapp2.2</span><br><span class="line">├── Controllers</span><br><span class="line">│   ├── HelloWorldController.cs</span><br><span class="line">│   └── HomeController.cs</span><br><span class="line">├── Models</span><br><span class="line">│   └── ErrorViewModel.cs</span><br><span class="line">├── MvcHello.csproj</span><br><span class="line">├── obj</span><br><span class="line">│   ├── Debug</span><br><span class="line">│   │   └── netcoreapp2.2</span><br><span class="line">│   ├── MvcHello.csproj.nuget.cache</span><br><span class="line">│   ├── MvcHello.csproj.nuget.dgspec.json</span><br><span class="line">│   ├── MvcHello.csproj.nuget.g.props</span><br><span class="line">│   ├── MvcHello.csproj.nuget.g.targets</span><br><span class="line">│   └── project.assets.json</span><br><span class="line">├── Program.cs</span><br><span class="line">├── Properties</span><br><span class="line">│   └── launchSettings.json</span><br><span class="line">├── Startup.cs</span><br><span class="line">├── Views</span><br><span class="line">│   ├── Home</span><br><span class="line">│   │   ├── Index.cshtml</span><br><span class="line">│   │   └── Privacy.cshtml</span><br><span class="line">│   ├── Shared</span><br><span class="line">│   │   ├── _CookieConsentPartial.cshtml</span><br><span class="line">│   │   ├── Error.cshtml</span><br><span class="line">│   │   ├── _Layout.cshtml</span><br><span class="line">│   │   └── _ValidationScriptsPartial.cshtml</span><br><span class="line">│   ├── _ViewImports.cshtml</span><br><span class="line">│   └── _ViewStart.cshtml</span><br><span class="line">└── wwwroot</span><br><span class="line">    ├── css</span><br><span class="line">    │   └── site.css</span><br><span class="line">    ├── favicon.ico</span><br><span class="line">    ├── js</span><br><span class="line">    │   └── site.js</span><br><span class="line">    └── lib</span><br><span class="line">        ├── bootstrap</span><br><span class="line">        ├── jquery</span><br><span class="line">        ├── jquery-validation</span><br><span class="line">        └── jquery-validation-unobtrusive</span><br></pre></td></tr></table></figure>
-
-<h2 id="Route"><a href="#Route" class="headerlink" title="Route"></a>Route</h2><p>在 Startup类 的Configure 方法中，可能会看到与下面类似的代码：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">app.UseMvc(routes =&gt; &#123;</span><br><span class="line">   routes.MapRoute(<span class="string">&quot;default&quot;</span>, <span class="string">&quot;&#123;controller=Home&#125;/&#123;action=Index&#125;/&#123;id?&#125;&quot;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-
-<p>在对 UseMvc 的调用中，MapRoute 用于创建单个路由，亦称 default 路由。大多数 MVC 应用使用带有模板的路由，与 default 路由类似。路由模板：</p>
-<ul>
-<li>{controller=Home} 将 Home 定义为默认 controller</li>
-<li>{action=Index} 将 Index 定义为默认 action</li>
-<li>{id?} 将 id 定义为可选参数</li>
-</ul>
-<p>路由模板 “{controller=Home}/{action=Index}/{id?}” 可以匹配诸如 /Products/Details/5 之类的 URL 路径，并通过对路径进行标记来提取路由值 { controller = Products, action = Details, id = 5 }。 MVC 将尝试查找名为 ProductsController 的控制器并运行 Details 操作：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ProductsController</span> : <span class="title">Controller</span> &#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> IActionResult <span class="title">Details</span>(<span class="params"><span class="keyword">int</span> id</span>)</span> &#123; ... &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="依赖关系注入"><a href="#依赖关系注入" class="headerlink" title="依赖关系注入"></a>依赖关系注入</h2><h3 id="控制器"><a href="#控制器" class="headerlink" title="控制器"></a>控制器</h3><h4 id="构造函数注入"><a href="#构造函数注入" class="headerlink" title="构造函数注入"></a>构造函数注入</h4><p>服务作为构造函数参数添加，并且运行时从服务容器中解析服务，通常使用接口来定义服务。例如，考虑需要当前时间的应用，以下接口公开 IDateTime 服务：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">IDateTime</span></span><br><span class="line">&#123;</span><br><span class="line">    DateTime Now &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">SystemDateTime</span> : <span class="title">IDateTime</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> DateTime Now</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">get</span> &#123; <span class="keyword">return</span> DateTime.Now; &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>注册：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ConfigureServices</span>(<span class="params">IServiceCollection services</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    services.AddSingleton&lt;IDateTime, SystemDateTime&gt;();</span><br><span class="line"></span><br><span class="line">    services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>使用：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">HomeController</span> : <span class="title">Controller</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> IDateTime _dateTime;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HomeController</span>(<span class="params">IDateTime dateTime</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        _dateTime = dateTime;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> IActionResult <span class="title">Index</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">var</span> serverTime = _dateTime.Now;</span><br><span class="line">        <span class="keyword">if</span> (serverTime.Hour &lt; <span class="number">12</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            ViewData[<span class="string">&quot;Message&quot;</span>] = <span class="string">&quot;It&#x27;s morning here - Good Morning!&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (serverTime.Hour &lt; <span class="number">17</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            ViewData[<span class="string">&quot;Message&quot;</span>] = <span class="string">&quot;It&#x27;s afternoon here - Good Afternoon!&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            ViewData[<span class="string">&quot;Message&quot;</span>] = <span class="string">&quot;It&#x27;s evening here - Good Evening!&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> View();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="FromServices注入"><a href="#FromServices注入" class="headerlink" title="FromServices注入"></a>FromServices注入</h4><p>FromServicesAttribute 允许将服务直接注入到操作方法，而无需使用构造函数注入：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> IActionResult <span class="title">About</span>(<span class="params">[FromServices] IDateTime dateTime</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ViewData[<span class="string">&quot;Message&quot;</span>] = <span class="string">$&quot;Current server time: <span class="subst">&#123;dateTime.Now&#125;</span>&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> View();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="视图"><a href="#视图" class="headerlink" title="视图"></a>视图</h3><p>ASP.NET Core 支持将依赖关系注入到视图。 这对于视图特定服务很有用，例如仅为填充视图元素所需的本地化或数据。 应尽量在控制器和视图之间保持问题分离。 视图显示的大部分数据应该从控制器传入。</p>
-<h4 id="简单示例"><a href="#简单示例" class="headerlink" title="简单示例"></a>简单示例</h4><p>可使用 @inject 指令将服务注入到视图中，可将 @inject 看作向视图添加属性，并用 DI 填充该属性。@inject 的语法：<code>@inject &lt;type&gt; &lt;name&gt;</code>，示例：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">@using System.Threading.Tasks</span><br><span class="line">@using ViewInjectSample.Model</span><br><span class="line">@using ViewInjectSample.Model.Services</span><br><span class="line">@model IEnumerable<span class="tag">&lt;<span class="name">ToDoItem</span>&gt;</span></span><br><span class="line">@inject StatisticsService StatsService</span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>To Do Items<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">h1</span>&gt;</span>To Do Items<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">li</span>&gt;</span>Total Items: @StatsService.GetCount()<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">li</span>&gt;</span>Completed: @StatsService.GetCompletedCount()<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">li</span>&gt;</span>Avg. Priority: @StatsService.GetAveragePriority()<span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">table</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">th</span>&gt;</span>Name<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">th</span>&gt;</span>Priority<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">th</span>&gt;</span>Is Done?<span class="tag">&lt;/<span class="name">th</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">            @foreach (var item in Model)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">td</span>&gt;</span>@item.Name<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">td</span>&gt;</span>@item.Priority<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">td</span>&gt;</span>@item.IsDone<span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">            &#125;</span><br><span class="line">        <span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>在 Startup.cs 的 ConfigureServices 中为依赖关系注入注册此服务：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ConfigureServices</span>(<span class="params">IServiceCollection services</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    services.AddMvc();</span><br><span class="line"></span><br><span class="line">    services.AddTransient&lt;IToDoItemRepository, ToDoItemRepository&gt;();</span><br><span class="line">    services.AddTransient&lt;StatisticsService&gt;();</span><br><span class="line">    services.AddTransient&lt;ProfileOptionsService&gt;();</span><br></pre></td></tr></table></figure>
-
-<h4 id="填充查找数据"><a href="#填充查找数据" class="headerlink" title="填充查找数据"></a>填充查找数据</h4><p>视图注入可用于填充 UI 元素（如下拉列表）中的选项。</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc;</span><br><span class="line"><span class="keyword">using</span> ViewInjectSample.Model;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">ViewInjectSample.Controllers</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ProfileController</span> : <span class="title">Controller</span></span><br><span class="line">    &#123;</span><br><span class="line">        [<span class="meta">Route(<span class="meta-string">&quot;Profile&quot;</span>)</span>]</span><br><span class="line">        <span class="function"><span class="keyword">public</span> IActionResult <span class="title">Index</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="comment">// <span class="doctag">TODO:</span> look up profile based on logged-in user</span></span><br><span class="line">            <span class="keyword">var</span> profile = <span class="keyword">new</span> Profile()</span><br><span class="line">            &#123;</span><br><span class="line">                Name = <span class="string">&quot;Steve&quot;</span>,</span><br><span class="line">                FavColor = <span class="string">&quot;Blue&quot;</span>,</span><br><span class="line">                Gender = <span class="string">&quot;Male&quot;</span>,</span><br><span class="line">                State = <span class="keyword">new</span> State(<span class="string">&quot;Ohio&quot;</span>,<span class="string">&quot;OH&quot;</span>)</span><br><span class="line">            &#125;;</span><br><span class="line">            <span class="keyword">return</span> View(profile);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">ViewInjectSample.Model.Services</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ProfileOptionsService</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> List&lt;<span class="keyword">string</span>&gt; <span class="title">ListGenders</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="comment">// keeping this simple</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> List&lt;<span class="keyword">string</span>&gt;() &#123;<span class="string">&quot;Female&quot;</span>, <span class="string">&quot;Male&quot;</span>&#125;;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> List&lt;State&gt; <span class="title">ListStates</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="comment">// a few states from USA</span></span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> List&lt;State&gt;()</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">new</span> State(<span class="string">&quot;Alabama&quot;</span>, <span class="string">&quot;AL&quot;</span>),</span><br><span class="line">                <span class="keyword">new</span> State(<span class="string">&quot;Alaska&quot;</span>, <span class="string">&quot;AK&quot;</span>),</span><br><span class="line">                <span class="keyword">new</span> State(<span class="string">&quot;Ohio&quot;</span>, <span class="string">&quot;OH&quot;</span>)</span><br><span class="line">            &#125;;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> List&lt;<span class="keyword">string</span>&gt; <span class="title">ListColors</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> List&lt;<span class="keyword">string</span>&gt;() &#123; <span class="string">&quot;Blue&quot;</span>,<span class="string">&quot;Green&quot;</span>,<span class="string">&quot;Red&quot;</span>,<span class="string">&quot;Yellow&quot;</span> &#125;;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">@using System.Threading.Tasks</span><br><span class="line">@using ViewInjectSample.Model.Services</span><br><span class="line">@model ViewInjectSample.Model.Profile</span><br><span class="line">@inject ProfileOptionsService Options</span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>Update Profile<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h1</span>&gt;</span>Update Profile<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span><br><span class="line">    Name: @Html.TextBoxFor(m =&gt; m.Name)</span><br><span class="line">    <span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line">    Gender: @Html.DropDownList(&quot;Gender&quot;,</span><br><span class="line">           Options.ListGenders().Select(g =&gt; </span><br><span class="line">                new SelectListItem() &#123; Text = g, Value = g &#125;))</span><br><span class="line">    <span class="tag">&lt;<span class="name">br</span>/&gt;</span></span><br><span class="line"></span><br><span class="line">    State: @Html.DropDownListFor(m =&gt; m.State.Code,</span><br><span class="line">           Options.ListStates().Select(s =&gt; </span><br><span class="line">                new SelectListItem() &#123; Text = s.Name, Value = s.Code&#125;))</span><br><span class="line">    <span class="tag">&lt;<span class="name">br</span> /&gt;</span></span><br><span class="line"></span><br><span class="line">    Fav. Color: @Html.DropDownList(&quot;FavColor&quot;,</span><br><span class="line">           Options.ListColors().Select(c =&gt; </span><br><span class="line">                new SelectListItem() &#123; Text = c, Value = c &#125;))</span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="Controller"><a href="#Controller" class="headerlink" title="Controller"></a>Controller</h2><ul>
-<li>驻留在项目的根级别“Controllers”文件夹中</li>
-<li>继承自 Microsoft.AspNetCore.Mvc.Controller</li>
-</ul>
-<p>控制器是一个可实例化的类，其中下列条件至少某一个为 true：</p>
-<ul>
-<li>类名称带有“Controller”后缀</li>
-<li>该类继承自带有“Controller”后缀的类</li>
-<li>使用 [Controller] 属性修饰该类</li>
-</ul>
-<p>控制器上的公共方法（除了那些使用 [NonAction] 属性装饰的方法）均为操作。操作上的参数会绑定到请求数据，并使用模型绑定进行验证。所有模型绑定的内容都会执行模型验证。 ModelState.IsValid 属性值指示模型绑定和验证是否成功。</p>
-<p>操作方法应包含用于将请求映射到某个业务关注点的逻辑，业务关注点通常应当表示为控制器通过依赖关系注入来访问的服务，然后，操作将业务操作的结果映射到应用程序状态。</p>
-<p>操作可以返回任何内容，但是经常返回生成响应的 IActionResult（或异步方法的 Task<IActionResult>）的实例，操作方法负责选择响应的类型，操作结果会做出响应。</p>
-<p>添加控制器：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> Microsoft.AspNetCore.Mvc;</span><br><span class="line"><span class="keyword">using</span> System.Text.Encodings.Web;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">MvcHello.Controllers</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">HelloWorldController</span> : <span class="title">Controller</span> &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// GET: /HelloWorld/</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">string</span> <span class="title">Index</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;This is my default action...&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// GET: /HelloWorld/Welcome/</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">string</span> <span class="title">Welcome</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;This is the Welcome action method...&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="View"><a href="#View" class="headerlink" title="View"></a>View</h2><h3 id="创建视图"><a href="#创建视图" class="headerlink" title="创建视图"></a>创建视图</h3><p>在 Views / [ControllerName] 文件夹中创建特定于控制器的视图。 控制器之间共享的视图都将置于 Views/Shared 文件夹。 要创建一个视图，请添加新文件，并将其命名为与 .cshtml 文件扩展名相关联的控制器操作的相同名称。</p>
-<p>Razor 标记以 @ 符号开头。 通过将 C# 代码放置在用大括号 ({ … }) 括住的 Razor 代码块内，运行 C# 语句。如下所示：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@&#123;</span><br><span class="line">    ViewData[<span class="string">&quot;Title&quot;</span>] = <span class="string">&quot;About&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line">&lt;h2&gt;@ViewData[<span class="string">&quot;Title&quot;</span>].&lt;/h2&gt;</span><br><span class="line">&lt;h3&gt;@ViewData[<span class="string">&quot;Message&quot;</span>]&lt;/h3&gt;</span><br><span class="line"></span><br><span class="line">&lt;p&gt;Use <span class="keyword">this</span> area to provide additional information.&lt;/p&gt;</span><br></pre></td></tr></table></figure>
-
-<h3 id="添加视图"><a href="#添加视图" class="headerlink" title="添加视图"></a>添加视图</h3><p>在 HelloWorldController 类中，将 Index 方法替换为以下代码：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> IActionResult <span class="title">Index</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> View();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>为 HelloWorldController 添加 Index 视图。</p>
-<ol>
-<li>添加一个名为“Views/HelloWorld”的新文件夹。</li>
-<li>向 Views/HelloWorld 文件夹添加名为“Index.cshtml”的新文件，并添加内容。</li>
-</ol>
-<h3 id="更改标题和页脚等"><a href="#更改标题和页脚等" class="headerlink" title="更改标题和页脚等"></a>更改标题和页脚等</h3><p>修改Views/Shared/_Layout.cshtml 文件中的相关内容，并确认 Views/_ViewStart.cshtml 文件：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@&#123;</span><br><span class="line">    Layout = <span class="string">&quot;_Layout&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>Views/_ViewStart.cshtml 文件将 Views/Shared/_Layout.cshtml 文件引入到每个视图中。 可以使用 Layout 属性设置不同的布局视图，或将它设置为 null，这样将不会使用任何布局文件。</p>
-<h3 id="控制器传递数据"><a href="#控制器传递数据" class="headerlink" title="控制器传递数据"></a>控制器传递数据</h3><h4 id="强类型数据-ViewModel"><a href="#强类型数据-ViewModel" class="headerlink" title="强类型数据 (ViewModel)"></a>强类型数据 (ViewModel)</h4><p>使用 viewmodel 将数据传递给视图可让视图充分利用强类型检查。 强类型化（或强类型）意味着每个变量和常量都有明确定义的类型（例如 string、int 或 DateTime）。 在编译时检查视图中使用的类型是否有效。</p>
-<p>使用 @model 指令指定模型。 使用带有 @Model 的模型：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@model WebApplication1.ViewModels.Address</span><br><span class="line"></span><br><span class="line">&lt;h2&gt;Contact&lt;/h2&gt;</span><br><span class="line">&lt;address&gt;</span><br><span class="line">    @Model.Street&lt;br&gt;</span><br><span class="line">    @Model.City, @Model.State @Model.PostalCode&lt;br&gt;</span><br><span class="line">    &lt;abbr title=<span class="string">&quot;Phone&quot;</span>&gt;P:&lt;/abbr&gt; <span class="number">425.555</span><span class="number">.0100</span></span><br><span class="line">&lt;/address&gt;</span><br></pre></td></tr></table></figure>
-
-<p>为了将模型提供给视图，控制器将其作为参数进行传递：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> IActionResult <span class="title">Contact</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ViewData[<span class="string">&quot;Message&quot;</span>] = <span class="string">&quot;Your contact page.&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> viewModel = <span class="keyword">new</span> Address()</span><br><span class="line">    &#123;</span><br><span class="line">        Name = <span class="string">&quot;Microsoft&quot;</span>,</span><br><span class="line">        Street = <span class="string">&quot;One Microsoft Way&quot;</span>,</span><br><span class="line">        City = <span class="string">&quot;Redmond&quot;</span>,</span><br><span class="line">        State = <span class="string">&quot;WA&quot;</span>,</span><br><span class="line">        PostalCode = <span class="string">&quot;98052-6399&quot;</span></span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> View(viewModel);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="弱类型数据（ViewData、ViewData-属性和-ViewBag）"><a href="#弱类型数据（ViewData、ViewData-属性和-ViewBag）" class="headerlink" title="弱类型数据（ViewData、ViewData 属性和 ViewBag）"></a>弱类型数据（ViewData、ViewData 属性和 ViewBag）</h4><p>与强类型不同，弱类型（或松散类型）意味着不显式声明要使用的数据类型，可以使用弱类型数据集合将少量数据传入及传出控制器和视图。ViewBag 在 Razor 页中不可用。</p>
-<p>ViewData 是通过 string 键访问的 ViewDataDictionary 对象。 字符串数据可以直接存储和使用，而不需要强制转换，但是在提取其他 ViewData 对象值时必须将其强制转换为特定类型。可以让控制器将视图模板所需的动态数据（参数）放置在视图模板稍后可以访问的 ViewData 字典中，将Welcome方法改为如下内容：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> IActionResult <span class="title">Welcome</span>(<span class="params"><span class="keyword">string</span> name, <span class="keyword">int</span> numTimes = <span class="number">1</span></span>)</span> &#123;</span><br><span class="line">    ViewData[<span class="string">&quot;Message&quot;</span>] = <span class="string">&quot;Hello &quot;</span> + name;</span><br><span class="line">    ViewData[<span class="string">&quot;NumTimes&quot;</span>] = numTimes;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// return View(&quot;Views/HelloWorld/Welcome.cshtml&quot;);</span></span><br><span class="line">    <span class="keyword">return</span> View();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>创建一个名为 Views/HelloWorld/Welcome.cshtml 的 Welcome 视图模板，内容如下：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">@&#123;</span><br><span class="line">    ViewData[&quot;Title&quot;] = &quot;Welcome&quot;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">h2</span>&gt;</span>Welcome<span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">    @for (int i = 0; i <span class="tag">&lt; (<span class="attr">int</span>)<span class="attr">ViewData</span>[&quot;<span class="attr">NumTimes</span>&quot;]; <span class="attr">i</span>++)</span></span><br><span class="line"><span class="tag">    &#123;</span></span><br><span class="line">        &lt;li&gt;@ViewData[&quot;Message&quot;]&lt;/li&gt;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>实例：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> IActionResult <span class="title">SomeAction</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    ViewData[<span class="string">&quot;Greeting&quot;</span>] = <span class="string">&quot;Hello&quot;</span>;</span><br><span class="line">    ViewData[<span class="string">&quot;Address&quot;</span>]  = <span class="keyword">new</span> Address()</span><br><span class="line">    &#123;</span><br><span class="line">        Name = <span class="string">&quot;Steve&quot;</span>,</span><br><span class="line">        Street = <span class="string">&quot;123 Main St&quot;</span>,</span><br><span class="line">        City = <span class="string">&quot;Hudson&quot;</span>,</span><br><span class="line">        State = <span class="string">&quot;OH&quot;</span>,</span><br><span class="line">        PostalCode = <span class="string">&quot;44236&quot;</span></span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> View();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在视图中处理数据：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">@&#123;</span><br><span class="line">    // Since Address isn&#x27;t a string, it requires a cast.</span><br><span class="line">    var address = ViewData[&quot;Address&quot;] as Address;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@ViewData[&quot;Greeting&quot;] World!</span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">address</span>&gt;</span></span><br><span class="line">    @address.Name<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">    @address.Street<span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line">    @address.City, @address.State @address.PostalCode</span><br><span class="line"><span class="tag">&lt;/<span class="name">address</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="Model"><a href="#Model" class="headerlink" title="Model"></a>Model</h2><p>可以结合 Entity Framework Core (EF Core) 使用来处理数据库，EF Core 是对象关系映射 (ORM) 框架，可以简化需要编写的数据访问代码。要创建的模型类称为 POCO 类（源自“简单传统 CLR 对象”），因为它们与 EF Core 没有任何依赖关系，它们只定义将存储在数据库中的数据的属性。</p>
-<h3 id="建表"><a href="#建表" class="headerlink" title="建表"></a>建表</h3><p>在数据库中建立表，需要与实体类对应。</p>
-<h3 id="安装相关包"><a href="#安装相关包" class="headerlink" title="安装相关包"></a>安装相关包</h3><p>通过Nuget包管理器安装MySql.Data.EntityFrameworkCore包：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> dotnet add package  MySql.Data.EntityFrameworkCore</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="添加实体类"><a href="#添加实体类" class="headerlink" title="添加实体类"></a>添加实体类</h3><p>在“Models”文件夹下添加“User.cs”：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.ComponentModel.DataAnnotations;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">MvcHello.Models</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">User</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//用户Id</span></span><br><span class="line">        [<span class="meta">Key</span>]</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">int</span> Id &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;   </span><br><span class="line">        <span class="comment">//用户名</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">string</span> Name &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">        <span class="comment">//用户密码</span></span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">string</span> Password &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>User 类可包含：</p>
-<ul>
-<li>数据库需要 Id 字段以获取主键。</li>
-<li>[DataType(DataType.Date)]：DataType 属性指定数据的类型 (Date)。 通过此特性：<ul>
-<li>用户无需在数据字段中输入时间信息。</li>
-<li>仅显示日期，而非时间信息。</li>
-</ul>
-</li>
-</ul>
-<h3 id="添加数据库上下文类"><a href="#添加数据库上下文类" class="headerlink" title="添加数据库上下文类"></a>添加数据库上下文类</h3><p>在根目录下加上 DataAccess 目录做为数据库操作目录，在该目录下加上 Base 目录做数据库上下文目录，在Base目录下添加上下文类，继承 DbContext 类，通过构造函数注入数据库连接，添加 DbSet<User> 实体属性，代码如下：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> System.Linq;</span><br><span class="line"><span class="keyword">using</span> System.Threading.Tasks;</span><br><span class="line"><span class="keyword">using</span> Microsoft.EntityFrameworkCore;</span><br><span class="line"></span><br><span class="line"><span class="keyword">namespace</span> <span class="title">MvcHello.DataAccess.Base</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">UserDbContext</span> : <span class="title">DbContext</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">UserDbContext</span> (<span class="params">DbContextOptions&lt;UserDbContext&gt; options</span>): <span class="title">base</span>(<span class="params">options</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> DbSet&lt;MvcHello.Models.User&gt; User &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="添加数据库连接配置（MySQL）"><a href="#添加数据库连接配置（MySQL）" class="headerlink" title="添加数据库连接配置（MySQL）"></a>添加数据库连接配置（MySQL）</h3><p>将连接字符串添加到 appsettings.json 文件：</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">&quot;Logging&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;LogLevel&quot;</span>: &#123;</span><br><span class="line">      <span class="attr">&quot;Default&quot;</span>: <span class="string">&quot;Warning&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">&quot;AllowedHosts&quot;</span>: <span class="string">&quot;*&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;ConnectionStrings&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;UserDbContext&quot;</span>: <span class="string">&quot;server=localhost;user id=root;password=123456;database=asp;charset=utf8;sslMode=None&quot;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="添加数据库操作服务类"><a href="#添加数据库操作服务类" class="headerlink" title="添加数据库操作服务类"></a>添加数据库操作服务类</h3><p>在 DataAccess 目录下新建 Interface 目录，用于保存数据库操作的接口，在该目录下新建 IUserDao 接口，在接口里增加相关数据库添、删、改、查接口，代码如下：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">MvcHello.DataAccess.Interface</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">IUserDao</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//插入数据</span></span><br><span class="line">        <span class="function"><span class="keyword">bool</span> <span class="title">CreateUser</span>(<span class="params">User user</span>)</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//取全部记录</span></span><br><span class="line">        <span class="function">IEnumerable&lt;User&gt; <span class="title">GetUsers</span>(<span class="params"></span>)</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//取某id记录</span></span><br><span class="line">        <span class="function">User <span class="title">GetUserByID</span>(<span class="params"><span class="keyword">int</span> id</span>)</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//根据id更新整条记录</span></span><br><span class="line">        <span class="function"><span class="keyword">bool</span> <span class="title">UpdateUser</span>(<span class="params">User user</span>)</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//根据id更新名称</span></span><br><span class="line">        <span class="function"><span class="keyword">bool</span> <span class="title">UpdateNameByID</span>(<span class="params"><span class="keyword">int</span> id, <span class="keyword">string</span> name</span>)</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//根据id删掉记录</span></span><br><span class="line">        <span class="function"><span class="keyword">bool</span> <span class="title">DeleteUserByID</span>(<span class="params"><span class="keyword">int</span> id</span>)</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在 DataAccess 目录下新建 Implement 目录，用于保存数据库操作接口的实现，在该目录下新建 UserDao 类，继承 IUserDao 接口，实现接口里的数据库操作方法，在构造函数注入 UserDbContext 数据库上下文，代码如下：</p>
-<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">namespace</span> <span class="title">MvcHello.DataAccess.Implement</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">class</span> <span class="title">UserDao</span>: <span class="title">IUserDao</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">public</span> UserDbContext Context;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">UserDao</span>(<span class="params">UserDbContext context</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            Context = context;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//插入数据</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">bool</span> <span class="title">CreateUser</span>(<span class="params">User user</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            Context.User.Add(user);</span><br><span class="line">            <span class="keyword">return</span> Context.SaveChanges() &gt; <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//取全部记录</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> IEnumerable&lt;User&gt; <span class="title">GetUsers</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">return</span> Context.User.ToList();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//取某id记录</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> User <span class="title">GetUserByID</span>(<span class="params"><span class="keyword">int</span> id</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">return</span> Context.User.SingleOrDefault(s =&gt; s.Id == id);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//根据id更新整条记录</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">bool</span> <span class="title">UpdateUser</span>(<span class="params">User user</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            Context.User.Update(user);</span><br><span class="line">            <span class="keyword">return</span> Context.SaveChanges() &gt; <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//根据id更新名称</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">bool</span> <span class="title">UpdateNameByID</span>(<span class="params"><span class="keyword">int</span> id, <span class="keyword">string</span> name</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">var</span> state = <span class="literal">false</span>;</span><br><span class="line">            <span class="keyword">var</span> user = Context.User.SingleOrDefault(s =&gt; s.Id == id);</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (user != <span class="literal">null</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                user.Name = name;</span><br><span class="line">                state = Context.SaveChanges() &gt; <span class="number">0</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> state;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//根据id删掉记录</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">bool</span> <span class="title">DeleteUserByID</span>(<span class="params"><span class="keyword">int</span> id</span>)</span></span><br><span class="line"><span class="function"></span>        &#123;</span><br><span class="line">            <span class="keyword">var</span> user = Context.User.SingleOrDefault(s =&gt; s.Id == id);</span><br><span class="line">            Context.User.Remove(user);</span><br><span class="line">            <span class="keyword">return</span> Context.SaveChanges() &gt; <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="控制器中注入使用"><a href="#控制器中注入使用" class="headerlink" title="控制器中注入使用"></a>控制器中注入使用</h3><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">//插入数据</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ActionResult&lt;<span class="keyword">string</span>&gt; <span class="title">Create</span>(<span class="params"><span class="keyword">string</span> name, <span class="keyword">string</span> password</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">string</span>.IsNullOrEmpty(name.Trim()))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;姓名不能为空&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">string</span>.IsNullOrEmpty(password.Trim()))</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;密码不能为空&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> user = <span class="keyword">new</span> User() &#123;</span><br><span class="line">        Name = name,</span><br><span class="line">        Password = password</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> result = iHelloDao.CreateUser(user);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (result)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;学生插入成功&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;学生插入失败&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//取全部记录</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ActionResult&lt;<span class="keyword">string</span>&gt; <span class="title">Gets</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">var</span> names = <span class="string">&quot;没有数据&quot;</span>;</span><br><span class="line">    <span class="keyword">var</span> users = iHelloDao.GetUsers();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (users != <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        names = <span class="string">&quot;&quot;</span>;</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> s <span class="keyword">in</span> users)</span><br><span class="line">        &#123;</span><br><span class="line">            names += <span class="string">$&quot;<span class="subst">&#123;s.Name&#125;</span> \r\n&quot;</span>;</span><br><span class="line">        &#125;</span><br><span class="line">            </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> names;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="在Starup-cs中注册数据库服务"><a href="#在Starup-cs中注册数据库服务" class="headerlink" title="在Starup.cs中注册数据库服务"></a>在Starup.cs中注册数据库服务</h3><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">ConfigureServices</span>(<span class="params">IServiceCollection services</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    services.Configure&lt;CookiePolicyOptions&gt;(options =&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// This lambda determines whether user consent for non-essential cookies is needed for a given request.</span></span><br><span class="line">        options.CheckConsentNeeded = context =&gt; <span class="literal">true</span>;</span><br><span class="line">        options.MinimumSameSitePolicy = SameSiteMode.None;</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    services.AddDbContext&lt;UserDbContext&gt;(d =&gt; d.UseMySQL(Configuration.GetConnectionString(<span class="string">&quot;UserDbContext&quot;</span>)));</span><br><span class="line">    services.AddScoped&lt;IUserDao, UserDao&gt;();</span><br><span class="line"></span><br><span class="line">    services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/04/29/C-Sharp%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3243,6 +2660,386 @@
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/01/07/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/01/07/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">docker学习笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-01-07 14:32:02" itemprop="dateCreated datePublished" datetime="2019-01-07T14:32:02+08:00">2019-01-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%90%8E%E5%8F%B0/" itemprop="url" rel="index"><span itemprop="name">后台</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%90%8E%E5%8F%B0/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/01/07/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="docker学习笔记" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/01/07/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/01/07/docker%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="镜像"><a href="#镜像" class="headerlink" title="镜像"></a>镜像</h1><h2 id="获取镜像"><a href="#获取镜像" class="headerlink" title="获取镜像"></a>获取镜像</h2><p>Docker 运行容器前需要本地存在对应的镜像，如果镜像不存在本地，Docker 会从镜像仓库下载（默认是 Docker Hub 公共注册服务器中的仓库）。</p>
+<p>下载镜像：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">docker pull image:tag</span><br><span class="line"><span class="meta">#</span><span class="bash"> 相当于</span></span><br><span class="line">docker pull registry.hub.docker.com/image:tag</span><br></pre></td></tr></table></figure>
+
+<p>列出镜像：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker images</span><br></pre></td></tr></table></figure>
+
+<h2 id="创建镜像"><a href="#创建镜像" class="headerlink" title="创建镜像"></a>创建镜像</h2><h3 id="修改已有镜像"><a href="#修改已有镜像" class="headerlink" title="修改已有镜像"></a>修改已有镜像</h3><ol>
+<li>使用本地镜像启动容器: docker run -i -t ubuntu:12.04 /bin/bash</li>
+<li>修改</li>
+<li>提交: docker commit -m=”msg” -a=”author” container_id rep/name:tag </li>
+</ol>
+<p>提交参数：</p>
+<ul>
+<li>-m:提交的描述信息</li>
+<li>-a:指定镜像作者</li>
+<li>e218edb10161：容器ID</li>
+<li>runoob/ubuntu:v2:指定要创建的目标镜像名</li>
+</ul>
+<h3 id="Dockerfile"><a href="#Dockerfile" class="headerlink" title="Dockerfile"></a>Dockerfile</h3><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">FROM    centos:6.7</span><br><span class="line">MAINTAINER      Fisher <span class="string">&quot;fisher@sudops.com&quot;</span></span><br><span class="line"></span><br><span class="line">RUN     /bin/echo &#x27;root:123456&#x27; |chpasswd</span><br><span class="line">RUN     useradd runoob</span><br><span class="line">RUN     /bin/echo &#x27;runoob:123456&#x27; |chpasswd</span><br><span class="line">RUN     /bin/echo -e <span class="string">&quot;LANG=\&quot;en_US.UTF-8\&quot;&quot;</span> &gt;/etc/default/local</span><br><span class="line">EXPOSE  22</span><br><span class="line">EXPOSE  80</span><br><span class="line">ADD myApp /var/www</span><br><span class="line">EXPOSE 80</span><br><span class="line">CMD     /usr/sbin/sshd -D</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用<code>#</code>注释</li>
+<li>每一个指令都会在镜像上创建一个新的层，每一个指令的前缀必须大写</li>
+<li>一个镜像不能超过 127 层</li>
+<li>第一条FROM指令指定使用哪个镜像源</li>
+<li>MAINTAINER 表示维护者的信息</li>
+<li>RUN 指令表示在镜像内执行的命令</li>
+<li>ADD 命令复制本地文件到镜像</li>
+<li>EXPOSE 命令向外部开放端口</li>
+<li>CMD 命令描述容器启动后运行的程序</li>
+<li>最后通过docker build命令来构建一个镜像</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> -t 添加 tag</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> dir 是 Dockerfile 所在的路径</span></span><br><span class="line">docker build -t runoob/centos:6.7 dir</span><br></pre></td></tr></table></figure>
+
+<h3 id="本地文件系统导入"><a href="#本地文件系统导入" class="headerlink" title="本地文件系统导入"></a>本地文件系统导入</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat ubuntu-14.04-x86_64-minimal.tar.gz  |docker import - ubuntu:14.04</span><br></pre></td></tr></table></figure>
+
+<h2 id="上传镜像"><a href="#上传镜像" class="headerlink" title="上传镜像"></a>上传镜像</h2><ul>
+<li>登录: docker login -u user -p passwd -e email hub.c.163.com(网易蜂巢)</li>
+<li>标签: docker tag image user_name/repo_name[:tag]</li>
+<li>上传: docker push hub.c.163.com/user_name/repo_name[:tag]</li>
+</ul>
+<h2 id="导出与导入"><a href="#导出与导入" class="headerlink" title="导出与导入"></a>导出与导入</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 导出镜像到本地文件</span></span><br><span class="line">docker save -o file_name image:tag</span><br><span class="line"><span class="meta">#</span><span class="bash"> 载入镜像</span></span><br><span class="line">docker load --input file_name</span><br><span class="line"><span class="meta">#</span><span class="bash"> 或</span></span><br><span class="line">docker load &lt; file_name</span><br></pre></td></tr></table></figure>
+
+<h2 id="移除"><a href="#移除" class="headerlink" title="移除"></a>移除</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker rmi name/id</span><br></pre></td></tr></table></figure>
+
+<h1 id="容器"><a href="#容器" class="headerlink" title="容器"></a>容器</h1><h2 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 运行容器</span></span><br><span class="line">docker run image:tag cmd</span><br><span class="line"><span class="meta">#</span><span class="bash"> 交互式运行容器</span></span><br><span class="line">docker run -i -t image:tag cmd</span><br><span class="line"><span class="meta">#</span><span class="bash"> 停止容器</span></span><br><span class="line">docker stop id/name</span><br><span class="line"><span class="meta">#</span><span class="bash"> 重启容器</span></span><br><span class="line">docket stop id/name</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>-t: 在新容器内指定一个伪终端或终端</li>
+<li>-i: 允许对容器内的标准输入 (STDIN) 进行交互</li>
+<li>-d: 后台启动一个容器</li>
+<li>-p local_port:container_port: 端口映射</li>
+</ul>
+<h2 id="进入容器"><a href="#进入容器" class="headerlink" title="进入容器"></a>进入容器</h2><h3 id="attach"><a href="#attach" class="headerlink" title="attach"></a>attach</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker attach name/id</span><br></pre></td></tr></table></figure>
+
+<h3 id="nsenter"><a href="#nsenter" class="headerlink" title="nsenter"></a>nsenter</h3><h2 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker rm name/id</span><br></pre></td></tr></table></figure>
+
+<h1 id="数据管理"><a href="#数据管理" class="headerlink" title="数据管理"></a>数据管理</h1><h2 id="数据卷"><a href="#数据卷" class="headerlink" title="数据卷"></a>数据卷</h2><p>数据卷是一个可供一个或多个容器使用的特殊目录，它绕过 UFS，可以提供很多有用的特性：</p>
+<ul>
+<li>数据卷可以在容器之间共享和重用</li>
+<li>对数据卷的修改会立马生效</li>
+<li>对数据卷的更新，不会影响镜像</li>
+<li>卷会一直存在，直到没有容器使用</li>
+<li>数据卷的使用，类似于 Linux 下对目录或文件进行 mount。</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 加载一个数据卷到容器的 /webapp 目录</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 也可以在 Dockerfile 中使用 VOLUME 来添加一个或者多个新的卷到由该镜像创建的任意容器</span></span><br><span class="line">docker run -d -P --name web -v /webapp training/webapp python app.py</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 指定挂载一个本地主机目录到容器中</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 加载主机的 /src/webapp 目录到容器的 /opt/webapp 目录, 如果目录不存在会自动创建</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> Dockerfile 中不支持这种用法，因为不同操作系统的路径格式不一样</span></span><br><span class="line">docker run -d -P --name web -v /src/webapp:/opt/webapp training/webapp python app.py</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 挂载数据卷的默认权限是读写，可以通过 :ro 指定为只读</span></span><br><span class="line">docker run -d -P --name web -v /src/webapp:/opt/webapp:ro training/webapp python app.py</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 挂载一个本地主机文件作为数据卷</span></span><br><span class="line">docker run --rm -it -v ~/.bash_history:/.bash_history ubuntu /bin/bash</span><br></pre></td></tr></table></figure>
+
+<h2 id="数据卷容器"><a href="#数据卷容器" class="headerlink" title="数据卷容器"></a>数据卷容器</h2><p>如果有一些持续更新的数据需要在容器之间共享，最好创建数据卷容器。数据卷容器，其实就是一个正常的容器，专门用来提供数据卷供其它容器挂载的。</p>
+<ol>
+<li>创建一个命名的数据卷容器dbdata：</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -v /dbdata --name dbdata training/postgres echo Data-only container for postgres</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>在其他容器中使用 –volumes-from 来挂载 dbdata 容器中的数据卷</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">docker run -d --volumes-from dbdata --name db1 training/postgres</span><br><span class="line">docker run -d --volumes-from dbdata --name db2 training/postgres</span><br><span class="line"><span class="meta">#</span><span class="bash"> 可以使用多个 --volumes-from 参数来从多个容器挂载多个数据卷，也可以从其他已经挂载了数据卷的容器来挂载数据卷。</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 使用 --volumes-from 参数所挂载数据卷的容器自己并不需要保持在运行状态</span></span><br><span class="line">docker run -d --name db3 --volumes-from db1 training/postgres</span><br></pre></td></tr></table></figure>
+
+<p>如果删除了挂载的容器（包括 dbdata、db1 和 db2），数据卷并不会被自动删除。如果要删除一个数据卷，必须在删除最后一个还挂载着它的容器时使用 docker rm -v 命令来指定同时删除关联的容器。</p>
+<h2 id="备份、恢复、迁移数据卷"><a href="#备份、恢复、迁移数据卷" class="headerlink" title="备份、恢复、迁移数据卷"></a>备份、恢复、迁移数据卷</h2><h3 id="备份"><a href="#备份" class="headerlink" title="备份"></a>备份</h3><p>首先使用 –volumes-from 标记来创建一个加载 dbdata 容器卷的容器，并从本地主机挂载当前到容器的 /backup 目录。命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --volumes-from dbdata -v $(pwd):/backup ubuntu tar cvf /backup/backup.tar /dbdata</span><br></pre></td></tr></table></figure>
+
+<p>容器启动后，使用了 tar 命令来将 dbdata 卷备份为本地的 /backup/backup.tar。</p>
+<h3 id="恢复"><a href="#恢复" class="headerlink" title="恢复"></a>恢复</h3><p>如果要恢复数据到一个容器，首先创建一个带有数据卷的容器 dbdata2。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -v /dbdata --name dbdata2 ubuntu /bin/bash</span><br></pre></td></tr></table></figure>
+
+<p>然后创建另一个容器，挂载 dbdata2 的容器，并使用 untar 解压备份文件到挂载的容器卷中。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --volumes-from dbdata2 -v $(pwd):/backup busybox tar xvf /backup/backup.tar</span><br></pre></td></tr></table></figure>
+
+<h1 id="网络"><a href="#网络" class="headerlink" title="网络"></a>网络</h1><h2 id="外部访问容器"><a href="#外部访问容器" class="headerlink" title="外部访问容器"></a>外部访问容器</h2><ul>
+<li>当使用 -P 标记时，Docker 会随机映射一个 49000~49900 的端口到内部容器开放的网络端口。</li>
+<li>-p 则可以指定要映射的端口，并且，在一个指定端口上只可以绑定一个容器。支持的格式有 ip:hostPort:containerPort | ip::containerPort | hostPort:containerPort。</li>
+</ul>
+<p>映射所有接口地址:</p>
+<ul>
+<li>docker run -d -p 5000:5000 training/webapp python app.py: 默认会绑定本地所有接口上的所有地址。</li>
+</ul>
+<p>映射到指定地址的指定端口:</p>
+<ul>
+<li>使用 ip:hostPort:containerPort 格式指定映射使用一个特定地址</li>
+</ul>
+<p>映射到指定地址的任意端口:</p>
+<ul>
+<li>使用 ip::containerPort 绑定 localhost 的任意端口到容器的 5000 端口，本地主机会自动分配一个端口。</li>
+</ul>
+<p>还可以使用 udp 标记来指定 udp 端口:</p>
+<ul>
+<li>docker run -d -p 127.0.0.1:5000:5000/udp training/webapp python app.py</li>
+</ul>
+<p>查看映射端口配置:</p>
+<ul>
+<li>使用 docker port 来查看当前映射的端口配置，也可以查看到绑定的地址:port nostalgic_morse 5000</li>
+</ul>
+<h2 id="容器互联"><a href="#容器互联" class="headerlink" title="容器互联"></a>容器互联</h2><p>容器的连接（linking）系统是除了端口映射外，另一种跟容器中应用交互的方式。该系统会在源和接收容器之间创建一个隧道，接收容器可以看到源容器指定的信息。</p>
+<h3 id="自定义容器命名"><a href="#自定义容器命名" class="headerlink" title="自定义容器命名"></a>自定义容器命名</h3><p>连接系统依据容器的名称来执行。因此，首先需要自定义一个好记的容器命名。使用 –name 标记可以为容器自定义命名。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -P --name web training/webapp python app.py</span><br></pre></td></tr></table></figure>
+
+<p>在执行 docker run 的时候如果添加 –rm 标记，则容器在终止后会立刻删除。注意，–rm 和 -d 参数不能同时使用。</p>
+<h3 id="容器互联-1"><a href="#容器互联-1" class="headerlink" title="容器互联"></a>容器互联</h3><p>使用 –link 参数可以让容器之间安全的进行交互。–link 参数的格式为 –link name:alias，其中 name 是要链接的容器的名称，alias 是这个连接的别名。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 创建一个新的数据库容器。</span></span><br><span class="line">docker run -d --name db training/postgres</span><br><span class="line"><span class="meta">#</span><span class="bash"> 创建一个新的 web 容器，并将它连接到 db 容器</span></span><br><span class="line">docker run -d -P --name web --link db:db training/webapp python app.py</span><br><span class="line"><span class="meta">#</span><span class="bash"> docker ps 查看容器的连接</span></span><br><span class="line">docker ps</span><br><span class="line"></span><br><span class="line">CONTAINER ID  IMAGE                     COMMAND               CREATED             STATUS             PORTS                    NAMES</span><br><span class="line">349169744e49  training/postgres:latest  su postgres -c &#x27;/usr  About a minute ago  Up About a minute  5432/tcp                 db, web/db</span><br><span class="line">aed84ee21bde  training/webapp:latest    python app.py         16 hours ago        Up 2 minutes       0.0.0.0:49154-&gt;5000/tcp  web</span><br></pre></td></tr></table></figure>
+
+<p>可以看到自定义命名的容器，db 和 web，db 容器的 names 列有 db 也有 web/db。这表示 web 容器链接到 db 容器，web 容器将被允许访问 db 容器的信息。Docker 在两个互联的容器之间创建了一个安全隧道，而且不用映射它们的端口到宿主主机上。在启动 db 容器的时候并没有使用 -p 和 -P 标记，从而避免了暴露数据库端口到外部网络上。</p>
+<p>Docker 通过 2 种方式为容器公开连接信息：</p>
+<ol>
+<li>环境变量</li>
+<li>更新 /etc/hosts 文件</li>
+</ol>
+<p>使用 env 命令来查看 web 容器的环境变量:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> sudo docker run --rm --name web2 --link db:db training/webapp env</span></span><br><span class="line"></span><br><span class="line">DB_NAME=/web2/db</span><br><span class="line">DB_PORT=tcp://172.17.0.5:5432</span><br><span class="line">DB_PORT_5000_TCP=tcp://172.17.0.5:5432</span><br><span class="line">DB_PORT_5000_TCP_PROTO=tcp</span><br><span class="line">DB_PORT_5000_TCP_PORT=5432</span><br><span class="line">DB_PORT_5000_TCP_ADDR=172.17.0.5</span><br><span class="line"><span class="meta">#</span><span class="bash"> 其中 DB_ 开头的环境变量是供 web 容器连接 db 容器使用，前缀采用大写的连接别名。</span></span><br></pre></td></tr></table></figure>
+
+<p>除了环境变量，Docker 还添加 host 信息到父容器的 /etc/hosts 的文件。下面是父容器 web 的 hosts 文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">docker run -t -i --rm --link db:db training/webapp /bin/bash</span><br><span class="line">root@aed84ee21bde:/opt/webapp# cat /etc/hosts</span><br><span class="line">172.17.0.7  aed84ee21bde</span><br><span class="line">. . .</span><br><span class="line">172.17.0.5  db</span><br></pre></td></tr></table></figure>
+
+<p>这里有两个 hosts，第一个是 web 容器，web 容器用 id 作为他的主机名，第二个是 db 容器的 ip 和主机名。可以在 web 容器中安装 ping 命令来测试跟db容器的连通。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/01/04/RPC%E5%92%8CHTTP%E7%9B%B8%E5%85%B3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/01/04/RPC%E5%92%8CHTTP%E7%9B%B8%E5%85%B3/" class="post-title-link" itemprop="url">RPC和HTTP相关</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-01-04 13:17:47" itemprop="dateCreated datePublished" datetime="2019-01-04T13:17:47+08:00">2019-01-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%90%8E%E5%8F%B0/" itemprop="url" rel="index"><span itemprop="name">后台</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/01/04/RPC%E5%92%8CHTTP%E7%9B%B8%E5%85%B3/" class="post-meta-item leancloud_visitors" data-flag-title="RPC和HTTP相关" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/01/04/RPC%E5%92%8CHTTP%E7%9B%B8%E5%85%B3/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/01/04/RPC%E5%92%8CHTTP%E7%9B%B8%E5%85%B3/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h1><p>传输协议：</p>
+<ul>
+<li>RPC，可以基于TCP协议，也可以基于HTTP协议</li>
+<li>HTTP，基于HTTP协议</li>
+</ul>
+<p>传输效率：</p>
+<ul>
+<li>RPC，使用自定义的TCP协议，可以让请求报文体积更小，或者使用HTTP2协议，也可以很好的减少报文的体积，提高传输效率</li>
+<li>HTTP，如果是基于HTTP1.1的协议，请求中会包含很多无用的内容，如果是基于HTTP2.0，那么简单的封装一下是可以作为一个RPC来使用的，这时标准RPC框架更多的是服务治理</li>
+</ul>
+<p>性能消耗：主要在于序列化和反序列化的耗时</p>
+<ul>
+<li>RPC，可以基于thrift实现高效的二进制传输</li>
+<li>HTTP，大部分是通过json来实现的，字节大小和序列化耗时都比thrift要更消耗性能</li>
+</ul>
+<p>负载均衡：</p>
+<ul>
+<li>RPC，基本都自带了负载均衡策略</li>
+<li>HTTP，需要配置Nginx，HAProxy来实现</li>
+</ul>
+<p>服务治理（下游服务新增，重启，下线时如何不影响上游调用者）：</p>
+<ul>
+<li>RPC，能做到自动通知，不影响上游</li>
+<li>HTTP，需要事先通知，修改Nginx/HAProxy配置</li>
+</ul>
+<p>总结：<br>  RPC主要用于公司内部的服务调用，性能消耗低，传输效率高，服务治理方便。HTTP主要用于对外的异构环境，浏览器接口调用，APP接口调用，第三方接口调用等。</p>
+<h1 id="RPC"><a href="#RPC" class="headerlink" title="RPC"></a>RPC</h1><p>RPC（Remote Procedure Call）：远程过程调用，它是一种通过网络从远程计算机程序上请求服务，而不需要了解底层网络技术的协议。</p>
+<img src="RPC架构.jpg"/>
+
+<ul>
+<li>客户端（Client），服务的调用方。</li>
+<li>服务端（Server），真正的服务提供者。</li>
+<li>客户端存根（Client Stub），存放服务端的地址消息，再将客户端的请求参数打包成网络消息，然后通过网络远程发送给服务方。</li>
+<li>服务端存根（Server Stub），接收客户端发送过来的消息，将消息解包，并调用本地的方法。</li>
+</ul>
+<p>RPC主要是为了解决的两个问题：</p>
+<ul>
+<li>解决分布式系统中，服务之间的调用问题。</li>
+<li>远程调用时，要能够像本地调用一样方便，让调用者感知不到远程调用的逻辑。</li>
+</ul>
+<p>假设Service A（Client）要调用Service B（Server）中Util类的handle方法：</p>
+<img src="RPC调用过程.webp"/>
+
+<ol>
+<li>Service A的应用层代码中，调用了handle方法；</li>
+<li>这个Util实现类，内部并不是直接实现handle逻辑，而是通过远程调用Service B的RPC接口，来获取运算结果，因此称之为Stub；</li>
+<li>Stub和Service B建立远程通讯需要用到远程通讯工具，也就是图中的Run-time Library，这个工具将实现远程通讯的功能，比如Java的Socket，就是这样一个库，当然，也可以用基于Http协议的HttpClient，或者其他通讯工具类都可以，RPC并没有规定要用何种协议进行通讯；</li>
+<li>Stub通过调用通讯工具提供的方法，和Service B建立起了通讯，然后将请求数据发给Service B。需要注意的是，由于底层的网络通讯是基于二进制格式的，因此这里Stub传给通讯工具类的数据也必须是二进制，然后传给通讯工具类；</li>
+<li>二进制的数据传到Service B后，Service B使用自己的通讯工具接收二进制的请求；</li>
+<li>然后将二进制的数据反序列化为请求对象，再将这个请求对象交给Service B的Stub处理；</li>
+<li>Stub负责解析请求对象，知道调用方要调的是哪个RPC接口，传进来的参数又是什么，然后再把这些参数传给对应的RPC接口，也就是Util的实际实现类去执行；</li>
+<li>RPC接口执行完毕，返回执行结果，二者交互角色，重复以上过程。</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
   <nav class="pagination">
@@ -3314,7 +3111,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">164</span>
+          <span class="site-state-item-count">162</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

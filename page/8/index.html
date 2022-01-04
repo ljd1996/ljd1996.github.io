@@ -192,280 +192,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/03/18/Android-Activity%E5%8E%9F%E7%90%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/head.png">
-      <meta itemprop="name" content="苍耳叔叔">
-      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苍耳的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/03/18/Android-Activity%E5%8E%9F%E7%90%86/" class="post-title-link" itemprop="url">Android-Activity原理</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-03-18 16:14:12" itemprop="dateCreated datePublished" datetime="2020-03-18T16:14:12+08:00">2020-03-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-14 14:15:18" itemprop="dateModified" datetime="2021-05-14T14:15:18+08:00">2021-05-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/%E6%BA%90%E7%A0%81/" itemprop="url" rel="index"><span itemprop="name">源码</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2020/03/18/Android-Activity%E5%8E%9F%E7%90%86/" class="post-meta-item leancloud_visitors" data-flag-title="Android-Activity原理" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/03/18/Android-Activity%E5%8E%9F%E7%90%86/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/03/18/Android-Activity%E5%8E%9F%E7%90%86/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="启动原理"><a href="#启动原理" class="headerlink" title="启动原理"></a>启动原理</h1><p>注：本文基于Android 9.0源码，为了文章的简洁性，引用源码的地方可能有所删减。Activity启动中涉及到的核心相关类有：</p>
-<ul>
-<li>ActivityManagerService：由SystemServer进程创建，实体运行在Binder服务端，远程操作Activity的生命周期。</li>
-<li>ActivityThread：ActivityThread通过和AMS进行IPC通信来共同管理Activity的生命周期。</li>
-<li>ApplicationThread：ActivityThread的内部类，本质上ActivityThread是通过它来进行和AMS的IPC通信的。其实体运行在客户端，AMS通过代理类与ApplicationThread通信。</li>
-<li>Instrumentation：这个类有点像整个操作链的最外层，是ActivityThread操作的具体操作类，Activity中持有它的引用，在这个类中调用Activity相关的生命周期回调。</li>
-<li>ActivityStack（AMS中）：Activity栈，由AMS管理，AMS通过这个数据结构来得知activity的状态。</li>
-<li>ActivityStackSuperisor（AMS中）：Activity栈的管理者，这个类的作用就是管理栈，并且通过ActivityStack来获得要启动的activity的信息。</li>
-<li>ActivityRecord：服务端的Actiivty信息载体类，在ActivityStack里面存储的并不是Activity实例，而是ActivityRecord的实例。</li>
-<li>TaskRecord：ActivityTask的信息记录类。</li>
-</ul>
-<p>接下来从Activity的启动流程来分析Activity的相关原理。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/03/18/Android-Activity%E5%8E%9F%E7%90%86/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/02/11/Android%E6%8F%92%E4%BB%B6%E5%8C%96%E5%8F%8A%E7%83%AD%E4%BF%AE%E5%A4%8D/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/head.png">
-      <meta itemprop="name" content="苍耳叔叔">
-      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苍耳的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/02/11/Android%E6%8F%92%E4%BB%B6%E5%8C%96%E5%8F%8A%E7%83%AD%E4%BF%AE%E5%A4%8D/" class="post-title-link" itemprop="url">Android插件化及热修复</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-02-11 16:25:01" itemprop="dateCreated datePublished" datetime="2020-02-11T16:25:01+08:00">2020-02-11</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/%E7%83%AD%E6%9B%B4%E6%96%B0/" itemprop="url" rel="index"><span itemprop="name">热更新</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2020/02/11/Android%E6%8F%92%E4%BB%B6%E5%8C%96%E5%8F%8A%E7%83%AD%E4%BF%AE%E5%A4%8D/" class="post-meta-item leancloud_visitors" data-flag-title="Android插件化及热修复" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/02/11/Android%E6%8F%92%E4%BB%B6%E5%8C%96%E5%8F%8A%E7%83%AD%E4%BF%AE%E5%A4%8D/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/02/11/Android%E6%8F%92%E4%BB%B6%E5%8C%96%E5%8F%8A%E7%83%AD%E4%BF%AE%E5%A4%8D/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="Java类加载器"><a href="#Java类加载器" class="headerlink" title="Java类加载器"></a>Java类加载器</h1><p>每个类有自己的类加载器，用户也可以自定义类加载器，同一个类文件被不同加载器加载后他们也不是同一个类，使用 isInstance() 等方法将会得到 false。Java类加载机制相关见：<a href="https://ljd1996.github.io/2018/06/11/JVM%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#%E7%B1%BB%E7%9A%84%E5%8A%A0%E8%BD%BD">Java类加载机制</a>。</p>
-<h1 id="Android类加载器"><a href="#Android类加载器" class="headerlink" title="Android类加载器"></a>Android类加载器</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p><img src="Android_ClassLoader_UML.png" alt="Android_ClassLoader_UML"></p>
-<p>简单介绍一下部分类加载器：</p>
-<ul>
-<li>ClassLoader: 抽象类，其中定义了 ClassLoader 的主要功能，子类重写 findClass 方法即可。</li>
-<li>BootClassLoader: 在 ClassLoader.java 中，使用默认修饰符，因此我们无法直接访问到它。它加载的是系统类，如 HashMap, Intent, Activity 等。</li>
-<li>BaseDexClassLoader: 是 PathClassLoader 和 DexClassLoader 的父类，其内有一个 DexPathList 属性，实现了 findClass 方法逻辑，PathClassLoader 和 DexClassLoader 都只是在构造函数上对其做了简单封装而已。</li>
-<li>PathClassLoader: 它是 App 加载自身 Dex 文件所用到的类加载器，如 MainActivity, AppCompatActivity 等，其 parent 是 BootClassLoader。</li>
-<li>DexClassLoader: 可以加载 dex 或 apk 等文件，可用于执行动态加载，因此很多插件化方案都是采用 DexClassLoader。</li>
-</ul>
-<p>相关参数：</p>
-<ul>
-<li>dexPath: 包含类或者资源的 <code>.jar/.apk/.dex</code> 等路径，如果是多个路径，则用 <code>:</code> 分隔。</li>
-<li>optimizedDirectory: 在 API 26(Android 8.0)的版本中，它表示 odex(optimized dex) 读写存放目录，如果传 null 则表示使用系统默认的目录来存储。自 Android 8.0 起，这个参数已经被弃用，不再生效，使用系统默认的目录。</li>
-<li>librarySearchPath: native 库文件存放目录，多个库文件则用 <code>:</code> 分隔。</li>
-<li>parent: 父类加载器。</li>
-<li>isTrusted: 当前加载的 dex 是否受信任，如果受信任则可以访问平台隐藏的API，默认为 false。</li>
-</ul>
-<h2 id="ClassLoader"><a href="#ClassLoader" class="headerlink" title="ClassLoader"></a>ClassLoader</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">ClassLoader</span> </span>&#123;</span><br><span class="line">    <span class="comment">// --------系统默认使用的类加载器是PathClassLoader，parent为BootClassLoader</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> ClassLoader <span class="title">getSystemClassLoader</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> SystemClassLoader.loader;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">private</span> <span class="class"><span class="keyword">class</span> <span class="title">SystemClassLoader</span> </span>&#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">static</span> ClassLoader loader = ClassLoader.createSystemClassLoader();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> ClassLoader <span class="title">createSystemClassLoader</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        String classPath = System.getProperty(<span class="string">&quot;java.class.path&quot;</span>, <span class="string">&quot;.&quot;</span>);</span><br><span class="line">        String librarySearchPath = System.getProperty(<span class="string">&quot;java.library.path&quot;</span>, <span class="string">&quot;&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> PathClassLoader(classPath, librarySearchPath, BootClassLoader.getInstance());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ClassLoader parent;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">ClassLoader</span><span class="params">(Void unused, ClassLoader parent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.parent = parent;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="title">ClassLoader</span><span class="params">(ClassLoader parent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(checkCreateClassLoader(), parent);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="title">ClassLoader</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(checkCreateClassLoader(), getSystemClassLoader());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Class&lt;?&gt; loadClass(String name) <span class="keyword">throws</span> ClassNotFoundException &#123;</span><br><span class="line">        <span class="keyword">return</span> loadClass(name, <span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">protected</span> Class&lt;?&gt; loadClass(String name, <span class="keyword">boolean</span> resolve) <span class="keyword">throws</span> ClassNotFoundException &#123;</span><br><span class="line">        <span class="comment">// 判断当前类加载器是否已经加载过指定类，若已加载则直接返回</span></span><br><span class="line">        Class&lt;?&gt; c = findLoadedClass(name);</span><br><span class="line">        <span class="keyword">if</span> (c == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (parent != <span class="keyword">null</span>) &#123;</span><br><span class="line">                    <span class="comment">// 如果没有加载过，则调用parent的类加载递归加载该类</span></span><br><span class="line">                    c = parent.loadClass(name, <span class="keyword">false</span>);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// findBootstrapClassOrNull方法return null</span></span><br><span class="line">                    c = findBootstrapClassOrNull(name);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 还没加载，则调用当前类加载器来加载</span></span><br><span class="line">            <span class="keyword">if</span> (c == <span class="keyword">null</span>) &#123;</span><br><span class="line">                c = findClass(name);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> c;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">protected</span> Class&lt;?&gt; findClass(String name) <span class="keyword">throws</span> ClassNotFoundException &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ClassNotFoundException(name);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="BaseDexClassLoader"><a href="#BaseDexClassLoader" class="headerlink" title="BaseDexClassLoader"></a>BaseDexClassLoader</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BaseDexClassLoader</span> <span class="keyword">extends</span> <span class="title">ClassLoader</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> DexPathList pathList;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">BaseDexClassLoader</span><span class="params">(String dexPath, File optimizedDirectory, String librarySearchPath, ClassLoader parent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(dexPath, optimizedDirectory, librarySearchPath, parent, <span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">BaseDexClassLoader</span><span class="params">(String dexPath, File optimizedDirectory, String librarySearchPath, ClassLoader parent, <span class="keyword">boolean</span> isTrusted)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(parent);</span><br><span class="line">        <span class="keyword">this</span>.pathList = <span class="keyword">new</span> DexPathList(<span class="keyword">this</span>, dexPath, librarySearchPath, <span class="keyword">null</span>, isTrusted);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// BaseDexClassLoader 实现了 findClass 方法</span></span><br><span class="line">    <span class="keyword">protected</span> Class&lt;?&gt; findClass(String name) <span class="keyword">throws</span> ClassNotFoundException &#123;</span><br><span class="line">        List&lt;Throwable&gt; suppressedExceptions = <span class="keyword">new</span> ArrayList&lt;Throwable&gt;();</span><br><span class="line">        <span class="comment">// 实际上是通过 DexPathList 来加载类</span></span><br><span class="line">        Class c = pathList.findClass(name, suppressedExceptions);</span><br><span class="line">        <span class="keyword">if</span> (c == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// throw Exception;</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> c;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>BaseDexClassLoader 中有一个 DexPathList 类的 pathList 成员变量，它表示 dexPath 下的 .dex 列表。</p>
-<h2 id="PathClassLoader"><a href="#PathClassLoader" class="headerlink" title="PathClassLoader"></a>PathClassLoader</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PathClassLoader</span> <span class="keyword">extends</span> <span class="title">BaseDexClassLoader</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PathClassLoader</span><span class="params">(String dexPath, ClassLoader parent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(dexPath, <span class="keyword">null</span>, <span class="keyword">null</span>, parent);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">PathClassLoader</span><span class="params">(String dexPath, String librarySearchPath, ClassLoader parent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(dexPath, <span class="keyword">null</span>, librarySearchPath, parent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>PathClassLoader 构造函数很简单，直接调用父类 BaseDexClassLoader 的构造函数。第二个构造参数始终是 null，表示 optimizedDirectory 始终为 null。</p>
-<h2 id="DexClassLoader"><a href="#DexClassLoader" class="headerlink" title="DexClassLoader"></a>DexClassLoader</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DexClassLoader</span> <span class="keyword">extends</span> <span class="title">BaseDexClassLoader</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DexClassLoader</span><span class="params">(String dexPath, String optimizedDirectory, String librarySearchPath, ClassLoader parent)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(dexPath, <span class="keyword">null</span>, librarySearchPath, parent);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>DexClassLoader 跟 PathClassLoader 相似。和前面一样，第二个参数 optimizedDirectory 也从 Android 8.0 开始弃用，不再有效。</p>
-<h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> <span class="keyword">extends</span> <span class="title">AppCompatActivity</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(Bundle savedInstanceState)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_main);</span><br><span class="line">        Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;HashMap: &quot;</span> + HashMap.class.getClassLoader());</span><br><span class="line">        Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;Intent: &quot;</span> + Intent.class.getClassLoader());</span><br><span class="line">        Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;Activity: &quot;</span> + Activity.class.getClassLoader());</span><br><span class="line">        Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;AppCompatActivity: &quot;</span> + AppCompatActivity.class.getClassLoader());</span><br><span class="line">        Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;this: &quot;</span> + <span class="keyword">this</span>.getClassLoader());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>输出：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">HashMap: java.lang.BootClassLoader<span class="meta">@e8c0fdc</span></span><br><span class="line">Intent: java.lang.BootClassLoader<span class="meta">@e8c0fdc</span></span><br><span class="line">Activity: java.lang.BootClassLoader<span class="meta">@e8c0fdc</span></span><br><span class="line">AppCompatActivity: dalvik.system.PathClassLoader[DexPathList[[zip file <span class="string">&quot;/data/app/com.hearing.demo-CXVzyNHtPtPvvTGoYDELiA==/base.apk&quot;</span>],nativeLibraryDirectories=[/data/app/com.hearing.demo-CXVzyNHtPtPvvTGoYDELiA==/lib/arm64, /system/lib64, /vendor/lib64]]]</span><br><span class="line"><span class="keyword">this</span>: dalvik.system.PathClassLoader[DexPathList[[zip file <span class="string">&quot;/data/app/com.hearing.demo-CXVzyNHtPtPvvTGoYDELiA==/base.apk&quot;</span>],nativeLibraryDirectories=[/data/app/com.hearing.demo-CXVzyNHtPtPvvTGoYDELiA==/lib/arm64, /system/lib64, /vendor/lib64]]]</span><br></pre></td></tr></table></figure>
-
-<h1 id="DexPathList"><a href="#DexPathList" class="headerlink" title="DexPathList"></a>DexPathList</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@hide</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">DexPathList</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String DEX_SUFFIX = <span class="string">&quot;.dex&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String zipSeparator = <span class="string">&quot;!/&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Element[] dexElements;</span><br><span class="line">    NativeLibraryElement[] nativeLibraryPathElements;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">DexPathList</span><span class="params">(ClassLoader definingContext, String dexPath, String librarySearchPath, File optimizedDirectory)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>(definingContext, dexPath, librarySearchPath, optimizedDirectory, <span class="keyword">false</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    DexPathList(ClassLoader definingContext, String dexPath, String librarySearchPath, File optimizedDirectory, <span class="keyword">boolean</span> isTrusted) &#123;</span><br><span class="line">        <span class="keyword">this</span>.dexElements = makeDexElements(splitDexPath(dexPath), optimizedDirectory, suppressedExceptions, definingContext, isTrusted);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">this</span>.nativeLibraryDirectories = splitPaths(librarySearchPath, <span class="keyword">false</span>);</span><br><span class="line">        <span class="keyword">this</span>.systemNativeLibraryDirectories = splitPaths(System.getProperty(<span class="string">&quot;java.library.path&quot;</span>), <span class="keyword">true</span>);</span><br><span class="line">        List&lt;File&gt; allNativeLibraryDirectories = <span class="keyword">new</span> ArrayList&lt;&gt;(nativeLibraryDirectories);</span><br><span class="line">        allNativeLibraryDirectories.addAll(systemNativeLibraryDirectories);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">this</span>.nativeLibraryPathElements = makePathElements(allNativeLibraryDirectories);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>Element 用来描述一个 dex 文件所代表的元素。字段 dexElements 是 dex 文件元素列表，通过 makeDexElements() 方法来初始化。</li>
-<li>NativeLibraryElement 用来描述一个库文件所代表的元素，字段 nativeLibraryPathElements 则为库文件元素列表，通过 makePathElements 方法来初始化。</li>
-</ul>
-<h1 id="热修复-插件化原理"><a href="#热修复-插件化原理" class="headerlink" title="热修复/插件化原理"></a>热修复/插件化原理</h1><p>类加载过程：以 PathClassLoader 加载为例，它会调用父类的 ClassLoader.loadClass() 方法，这个方法在上面已经看了，它遵循双亲委派原则，当 parent 加载不到时则调用自身的 findClass 方法，其父类加载器也是这个逻辑。因此会调用到 BaseDexClassLoader.findClass() 方法，这个方法会借助 DexPathList.findClass() 方法来加载。最终会调用 native 方法来查找 .dex 文件中相应的类，并在 native 层创建目标类的对象并添加到虚拟机列表。</p>
-<p>在 DexPathList.findClass() 过程，一个Classloader可以包含多个dex文件，每个dex文件被封装到一个Element对象，这些Element对象排列成有序的数组dexElements。当查找某个类时，会遍历所有的dex文件，如果找到则直接返回，不再继续遍历dexElements。也就是说当两个类不同的dex中出现，会优先处理排在前面的dex文件，这便是热修复的核心精髓，将需要修复的类所打包的dex文件插入到dexElements前面。</p>
-<h1 id="热修复示例"><a href="#热修复示例" class="headerlink" title="热修复示例"></a>热修复示例</h1><p>此处反射获取PathClassLoader的过程与Android启动Application原理相关，具体过程可见：<a href="https://ljd1996.github.io/2019/12/16/Android-Application/">Android-Application</a>，在理解了这部分源码后，便可知道下面为何要通过反射LoadedApk来获取PathClassLoader了。</p>
-<h2 id="反射工具类"><a href="#反射工具类" class="headerlink" title="反射工具类"></a>反射工具类</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">ReflectUtils</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> Field <span class="title">getField</span><span class="params">(Class&lt;?&gt; cls, String fieldName)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (Class&lt;?&gt; acls = cls; acls != <span class="keyword">null</span>; acls = acls.getSuperclass()) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">final</span> Field field = acls.getDeclaredField(fieldName);</span><br><span class="line">                setAccessible(field, <span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> field;</span><br><span class="line">            &#125; <span class="keyword">catch</span> (<span class="keyword">final</span> NoSuchFieldException ex) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        Field match = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">final</span> Class&lt;?&gt; class1 : cls.getInterfaces()) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                match = class1.getField(fieldName);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (<span class="keyword">final</span> NoSuchFieldException ex) &#123;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> match;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">readField</span><span class="params">(Object target, String fieldName)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> readField(target.getClass(), target, fieldName);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> Object <span class="title">readField</span><span class="params">(Class&lt;?&gt; c, Object target, String fieldName)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        Field f = getField(c, fieldName);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> readField(f, target);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> Object <span class="title">readField</span><span class="params">(<span class="keyword">final</span> Field field, <span class="keyword">final</span> Object target)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> field.get(target);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">writeField</span><span class="params">(Object target, String fName, Object value)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        writeField(target.getClass(), target, fName, value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">writeField</span><span class="params">(Class&lt;?&gt; c, Object object, String fName, Object value)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        Field f = getField(c, fName);</span><br><span class="line">        writeField(f, object, value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">writeField</span><span class="params">(<span class="keyword">final</span> Field field, <span class="keyword">final</span> Object target, <span class="keyword">final</span> Object value)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        field.set(target, value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">setAccessible</span><span class="params">(AccessibleObject ao, <span class="keyword">boolean</span> value)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (ao.isAccessible() != value) &#123;</span><br><span class="line">            ao.setAccessible(value);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Object <span class="title">combineArray</span><span class="params">(Object arrayLhs, Object arrayRhs)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        Class&lt;?&gt; clazz = arrayLhs.getClass().getComponentType();</span><br><span class="line">        <span class="keyword">int</span> i = Array.getLength(arrayLhs);</span><br><span class="line">        <span class="keyword">int</span> j = Array.getLength(arrayRhs);</span><br><span class="line">        <span class="keyword">int</span> k = i + j;</span><br><span class="line">        Object result = Array.newInstance(clazz, k);</span><br><span class="line">        System.arraycopy(arrayLhs, <span class="number">0</span>, result, <span class="number">0</span>, i);</span><br><span class="line">        System.arraycopy(arrayRhs, <span class="number">0</span>, result, i, j);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="修复工具类"><a href="#修复工具类" class="headerlink" title="修复工具类"></a>修复工具类</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FixDexUtil</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String DEX_SUFFIX = <span class="string">&quot;.dex&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String APK_SUFFIX = <span class="string">&quot;.apk&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String PATCH_DIR = <span class="string">&quot;patch&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> HashSet&lt;File&gt; sLoadedDex = <span class="keyword">new</span> HashSet&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">needFix</span><span class="params">(<span class="meta">@NonNull</span> Context context)</span> </span>&#123;</span><br><span class="line">        sLoadedDex.clear();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// /data/data/包名/files/patch</span></span><br><span class="line">        File fileDir = <span class="keyword">new</span> File(context.getFilesDir(), PATCH_DIR);</span><br><span class="line">        <span class="keyword">if</span> (!fileDir.exists()) &#123;</span><br><span class="line">            fileDir.mkdirs();</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!fileDir.isDirectory()) &#123;</span><br><span class="line">            fileDir.delete();</span><br><span class="line">            fileDir.mkdirs();</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">boolean</span> canFix = <span class="keyword">false</span>;</span><br><span class="line">        File[] listFiles = fileDir.listFiles();</span><br><span class="line">        <span class="keyword">if</span> (listFiles == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (File file : listFiles) &#123;</span><br><span class="line">            <span class="keyword">if</span> ((file.getName().endsWith(DEX_SUFFIX)</span><br><span class="line">                    || file.getName().endsWith(APK_SUFFIX))) &#123;</span><br><span class="line">                sLoadedDex.add(file);</span><br><span class="line">                canFix = <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> canFix;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">fix</span><span class="params">(Application application)</span> </span>&#123;</span><br><span class="line">        doFix(application, sLoadedDex);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">doFix</span><span class="params">(Application application, HashSet&lt;File&gt; loadedDex)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            Context base = application.getBaseContext();</span><br><span class="line">            <span class="keyword">if</span> (base == <span class="keyword">null</span>) &#123;</span><br><span class="line">                Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;base == null&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            Object packageInfo = ReflectUtils.readField(base, <span class="string">&quot;mPackageInfo&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (packageInfo == <span class="keyword">null</span>) &#123;</span><br><span class="line">                Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;packageInfo == null&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 这里也可以由context.getClassLoader()得到PathClassLoader</span></span><br><span class="line">            <span class="comment">// 而loadedDex.getClass().getClassLoader()返回的是BootCLassLoader</span></span><br><span class="line">            ClassLoader classLoader = (ClassLoader) ReflectUtils.readField(packageInfo, <span class="string">&quot;mClassLoader&quot;</span>);</span><br><span class="line">            <span class="keyword">if</span> (!(classLoader <span class="keyword">instanceof</span> PathClassLoader)) &#123;</span><br><span class="line">                Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;classLoader == null&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            PathClassLoader pathLoader = (PathClassLoader) classLoader;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> (File dex : loadedDex) &#123;</span><br><span class="line">                DexClassLoader dexLoader = <span class="keyword">new</span> DexClassLoader(dex.getAbsolutePath(), <span class="keyword">null</span>, <span class="keyword">null</span>, pathLoader);</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 3.开始合并: 合并的目标是Element[], 重新赋值它的值即可</span></span><br><span class="line"></span><br><span class="line">                <span class="comment">//3.1 准备好pathList的引用</span></span><br><span class="line">                Object dexPathList = ReflectUtils.readField(dexLoader, <span class="string">&quot;pathList&quot;</span>);</span><br><span class="line">                Object pathPathList = ReflectUtils.readField(pathLoader, <span class="string">&quot;pathList&quot;</span>);</span><br><span class="line">                <span class="comment">//3.2 从pathList中反射出element集合</span></span><br><span class="line">                Object leftDexElements = ReflectUtils.readField(dexPathList, <span class="string">&quot;dexElements&quot;</span>);</span><br><span class="line">                Object rightDexElements = ReflectUtils.readField(pathPathList, <span class="string">&quot;dexElements&quot;</span>);</span><br><span class="line">                <span class="comment">//3.3 合并两个dex数组</span></span><br><span class="line">                Object dexElements = ReflectUtils.combineArray(leftDexElements, rightDexElements);</span><br><span class="line"></span><br><span class="line">                Object pathList = ReflectUtils.readField(pathLoader, <span class="string">&quot;pathList&quot;</span>);</span><br><span class="line">                ReflectUtils.writeField(pathList, <span class="string">&quot;dexElements&quot;</span>, dexElements);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PatchApplication</span> <span class="keyword">extends</span> <span class="title">Application</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">attachBaseContext</span><span class="params">(Context base)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.attachBaseContext(base);</span><br><span class="line">        <span class="keyword">if</span> (FixDexUtil.needFix(<span class="keyword">this</span>)) &#123;</span><br><span class="line">            Log.d(<span class="string">&quot;LLL&quot;</span>, <span class="string">&quot;begin to fix&quot;</span>);</span><br><span class="line">            FixDexUtil.fix(<span class="keyword">this</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>需要修复的工具类：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 修复前</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Util</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">&quot;LLL&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Log.d(TAG, <span class="string">&quot;first publish.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 修复后</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Util</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String TAG = <span class="string">&quot;LLL&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Log.d(TAG, <span class="string">&quot;first publish.&quot;</span>);</span><br><span class="line">        Log.d(TAG, <span class="string">&quot;patch publish.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>首先在手机上安装修复前的版本，调用Util.test()，会输出<code>first publish.</code>；</li>
-<li>然后修改Util类，打包成apk，也可以只将Util类单独打包成dex，push到<code>/data/data/pkg/files/patch</code>下，由于我的测试机已经root，所以直接使用这个目录，否则可以添加从sd卡拷贝到私有目录的逻辑；</li>
-<li>重启后会加载修复包，多输出一行<code>patch publish.</code>。</li>
-<li>打包成dex的命令：<code>dx --dex --output=util.dex com\hearing\gopatch\Util.class</code>。</li>
-</ul>
-<h1 id="RePlugin"><a href="#RePlugin" class="headerlink" title="RePlugin"></a>RePlugin</h1><p>见<a href="https://ljd1996.github.io/2020/03/19/RePlugin%E5%8E%9F%E7%90%86%E8%A7%A3%E6%9E%90/">RePlugin原理解析</a>。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/01/14/Android-AccessibilityService/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2337,6 +2063,352 @@
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Android/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Android/" class="post-title-link" itemprop="url">操作系统-Android</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-12-11 18:07:05" itemprop="dateCreated datePublished" datetime="2019-12-11T18:07:05+08:00">2019-12-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/OS/" itemprop="url" rel="index"><span itemprop="name">OS</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Android/" class="post-meta-item leancloud_visitors" data-flag-title="操作系统-Android" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Android/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Android/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Android基于Linux内核，它将开源代码和闭源第三方应用程序结合在一起。Android的开源部分称为Android开源项目（Android Open Source Project，AOSP）,它是完全开放的，任何人都可以免费使用和修改。</p>
+<p>如同传统的Linux系统一样，Android的第一个用户空间进程是init，它是所有其他进程的根。与Android相关的内容可以看<a href="https://ljd1996.github.io/categories/Android/">这里</a>。</p>
+<h1 id="Linux扩展"><a href="#Linux扩展" class="headerlink" title="Linux扩展"></a>Linux扩展</h1><h2 id="唤醒锁"><a href="#唤醒锁" class="headerlink" title="唤醒锁"></a>唤醒锁</h2><p>移动设备上的电源管理不同于传统的计算机系统，所以，为了管理系统如何进入睡眠，Android为Linux添加了一个新的功能，称为唤醒锁（wake lock），也称为悬停阻止器（suspend blocker）。</p>
+<p>在传统的计算机系统上，系统可以处于两种电源状态之一：运行并且准备好处理用户输人：或者深度睡眠，并且如果没有诸如按下电源键一类的外部中断就不能继续执行。在运行的时候，次要的硬件设备可以按需要通电或者断电，但是CPU本身以及核心硬件部件必须保持通电状态以处理到来的网络通信以及其他类似的事件。进人低能耗睡眠状态是发生得比较少的事情：或者通过用户明确地让系统睡眠，或者由于比较长的时间间隔没有用户活动，从而系统自身进入睡眠。从这样的睡眠状态醒来需要来自外部源的硬件中断，例如按下键盘上的一个按键，在此刻设备将醒来并且点亮屏幕。</p>
+<p>移动设备的用户具有不同的期望。尽管用户可以关闭屏幕，在这样的情况下看起来好像是让设备睡眠了，但是传统的睡眠状态实际上并不是用户想得到的。当设备的屏幕关闭之时，设备仍然需要工作：它需要能够接听电话呼叫，接收并处理到来的聊天消息数据，以及许多其他事情。对于移动设备，关干打开和关闭设备屏幕的期望同样比传统的计算机具有更髙的要求。在这类典型的移动应用中，恢复设备直到它能够使用的任何延迟都会对用户体验造成严重的负面影响。</p>
+<p>给定了这样的需求，一种解决方案或许仅仅是当设备的屏幕关闭之时不让CPU睡眠，这样它就总是准备好再次重新打开。归根到底，内核了解什么时候线程无需工作调度，并且Linux（以及大多数操作系统）将会自动地让CPU空闲，在这样的情况下使用较低的电能。</p>
+<p>然而，空闲的CPU与真正的睡眠是不同的。</p>
+<p>1）在许多芯片组上，空闲状态使用的电能比真正的睡眠状态要多得多。<br>2）空闲的CPU可以在任何时刻唤醒，只要某些工作赶巧变得可用，即使该工作是不重要的。<br>3）只是让CPU空闲并不意味着可以关闭其他硬件，而这样的硬件在真正的睡眠中是不需要的。</p>
+<p>Android上的唤醒锁允许系统进入深度睡眠模式，而不必与一个明确的用户活动（例如关闭屏幕）绑在一起。具有唤醒锁的系统的默认状态是睡眠状态。当设备在运行时，为了保持它不回到睡眠，则需要持有一个唤醒锁。</p>
+<p>当屏幕打开时，系统总是持有一个唤醒锁，这样就阻止了设备进入睡眠，所以它将保持运行。</p>
+<p>然而，在屏幕关闭时，系统本身一般并不持有唤醒锁，所以只有在某些其他实体持有唤醒锁的条件下才能保持系统不进入睡眠。当没有唤醒锁被持有时，系统进入睡眠，并且只能由干硬件中断才能将其从睡眠中唤醒。</p>
+<p>一旦系统已经进入睡眠，硬件中断可以将其再次唤醒，如同在传统操作系统中那样。这样的中断源有基于时间的鳖报、来自蜂窝无线电的事件（例如呼入的呼叫）、到来的网络通信以及按下特定的硬件按钮（例如电源按钮）。针对这些事件的中断处理程序要求对标准Linux做出一个改变：在处理完中断之后，它们需要获得一个初始的唤醒锁从而使系统保持运行。</p>
+<p>中断处理程序获得的唤醒锁必须持有足够长的时间，以便能够沿着栈向上将控制传递给内核中的驱动程序，由其继续对事件进行处理。然后，内核驱动程序负责获得自己的唤醒锁，在此之后，中断唤醒锁可以安全地得到释放而不存在系统进入睡眠的风险。</p>
+<p>如果在这之后驱动程序将该事件向上传送到用户空间，则需要类似的握手。驱动程序必须确保继续持有唤醒锁直到它将事件传递给等待的用户进程，并且要确保存在使用户进程获得自己的唤醒锁的条件。这一流程可能还会在用户空间的子系统之间继续，只要某个实体持有唤醒锁，我们就继续执行想要的处理以便响应事件。然而，一旦没有唤醒锁被持有，整个系统将返回睡眠并且所有进程停止。</p>
+<h2 id="内存不足杀手"><a href="#内存不足杀手" class="headerlink" title="内存不足杀手"></a>内存不足杀手</h2><p>Linux中的“内存不足杀手”（out-of-memory Killer）试图在内存极低时进行恢复，在现代操作系统上内存不足的情况是模糊的事情。由于有分页和交换，应用程序本身很难看到内存不足的错误。然而，内核仍然可能进入这样一种情形，当需要的时候找不到可用的RAM页面，不但对新的分配会这样，而且在换入或者分页入某些正在使用的地址范围时也可能如此。</p>
+<p>在这样的低内存情形中，标准的Linux内存不足杀手是最后的应急手段，它试图找到RAM，使得内核能够继续处理它正在做的事情。做法是为每个进程分配一个“坏度” (badness)水平，并且简单地杀死最坏的进程。进程的坏度基于进程正在使用的RAM数量、它已经运行了多长时间以及其他因素，目标是杀死大量但愿不太重要的进程。</p>
+<p>Android为内存不足杀手施加了特别的压力。它没有交换空间，所以它处于内存不足情形会更为常见：除非通过放弃从最近使用的存储器映射的干净的RAM页面，否则没有办法缓解内存压力。即便如此，Android还是使用标准Linux的配置，过度提交(over-commit)内存，也就是说，允许在RAM中分配地址空间而无需保证有可用的RAM对其提供后备。过度提交对于优化内存使用是一个极其重要的工具，这是因为mmap大文件(例如可执行文件)是很常见的，此处你只需要将该文件中全部数据的一小部分装入RAM。</p>
+<p>考虑到这样的情形，常备的Linux内存不足杀手工作得不太好，因为它更多地被预定为最后的应急手段，并且很难正确地识别合理的进程来杀死。事实上，正如我们在后面要讨论的，Android广泛地依赖定期运行内存不足杀手以收割(reap)进程，并且对于选择哪个进程的问题做出好的选择。</p>
+<p>为解决这一问题，Android为内核引入了自己的内存不足杀手，具有不同的语义和设计目标。Android的内存不足杀手运行得更加积极进取：只要RAM变“低”则运行。低的RAM是由一个可调整的参数标识的，该参数指示在内核中有多少空闲的和缓存的RAM是可接受的。当系统变得低于这个极限时，内存不足杀手便运行以便从别处释放RAM。目标是确保系统绝不会进入坏的分页状态，当前台应用程序竞争RAM时坏的分页状态会对用户体验造成负面影响，因为页面不断地换入换出会导致应用程序的执行变得非常缓慢。</p>
+<p>与试图猜测哪个进程应该被杀死不同，Android的内存不足杀手非常严格地依赖由用户空间提供给它的信息。传统的Linux内存不足杀手具有每个进程的oom_adj参数，通过修改进程的总体坏度得分，该参数可用来指导选择最佳的进程并将其杀死。Android的内存不足杀手使用这个相同的参数，但是具有严格的顺序：具有较髙oom.adj的进程总是在那些具有较低oom_adj的进程之前被杀死。</p>
+<h1 id="Binder"><a href="#Binder" class="headerlink" title="Binder"></a>Binder</h1><h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>Binder机制如下图：</p>
+<p><img src="Binder%E6%9C%BA%E5%88%B6.jpg" alt="Binder机制"></p>
+<p>在栈的最底层是一个内核模块，实现了实际的跨进程交互，并且通过内核的ioctl函数将其展露（ioctl是一个通用的内核调用，用来发送定制的命令给内核驱动程序和模块。）在内核模块之上，是一个基本的面向对象的用户空间API，允许应用程序通过IBinder和Binder类创建并且与IPC端点进行交互。在顶部是一个基于接口的编程模型，应用程序在其中声明它们的IPC接口，并且不再需要关心IPC在底层是如何发生的细节问题。</p>
+<h2 id="Binder内核模块"><a href="#Binder内核模块" class="headerlink" title="Binder内核模块"></a>Binder内核模块</h2><p>Binder没有使用像管道这样的现有Linux IPC设施，Binder IPC模型与传统的Linux机制差别之大，使得它无法纯粹在用户空间及Linux机制之上来实现。此外，Android不支持大部分System V原语（信号量、共享内存段、消息队列）进行跨进程的交互，因为它们不能提供健壮的语义以清除来自有问题的或恶意的应用程序的资源。</p>
+<p>Binder使用的基本IPC模型是远程过程调用（Remote Procedure Call, RPC）。也就是说，发送的进程向内核提交一个完整的IPC操作，该操作在接收的进程中被执行，当接收者执行时，发送者可以有选择地设定它们不阻塞，从而继续执行，与接收者并行。因此，Binder IPC是基于消息的，类似System V消息队列，而不是基于流的（如Linux管道）。Binder中的消息称为事务（transaction），在更高层可以被看作跨进程的函数调用。</p>
+<p>用户空间提交给内核的每个事务是一个完整的操作：它标识操作的目标和发送者的标识符，以及交付的完整数据。内核决定适当的进程来接收该事务，将其交付给进程中等待的线程。</p>
+<p>下图显示了事务的基本流程。发送的进程中任何线程都可能创建标识其目标的事务，并且将该事务提交给内核。内核制作事务的副本，将发送者的标识符添加到其中。内核确定由哪个进程负责事务的目标，并且唤醒接收事务的进程中的一个线程。一旦接收的进程执行起来，它要确定适当的事务目标并且交付。</p>
+<p><img src="%E5%9F%BA%E6%9C%AC%E7%9A%84Binder-IPC%E4%BA%8B%E5%8A%A1.jpg" alt="基本的Binder-IPC事务"></p>
+<p>发送给内核的事务标识了一个目标对象，然而，内核必须确定接收进程。为实现这一点，内核跟踪每个进程中可用的对象，并将它们映射到其他进程，如下图所示。我们在这里看到的对象只是该进程地址空间中的地址。内核只是跟踪这些对象地址，并没有附着在它们之上的意义；它们可以是C数据结构的地址或者位于该进程地址空间中的任何其他东西。</p>
+<p><img src="Binder%E8%B7%A8%E8%BF%9B%E7%A8%8B%E5%AF%B9%E8%B1%A1%E6%98%A0%E5%B0%84.jpg" alt="Binder跨进程对象映射"></p>
+<p>远程进程中对干对象的引用由一个整数句柄（handle）来标识，这很像是Linux的文件描述符。</p>
+<p><img src="%E5%9C%A8%E8%BF%9B%E7%A8%8B%E4%B8%AD%E4%BC%A0%E8%BE%93Binder%E5%AF%B9%E8%B1%A1.jpg" alt="在进程中传输Binder对象"></p>
+<p>上图中的主要步骤如下：</p>
+<p>1）进程1创建一个初始的事务结构，其中包含对象lb的本地地址。<br>2）进程1提交事务到内核。<br>3）内核査看事务中的数据，找到地址对象lb，并且创建一个针对它的新条目，因为它以前并不知道该地址。<br>4）内核利用事务的目标句柄2来确定它意在进程2中的对象2。<br>5）内核现在将事务头重写，使其适合进程2,改变其目标为地址对象2a。<br>6）内核同样为目标进程重写事务数据；此处它发现对象lb还不被进程2所知，所以为它创建一个新的句柄3。<br>7）重写的事务被交付给进程2来执行。<br>8）—旦接收到事务，进程会发现新的句柄3，并将其添加到可用句柄表中。</p>
+<p>如果事务内部的一个对象已经由接收进程知晓，则流程是类似的，差别在于现在内核只需要重写事务，使得事务包含此前已分配的句柄或者接收进程的本地对象指针。这意味着，发送相同的对象到一个进程很多次，总是会得到相同的标识，这与Linux文件描述符不同，在Linux中打开相同的文件多次，每次会分配不同的文件描述符。当对象在进程之间传递时，Binder IPC系统将维护唯一的对象标识。</p>
+<p>Binder体系结构本质上为Linux引入了一个基于能力的安全模型。每一个Binder对象是一个能力。发送一个对象到另一个进程就是将能力授予该进程。于是，接收进程可以使用对象提供的一切功能。进程可以送出一个对象到另一个进程，然后从任何进程接收一个对象，并且识别接收到的对象是否正是它最初送出的那个对象。</p>
+<h2 id="Binder用户空间API"><a href="#Binder用户空间API" class="headerlink" title="Binder用户空间API"></a>Binder用户空间API</h2><p>大多数用户空间代码不直接与Binder内核模块交互，存在一个用户空间的面向对象的库，它提供了更加简单的API。这些用户空间API的第一层相当直接地映射到之前讨论过的内核概念，采用如下三个类的形式。</p>
+<p>1）IBinder是Binder对象的抽象接口。其关键方法是transact，它将一个事务提交给对象。接收事务的实现可能是本地进程中的一个对象，或者是另一个进程中的对象；如果它在另一个进程中，则将会通过如前面讨论的Binder内核模块交付给它。<br>2）Binder是一个具体的Binder对象。实现一个Binder子类将给你一个可以从其他进程调用的类。其关键方法是onTransact，它接收发送给它的一个事务。Binder子类的主要责任是查看它接收的事务数据，并且执行适当的操作。<br>3）Parcel是一个容器，用于读和写Binder事务中的数据。</p>
+<p><img src="Binder%E7%94%A8%E6%88%B7%E7%A9%BA%E9%97%B4API.jpg" alt="Binder用户空间API"></p>
+<p>从上图可以看到Binderlb和Binder2a是具体Binder子类的实例。为了执行一个IPC，进程现在要创建一个包含期望数据的Parcel，并且通过BinderProxy将其发送。只要一个新的句柄出现在进程之中，此类就将被创建，因此提供了IBinder的实现，它的transact方法将为调用创建适当的事务并将其提交到内核。因此，我们在前面讨论过的内核事务结构在用户空间API中拆开了：目标由BinderProxy代表，并且其数据保存在一个Parcel之中：事务如我们前面看过的那样流过内核，一旦出现在接收进程的用户空间中，它的目标将用来确定适当的接收Binder对象，而一个Parcel将从其数据构造出来并且交付给对象的onTransact方法。</p>
+<h2 id="Binder接口和AIDL"><a href="#Binder接口和AIDL" class="headerlink" title="Binder接口和AIDL"></a>Binder接口和AIDL</h2><p>这一层主要的部分是一个命令行工具，称为AIDL(Android Interface Definition Language, Android接口定义语言)。该工具是一个接口编译器，它以接口的抽象描述为输入，生成定义接口所必需的源代码，并且实现适当的编组和解组代码，这样的代码是进行远程调用所需要的。</p>
+<h1 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h1><p>Android的应用程序安全性围绕着UID展开。在Linux中，每个进程在运行时拥有一个独特的UID，Android使用UID来识别与保护安全屏障。进程进行交互的唯一手段是利用跨进程通信（IPC）机制，携带足以使它识别调用者的信息。binder IPC在毎个跨进程的事务中明确包含了这些信息，确保IPC的接收者能简单地请求调用者的UID。</p>
+<p>Android为系统底层预先定义了一系列标准UID，但大多数应用程序是在其第一次运行或安装时，从“应用程序UID”范围中获得动态分配的UID的。下表是一些常用的UID：</p>
+<table>
+<thead>
+<tr>
+<th align="center">UID值</th>
+<th align="center">用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">0</td>
+<td align="center">根</td>
+</tr>
+<tr>
+<td align="center">1000</td>
+<td align="center">核心系统（system server进程）</td>
+</tr>
+<tr>
+<td align="center">1001</td>
+<td align="center">电话服务</td>
+</tr>
+<tr>
+<td align="center">1013</td>
+<td align="center">底层媒体进程</td>
+</tr>
+<tr>
+<td align="center">2000</td>
+<td align="center">命令行界面访问</td>
+</tr>
+<tr>
+<td align="center">10000-19999</td>
+<td align="center">动态分配应用程序U1D</td>
+</tr>
+<tr>
+<td align="center">100000</td>
+<td align="center">多用户由此开始</td>
+</tr>
+</tbody></table>
+<p>当一个应用程序首次被分配一个UID时，随之将创造一个新的存储目录，用来存储这个UID拥有的文件。应用程序可以自由访问该目录中它的私有文件，但不能访问其他应用程序的文件。反过来，其他应用程序也不能访问它的文件。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Linux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Linux/" class="post-title-link" itemprop="url">操作系统-Linux</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-12-11 16:39:45" itemprop="dateCreated datePublished" datetime="2019-12-11T16:39:45+08:00">2019-12-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/OS/" itemprop="url" rel="index"><span itemprop="name">OS</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Linux/" class="post-meta-item leancloud_visitors" data-flag-title="操作系统-Linux" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Linux/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Linux/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Linux简介"><a href="#Linux简介" class="headerlink" title="Linux简介"></a>Linux简介</h1><p>关于<a href="https://ljd1996.github.io/2019/11/27/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%AE%BA/#POSIX">POSIX</a>的介绍在这里。Linux系统的层次结构如下：</p>
+<p><img src="Linux%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84.jpg" alt="Linux层次结构"></p>
+<p>内核坐落在硬件之上，负责实现与I/O设备和存储管理单元的交互，并控制CPU对前述设备的访问。如图所示，在最底层，内核包含中断处理程序，它们是与设备交互的主要方式，以及底层的分派机制。这种分派在中断时发生。底层的代码中止正在运行的进程，将其状态存储在内核进程结构中，然后启动相应的驱动程序。进程分派也在内核完成某些操作，并且需要再次启动一个用户进程时发生。进程分派的代码是汇编代码，并且和进程调度代码有很大不同。</p>
+<p><img src="Linux%E5%86%85%E6%A0%B8%E7%BB%93%E6%9E%84.jpg" alt="Linux内核结构"></p>
+<h1 id="Linux系统进程"><a href="#Linux系统进程" class="headerlink" title="Linux系统进程"></a>Linux系统进程</h1><h1 id="Linux系统内存管理"><a href="#Linux系统内存管理" class="headerlink" title="Linux系统内存管理"></a>Linux系统内存管理</h1><h1 id="Linux-I-O"><a href="#Linux-I-O" class="headerlink" title="Linux I/O"></a>Linux I/O</h1><h1 id="Linux文件系统"><a href="#Linux文件系统" class="headerlink" title="Linux文件系统"></a>Linux文件系统</h1><h1 id="Linux系统启动"><a href="#Linux系统启动" class="headerlink" title="Linux系统启动"></a>Linux系统启动</h1><p>当计算机启动时，BIOS加电自检，并对硬件进行检测和初始化，这是因为操作系统的启动过程可能会依赖于磁盘访问、屏幕、键盘等。接下来，启动磁盘的第一个扇区，即主引导记录（MBR），被读入到一个固定的内存区域并且执行。这个分区中含有一个很小的程序（只有512字节），这个程序从启动设备中，比如SATA磁盘或SCSI磁盘，调入一个名为boot的独立程序。boot程序将自身复制到髙地址的内存当中从而为操作系统释放低地址的内存。</p>
+<p>复制完成后，boot程序读取启动设备的根目录。为了达到这个目的，boot程序必须能够理解文件系统和目录格式，这个工作通常由引导程序，如GRUB（多系统启动管理器）来完成。</p>
+<p>然后，boot程序读入操作系统内核，并把控制交给内核。从这里开始，boot程序完成了它的任务，系统内核开始运行。</p>
+<p>内核的启动代码是用汇编语言写成的，具有较髙的机器依赖性。主要的工作包括创建内核堆栈、识别CPU类型、计算可用内存、禁用中断、启用内存管理单元，最后调用C语言写成的main函数开始执行操作系统的主要部分。</p>
+<p>C语言代码也有相当多的初始化工作要做，但是这些工作更逻辑化（而不是物理化）。</p>
+<p>接下来，内核数据结构得到分配。大部分内核数据结构的大小是固定的，但是一少部分，如页面缓存和特殊的页表结构，依赖于可用内存的大小。</p>
+<p>从这里开始，系统进行自动配置。使用描述何种设备可能存在配置文件，系统开始探测哪些设备是确实存在的。如果一个被探测的设备给出了响应，这个设备就会被加入到已连接设备表中。如果它没有响应，就假设它未连接或直接忽略掉它。不同于传统的UNIX版本，Linux系统的设备驱动程序不需要被静态链接至内核中，它们可以被动态加载。</p>
+<p>一旦所有的硬件都配置好了，接下来要做的事情就是细心地手动运行进程0，建立它的堆栈，运行它。进程0继续进行初始化，做如下的工作：配置实时时钟，挂载根文件系统，创建init进程（进程1）和页面守护进程（进程2）。</p>
+<p>init进程检测它的标志以确定它应该为单用户还是多用户服务。</p>
+<ul>
+<li>单用户：调用fork函数创建一个shell进程，并且等待这个进程结束。</li>
+<li>多用户：调用fork函数创建一个运行系统初始化shell脚本（即/etc/rc）的进程，这个进程可以进行文件系统一致性检测、挂载附加文件系统、开启守护进程等。然后这个进程从/etc/ttys中读取数据，其中/etc/ttys列出了所有的终端和它们的属性。</li>
+</ul>
+<p>在多用户服务中，对于每一个启用的终端，/etc/rc进程调用fork函数创建一个自身的副本，进行内部处理并运行一个名为getty的程序。getty程序为每条连线设置传输速率和其他属性（比如，有一些可能是调制解调器），然后在终端的屏幕上输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">login:</span><br></pre></td></tr></table></figure>
+
+<p>等待用户从键盘键入用户名。当有人坐在终端前，提供了一个用户名后，getty程序就结束了，登录程序/bin/login开始运行。login程序要求输入密码，给密码加密，并与保存在密码文件/etc/passwd中的加密密码进行对比。如果是正确的，login程序以用户shell程序替换自身，等待第一个命令。如果是不正确的，login程序要求输入另一个用户名。</p>
+<h1 id="Linux的安全性"><a href="#Linux的安全性" class="headerlink" title="Linux的安全性"></a>Linux的安全性</h1><p>基本概念一个Linux系统的用户群体由一定数量的注册用户组成，其中毎个用户拥有一个唯一的UID（用户ID）。UID是介干0到65535之间的一个整数。文件（进程及其他资源）都标记了它的所有者的UID。尽管可以改变文件所有权，但是默认情况下，文件的所有者是创建该文件的用户。</p>
+<p>用户可以被分组，其中每组同样由一个16位的整数标记，叫作GID（组ID）。给用户分组通过在系统数据库中添加一条记录指明哪个用户属于哪个组的方法手工（由系统管理员）完成。一个用户可以同时属于多个组。</p>
+<p>Linux中的基本安全机制很简单。每个进程记录它的所有者的UID和GID。当一个文件被创建时，它的UID和GID被标记为创建它的进程的UID和GID。该文件同时获得由该进程决定的一些权限。这些权限指定所有者、所有者所在组的其他用户及其他用户对文件具有什么样的访问权限。对干这三类用户而言，潜在的访问权限为读、写和执行，分别由r、w和x标记。当然，执行文件的权限仅当文件是可执行二进制程序时才有意义。试图执行一个拥有执行权限的非可执行文件（即，并非由一个合法的文件头开始的文件）会导致错误。因为有三类用户，每类用户的权限由3个比特位标记，那么9个比特位就足够标记访问权限。下图给出了一些9位数字及其含义的例子：</p>
+<table>
+<thead>
+<tr>
+<th align="center">二进制</th>
+<th align="center">标记</th>
+<th align="center">准许的文件访问权限</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">111000000</td>
+<td align="center">rwx——</td>
+<td align="center">所有者可以读、写和执行</td>
+</tr>
+<tr>
+<td align="center">111111000</td>
+<td align="center">rwxrwx—</td>
+<td align="center">所有者和组可以读、写和执行</td>
+</tr>
+<tr>
+<td align="center">110100100</td>
+<td align="center">rw-r—–</td>
+<td align="center">所有者可以读和写；组可以读</td>
+</tr>
+<tr>
+<td align="center">110100100</td>
+<td align="center">rw-r–r–</td>
+<td align="center">所有者可以读和写；其他人可以读</td>
+</tr>
+<tr>
+<td align="center">111101101</td>
+<td align="center">rwxr-xr-x</td>
+<td align="center">所有者拥有所有权限，其他人可以读和执行</td>
+</tr>
+<tr>
+<td align="center">000000000</td>
+<td align="center">———</td>
+<td align="center">所有人都不拥有任何权限</td>
+</tr>
+<tr>
+<td align="center">000000111</td>
+<td align="center">——rwx</td>
+<td align="center">只有组以外的其他用户拥有所有权限（奇怪但是合法）</td>
+</tr>
+</tbody></table>
+<p>UID为0的用户是一个特殊用户，称为超级用户（或者根用户）。超级用户能够读和写系统中的任何文件，不论这个文件为谁所有，也不论这个文件的保护模式如何。UID为0的进程拥有调用一小部分受保护的系统调用的权限，而普通用户是不能调用这些系统调用的。</p>
+<p>目录也是一种文件，并且具有普通文件一样的保护模式。不同的是，目录的x比特位表示査找权限而不是执行权限。因此，如果一个目录具有保护模式<code>rwxr-xr-x</code>,那么它允许所有者读、写和查找目录，但是其他人只可以读和查找，而不允许从中添加或者删除目录里的文件。</p>
+<p>与I/O相关的特殊文件拥有与普通文件一样的保护位。这种机制可以用来限制对I/O设备的访问权限。例如，假设打印机是特殊文件——/dev/lp，可以被根用户或者一个叫守护进程的特殊用户拥有，具有保护模式<code>rw--------</code>，从而阻止其他所有人对打印机的访问权限。当然，这意味着其他任何人都不可以使用打印机，这种做法限制了很多合法的打印要求。</p>
+<p>事实上，允许对I/O设备及其他系统资源进行受控访问的做法具有一个更普遍的问题。这个问题通过增加一个保护位SETUID到之前的9个比特位来解决。当一个进程的SETUID位打开，它的有效UID将变成相应可执行文件的所有者的UID，而不是当前使用该进程的用户的UID。当一个进程试图打开一个文件时，系统检査的将是它的有效UID，而不是真正的UID。将访问打印机的程序设置为被守护进程所有，同时打开SETUID位，这样任何用户都可以执行该程序，并拥有守护进程的权限（例如访问/dep/lp），但是这仅限于运行该程序（例如给打印任务排序）。</p>
+<p>许多敏感的Linux程序通过打开SETUID位被根用户所有。例如，允许用户改变密码的程序需要写password文件。允许password文件公开可写显然不是个好主意。解决的方法是，提供一个被根用户所有同时SETUID位打开的程序。虽然该程序拥有对password文件的全部权限，但是它仅仅改变调用该程序的用户的密码，而不允许其他任何的访问权限。</p>
+<p>除了SETUID位，还有一个SETGID位，工作原理同SETUID类似。它暂时性地给用户该程序的有效GID。然而在实践中，这个位很少用到。</p>
+<p>当用户登录时，登录程序login（为根用户所有且SETUID打开）要求输入登录名和密码。它首先计算密码的散列值，然后在/etc/passwd文件中査找，看是否有相匹配的项（网络系统工作得稍有不同）。使用散列的原因是防止密码在系统中以非加密的方式存在。如果密码正确，登录程序在/etc/passwd中读取该用户选择的shell程序的名称，例如可能是bash，但是也有可能是其他的shell。然后登录程序使用setuid和setgid来使自己的UID和GID变成用户的UID和GID（注意，它一开始的时候是根用户所有且SETUID打开）。然后它打开键盘作为标准输入（文件描述符0），屏幕为标准输出（文件描述符1），屏幕为标准错误输出（文件描述符2）。最后，执行用户选择的shell程序，因此终止自己。</p>
+<p>到这里，用户选择的shell已经在运行，并且被设置了正确的UID和GID，标准输人、标准输出和标准错误输出都被设置成了默认值。它创建任何子进程（也就是用户输入的命令）都将自动继承shell的UID和GID，所以它们将拥有正确的UID和GID，这些进程创建的任何文件也具有这些值。</p>
+<p>当任何进程想要打开一个文件，系统首先将文件的i节点所记录的保护位与用户的有效UID和有效GID对比，来检査访问是否被允许。如果允许访问，就打开文件并且返回文件描述符：否则不打开文件，返回-1。在接下来的read和write中不再检査权限。因此，当一个文件的保护模式在它被打开后修改，新模式将无法影响已经打开该文件的进程。</p>
+<p>Linux安全模型及其实现在本质上跟其他大多数传统的UNIX系统相同。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
   <nav class="pagination">
@@ -2408,7 +2480,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">164</span>
+          <span class="site-state-item-count">162</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
