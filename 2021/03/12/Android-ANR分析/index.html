@@ -283,7 +283,7 @@
 <li>ServiceTimeout: 前台服务 onCreate, onStart, onBind 等生命周期在20s内没有处理完成，后台服务 onCreate, onStart, onBind 等生命周期在 200s 内没有处理完成, logcat 关键字: <code>Timeout executing service</code>。</li>
 <li>ContentProviderTimeout: ContentProvider 在 10s 内没有处理完成, logcat 关键字: <code>timeout publishing content providers</code>。</li>
 </ul>
-<span id="more"></span>
+<a id="more"></a>
 
 <h1 id="案例分析"><a href="#案例分析" class="headerlink" title="案例分析"></a>案例分析</h1><p>发生 ANR 后在日志中搜索关键字 <code>ANR</code> 可以看到如下日志：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">2021-03-12 19:52:42.224 2092-2171/? E/ActivityManager: ANR in com.hearing.demo (com.hearing.demo/.MainActivity)</span><br><span class="line">    PID: 14354</span><br><span class="line">    Reason: Input dispatching timed out (com.hearing.demo/com.hearing.demo.MainActivity, Waiting to send non-key event because the touched window has not finished processing certain input events that were delivered to it over 500.0ms ago.  Wait queue length: 8.  Wait queue head age: 9363.1ms.)</span><br><span class="line">    Load: 2.42 / 2.41 / 2.16</span><br></pre></td></tr></table></figure>

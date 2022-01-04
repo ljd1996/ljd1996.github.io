@@ -317,12 +317,10 @@
 <li>mvn archetype:generate<br> -DgroupId=xxx（这里一般就是组织名，例如公司网址反写+项目名）<br> -DartifactId=sss（这里一般是项目在公司的唯一标识，例如项目名-模块名）<br> -Dversion=11111 指定版本号<br> -Dpackage=dddddd代码所在的包</li>
 <li>mvn site, 在target目录生成项目站点文档</li>
 </ol>
-<h1 id="maven模板创建Java项目"><a href="#maven模板创建Java项目" class="headerlink" title="maven模板创建Java项目"></a>maven模板创建Java项目</h1><pre><code>mvn archetype:generate -DgroupId=&#123;project-packaging&#125; -DartifactId=&#123;project-name&#125;-DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-</code></pre>
+<h1 id="maven模板创建Java项目"><a href="#maven模板创建Java项目" class="headerlink" title="maven模板创建Java项目"></a>maven模板创建Java项目</h1><pre><code>mvn archetype:generate -DgroupId=&#123;project-packaging&#125; -DartifactId=&#123;project-name&#125;-DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false</code></pre>
 <p>这告诉 Maven 来从 maven-archetype-quickstart 模板创建 Java 项目。</p>
 <h1 id="安装和引用jar包"><a href="#安装和引用jar包" class="headerlink" title="安装和引用jar包"></a>安装和引用jar包</h1><p>安装现有jar到本地maven仓库</p>
-<pre><code>mvn install:install-file -Dfile=xxx-version.jar -DgroupId=groupId -DartifactId=artifactId -Dversion=&#123;version&#125; -Dpackaging=jar
-</code></pre>
+<pre><code>mvn install:install-file -Dfile=xxx-version.jar -DgroupId=groupId -DartifactId=artifactId -Dversion=&#123;version&#125; -Dpackaging=jar</code></pre>
 <p>在pom.xml中引用本地仓库包</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.google.code<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>kaptcha<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
@@ -337,10 +335,12 @@
 <ol>
 <li><p>短路优先，</p>
 <ul>
-<li>A -&gt; B -&gt; C -&gt; X(jar)；</li>
-<li>A -&gt; D -&gt; X(jar)；</li>
+<li><p>A -&gt; B -&gt; C -&gt; X(jar)；</p>
+</li>
+<li><p>A -&gt; D -&gt; X(jar)；</p>
+<p>这里，maven将采用第二个路径</p>
+</li>
 </ul>
-<p> 这里，maven将采用第二个路径</p>
 </li>
 <li><p>路径相同，则先声明先依赖</p>
 </li>

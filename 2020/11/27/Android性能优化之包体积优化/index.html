@@ -290,7 +290,7 @@
 <li>代码混淆配置文件proguard.cfg；</li>
 <li>签名信息文件META-INF等。</li>
 </ul>
-<span id="more"></span>
+<a id="more"></a>
 
 <p>除了AndroidManifest.xml、proguard.cfg、project.properties、META-INF这些本身很小没有必要做进一步压缩的文件外，其它文件或者文件夹都可以进一步优化，从而减小APK的体积。</p>
 <h1 id="classes-dex源码"><a href="#classes-dex源码" class="headerlink" title="classes.dex源码"></a>classes.dex源码</h1><ol>
@@ -335,7 +335,9 @@
 <li><p>将大资源文件放到服务端，启动后自动下载使用</p>
 </li>
 <li><p>删除无用的语言资源：大部分应用其实并不需要支持几十种语言的国际化支持，比如国内应用只支持中文：</p>
- <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">        resConfigs <span class="string">&quot;zh&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+ <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    defaultConfig &#123;</span><br><span class="line">        resConfigs <span class="string">&quot;zh&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
 </ol>
 <h1 id="lib库文件夹"><a href="#lib库文件夹" class="headerlink" title="lib库文件夹"></a>lib库文件夹</h1><ul>
 <li>动态加载so库</li>

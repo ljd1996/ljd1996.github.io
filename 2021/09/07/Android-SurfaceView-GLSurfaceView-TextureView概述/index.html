@@ -280,7 +280,7 @@
 <li>GLSurfaceView: 基于 SurfaceView 再次进行扩展，在 SurfaceView 基础上封装了 EGL 环境管理以及 Render 线程，专门为 OpenGl 显示渲染使用。参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/08/19/Android-OpenGL-ES%E7%AC%94%E8%AE%B0/">Android-OpenGL-ES笔记</a>。</li>
 <li>TextrueView: Android 4.0 后引入 TextureView, 它将 SurfaceTexture 和 View 结合到了一起。与 SurfaceView 相比，它并没有创建一个单独的 Surface 来绘制，解决了 SurfaceView 无法在 Canvas 内容上做动画的问题。另外 TextureView 必须在硬件加速开启的窗口中使用。</li>
 </ul>
-<span id="more"></span>
+<a id="more"></a>
 
 <h1 id="SurfaceView"><a href="#SurfaceView" class="headerlink" title="SurfaceView"></a>SurfaceView</h1><p>详细原理参考 <a target="_blank" rel="noopener" href="https://juejin.cn/post/6897029276752625671">Android双缓存与SurfaceView</a> 一文。</p>
 <p>SurfaceView 是一种较之 TextView, Button 等更为特殊的 View, 它不与其宿主的 Window 共享一个 Surface, 而是有自己的独立 Surface。并且它可以在一个独立的线程中绘制 UI。因此 SurfaceView 一般用来实现比较复杂的图像或动画/视频的显示。</p>
