@@ -17,13 +17,13 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"ljd1996.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="概述来电秀是当来电的时候，将系统默认的来电UI替换成我们自定义的来电页面，然后实现接听和挂断的功能。目前可以使用如下两种方式：  一种是参考大部分市面上来电秀APP的做法：监听手机的来电状态，然后以悬浮窗的方式弹出我们自定义的来电页面，覆盖系统来电页面，然后通过相关API实现接听和挂断功能。但是由于接听和挂断相关的API在Android的不同版本上都有修改，因此在某些Android版本上可能会有接">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android来电秀实践">
-<meta property="og:url" content="http://yoursite.com/2019/12/20/Android%E6%9D%A5%E7%94%B5%E7%A7%80%E5%AE%9E%E8%B7%B5/index.html">
+<meta property="og:url" content="https://ljd1996.github.io/2019/12/20/Android%E6%9D%A5%E7%94%B5%E7%A7%80%E5%AE%9E%E8%B7%B5/index.html">
 <meta property="og:site_name" content="苍耳的博客">
 <meta property="og:description" content="概述来电秀是当来电的时候，将系统默认的来电UI替换成我们自定义的来电页面，然后实现接听和挂断的功能。目前可以使用如下两种方式：  一种是参考大部分市面上来电秀APP的做法：监听手机的来电状态，然后以悬浮窗的方式弹出我们自定义的来电页面，覆盖系统来电页面，然后通过相关API实现接听和挂断功能。但是由于接听和挂断相关的API在Android的不同版本上都有修改，因此在某些Android版本上可能会有接">
 <meta property="og:locale" content="zh_CN">
@@ -34,7 +34,7 @@
 <meta property="article:tag" content="实战">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/2019/12/20/Android%E6%9D%A5%E7%94%B5%E7%A7%80%E5%AE%9E%E8%B7%B5/">
+<link rel="canonical" href="https://ljd1996.github.io/2019/12/20/Android%E6%9D%A5%E7%94%B5%E7%A7%80%E5%AE%9E%E8%B7%B5/">
 
 
 <script id="page-configurations">
@@ -196,7 +196,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/20/Android%E6%9D%A5%E7%94%B5%E7%A7%80%E5%AE%9E%E8%B7%B5/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/12/20/Android%E6%9D%A5%E7%94%B5%E7%A7%80%E5%AE%9E%E8%B7%B5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">

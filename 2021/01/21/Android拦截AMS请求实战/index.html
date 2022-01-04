@@ -17,13 +17,13 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"ljd1996.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="概述接着上次后台启动 Activity 的需求，依照 实战|Android后台启动Activity实践之路 中的一些方法处理后，虽然在 Android Q 版本上还是有一些问题，但后台启动的能力算是基本完成了，后来我又解开了小米 ROM 的源码，找到了他们后台启动这一项权限的实现方式以及怎么绕开这项权限的方法，发现结果意外的简单..(这部分以后有机会单独写一篇文章)。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android拦截AMS请求实战">
-<meta property="og:url" content="http://yoursite.com/2021/01/21/Android%E6%8B%A6%E6%88%AAAMS%E8%AF%B7%E6%B1%82%E5%AE%9E%E6%88%98/index.html">
+<meta property="og:url" content="https://ljd1996.github.io/2021/01/21/Android%E6%8B%A6%E6%88%AAAMS%E8%AF%B7%E6%B1%82%E5%AE%9E%E6%88%98/index.html">
 <meta property="og:site_name" content="苍耳的博客">
 <meta property="og:description" content="概述接着上次后台启动 Activity 的需求，依照 实战|Android后台启动Activity实践之路 中的一些方法处理后，虽然在 Android Q 版本上还是有一些问题，但后台启动的能力算是基本完成了，后来我又解开了小米 ROM 的源码，找到了他们后台启动这一项权限的实现方式以及怎么绕开这项权限的方法，发现结果意外的简单..(这部分以后有机会单独写一篇文章)。">
 <meta property="og:locale" content="zh_CN">
@@ -34,7 +34,7 @@
 <meta property="article:tag" content="实战">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/2021/01/21/Android%E6%8B%A6%E6%88%AAAMS%E8%AF%B7%E6%B1%82%E5%AE%9E%E6%88%98/">
+<link rel="canonical" href="https://ljd1996.github.io/2021/01/21/Android%E6%8B%A6%E6%88%AAAMS%E8%AF%B7%E6%B1%82%E5%AE%9E%E6%88%98/">
 
 
 <script id="page-configurations">
@@ -196,7 +196,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2021/01/21/Android%E6%8B%A6%E6%88%AAAMS%E8%AF%B7%E6%B1%82%E5%AE%9E%E6%88%98/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2021/01/21/Android%E6%8B%A6%E6%88%AAAMS%E8%AF%B7%E6%B1%82%E5%AE%9E%E6%88%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -277,7 +277,7 @@
         <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>接着上次后台启动 Activity 的需求，依照 <a target="_blank" rel="noopener" href="https://juejin.cn/post/6907817072185737224">实战|Android后台启动Activity实践之路</a> 中的一些方法处理后，虽然在 Android Q 版本上还是有一些问题，但后台启动的能力算是基本完成了，后来我又解开了小米 ROM 的源码，找到了他们后台启动这一项权限的实现方式以及怎么绕开这项权限的方法，发现结果意外的简单..(这部分以后有机会单独写一篇文章)。</p>
 <a id="more"></a>
 
-<p>这篇文章发生在后台启动的调研之后，如果我们要后台启动的 Activity 页面在第三方 SDK 里，且启动该页面的动作(startActivity)也发生在第三方 SDK 中，那么它们直接 startActivity 的方式是不具备后台启动的能力的，因为一些原因我们不能要求 SDK 方修改启动 Activity 的方法，因此需要找个方法能够在不修改第三方 SDK 调用 startActivity 代码的情况下，让其具备后台启动的能力。第一个反应就是拦截 startActivity 的请求，参考 <a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904135666434062#heading-13">Android之system_server进程</a> 和 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/03/18/Android-Activity%E5%8E%9F%E7%90%86/#%E6%80%BB%E7%BB%93">Android-Activity启动流程</a>，我们知道 AMS 是 system_server 进程中的一个线程，它负责启动 Activity 的具体工作，在它的工作完成之后，会通过 Binder 调用回调 APP 进程中 Activity 实例的生命周期方法。当 APP 进程调用 startActivity 时，会由 Instrumentation 获取到 AMS 的 Binder 代理，然后通过它来跨进程调用 AMS 的相关方法，我们能做 Hook 拦截的地方就是这个 Binder 代理对象！</p>
+<p>这篇文章发生在后台启动的调研之后，如果我们要后台启动的 Activity 页面在第三方 SDK 里，且启动该页面的动作(startActivity)也发生在第三方 SDK 中，那么它们直接 startActivity 的方式是不具备后台启动的能力的，因为一些原因我们不能要求 SDK 方修改启动 Activity 的方法，因此需要找个方法能够在不修改第三方 SDK 调用 startActivity 代码的情况下，让其具备后台启动的能力。第一个反应就是拦截 startActivity 的请求，参考 <a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904135666434062#heading-13">Android之system_server进程</a> 和 <a href="https://ljd1996.github.io/2020/03/18/Android-Activity%E5%8E%9F%E7%90%86/#%E6%80%BB%E7%BB%93">Android-Activity启动流程</a>，我们知道 AMS 是 system_server 进程中的一个线程，它负责启动 Activity 的具体工作，在它的工作完成之后，会通过 Binder 调用回调 APP 进程中 Activity 实例的生命周期方法。当 APP 进程调用 startActivity 时，会由 Instrumentation 获取到 AMS 的 Binder 代理，然后通过它来跨进程调用 AMS 的相关方法，我们能做 Hook 拦截的地方就是这个 Binder 代理对象！</p>
 <p>下面从各个 Android 版本看一下系统这个过程的实现方法以及我们是怎么拦截的，主要看一下 Android P 的源码，其它版本的虽然过程不一样，但是 Hook 的方式是类似的。</p>
 <h1 id="Android-P"><a href="#Android-P" class="headerlink" title="Android P"></a>Android P</h1><p>Android 8 到 Android 9 版本的 AOSP 获取 AMS 代理的方式是一样的，APP 进程在调用 context.startActivity 后，会来到 Instrumentation 中的相关方法里调用如下代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> result = ActivityManager.getService().startActivity(whoThread, who.getBasePackageName(), intent, ...);</span><br></pre></td></tr></table></figure>
@@ -291,8 +291,8 @@
 <p>于是可以知道 <code>IActivityManagerSingleton.get()</code> 返回的便是 create 方法中的实例，给出上面 1 处省略的 create 方法代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> IBinder b = ServiceManager.getService(Context.ACTIVITY_SERVICE);</span><br><span class="line"><span class="keyword">final</span> IActivityManager am = IActivityManager.Stub.asInterface(b);</span><br><span class="line"><span class="keyword">return</span> am;</span><br></pre></td></tr></table></figure>
 
-<p>熟悉 Binder 的同学一眼就能看出这里的 am 是一个 Binder 代理对象，存在 ServiceManager.getService 方法就肯定存在 ServiceManager.addService 方法，一个是从 ServiceManager 中查询 Binder 服务，一个是往 ServiceManager 中注册服务，注册的时机在系统启动 system_server 进程的时候，参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/04/01/Android-AMS%E5%90%AF%E5%8A%A8%E5%8E%9F%E7%90%86/">AMS启动流程</a>，这里就不深入描述了。</p>
-<p>所以 <code>ActivityManager.getService()</code> 方法其实就是返回了 AMS 的一个 Binder 代理对象，用来跨进程调用 AMS 相关方法，因此可以通过 JDK 动态代理的方式，通过 <code>Proxy.newProxyInstance</code> 方法创建 am 的代理 Proxy 对象，并通过反射的方式将 <code>ActivityManager.getService()</code> 方法返回的 am 对象替换成我们的 Proxy 对象，那么在 App 进程调用 <code>ActivityManager.getService().XXX</code> 方法时都会被我们的 Proxy 拦截到，进而做一些处理。JDK 动态代理也是 Java 常用的设计模式之一，不太熟悉的同学可以参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/02/07/Java%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/#Jdk%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86">Jdk动态代理</a> 的使用。</p>
+<p>熟悉 Binder 的同学一眼就能看出这里的 am 是一个 Binder 代理对象，存在 ServiceManager.getService 方法就肯定存在 ServiceManager.addService 方法，一个是从 ServiceManager 中查询 Binder 服务，一个是往 ServiceManager 中注册服务，注册的时机在系统启动 system_server 进程的时候，参考 <a href="https://ljd1996.github.io/2020/04/01/Android-AMS%E5%90%AF%E5%8A%A8%E5%8E%9F%E7%90%86/">AMS启动流程</a>，这里就不深入描述了。</p>
+<p>所以 <code>ActivityManager.getService()</code> 方法其实就是返回了 AMS 的一个 Binder 代理对象，用来跨进程调用 AMS 相关方法，因此可以通过 JDK 动态代理的方式，通过 <code>Proxy.newProxyInstance</code> 方法创建 am 的代理 Proxy 对象，并通过反射的方式将 <code>ActivityManager.getService()</code> 方法返回的 am 对象替换成我们的 Proxy 对象，那么在 App 进程调用 <code>ActivityManager.getService().XXX</code> 方法时都会被我们的 Proxy 拦截到，进而做一些处理。JDK 动态代理也是 Java 常用的设计模式之一，不太熟悉的同学可以参考 <a href="https://ljd1996.github.io/2019/02/07/Java%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/#Jdk%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86">Jdk动态代理</a> 的使用。</p>
 <p>这个过程可以分成三个步骤：</p>
 <ol>
 <li>反射获取 am 对象，由于 <code>ActivityManager.getService()</code> 是一个隐藏方法，因此可以通过反射调用它拿到原 am 对象；</li>

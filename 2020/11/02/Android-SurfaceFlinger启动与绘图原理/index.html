@@ -17,17 +17,17 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"ljd1996.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="概述注：本文基于Android 10源码，为了文章的简洁性，引用源码的地方可能有所删减。 官方注释: SurfaceFlinger accepts buffers, composes buffers, and sends buffers to the display.The most common consumer of image streams is SurfaceFlinger, the s">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android-SurfaceFlinger启动与绘图原理">
-<meta property="og:url" content="http://yoursite.com/2020/11/02/Android-SurfaceFlinger%E5%90%AF%E5%8A%A8%E4%B8%8E%E7%BB%98%E5%9B%BE%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:url" content="https://ljd1996.github.io/2020/11/02/Android-SurfaceFlinger%E5%90%AF%E5%8A%A8%E4%B8%8E%E7%BB%98%E5%9B%BE%E5%8E%9F%E7%90%86/index.html">
 <meta property="og:site_name" content="苍耳的博客">
 <meta property="og:description" content="概述注：本文基于Android 10源码，为了文章的简洁性，引用源码的地方可能有所删减。 官方注释: SurfaceFlinger accepts buffers, composes buffers, and sends buffers to the display.The most common consumer of image streams is SurfaceFlinger, the s">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://yoursite.com/2020/11/02/Android-SurfaceFlinger%E5%90%AF%E5%8A%A8%E4%B8%8E%E7%BB%98%E5%9B%BE%E5%8E%9F%E7%90%86/SurfaceFlinger%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.jpg">
+<meta property="og:image" content="https://ljd1996.github.io/2020/11/02/Android-SurfaceFlinger%E5%90%AF%E5%8A%A8%E4%B8%8E%E7%BB%98%E5%9B%BE%E5%8E%9F%E7%90%86/SurfaceFlinger%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.jpg">
 <meta property="article:published_time" content="2020-11-02T06:53:03.000Z">
 <meta property="article:modified_time" content="2021-05-14T06:14:57.773Z">
 <meta property="article:author" content="苍耳叔叔">
@@ -35,9 +35,9 @@
 <meta property="article:tag" content="图形系统">
 <meta property="article:tag" content="SurfaceFlinger">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://yoursite.com/2020/11/02/Android-SurfaceFlinger%E5%90%AF%E5%8A%A8%E4%B8%8E%E7%BB%98%E5%9B%BE%E5%8E%9F%E7%90%86/SurfaceFlinger%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.jpg">
+<meta name="twitter:image" content="https://ljd1996.github.io/2020/11/02/Android-SurfaceFlinger%E5%90%AF%E5%8A%A8%E4%B8%8E%E7%BB%98%E5%9B%BE%E5%8E%9F%E7%90%86/SurfaceFlinger%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.jpg">
 
-<link rel="canonical" href="http://yoursite.com/2020/11/02/Android-SurfaceFlinger%E5%90%AF%E5%8A%A8%E4%B8%8E%E7%BB%98%E5%9B%BE%E5%8E%9F%E7%90%86/">
+<link rel="canonical" href="https://ljd1996.github.io/2020/11/02/Android-SurfaceFlinger%E5%90%AF%E5%8A%A8%E4%B8%8E%E7%BB%98%E5%9B%BE%E5%8E%9F%E7%90%86/">
 
 
 <script id="page-configurations">
@@ -199,7 +199,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/11/02/Android-SurfaceFlinger%E5%90%AF%E5%8A%A8%E4%B8%8E%E7%BB%98%E5%9B%BE%E5%8E%9F%E7%90%86/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/11/02/Android-SurfaceFlinger%E5%90%AF%E5%8A%A8%E4%B8%8E%E7%BB%98%E5%9B%BE%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -282,7 +282,7 @@
 <p>SurfaceFlinger 用来管理消费当前可见的 Surface, 所有被渲染的可见 Surface 都会被 SurfaceFlinger 通过 WindowManager 提供的信息合成(使用 OpenGL 和 HardWare Composer)提交到屏幕的后缓冲区，等待屏幕的下一个 Vsync 信号到来，再显示到屏幕上。SufaceFlinger 通过屏幕后缓冲区与屏幕建立联系，同时通过 Surface 与上层建立联系，起到了一个承上启下的作用。</p>
 <a id="more"></a>
 
-<p>surfaceflinger 是在 Android 系统启动时解析 init.rc 文件(参考<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/10/21/Android-init-zygote/">Android系统启动源码解析</a>)启动的守护进程，当 surfaceflinger 重启时会触发 zygote 重启。配置的 rc 文件位于 <code>/system/etc/init/surfaceflinger.rc</code>, 文件内容如下：</p>
+<p>surfaceflinger 是在 Android 系统启动时解析 init.rc 文件(参考<a href="https://ljd1996.github.io/2019/10/21/Android-init-zygote/">Android系统启动源码解析</a>)启动的守护进程，当 surfaceflinger 重启时会触发 zygote 重启。配置的 rc 文件位于 <code>/system/etc/init/surfaceflinger.rc</code>, 文件内容如下：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">service surfaceflinger &#x2F;system&#x2F;bin&#x2F;surfaceflinger</span><br><span class="line">    class core animation</span><br><span class="line">    user system</span><br><span class="line">    group graphics drmrpc readproc</span><br><span class="line">    onrestart restart zygote</span><br><span class="line">    writepid &#x2F;dev&#x2F;stune&#x2F;foreground&#x2F;tasks</span><br><span class="line">    socket pdx&#x2F;system&#x2F;vr&#x2F;display&#x2F;client     stream 0666 system graphics u:object_r:pdx_display_client_endpoint_socket:s0</span><br><span class="line">    socket pdx&#x2F;system&#x2F;vr&#x2F;display&#x2F;manager    stream 0666 system graphics u:object_r:pdx_display_manager_endpoint_socket:s0</span><br><span class="line">    socket pdx&#x2F;system&#x2F;vr&#x2F;display&#x2F;vsync      stream 0666 system graphics u:object_r:pdx_display_vsync_endpoint_socket:s0</span><br></pre></td></tr></table></figure>
 
 <h1 id="启动SurfaceFlinger"><a href="#启动SurfaceFlinger" class="headerlink" title="启动SurfaceFlinger"></a>启动SurfaceFlinger</h1><p>在解析执行了 init.rc 文件后，surfaceflinger 服务启动从 main_surfaceflinger.main() 方法开始：</p>
@@ -434,7 +434,7 @@
 <li>DispSync 根据计算的偏移和周期计算下次 Vsync 信号发生时间，并通知监听者 Vsync 信号到达的事件，传递给 DispSyncSource 延时源，延时源通过 EventThread 来管理 Vsync 信号的收发。</li>
 <li>EventThread 调用连接 Connection 对象向 BitTube 发送数据，触发 addFd 函数中设置的回调方法，回调方法进而调用 SF.onMessageReceived 函数，然后进行图像的合成等工作。</li>
 </ol>
-<p>另一方面，Choreographer 会通过上面创建的 APP 延时源 mEventThreadSource 对象及其对应的 EventThread 线程来监听同步模拟发出的 Vsync 信号，然后进行绘制(measure/layout/draw)操作。具体逻辑见 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/09/07/Android-Choreographer%E5%8E%9F%E7%90%86/">Android-Choreographer原理</a>。</p>
+<p>另一方面，Choreographer 会通过上面创建的 APP 延时源 mEventThreadSource 对象及其对应的 EventThread 线程来监听同步模拟发出的 Vsync 信号，然后进行绘制(measure/layout/draw)操作。具体逻辑见 <a href="https://ljd1996.github.io/2020/09/07/Android-Choreographer%E5%8E%9F%E7%90%86/">Android-Choreographer原理</a>。</p>
 <p>将 SurfaceFlinger 的工作流程总结如下图：</p>
 <p><img src="SurfaceFlinger%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B.jpg" alt="SurfaceFlinger工作流程"></p>
 

@@ -17,20 +17,20 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"ljd1996.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="概述AccessibilityService用于提供辅助功能服务，其在后台运行，并在触发AccessibilityEvents时由系统接收回调。此类事件表示用户界面中的某些状态转换，例如，焦点更改，按钮被单击等。此类服务可以可选地请求查询活动窗口内容的功能。 AccessibilityServiceInfo描述一个AccessibilityService，系统根据封装在此类中的信息将Accessi">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android-AccessibilityService">
-<meta property="og:url" content="http://yoursite.com/2020/01/14/Android-AccessibilityService/index.html">
+<meta property="og:url" content="https://ljd1996.github.io/2020/01/14/Android-AccessibilityService/index.html">
 <meta property="og:site_name" content="苍耳的博客">
 <meta property="og:description" content="概述AccessibilityService用于提供辅助功能服务，其在后台运行，并在触发AccessibilityEvents时由系统接收回调。此类事件表示用户界面中的某些状态转换，例如，焦点更改，按钮被单击等。此类服务可以可选地请求查询活动窗口内容的功能。 AccessibilityServiceInfo描述一个AccessibilityService，系统根据封装在此类中的信息将Accessi">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://yoursite.com/2020/01/14/Android-AccessibilityService/AccessibilityService%E7%B1%BB%E5%9B%BE.jpg">
-<meta property="og:image" content="http://yoursite.com/2020/01/14/Android-AccessibilityService/AccessibilityInteractionClient%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg">
-<meta property="og:image" content="http://yoursite.com/2020/01/14/Android-AccessibilityService/AccessibilityService%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg">
-<meta property="og:image" content="http://yoursite.com/2020/01/14/Android-AccessibilityService/AccessibilityService%E5%A4%96%E9%83%A8%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg">
+<meta property="og:image" content="https://ljd1996.github.io/2020/01/14/Android-AccessibilityService/AccessibilityService%E7%B1%BB%E5%9B%BE.jpg">
+<meta property="og:image" content="https://ljd1996.github.io/2020/01/14/Android-AccessibilityService/AccessibilityInteractionClient%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg">
+<meta property="og:image" content="https://ljd1996.github.io/2020/01/14/Android-AccessibilityService/AccessibilityService%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg">
+<meta property="og:image" content="https://ljd1996.github.io/2020/01/14/Android-AccessibilityService/AccessibilityService%E5%A4%96%E9%83%A8%E6%B5%81%E7%A8%8B%E5%9B%BE.jpg">
 <meta property="article:published_time" content="2020-01-14T02:25:12.000Z">
 <meta property="article:modified_time" content="2021-05-14T06:14:57.707Z">
 <meta property="article:author" content="苍耳叔叔">
@@ -38,9 +38,9 @@
 <meta property="article:tag" content="Framework">
 <meta property="article:tag" content="AccessibilityService">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://yoursite.com/2020/01/14/Android-AccessibilityService/AccessibilityService%E7%B1%BB%E5%9B%BE.jpg">
+<meta name="twitter:image" content="https://ljd1996.github.io/2020/01/14/Android-AccessibilityService/AccessibilityService%E7%B1%BB%E5%9B%BE.jpg">
 
-<link rel="canonical" href="http://yoursite.com/2020/01/14/Android-AccessibilityService/">
+<link rel="canonical" href="https://ljd1996.github.io/2020/01/14/Android-AccessibilityService/">
 
 
 <script id="page-configurations">
@@ -202,7 +202,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/01/14/Android-AccessibilityService/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/01/14/Android-AccessibilityService/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">

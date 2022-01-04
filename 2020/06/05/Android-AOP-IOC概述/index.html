@@ -17,13 +17,13 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"ljd1996.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="概述首先说明，AOP和IOC不是Android特有的概念，在其它许多框架、领域都有它们的影子，比如说Spring后台开发中，也有AOP和IOC的思想。在Android中实现这些的方式有：动态代理，APT，AspectJ，Transform&amp;Javassist（或者Gradle编译期间的许多节点都可以）等。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android-AOP-IOC概述">
-<meta property="og:url" content="http://yoursite.com/2020/06/05/Android-AOP-IOC%E6%A6%82%E8%BF%B0/index.html">
+<meta property="og:url" content="https://ljd1996.github.io/2020/06/05/Android-AOP-IOC%E6%A6%82%E8%BF%B0/index.html">
 <meta property="og:site_name" content="苍耳的博客">
 <meta property="og:description" content="概述首先说明，AOP和IOC不是Android特有的概念，在其它许多框架、领域都有它们的影子，比如说Spring后台开发中，也有AOP和IOC的思想。在Android中实现这些的方式有：动态代理，APT，AspectJ，Transform&amp;Javassist（或者Gradle编译期间的许多节点都可以）等。">
 <meta property="og:locale" content="zh_CN">
@@ -35,7 +35,7 @@
 <meta property="article:tag" content="IOC">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/2020/06/05/Android-AOP-IOC%E6%A6%82%E8%BF%B0/">
+<link rel="canonical" href="https://ljd1996.github.io/2020/06/05/Android-AOP-IOC%E6%A6%82%E8%BF%B0/">
 
 
 <script id="page-configurations">
@@ -197,7 +197,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/05/Android-AOP-IOC%E6%A6%82%E8%BF%B0/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/06/05/Android-AOP-IOC%E6%A6%82%E8%BF%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -290,15 +290,15 @@
 <li>第一：向小卖部注册为会员。</li>
 <li>第二：告诉小卖部你需要什么。</li>
 </ul>
-<h1 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h1><p>见<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/02/07/Java%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/#%E4%BB%A3%E7%90%86-%E5%A7%94%E6%89%98%E6%A8%A1%E5%BC%8F">动态代理</a>。</p>
+<h1 id="动态代理"><a href="#动态代理" class="headerlink" title="动态代理"></a>动态代理</h1><p>见<a href="https://ljd1996.github.io/2019/02/07/Java%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/#%E4%BB%A3%E7%90%86-%E5%A7%94%E6%89%98%E6%A8%A1%E5%BC%8F">动态代理</a>。</p>
 <h1 id="APT"><a href="#APT" class="headerlink" title="APT"></a>APT</h1><p>APT(Annotation Processing Tool)是一种编译期注解处理技术。它通过定义注解和处理器来实现编译期生成代码的功能，并且将生成的代码和源代码一起编译成.class文件。</p>
-<p>见<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/10/21/Java%E6%B3%A8%E8%A7%A3/">Java注解</a>。</p>
+<p>见<a href="https://ljd1996.github.io/2019/10/21/Java%E6%B3%A8%E8%A7%A3/">Java注解</a>。</p>
 <h1 id="AspectJ"><a href="#AspectJ" class="headerlink" title="AspectJ"></a>AspectJ</h1><p>AspectJ就是一种编译器，它在Java编译器的基础上增加了关键字识别和编译方法。因此，AspectJ可以编译Java代码。它还提供了Aspect程序。在编译期间，将开发者编写的Aspect程序织入到目标程序中，扩展目标程序的功能。开发者可以通过编写AspectJ程序实现AOP功能。</p>
-<p>见<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/05/22/AspectJ%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/">AspectJ</a>。</p>
+<p>见<a href="https://ljd1996.github.io/2020/05/22/AspectJ%E5%9F%BA%E6%9C%AC%E7%94%A8%E6%B3%95/">AspectJ</a>。</p>
 <h1 id="Transform-amp-Javassist"><a href="#Transform-amp-Javassist" class="headerlink" title="Transform&amp;Javassist"></a>Transform&amp;Javassist</h1><p>Transform是Android Gradle提供的，可以操作字节码的一种方式。App编译时，源代码首先会被编译成class，然后再被编译成dex。在class编译成dex的过程中，会经过一系列Transform处理。</p>
 <p>Javassist是一个能够非常方便操作字节码的库。我们通过它们可以修改编译的.class文件。利用这种方式，我们将横切关注点封装到Transform，来达到与业务主体分离的目的。</p>
-<p>见<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/04/23/Android-Gradle-Transform%E7%94%A8%E6%B3%95/">Gradle-Transform</a>。</p>
-<p>见<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/04/23/Javassist%E7%94%A8%E6%B3%95/">Javassist</a>。</p>
+<p>见<a href="https://ljd1996.github.io/2020/04/23/Android-Gradle-Transform%E7%94%A8%E6%B3%95/">Gradle-Transform</a>。</p>
+<p>见<a href="https://ljd1996.github.io/2020/04/23/Javassist%E7%94%A8%E6%B3%95/">Javassist</a>。</p>
 <h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>利用AOP和IOC可以做一些很有意思的事情，一些知名的开源框架都采用了它们的思想。例如：ButterKnife、Retrofit、Hugo、Dagger2等。另外，它们还可以用在性能检测、权限管理和埋点技术上。</p>
 
     </div>

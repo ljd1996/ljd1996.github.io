@@ -17,13 +17,13 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"ljd1996.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
 <meta property="og:type" content="website">
 <meta property="og:title" content="苍耳的博客">
-<meta property="og:url" content="http://yoursite.com/page/10/index.html">
+<meta property="og:url" content="https://ljd1996.github.io/page/10/index.html">
 <meta property="og:site_name" content="苍耳的博客">
 <meta property="og:description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
 <meta property="og:locale" content="zh_CN">
@@ -31,7 +31,7 @@
 <meta property="article:tag" content="诗歌，宋词，后台，Android，Java">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/page/10/">
+<link rel="canonical" href="https://ljd1996.github.io/page/10/">
 
 
 <script id="page-configurations">
@@ -192,7 +192,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/21/Android-init-zygote/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/10/21/Android-init-zygote/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -392,8 +392,8 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">startOtherServices</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    ServiceManager.addService(<span class="string">&quot;sec_key_att_app_id_provider&quot;</span>, <span class="keyword">new</span> KeyAttestationApplicationIdProviderService(context));</span><br><span class="line">    mSystemServiceManager.startService(KeyChainSystemService.class);</span><br><span class="line">    ServiceManager.addService(<span class="string">&quot;scheduling_policy&quot;</span>, <span class="keyword">new</span> SchedulingPolicyService());</span><br><span class="line">    mSystemServiceManager.startService(TelecomLoaderService.class);</span><br><span class="line">    telephonyRegistry = <span class="keyword">new</span> TelephonyRegistry(context);</span><br><span class="line">    ServiceManager.addService(<span class="string">&quot;telephony.registry&quot;</span>, telephonyRegistry);</span><br><span class="line">    mEntropyMixer = <span class="keyword">new</span> EntropyMixer(context);</span><br><span class="line"></span><br><span class="line">    mContentResolver = context.getContentResolver();</span><br><span class="line"></span><br><span class="line">    mSystemServiceManager.startService(ACCOUNT_SERVICE_CLASS);</span><br><span class="line">    mSystemServiceManager.startService(CONTENT_SERVICE_CLASS);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 准备好window, power, package, display服务</span></span><br><span class="line">    wm.systemReady();</span><br><span class="line">    mPowerManagerService.systemReady(...);</span><br><span class="line">    mPackageManagerService.systemReady();</span><br><span class="line">    mDisplayManagerService.systemReady(...);</span><br><span class="line">    mActivityManagerService.systemReady(...);</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>到此, System_server主线程的启动工作总算完成, 进入Looper.loop()状态，等待其他线程通过handler发送消息到主线再处理。</p>
-<p>与system_server进程的Application相关的解析可见：<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/12/16/Android-Application/">Android-Application</a>。</p>
-<h1 id="app进程"><a href="#app进程" class="headerlink" title="app进程"></a>app进程</h1><h2 id="AMS发送请求"><a href="#AMS发送请求" class="headerlink" title="AMS发送请求"></a>AMS发送请求</h2><p>ActivityManagerService也是由SystemServer创建的。假设通过startActivity来启动一个新的Activity，而这个Activity附属于一个还未启动的进程，则会启动一个新的进程，调用startActivity的进程通过Binder调用到ActivityManagerService中的方法，然后经过层层调用（具体可见<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/03/18/Android-Activity%E5%8E%9F%E7%90%86/">Android-Activity启动原理</a>），会调用到Process.start()方法，代码如下所示：</p>
+<p>与system_server进程的Application相关的解析可见：<a href="https://ljd1996.github.io/2019/12/16/Android-Application/">Android-Application</a>。</p>
+<h1 id="app进程"><a href="#app进程" class="headerlink" title="app进程"></a>app进程</h1><h2 id="AMS发送请求"><a href="#AMS发送请求" class="headerlink" title="AMS发送请求"></a>AMS发送请求</h2><p>ActivityManagerService也是由SystemServer创建的。假设通过startActivity来启动一个新的Activity，而这个Activity附属于一个还未启动的进程，则会启动一个新的进程，调用startActivity的进程通过Binder调用到ActivityManagerService中的方法，然后经过层层调用（具体可见<a href="https://ljd1996.github.io/2020/03/18/Android-Activity%E5%8E%9F%E7%90%86/">Android-Activity启动原理</a>），会调用到Process.start()方法，代码如下所示：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> ProcessStartResult <span class="title">start</span><span class="params">(<span class="keyword">final</span> String processClass,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  <span class="keyword">final</span> String niceName,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  <span class="keyword">int</span> uid, <span class="keyword">int</span> gid, <span class="keyword">int</span>[] gids,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  <span class="keyword">int</span> runtimeFlags, <span class="keyword">int</span> mountExternal,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  <span class="keyword">int</span> targetSdkVersion,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  String seInfo,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  String abi,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  String instructionSet,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  String appDataDir,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  String invokeWith,</span></span></span><br><span class="line"><span class="function"><span class="params">                                  String[] zygoteArgs)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> zygoteProcess.start(processClass, niceName, uid, gid, gids,</span><br><span class="line">            runtimeFlags, mountExternal, targetSdkVersion, seInfo,</span><br><span class="line">            abi, instructionSet, appDataDir, invokeWith, zygoteArgs);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>这里的参数processClass为“android.app.ActivityThread”，它是传进去的第一个参数，也就是程序初始化进程时要加载的主文件Java类。当应用进程启动之后，会把这个类加载到进程，调用它的main()方法作为应用程序进程的入口。Process类的start()直接调用了ZygoteProcess类的start()方法，该start()方法调用了ZygoteProcess类的startViaZygote()方法，下面看看该方法实现：</p>
@@ -419,7 +419,7 @@
 <p>通过fork新的应用程序进程之后，返回pid等于0就表示进入子进程，于是调用handleChildProc()方法进一步处理：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Runnable <span class="title">handleChildProc</span><span class="params">(Arguments parsedArgs, FileDescriptor[] descriptors,FileDescriptor pipeFd)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ZygoteInit.zygoteInit中会创建Binder线程池，</span></span><br><span class="line">    <span class="comment">// 也就是说每个进程无论是否包含任何activity等组件，一定至少会包含一个Binder线程</span></span><br><span class="line">    <span class="keyword">return</span> ZygoteInit.zygoteInit(parsedArgs.targetSdkVersion, parsedArgs.remainingArgs,<span class="keyword">null</span> <span class="comment">/* classLoader */</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>到此处，后面便和上面一样的了，唯一不同的是，SystemServer进程启动之后进入的是主类SystemServer.java的main()函数，而这里应用程序启动起来后进入的是主类是ActivityThread.java的main()函数，进入ActivityThread.main()方法后，会创建Application实例，具体可见：<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/12/16/Android-Application/">Android-Application</a>。</p>
+<p>到此处，后面便和上面一样的了，唯一不同的是，SystemServer进程启动之后进入的是主类SystemServer.java的main()函数，而这里应用程序启动起来后进入的是主类是ActivityThread.java的main()函数，进入ActivityThread.main()方法后，会创建Application实例，具体可见：<a href="https://ljd1996.github.io/2019/12/16/Android-Application/">Android-Application</a>。</p>
 <p>接下来就只剩下forkAndSpecialize方法的解析了：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">forkAndSpecialize</span><span class="params">(<span class="keyword">int</span> uid, <span class="keyword">int</span> gid, <span class="keyword">int</span>[] gids, <span class="keyword">int</span> runtimeFlags,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">int</span>[][] rlimits, <span class="keyword">int</span> mountExternal, String seInfo, String niceName, <span class="keyword">int</span>[] fdsToClose,</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">int</span>[] fdsToIgnore, <span class="keyword">boolean</span> startChildZygote, String instructionSet, String appDataDir)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 停止Zygote的4个Daemon子线程的运行，等待并确保Zygote是单线程（用于提升fork效率），</span></span><br><span class="line">    <span class="comment">// 并等待这些线程的停止，初始化gc堆的工作</span></span><br><span class="line">    VM_HOOKS.preFork();</span><br><span class="line">    <span class="comment">// Resets nice priority for zygote process.</span></span><br><span class="line">    resetNicePriority();</span><br><span class="line">    <span class="comment">// 调用fork()创建新进程，设置新进程的主线程id，重置gc性能数据，设置信号处理函数</span></span><br><span class="line">    <span class="keyword">int</span> pid = nativeForkAndSpecialize(</span><br><span class="line">                uid, gid, gids, runtimeFlags, rlimits, mountExternal, seInfo, niceName, fdsToClose,</span><br><span class="line">                fdsToIgnore, startChildZygote, instructionSet, appDataDir);</span><br><span class="line">    <span class="comment">// 在fork新进程后，启动Zygote的4个Daemon线程，java堆整理等。</span></span><br><span class="line">    VM_HOOKS.postForkCommon();</span><br><span class="line">    <span class="keyword">return</span> pid;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -485,7 +485,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/21/Java%E5%8F%8D%E5%B0%84/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/10/21/Java%E5%8F%8D%E5%B0%84/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -682,7 +682,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/21/Java%E5%B9%B6%E5%8F%91/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/10/21/Java%E5%B9%B6%E5%8F%91/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -832,7 +832,7 @@
 <p>通常情况下，为了保证多线程间的有效并发，会要求每个线程持有锁的时间尽可能短，但在某些情况下需要增大锁粒度。比如说某个循环内的操作需要加锁，此时应该把锁放到循环外面，否则每次进出循环都需要获取与释放锁。</p>
 <p><strong>使用CAS</strong></p>
 <p>如果需要同步的操作执行速度非常快，并且线程竞争不激烈，这时候使用 CAS 效率会更高，因为线程阻塞唤醒会有比较大的性能消耗，此时使用 CAS 操作(原子类)会是非常高效的选择。</p>
-<h2 id="Java内存模型"><a href="#Java内存模型" class="headerlink" title="Java内存模型"></a>Java内存模型</h2><p>参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2018/06/11/JVM%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B">Java内存模型与线程</a>。</p>
+<h2 id="Java内存模型"><a href="#Java内存模型" class="headerlink" title="Java内存模型"></a>Java内存模型</h2><p>参考 <a href="https://ljd1996.github.io/2018/06/11/JVM%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#Java%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B">Java内存模型与线程</a>。</p>
 <h1 id="volatile"><a href="#volatile" class="headerlink" title="volatile"></a>volatile</h1><ul>
 <li>可见性：线程可见性。</li>
 <li>有序性：Java遵循as-if-serial语义，即单线程执行程序时，即使发生重排序，程序的执行结果不能被改变。而 volatile 会禁止指令重排序，因此可以避免其他线程访问到一个未初始化的对象(分配内存，初始化对象，引用赋值给变量)。</li>
@@ -1143,7 +1143,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/21/Java-Android-Collection/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/10/21/Java-Android-Collection/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -1539,7 +1539,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/21/Java%E6%B3%A8%E8%A7%A3/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/10/21/Java%E6%B3%A8%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -1649,7 +1649,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/16/CMake%E7%AC%94%E8%AE%B0/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/09/16/CMake%E7%AC%94%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -1902,7 +1902,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/12/%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/09/12/%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -2008,7 +2008,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/11/Android%E7%BB%84%E4%BB%B6%E5%8C%96/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/09/11/Android%E7%BB%84%E4%BB%B6%E5%8C%96/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -2168,7 +2168,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/10/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/09/10/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -2690,7 +2690,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/10/Android%E5%8A%A8%E7%94%BB%E7%AC%94%E8%AE%B0/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/09/10/Android%E5%8A%A8%E7%94%BB%E7%AC%94%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">

@@ -17,13 +17,13 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"ljd1996.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
 <meta property="og:type" content="website">
 <meta property="og:title" content="苍耳的博客">
-<meta property="og:url" content="http://yoursite.com/page/5/index.html">
+<meta property="og:url" content="https://ljd1996.github.io/page/5/index.html">
 <meta property="og:site_name" content="苍耳的博客">
 <meta property="og:description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
 <meta property="og:locale" content="zh_CN">
@@ -31,7 +31,7 @@
 <meta property="article:tag" content="诗歌，宋词，后台，Android，Java">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/page/5/">
+<link rel="canonical" href="https://ljd1996.github.io/page/5/">
 
 
 <script id="page-configurations">
@@ -192,7 +192,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/17/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86%E4%B9%8BToken%E9%AA%8C%E8%AF%81/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/09/17/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86%E4%B9%8BToken%E9%AA%8C%E8%AF%81/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -272,7 +272,7 @@
 
       
           <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>注：本文基于Android 10源码，为了文章的简洁性，引用源码的地方可能有所删减。</p>
-<p>今天在掘金上看到一篇解析<code>为什么不能使用 Application Context 显示 Dialog</code>的文章，看完之后感觉作者忽略了一个很重要的对象–parentWindow，因此讲解的时候无法完整地把源码逻辑串起来。在参考了之前对<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/08/27/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86/">Android-Window机制原理</a>的解析，重新阅读了源码，决定借助这个问题记录一下关于 Android WMS 在 addWindow 的时候Token验证的逻辑，借此也可以说明为什么不能使用 Application Context 显示 Dialog。</p>
+<p>今天在掘金上看到一篇解析<code>为什么不能使用 Application Context 显示 Dialog</code>的文章，看完之后感觉作者忽略了一个很重要的对象–parentWindow，因此讲解的时候无法完整地把源码逻辑串起来。在参考了之前对<a href="https://ljd1996.github.io/2020/08/27/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86/">Android-Window机制原理</a>的解析，重新阅读了源码，决定借助这个问题记录一下关于 Android WMS 在 addWindow 的时候Token验证的逻辑，借此也可以说明为什么不能使用 Application Context 显示 Dialog。</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/09/17/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86%E4%B9%8BToken%E9%AA%8C%E8%AF%81/#more" rel="contents">
@@ -299,7 +299,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/16/Android-SPI%E7%AC%94%E8%AE%B0/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/09/16/Android-SPI%E7%AC%94%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -406,7 +406,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/15/Android%E5%9B%BE%E5%BD%A2%E7%B3%BB%E7%BB%9F%E7%BB%BC%E8%BF%B0/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/09/15/Android%E5%9B%BE%E5%BD%A2%E7%B3%BB%E7%BB%9F%E7%BB%BC%E8%BF%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -512,7 +512,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/11/Android-View%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E8%B7%B5/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/09/11/Android-View%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E8%B7%B5/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -592,7 +592,7 @@
 
       
           <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>注：本文基于Android 10源码，为了文章的简洁性，引用源码的地方可能有所删减。</p>
-<p>本文主要学习一下与View相关的一些原理与实践，如常用的 View.post 和 ViewTreeObserver 的原理，以及老生常谈的 View 事件分发机制的源码解读，自定义 View 及其滑动冲突的解决方式等。有关Android绘制相关的看<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/09/09/Android-View%E7%BB%98%E5%88%B6%E5%8E%9F%E7%90%86/">Android-View绘制原理</a>。</p>
+<p>本文主要学习一下与View相关的一些原理与实践，如常用的 View.post 和 ViewTreeObserver 的原理，以及老生常谈的 View 事件分发机制的源码解读，自定义 View 及其滑动冲突的解决方式等。有关Android绘制相关的看<a href="https://ljd1996.github.io/2020/09/09/Android-View%E7%BB%98%E5%88%B6%E5%8E%9F%E7%90%86/">Android-View绘制原理</a>。</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2020/09/11/Android-View%E5%8E%9F%E7%90%86%E4%B8%8E%E5%AE%9E%E8%B7%B5/#more" rel="contents">
@@ -619,7 +619,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/09/Android-View%E7%BB%98%E5%88%B6%E5%8E%9F%E7%90%86/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/09/09/Android-View%E7%BB%98%E5%88%B6%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -699,7 +699,7 @@
 
       
           <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>注：本文基于Android 10源码，为了文章的简洁性，引用源码的地方可能有所删减。</p>
-<p>从 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/08/27/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86/">Android-Window机制原理</a> 和 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/09/07/Android-Choreographer%E5%8E%9F%E7%90%86/">Android-Choreographer原理</a> 中了解到，无论是通过 WindowManager.addView 方法添加View，还是调用 View.invalidate 或 View.requestLayout 等方法更新 View 都会走到 ViewRootImpl.scheduleTraversals 方法，在这个方法中有一段代码：<code>mChoreographer.postCallback(Choreographer.CALLBACK_TRAVERSAL, mTraversalRunnable, null)</code>，其中mChoreographer是Choreographer实例，Choreographer用来处理Vsync信号，当Vsync信号到来时，mTraversalRunnable会被执行，mTraversalRunnable是一个Runnable实例，其run方法最终会调用 ViewRootImpl.performTraversals 方法。</p>
+<p>从 <a href="https://ljd1996.github.io/2020/08/27/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86/">Android-Window机制原理</a> 和 <a href="https://ljd1996.github.io/2020/09/07/Android-Choreographer%E5%8E%9F%E7%90%86/">Android-Choreographer原理</a> 中了解到，无论是通过 WindowManager.addView 方法添加View，还是调用 View.invalidate 或 View.requestLayout 等方法更新 View 都会走到 ViewRootImpl.scheduleTraversals 方法，在这个方法中有一段代码：<code>mChoreographer.postCallback(Choreographer.CALLBACK_TRAVERSAL, mTraversalRunnable, null)</code>，其中mChoreographer是Choreographer实例，Choreographer用来处理Vsync信号，当Vsync信号到来时，mTraversalRunnable会被执行，mTraversalRunnable是一个Runnable实例，其run方法最终会调用 ViewRootImpl.performTraversals 方法。</p>
 <p>因此当Vsync信号来临时，会调用 ViewRootImpl.performTraversals 方法执行View的绘制流程。以startActivity为例，WindowManager.addView 添加的View是DecorView类型。以下ViewRootImpl缩写为VRImpl。</p>
           <!--noindex-->
             <div class="post-button">
@@ -727,7 +727,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/07/Android-Choreographer%E5%8E%9F%E7%90%86/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/09/07/Android-Choreographer%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -808,7 +808,7 @@
       
           <h1 id="基础知识"><a href="#基础知识" class="headerlink" title="基础知识"></a>基础知识</h1><p>注：本文基于Android 10源码，为了文章的简洁性，引用源码的地方可能有所删减。</p>
 <p>在一个典型的显示系统中，一般包括CPU、GPU、Display三个部分，CPU负责计算帧数据，把计算好的数据交给GPU，GPU会对图形数据进行渲染，渲染好后放到buffer(图像缓冲区)里存起来，然后Display（屏幕或显示器）负责把buffer里的数据呈现到屏幕上。</p>
-<p>相关基础概念见<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/09/15/Android%E5%9B%BE%E5%BD%A2%E7%B3%BB%E7%BB%9F%E7%BB%BC%E8%BF%B0/">Android图形系统综述</a>。</p>
+<p>相关基础概念见<a href="https://ljd1996.github.io/2020/09/15/Android%E5%9B%BE%E5%BD%A2%E7%B3%BB%E7%BB%9F%E7%BB%BC%E8%BF%B0/">Android图形系统综述</a>。</p>
 <p><strong>Choreographer</strong>：编舞者，指对CPU/GPU绘制的指导，收到VSync信号才开始绘制，保证绘制拥有完整的16.6ms。通常应用层不会直接使用Choreographer，而是使用更高级的API，如View.invalidate()等，可以通过Choreographer来监控应用的帧率。</p>
           <!--noindex-->
             <div class="post-button">
@@ -836,7 +836,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/27/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/08/27/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -943,7 +943,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/20/Android-ContentProvider%E5%8E%9F%E7%90%86/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/08/20/Android-ContentProvider%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -1022,7 +1022,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>ContentProvider用于提供数据的统一访问格式，封装了底层的具体实现。对于数据的使用者来说，无需知晓数据的来源是数据库、本地文件或者网络等，使用者只需简单地使用ContentProvider提供的数据增删查改操作接口即可，基本使用可参考<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/09/10/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6/#ContentProvider">Android四大组件之ContentProvider</a>。</p>
+          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>ContentProvider用于提供数据的统一访问格式，封装了底层的具体实现。对于数据的使用者来说，无需知晓数据的来源是数据库、本地文件或者网络等，使用者只需简单地使用ContentProvider提供的数据增删查改操作接口即可，基本使用可参考<a href="https://ljd1996.github.io/2019/09/10/Android%E5%9B%9B%E5%A4%A7%E7%BB%84%E4%BB%B6/#ContentProvider">Android四大组件之ContentProvider</a>。</p>
 <p>注：本文基于Android 10源码，为了文章的简洁性，引用源码的地方可能有所删减。</p>
           <!--noindex-->
             <div class="post-button">
@@ -1050,7 +1050,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/08/18/Android-Broadcast%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/08/18/Android-Broadcast%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -1162,7 +1162,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/09/Android-Binder%E5%8E%9F%E7%90%86%E5%9B%9B-%E5%AE%9E%E4%BE%8B%E4%B8%8E%E6%80%BB%E7%BB%93/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/07/09/Android-Binder%E5%8E%9F%E7%90%86%E5%9B%9B-%E5%AE%9E%E4%BE%8B%E4%B8%8E%E6%80%BB%E7%BB%93/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">

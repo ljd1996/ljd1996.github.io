@@ -17,13 +17,13 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"ljd1996.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="概述前段时间在读EventBus的源码，然后突然来了兴趣（闲的没事）就稍微修改了一下使其支持进程间订阅消息，实现原理很简单，其实就是进程内使用EventBus原生方式，进程间则通过Binder发送信息。实现比较简单，进程间Binder传递其实也可以不使用bindService，使用ContentProvider会更加灵活，后来就想着反正没事就试一试写个IPC框架（反正也不会有人用，练练手）。 大概">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android-IpcBridge原理">
-<meta property="og:url" content="http://yoursite.com/2020/06/04/Android-IpcBridge%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:url" content="https://ljd1996.github.io/2020/06/04/Android-IpcBridge%E5%8E%9F%E7%90%86/index.html">
 <meta property="og:site_name" content="苍耳的博客">
 <meta property="og:description" content="概述前段时间在读EventBus的源码，然后突然来了兴趣（闲的没事）就稍微修改了一下使其支持进程间订阅消息，实现原理很简单，其实就是进程内使用EventBus原生方式，进程间则通过Binder发送信息。实现比较简单，进程间Binder传递其实也可以不使用bindService，使用ContentProvider会更加灵活，后来就想着反正没事就试一试写个IPC框架（反正也不会有人用，练练手）。 大概">
 <meta property="og:locale" content="zh_CN">
@@ -35,7 +35,7 @@
 <meta property="article:tag" content="IPC">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/2020/06/04/Android-IpcBridge%E5%8E%9F%E7%90%86/">
+<link rel="canonical" href="https://ljd1996.github.io/2020/06/04/Android-IpcBridge%E5%8E%9F%E7%90%86/">
 
 
 <script id="page-configurations">
@@ -197,7 +197,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/04/Android-IpcBridge%E5%8E%9F%E7%90%86/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/06/04/Android-IpcBridge%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -276,7 +276,7 @@
 
       
         <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>前段时间在读EventBus的源码，然后突然来了兴趣（闲的没事）就稍微修改了一下使其支持进程间订阅消息，实现原理很简单，其实就是进程内使用EventBus原生方式，进程间则通过Binder发送信息。实现比较简单，进程间Binder传递其实也可以不使用bindService，使用ContentProvider会更加灵活，后来就想着反正没事就试一试写个IPC框架（反正也不会有人用，练练手）。</p>
-<p>大概原理就是通过一个AIDL接口传递要调用的类和方法名，然后通过反射调用。进程间的Binder通过ContentProvider传递（<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/01/06/Android-IPC%E6%9C%BA%E5%88%B6/#ContentProvider-amp-Binder">Android-IPC机制-ContentProvider</a>），不需要bindService，然后自定义了一个Gradle插件，用来动态修改Manifest信息以及生成ContentProvider类。</p>
+<p>大概原理就是通过一个AIDL接口传递要调用的类和方法名，然后通过反射调用。进程间的Binder通过ContentProvider传递（<a href="https://ljd1996.github.io/2020/01/06/Android-IPC%E6%9C%BA%E5%88%B6/#ContentProvider-amp-Binder">Android-IPC机制-ContentProvider</a>），不需要bindService，然后自定义了一个Gradle插件，用来动态修改Manifest信息以及生成ContentProvider类。</p>
 <p>项目地址：<a target="_blank" rel="noopener" href="https://github.com/ljd1996/IpcBridge">IpcBridge</a>，ReadMe文档有使用方法。</p>
 <p>项目工程中包括三个模块，一个是IpcBridge的Kotlin源代码，一个是IpcBridge的Gradle插件源码，主模块是demo模块。</p>
 <a id="more"></a>
@@ -286,7 +286,7 @@
 <p>这里参数和返回值都是Bundle类型，具体的参数和返回值都约定在Bundle里，毕竟Bundle现成就实现了Parcelable接口。</p>
 <h2 id="ContentProvider基础类"><a href="#ContentProvider基础类" class="headerlink" title="ContentProvider基础类"></a>ContentProvider基础类</h2><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">open</span> <span class="class"><span class="keyword">class</span> <span class="title">BaseProvider</span> : <span class="type">ContentProvider</span></span>() &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">query</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        uri: <span class="type">Uri</span>, projection: <span class="type">Array</span>&lt;<span class="type">out</span> <span class="type">String</span>&gt;?, selection: <span class="type">String</span>?,</span></span></span><br><span class="line"><span class="function"><span class="params">        selectionArgs: <span class="type">Array</span>&lt;<span class="type">out</span> <span class="type">String</span>&gt;?, sortOrder: <span class="type">String</span>?</span></span></span><br><span class="line"><span class="function"><span class="params">    )</span></span>: Cursor? &#123;</span><br><span class="line">        <span class="keyword">return</span> BinderCursor(arrayOf(<span class="string">&quot;service&quot;</span>), BridgeBinder())</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>此处返回的BinderCursor是一个继承了MatrixCursor的特殊Cursor，有关MatrixCursor的信息可以看这里<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/01/06/Android-IPC%E6%9C%BA%E5%88%B6/#MatrixCursor">MatrixCursor</a>。它的使用情景就是当我想得到一个Cursor，而此时又不需要数据库来返回一个Cursor时，可以通过MatrixCursor来返回一个伪造的Cursor，而这里的作用就是通过这个Cursor对象来携带Binder对象。然后通过后面讲到的Gradle插件中动态生成的ContentProvider，将其注册到要跨进程的进程中，那么就可以嘿嘿了。</p>
+<p>此处返回的BinderCursor是一个继承了MatrixCursor的特殊Cursor，有关MatrixCursor的信息可以看这里<a href="https://ljd1996.github.io/2020/01/06/Android-IPC%E6%9C%BA%E5%88%B6/#MatrixCursor">MatrixCursor</a>。它的使用情景就是当我想得到一个Cursor，而此时又不需要数据库来返回一个Cursor时，可以通过MatrixCursor来返回一个伪造的Cursor，而这里的作用就是通过这个Cursor对象来携带Binder对象。然后通过后面讲到的Gradle插件中动态生成的ContentProvider，将其注册到要跨进程的进程中，那么就可以嘿嘿了。</p>
 <h2 id="IpcBridge-1"><a href="#IpcBridge-1" class="headerlink" title="IpcBridge"></a>IpcBridge</h2><p>IpcBridge是对外的接口，里面有三个集合：</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 存储对应接口类的对应实现类：key-接口类；value-实现类</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> mClassMap = mutableMapOf&lt;Class&lt;*&gt;, Class&lt;*&gt;&gt;()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 存储对应接口类的对应实例：key-接口类；value-实例</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> mInstanceMap = mutableMapOf&lt;Class&lt;*&gt;, Any&gt;()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 缓存客户端需要调用的远程接口的代理</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">val</span> mProxyCache = mutableMapOf&lt;Class&lt;*&gt;, Any&gt;()</span><br></pre></td></tr></table></figure>
 

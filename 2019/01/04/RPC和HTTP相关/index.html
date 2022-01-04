@@ -17,26 +17,26 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"ljd1996.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="区别传输协议：  RPC，可以基于TCP协议，也可以基于HTTP协议 HTTP，基于HTTP协议  传输效率：  RPC，使用自定义的TCP协议，可以让请求报文体积更小，或者使用HTTP2协议，也可以很好的减少报文的体积，提高传输效率 HTTP，如果是基于HTTP1.1的协议，请求中会包含很多无用的内容，如果是基于HTTP2.0，那么简单的封装一下是可以作为一个RPC来使用的，这时标准RPC框架更">
 <meta property="og:type" content="article">
 <meta property="og:title" content="RPC和HTTP相关">
-<meta property="og:url" content="http://yoursite.com/2019/01/04/RPC%E5%92%8CHTTP%E7%9B%B8%E5%85%B3/index.html">
+<meta property="og:url" content="https://ljd1996.github.io/2019/01/04/RPC%E5%92%8CHTTP%E7%9B%B8%E5%85%B3/index.html">
 <meta property="og:site_name" content="苍耳的博客">
 <meta property="og:description" content="区别传输协议：  RPC，可以基于TCP协议，也可以基于HTTP协议 HTTP，基于HTTP协议  传输效率：  RPC，使用自定义的TCP协议，可以让请求报文体积更小，或者使用HTTP2协议，也可以很好的减少报文的体积，提高传输效率 HTTP，如果是基于HTTP1.1的协议，请求中会包含很多无用的内容，如果是基于HTTP2.0，那么简单的封装一下是可以作为一个RPC来使用的，这时标准RPC框架更">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://yoursite.com/2019/01/04/RPC%E5%92%8CHTTP%E7%9B%B8%E5%85%B3/RPC架构.jpg">
-<meta property="og:image" content="http://yoursite.com/2019/01/04/RPC%E5%92%8CHTTP%E7%9B%B8%E5%85%B3/RPC调用过程.webp">
+<meta property="og:image" content="https://ljd1996.github.io/2019/01/04/RPC%E5%92%8CHTTP%E7%9B%B8%E5%85%B3/RPC架构.jpg">
+<meta property="og:image" content="https://ljd1996.github.io/2019/01/04/RPC%E5%92%8CHTTP%E7%9B%B8%E5%85%B3/RPC调用过程.webp">
 <meta property="article:published_time" content="2019-01-04T05:17:47.000Z">
 <meta property="article:modified_time" content="2021-05-14T06:14:57.906Z">
 <meta property="article:author" content="苍耳叔叔">
 <meta property="article:tag" content="后台">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://yoursite.com/2019/01/04/RPC%E5%92%8CHTTP%E7%9B%B8%E5%85%B3/RPC架构.jpg">
+<meta name="twitter:image" content="https://ljd1996.github.io/2019/01/04/RPC%E5%92%8CHTTP%E7%9B%B8%E5%85%B3/RPC架构.jpg">
 
-<link rel="canonical" href="http://yoursite.com/2019/01/04/RPC%E5%92%8CHTTP%E7%9B%B8%E5%85%B3/">
+<link rel="canonical" href="https://ljd1996.github.io/2019/01/04/RPC%E5%92%8CHTTP%E7%9B%B8%E5%85%B3/">
 
 
 <script id="page-configurations">
@@ -198,7 +198,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/04/RPC%E5%92%8CHTTP%E7%9B%B8%E5%85%B3/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/01/04/RPC%E5%92%8CHTTP%E7%9B%B8%E5%85%B3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">

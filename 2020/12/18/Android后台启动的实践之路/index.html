@@ -17,13 +17,13 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"ljd1996.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="概述前几天产品提了一个需求，想在后台的时候启动我们 APP 的一个 Activity，随着 Android 版本的更新，以及各家 ROM 厂商的无限改造，这种影响用户体验的功能许多都受到了限制，没办法，虽然是比较流氓的功能，但拿人钱财替人消灾，于是开启了哼哧哼哧的调研之路。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android后台启动的实践之路">
-<meta property="og:url" content="http://yoursite.com/2020/12/18/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF/index.html">
+<meta property="og:url" content="https://ljd1996.github.io/2020/12/18/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF/index.html">
 <meta property="og:site_name" content="苍耳的博客">
 <meta property="og:description" content="概述前几天产品提了一个需求，想在后台的时候启动我们 APP 的一个 Activity，随着 Android 版本的更新，以及各家 ROM 厂商的无限改造，这种影响用户体验的功能许多都受到了限制，没办法，虽然是比较流氓的功能，但拿人钱财替人消灾，于是开启了哼哧哼哧的调研之路。">
 <meta property="og:locale" content="zh_CN">
@@ -34,7 +34,7 @@
 <meta property="article:tag" content="实战">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/2020/12/18/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF/">
+<link rel="canonical" href="https://ljd1996.github.io/2020/12/18/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF/">
 
 
 <script id="page-configurations">
@@ -196,7 +196,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/18/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/12/18/Android%E5%90%8E%E5%8F%B0%E5%90%AF%E5%8A%A8%E7%9A%84%E5%AE%9E%E8%B7%B5%E4%B9%8B%E8%B7%AF/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -308,7 +308,7 @@
 <p>看上去在 APP 进程这一侧只有一个 callingPackage 参数在 Hook 后有突破的可能，碰碰运气，可以看到 callingPackage 是由 <code>who.getBasePackageName()</code> 赋值的，其实现在 ContextImpl 类中：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ContextImpl</span> <span class="keyword">extends</span> <span class="title">Context</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String mBasePackageName;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** <span class="doctag">@hide</span> */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getBasePackageName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mBasePackageName != <span class="keyword">null</span> ? mBasePackageName : getPackageName();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/12/16/Android-Application">Android-Application启动流程</a> 可以知道这个 ContextImpl 对象是作为 Application 中的 mBase 上下文传入的：</p>
+<p>参考 <a href="https://ljd1996.github.io/2019/12/16/Android-Application">Android-Application启动流程</a> 可以知道这个 ContextImpl 对象是作为 Application 中的 mBase 上下文传入的：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">attachBaseContext</span><span class="params">(Context base)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (mBase != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">&quot;Base context already set&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    mBase = base;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>因此可以尝试 Hook Application 中的 baseContext 将 mBasePackageName 改成白名单应用的包名：</p>

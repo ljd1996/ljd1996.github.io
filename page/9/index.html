@@ -17,13 +17,13 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"ljd1996.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
 <meta property="og:type" content="website">
 <meta property="og:title" content="苍耳的博客">
-<meta property="og:url" content="http://yoursite.com/page/9/index.html">
+<meta property="og:url" content="https://ljd1996.github.io/page/9/index.html">
 <meta property="og:site_name" content="苍耳的博客">
 <meta property="og:description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
 <meta property="og:locale" content="zh_CN">
@@ -31,7 +31,7 @@
 <meta property="article:tag" content="诗歌，宋词，后台，Android，Java">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/page/9/">
+<link rel="canonical" href="https://ljd1996.github.io/page/9/">
 
 
 <script id="page-configurations">
@@ -192,7 +192,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Android/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Android/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -268,7 +268,7 @@
 
       
           <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Android基于Linux内核，它将开源代码和闭源第三方应用程序结合在一起。Android的开源部分称为Android开源项目（Android Open Source Project，AOSP）,它是完全开放的，任何人都可以免费使用和修改。</p>
-<p>如同传统的Linux系统一样，Android的第一个用户空间进程是init，它是所有其他进程的根。与Android相关的内容可以看<a target="_blank" rel="noopener" href="https://ljd1996.github.io/categories/Android/">这里</a>。</p>
+<p>如同传统的Linux系统一样，Android的第一个用户空间进程是init，它是所有其他进程的根。与Android相关的内容可以看<a href="https://ljd1996.github.io/categories/Android/">这里</a>。</p>
 <h1 id="Linux扩展"><a href="#Linux扩展" class="headerlink" title="Linux扩展"></a>Linux扩展</h1><h2 id="唤醒锁"><a href="#唤醒锁" class="headerlink" title="唤醒锁"></a>唤醒锁</h2><p>移动设备上的电源管理不同于传统的计算机系统，所以，为了管理系统如何进入睡眠，Android为Linux添加了一个新的功能，称为唤醒锁（wake lock），也称为悬停阻止器（suspend blocker）。</p>
 <p>在传统的计算机系统上，系统可以处于两种电源状态之一：运行并且准备好处理用户输人：或者深度睡眠，并且如果没有诸如按下电源键一类的外部中断就不能继续执行。在运行的时候，次要的硬件设备可以按需要通电或者断电，但是CPU本身以及核心硬件部件必须保持通电状态以处理到来的网络通信以及其他类似的事件。进人低能耗睡眠状态是发生得比较少的事情：或者通过用户明确地让系统睡眠，或者由于比较长的时间间隔没有用户活动，从而系统自身进入睡眠。从这样的睡眠状态醒来需要来自外部源的硬件中断，例如按下键盘上的一个按键，在此刻设备将醒来并且点亮屏幕。</p>
 <p>移动设备的用户具有不同的期望。尽管用户可以关闭屏幕，在这样的情况下看起来好像是让设备睡眠了，但是传统的睡眠状态实际上并不是用户想得到的。当设备的屏幕关闭之时，设备仍然需要工作：它需要能够接听电话呼叫，接收并处理到来的聊天消息数据，以及许多其他事情。对于移动设备，关干打开和关闭设备屏幕的期望同样比传统的计算机具有更髙的要求。在这类典型的移动应用中，恢复设备直到它能够使用的任何延迟都会对用户体验造成严重的负面影响。</p>
@@ -366,7 +366,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Linux/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Linux/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -441,7 +441,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Linux简介"><a href="#Linux简介" class="headerlink" title="Linux简介"></a>Linux简介</h1><p>关于<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/11/27/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%AE%BA/#POSIX">POSIX</a>的介绍在这里。Linux系统的层次结构如下：</p>
+          <h1 id="Linux简介"><a href="#Linux简介" class="headerlink" title="Linux简介"></a>Linux简介</h1><p>关于<a href="https://ljd1996.github.io/2019/11/27/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%AE%BA/#POSIX">POSIX</a>的介绍在这里。Linux系统的层次结构如下：</p>
 <p><img src="Linux%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84.jpg" alt="Linux层次结构"></p>
 <p>内核坐落在硬件之上，负责实现与I/O设备和存储管理单元的交互，并控制CPU对前述设备的访问。如图所示，在最底层，内核包含中断处理程序，它们是与设备交互的主要方式，以及底层的分派机制。这种分派在中断时发生。底层的代码中止正在运行的进程，将其状态存储在内核进程结构中，然后启动相应的驱动程序。进程分派也在内核完成某些操作，并且需要再次启动一个用户进程时发生。进程分派的代码是汇编代码，并且和进程调度代码有很大不同。</p>
 <p><img src="Linux%E5%86%85%E6%A0%B8%E7%BB%93%E6%9E%84.jpg" alt="Linux内核结构"></p>
@@ -538,7 +538,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/05/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E4%B8%8EIO/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/12/05/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E4%B8%8EIO/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -822,7 +822,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/12/03/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -1145,7 +1145,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/02/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/12/02/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -1602,7 +1602,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/27/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%AE%BA/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/11/27/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%AE%BA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -1924,7 +1924,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/18/Glide%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/11/18/Glide%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -2032,7 +2032,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/11/app-process%E4%BD%BF%E7%94%A8/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/11/11/app-process%E4%BD%BF%E7%94%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -2156,7 +2156,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/01/Android-Security/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/11/01/Android-Security/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -2266,8 +2266,8 @@
 <h1 id="应用沙盒"><a href="#应用沙盒" class="headerlink" title="应用沙盒"></a>应用沙盒</h1><p>Android 平台利用基于用户的 Linux 保护机制来识别和隔离应用资源，可将不同的应用分离开，并保护应用和系统免受恶意应用的攻击。为此，Android 会为每个 Android 应用分配一个独一无二的用户 ID (UID)，并在自己的进程中运行。</p>
 <p>Android 会使用此 UID 设置一个<strong>内核级应用沙盒</strong>。内核会在进程级别利用标准的 Linux 机制（例如，分配给应用的用户 ID 和组 ID）实现应用和系统之间的安全防护。 默认情况下，应用不能彼此交互，而且对操作系统的访问权限会受到限制。例如，如果应用 A（一个单独的应用）尝试执行恶意操作，例如在没有权限的情况下读取应用 B 的数据或拨打电话，操作系统会阻止此类行为，因为应用 A 没有适当的用户权限。</p>
 <p>由于应用沙盒位于内核层面，因此该安全模型的保护范围扩展到了原生代码和操作系统应用。位于更高层面的所有软件（例如，操作系统库、应用框架、应用运行时环境和所有应用）都会在应用沙盒中运行。</p>
-<h1 id="进程间通信"><a href="#进程间通信" class="headerlink" title="进程间通信"></a>进程间通信</h1><p><a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/09/10/Android%E8%BF%9B%E7%A8%8B%E5%8F%8A%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">Android进程及消息机制</a></p>
-<h1 id="应用签名"><a href="#应用签名" class="headerlink" title="应用签名"></a>应用签名</h1><p><a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/08/26/Android%E7%AD%BE%E5%90%8D%E7%AC%94%E8%AE%B0/">Android签名</a></p>
+<h1 id="进程间通信"><a href="#进程间通信" class="headerlink" title="进程间通信"></a>进程间通信</h1><p><a href="https://ljd1996.github.io/2019/09/10/Android%E8%BF%9B%E7%A8%8B%E5%8F%8A%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">Android进程及消息机制</a></p>
+<h1 id="应用签名"><a href="#应用签名" class="headerlink" title="应用签名"></a>应用签名</h1><p><a href="https://ljd1996.github.io/2019/08/26/Android%E7%AD%BE%E5%90%8D%E7%AC%94%E8%AE%B0/">Android签名</a></p>
 <h1 id="SELinux"><a href="#SELinux" class="headerlink" title="SELinux"></a>SELinux</h1><h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>SELinux：Security-Enhanced Linux，安全增强型 Linux，是一个 Linux 内核模块，也是 Linux 的一个安全子系统。SELinux 主要由美国国家安全局开发，2.6 及以上版本的 Linux 内核都已经集成了 SELinux 模块。</p>
 <p>SELinux 主要作用就是最大限度地减小系统中服务进程可访问的资源（最小权限原则）。</p>
 <h2 id="DAC"><a href="#DAC" class="headerlink" title="DAC"></a>DAC</h2><p>DAC（Discretionary Access Control，自主式访问控制）。</p>
@@ -2319,7 +2319,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/10/29/Termux-AAB%E5%88%86%E4%BA%AB/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/10/29/Termux-AAB%E5%88%86%E4%BA%AB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -2426,7 +2426,7 @@
 
 <p>修改方法：</p>
 <ul>
-<li><a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/08/08/termux-app%E4%BF%AE%E6%94%B9%E5%8C%85%E5%90%8D">Termux修改包名</a></li>
+<li><a href="https://ljd1996.github.io/2019/08/08/termux-app%E4%BF%AE%E6%94%B9%E5%8C%85%E5%90%8D">Termux修改包名</a></li>
 </ul>
 <h2 id="源码解读"><a href="#源码解读" class="headerlink" title="源码解读"></a>源码解读</h2><p>流程图:</p>
 <p><img src="Termux%E6%BA%90%E7%A0%81%E6%B5%81%E7%A8%8B.jpg" alt="Termux流程图"></p>
@@ -2489,9 +2489,9 @@
 <li>Google Play签名计划会使用我们自己的签名文件去签名(而不是我们手动签名)(v1，v2)</li>
 </ul>
 <h1 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h1><ul>
-<li><a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/08/27/Termux%E8%A7%A3%E6%9E%90/">Termux解析</a></li>
-<li><a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/08/08/termux-app%E4%BF%AE%E6%94%B9%E5%8C%85%E5%90%8D/">termux-app修改包名</a></li>
-<li><a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/09/16/Android-App-Bundle%E7%AC%94%E8%AE%B0/">Android-App-Bundle笔记</a></li>
+<li><a href="https://ljd1996.github.io/2019/08/27/Termux%E8%A7%A3%E6%9E%90/">Termux解析</a></li>
+<li><a href="https://ljd1996.github.io/2019/08/08/termux-app%E4%BF%AE%E6%94%B9%E5%8C%85%E5%90%8D/">termux-app修改包名</a></li>
+<li><a href="https://ljd1996.github.io/2019/09/16/Android-App-Bundle%E7%AC%94%E8%AE%B0/">Android-App-Bundle笔记</a></li>
 <li><a target="_blank" rel="noopener" href="https://developer.android.com/guide/app-bundle/">Android App Bundles</a></li>
 </ul>
 

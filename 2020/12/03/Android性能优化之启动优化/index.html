@@ -17,13 +17,13 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"ljd1996.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="概述应用启动的类型可分为三种：  冷启动：耗时最长，从点击应用图标到创建进程再到 UI 显示且用户可操作的全部过程。 热启动：耗时最短，直接从后台切入前台，只会走 Activity 的部分生命周期方法(onRestart, onResume)。 温启动：耗时介于上面两种启动方式之间，不会重走进程的创建，以及 Application 的创建和生命周期流程，只会重走 Activity 的生命周期。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android性能优化之启动优化">
-<meta property="og:url" content="http://yoursite.com/2020/12/03/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/index.html">
+<meta property="og:url" content="https://ljd1996.github.io/2020/12/03/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/index.html">
 <meta property="og:site_name" content="苍耳的博客">
 <meta property="og:description" content="概述应用启动的类型可分为三种：  冷启动：耗时最长，从点击应用图标到创建进程再到 UI 显示且用户可操作的全部过程。 热启动：耗时最短，直接从后台切入前台，只会走 Activity 的部分生命周期方法(onRestart, onResume)。 温启动：耗时介于上面两种启动方式之间，不会重走进程的创建，以及 Application 的创建和生命周期流程，只会重走 Activity 的生命周期。">
 <meta property="og:locale" content="zh_CN">
@@ -34,7 +34,7 @@
 <meta property="article:tag" content="性能优化">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/2020/12/03/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/">
+<link rel="canonical" href="https://ljd1996.github.io/2020/12/03/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/">
 
 
 <script id="page-configurations">
@@ -196,7 +196,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/12/03/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/12/03/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%90%AF%E5%8A%A8%E4%BC%98%E5%8C%96/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -282,7 +282,7 @@
 </ul>
 <a id="more"></a>
 
-<p>关于冷启动涉及到的内容可以参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/03/18/Android-Activity%E5%8E%9F%E7%90%86/">Android-Activity启动原理</a>, <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/12/16/Android-Application/">Android-Application启动原理</a>, <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/10/21/Android-init-zygote/">Android系统启动流程</a> 和 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/08/27/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86/">Android-Window机制原理</a>。冷启动的流程简要如下：</p>
+<p>关于冷启动涉及到的内容可以参考 <a href="https://ljd1996.github.io/2020/03/18/Android-Activity%E5%8E%9F%E7%90%86/">Android-Activity启动原理</a>, <a href="https://ljd1996.github.io/2019/12/16/Android-Application/">Android-Application启动原理</a>, <a href="https://ljd1996.github.io/2019/10/21/Android-init-zygote/">Android系统启动流程</a> 和 <a href="https://ljd1996.github.io/2020/08/27/Android-Window%E6%9C%BA%E5%88%B6%E5%8E%9F%E7%90%86/">Android-Window机制原理</a>。冷启动的流程简要如下：</p>
 <ul>
 <li>启动 App，加载空白的 StartingWindow 页面。</li>
 <li>Zygote 创建 App 进程，接着启动主线程。</li>
@@ -301,11 +301,11 @@
 <li>WaitTime: 调用 context.startActivity 启动(包括 AMS 的工作) Activity 到第一帧完全显示的总耗时。</li>
 </ul>
 <p><strong>CPU Profiler</strong></p>
-<p>可以使用 CPU Profiler 结合 Debug 类来线下检测启动耗时，关于 CPU Profiler 的使用参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/11/26/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B7%A5%E5%85%B7%E7%AF%87/">Android性能优化之工具篇</a>。</p>
+<p>可以使用 CPU Profiler 结合 Debug 类来线下检测启动耗时，关于 CPU Profiler 的使用参考 <a href="https://ljd1996.github.io/2020/11/26/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B7%A5%E5%85%B7%E7%AF%87/">Android性能优化之工具篇</a>。</p>
 <p><strong>Systrace</strong></p>
-<p>可以使用 Systrace 结合 Trace 类来线下检测启动耗时，关于 Systrace 的使用参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/11/26/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B7%A5%E5%85%B7%E7%AF%87/">Android性能优化之工具篇</a>。</p>
+<p>可以使用 Systrace 结合 Trace 类来线下检测启动耗时，关于 Systrace 的使用参考 <a href="https://ljd1996.github.io/2020/11/26/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B7%A5%E5%85%B7%E7%AF%87/">Android性能优化之工具篇</a>。</p>
 <p><strong>函数插桩</strong></p>
-<p>为了能在线上统计到应用的启动耗时，可以通过函数插桩来统计一些初始化任务的耗时，在 Application 和 Activity 关键生命周期节点打点上报。另外可以使用 AOP 来非侵入式地实现这一功能，关于 AOP 可以参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/categories/AOP/">AOP</a>。</p>
+<p>为了能在线上统计到应用的启动耗时，可以通过函数插桩来统计一些初始化任务的耗时，在 Application 和 Activity 关键生命周期节点打点上报。另外可以使用 AOP 来非侵入式地实现这一功能，关于 AOP 可以参考 <a href="https://ljd1996.github.io/categories/AOP/">AOP</a>。</p>
 <h1 id="StartingWindow"><a href="#StartingWindow" class="headerlink" title="StartingWindow"></a>StartingWindow</h1><p>通过 <code>windowBackground</code> 属性控制 StartingWindow 的背景，将被启动的 Activity 主题的 windowBackground 设置成 StartingWindow 需要的背景(图片等)，然后在 Activity.onCreate 之前再通过 setTheme 方法设置回来。</p>
 <p>这种方法只会在表面上产生一种启动很快的感觉，因为 StartingWindow 默认的白色被更改成了我们需要展示的背景图。</p>
 <h1 id="初始化任务优化"><a href="#初始化任务优化" class="headerlink" title="初始化任务优化"></a>初始化任务优化</h1><p><strong>懒加载</strong></p>
@@ -319,14 +319,14 @@
 <li>多个 Task 链在不同的线程串行执行。</li>
 </ul>
 <p><strong>延迟初始化</strong></p>
-<p>通过 <code>Handler.postDelayed()</code> 来延迟初始化的方案不太好控制具体的延迟时长，如果控制不当，可能造成 APP 对用户操作事件的响应延迟。因此可以利用 Handle 机制中 IdleHandler 的特性，在主线程消息队列空闲时执行一些初始化任务，关于 IdleHandler 的原理可以参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/01/06/Android%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">Android消息机制</a>。</p>
+<p>通过 <code>Handler.postDelayed()</code> 来延迟初始化的方案不太好控制具体的延迟时长，如果控制不当，可能造成 APP 对用户操作事件的响应延迟。因此可以利用 Handle 机制中 IdleHandler 的特性，在主线程消息队列空闲时执行一些初始化任务，关于 IdleHandler 的原理可以参考 <a href="https://ljd1996.github.io/2020/01/06/Android%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">Android消息机制</a>。</p>
 <h1 id="预加载类"><a href="#预加载类" class="headerlink" title="预加载类"></a>预加载类</h1><p>在 Application 中提前异步加载一些加载耗时比较长的类，可以通过替换系统的 ClassLoader 来打印类加载的时间，选择一些加载耗时比较长的类去提前异步加载。</p>
 <p>加载类可以使用两种方法：</p>
 <ul>
 <li><code>Class.forName()</code>: 只加载类本身及其静态变量的引用类。</li>
 <li><code>new Bean()</code>: 会额外加载类成员变量的引用类。</li>
 </ul>
-<h1 id="启动页绘制优化"><a href="#启动页绘制优化" class="headerlink" title="启动页绘制优化"></a>启动页绘制优化</h1><p>参考 <a target="_blank" rel="noopener" href="https://ljd1996.github.io/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B8%83%E5%B1%80%E4%B8%8E%E7%BB%98%E5%88%B6%E4%BC%98%E5%8C%96/">Android性能优化之布局与绘制优化</a>，对启动闪屏页和主页的绘制进行优化，减少绘制时间。</p>
+<h1 id="启动页绘制优化"><a href="#启动页绘制优化" class="headerlink" title="启动页绘制优化"></a>启动页绘制优化</h1><p>参考 <a href="https://ljd1996.github.io/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%B8%83%E5%B1%80%E4%B8%8E%E7%BB%98%E5%88%B6%E4%BC%98%E5%8C%96/">Android性能优化之布局与绘制优化</a>，对启动闪屏页和主页的绘制进行优化，减少绘制时间。</p>
 
     </div>
 

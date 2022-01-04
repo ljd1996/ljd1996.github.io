@@ -17,27 +17,27 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"ljd1996.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="Linux简介关于POSIX的介绍在这里。Linux系统的层次结构如下：  内核坐落在硬件之上，负责实现与I&#x2F;O设备和存储管理单元的交互，并控制CPU对前述设备的访问。如图所示，在最底层，内核包含中断处理程序，它们是与设备交互的主要方式，以及底层的分派机制。这种分派在中断时发生。底层的代码中止正在运行的进程，将其状态存储在内核进程结构中，然后启动相应的驱动程序。进程分派也在内核完成某些操作，并且需">
 <meta property="og:type" content="article">
 <meta property="og:title" content="操作系统-Linux">
-<meta property="og:url" content="http://yoursite.com/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Linux/index.html">
+<meta property="og:url" content="https://ljd1996.github.io/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Linux/index.html">
 <meta property="og:site_name" content="苍耳的博客">
 <meta property="og:description" content="Linux简介关于POSIX的介绍在这里。Linux系统的层次结构如下：  内核坐落在硬件之上，负责实现与I&#x2F;O设备和存储管理单元的交互，并控制CPU对前述设备的访问。如图所示，在最底层，内核包含中断处理程序，它们是与设备交互的主要方式，以及底层的分派机制。这种分派在中断时发生。底层的代码中止正在运行的进程，将其状态存储在内核进程结构中，然后启动相应的驱动程序。进程分派也在内核完成某些操作，并且需">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://yoursite.com/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Linux/Linux%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84.jpg">
-<meta property="og:image" content="http://yoursite.com/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Linux/Linux%E5%86%85%E6%A0%B8%E7%BB%93%E6%9E%84.jpg">
+<meta property="og:image" content="https://ljd1996.github.io/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Linux/Linux%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84.jpg">
+<meta property="og:image" content="https://ljd1996.github.io/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Linux/Linux%E5%86%85%E6%A0%B8%E7%BB%93%E6%9E%84.jpg">
 <meta property="article:published_time" content="2019-12-11T08:39:45.000Z">
 <meta property="article:modified_time" content="2021-05-14T06:14:57.986Z">
 <meta property="article:author" content="苍耳叔叔">
 <meta property="article:tag" content="OS">
 <meta property="article:tag" content="Linux">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://yoursite.com/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Linux/Linux%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84.jpg">
+<meta name="twitter:image" content="https://ljd1996.github.io/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Linux/Linux%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84.jpg">
 
-<link rel="canonical" href="http://yoursite.com/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Linux/">
+<link rel="canonical" href="https://ljd1996.github.io/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Linux/">
 
 
 <script id="page-configurations">
@@ -199,7 +199,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Linux/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/12/11/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-Linux/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -273,7 +273,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="Linux简介"><a href="#Linux简介" class="headerlink" title="Linux简介"></a>Linux简介</h1><p>关于<a target="_blank" rel="noopener" href="https://ljd1996.github.io/2019/11/27/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%AE%BA/#POSIX">POSIX</a>的介绍在这里。Linux系统的层次结构如下：</p>
+        <h1 id="Linux简介"><a href="#Linux简介" class="headerlink" title="Linux简介"></a>Linux简介</h1><p>关于<a href="https://ljd1996.github.io/2019/11/27/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%AE%BA/#POSIX">POSIX</a>的介绍在这里。Linux系统的层次结构如下：</p>
 <p><img src="Linux%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84.jpg" alt="Linux层次结构"></p>
 <p>内核坐落在硬件之上，负责实现与I/O设备和存储管理单元的交互，并控制CPU对前述设备的访问。如图所示，在最底层，内核包含中断处理程序，它们是与设备交互的主要方式，以及底层的分派机制。这种分派在中断时发生。底层的代码中止正在运行的进程，将其状态存储在内核进程结构中，然后启动相应的驱动程序。进程分派也在内核完成某些操作，并且需要再次启动一个用户进程时发生。进程分派的代码是汇编代码，并且和进程调度代码有很大不同。</p>
 <p><img src="Linux%E5%86%85%E6%A0%B8%E7%BB%93%E6%9E%84.jpg" alt="Linux内核结构"></p>
