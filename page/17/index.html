@@ -192,6 +192,792 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2018/06/29/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/06/29/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">计算机网络学习笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-06-29 15:17:19" itemprop="dateCreated datePublished" datetime="2018-06-29T15:17:19+08:00">2018-06-29</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:15:18" itemprop="dateModified" datetime="2021-05-14T14:15:18+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA/" itemprop="url" rel="index"><span itemprop="name">计算机</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2018/06/29/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="计算机网络学习笔记" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/06/29/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/06/29/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="OSI七层模型"><a href="#OSI七层模型" class="headerlink" title="OSI七层模型"></a>OSI七层模型</h1><p>由于OSI(Open System Interconnect)是一个理想的模型，因此一般网络系统只涉及其中的几层，很少有系统能够具有所有的7层，并完全遵循它的规定。</p>
+<p>在7层模型中，每一层都提供一个特殊的网络功能。从网络功能的角度观察：下面4层（物理层、数据链路层、网络层和传输层）主要提供数据传输和交换功能，即以节点到节点之间的通信为主；第4层作为上下两部分的桥梁，是整个网络体系结构中最关键的部分；而上3层（会话层、表示层和应用层）则以提供用户与应用程序之间的信息和数据处理功能为主。</p>
+<p>简言之，下4层主要完成通信子网的功能，上3层主要完成资源子网的功能.OSI下3层的主要任务是数据通信，上3层的任务是数据处理。</p>
+<p>Socket：是应用层与传输层之间的桥梁.</p>
+<p><strong>协议</strong></p>
+<table>
+<thead>
+<tr>
+<th align="center">OSI七层网络模型</th>
+<th align="center">TCP/IP四层概念模型</th>
+<th align="center">对应网络协议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">应用层（Application）</td>
+<td align="center">应用层</td>
+<td align="center">HTTP、TFTP, FTP, NFS, WAIS、SMTP</td>
+</tr>
+<tr>
+<td align="center">表示层（Presentation）</td>
+<td align="center">应用层</td>
+<td align="center">Telnet, Rlogin, SNMP, Gopher</td>
+</tr>
+<tr>
+<td align="center">会话层（Session）</td>
+<td align="center">应用层</td>
+<td align="center">SMTP, DNS</td>
+</tr>
+<tr>
+<td align="center">传输层（Transport）</td>
+<td align="center">传输层</td>
+<td align="center">TCP, UDP</td>
+</tr>
+<tr>
+<td align="center">网络层（Network）</td>
+<td align="center">网络层</td>
+<td align="center">IP, ICMP, ARP, RARP, AKP, UUCP</td>
+</tr>
+<tr>
+<td align="center">数据链路层（Data Link）</td>
+<td align="center">数据链路层</td>
+<td align="center">FDDI, Ethernet, Arpanet, PDN, SLIP, PPP</td>
+</tr>
+<tr>
+<td align="center">物理层（Physical）</td>
+<td align="center">数据链路层</td>
+<td align="center">IEEE 802.1A, IEEE 802.2到IEEE 802.11</td>
+</tr>
+</tbody></table>
+<p><strong>物理层</strong></p>
+<ul>
+<li><p>利用传输介质为数据链路层提供物理连接，实现比特流的传输（比特Bit）.</p>
+</li>
+<li><p>物理层的作用是实现相邻计算机节点之间比特流的透明传送，尽可能屏蔽掉具体传输介质和物理设备的差异。使其上面的数据链路层不必考虑网络的具体传输介质是什么。“透明传送比特流”表示经实际电路传送后的比特流没有发生变化，对传送的比特流来说，这个电路好像是看不见的</p>
+</li>
+<li><p>把二进制转换成电流，把电流转换成二进制（单位是bit比特）</p>
+</li>
+</ul>
+<p><strong>数据链路层</strong></p>
+<ul>
+<li>将比特组装成帧和点到点的传递（帧Frame）</li>
+<li>通过各种控制协议，将有差错的物理信道变为无差错的、能可靠传输数据帧的数据链路.</li>
+<li>在计算机网络中由于各种干扰的存在，物理链路是不可靠的。因此，这一层的主要功能是在物理层提供的比特流的基础上，通过差错控制、流量控制方法，使有差错的物理线路变为无差错的数据链路，即提供可靠的通过物理介质传输数据的方法</li>
+<li>数据链路层的具体工作是：接收来自物理层的位流形式的数据，并封装成帧，传送到上一层；同样，也将来自上层的数据帧，拆装为位流形式的数据转发到物理层</li>
+<li>将二进制数据转换成标准帧格式（起始位、数据、地址、校验、结束位）</li>
+<li>与数据链路层有关的设备：交换机，也就是大家常说的猫（为数据帧从一个端口到另一个任意端口的转发提供了低时延、低开销的通路）</li>
+<li>如果把电脑比如成客户，数据链路比喻成物流，那么快递小哥通过电脑MAC地址（MAC地址由网卡决定）找到客户地址</li>
+</ul>
+<p><strong>网络层</strong></p>
+<ul>
+<li><p>数据链路层的数据在这一层被转换为数据包(package).</p>
+</li>
+<li><p>其主要任务是：通过路由选择算法，为报文或分组通过通信子网选择最适当的路径。该层控制数据链路层与传输层之间的信息转发，建立、维持和终止网络的连接。具体地说，数据链路层的数据在这一层被转换为数据包，然后通过路径选择、分段组合、顺序、进/出路由等控制，将信息从一个网络设备传送到另一个网络设备</p>
+</li>
+<li><p>寻址：数据链路层中使用的物理地址（如MAC地址）仅解决网络内部的寻址问题。在不同子网之间通信时，为了识别和找到网络中的设备，每一子网中的设备都会被分配一个唯一的地址。由于各子网使用的物理技术可能不同，因此这个地址应当是逻辑地址（如IP地址）。</p>
+</li>
+<li><p>交换：规定不同的信息交换方式。常见的交换技术有：线路交换技术和存储转发技术，后者又包括报文交换技术和分组交换技术。</p>
+</li>
+<li><p>路由算法：当源节点和目的节点之间存在多条路径时，本层可以根据路由算法，通过网络为数据分组选择最佳路径，并将信息从最合适的路径由发送端传送到接收端。</p>
+</li>
+<li><p>连接服务：与数据链路层流量控制不同的是，前者控制的是网络相邻节点间的流量，后者控制的是从源节点到目的节点间的流量。其目的在于防止阻塞，并进行差错检测</p>
+</li>
+<li><p>网络层有关的设备：路由器（一个作用是连通不同的网络，另一个作用是选择信息传送的线路）</p>
+</li>
+<li><p>网络层主要有两个作用</p>
+<p>  选择数据传输的最优路径，解决网络阻塞问题（网络阻塞的原因主要是CPU需要处理数据有一定延迟）</p>
+<p>  将大的数据切割成小的数据包，根据不同时间段的不同最优路径进行传输（可以联想看片时候的断点续传）</p>
+</li>
+<li><p>互联网通过ip地址识别电脑.</p>
+</li>
+</ul>
+<p><strong>传输层</strong></p>
+<ul>
+<li>传输层是通信子网和资源子网的接口和桥梁，起到承上启下的作用</li>
+<li>该层的主要任务是：定义了一些传输数据的协议和端口号（如HTTP的端口80等），TCP,UDP。 主要是从下层接收的数据进行分段和传输，到达目的地址后再进行重组。常常把这一层数据叫做报文段(Segment)</li>
+<li>电脑通过通过端口号识别某一个应用程序,每一个应用程序都有很多的服务，每一个服务对应着一个端口号</li>
+</ul>
+<p><strong>会话层</strong></p>
+<ul>
+<li>建立、管理和终止会话（会话协议数据单元SPDU）</li>
+<li>会话层是用户应用程序和网络之间的接口，主要任务是：向两个实体的表示层提供建立和使用连接的方法。将不同实体之间的表示层的连接称为会话。因此会话层的任务就是组织和协调两个会话进程之间的通信，并对数据交换进行管理</li>
+<li>通过传输层（端口号：传输端口与接收端口）建立数据传输的通路。主要在你的系统之间发起会话或者接受会话请求（设备之间需要互相认识可以是IP也可以是MAC或者是主机名）</li>
+<li><font color="#990000">数据的传输是在会话层完成的，而不是传输层，传输层只是定义了数据传输的协议</font></li>
+</ul>
+<p><strong>表示层</strong></p>
+<ul>
+<li>对数据进行翻译、加密和压缩（表示协议数据单元PPDU）</li>
+<li>表示层对来自应用层的命令和数据进行解释，对各种语法赋予相应的含义，并按照一定的格式传送给会话层。其主要功能是“处理用户信息的表示问题，如编码、数据格式转换和加密解密”等</li>
+<li>可确保一个系统的应用层所发送的信息可以被另一个系统的应用层读取。例如，PC程序与另一台计算机进行通信，其中一台计算机使用扩展二一十进制交换码（EBCDIC），而另一台则使用美国信息交换标准码（ASCII）来表示相同的字符。如有必要，表示层会通过使用一种通格式来实现多种数据格式之间的转换</li>
+<li>表示层的任务：数据格式转换（可以理解成iOS中将c语言的char字符转换成OC语言的NSString）</li>
+</ul>
+<p><strong>应用层</strong></p>
+<ul>
+<li>允许访问OSI环境的手段（应用协议数据单元APDU）</li>
+<li>应用层是计算机用户，以及各种应用程序和网络之间的接口，其功能是直接向用户提供服务，完成用户希望在网络上完成的各种工作</li>
+<li>是最靠近用户的OSI层。这一层为用户的应用程序（例如电子邮件、文件传输和终端仿真）提供网络服务</li>
+</ul>
+<h1 id="单工-半双工-全双工"><a href="#单工-半双工-全双工" class="headerlink" title="单工,半双工,全双工"></a>单工,半双工,全双工</h1><ul>
+<li>单工：单工就是指A只能发信号，而B只能接收信号，通信是单向的。</li>
+<li>半双工：指一个时间段内只有一个动作发生，举个简单例子，一天窄窄的马路，同时只能有一辆车通过，当目前有两量车对开，这种情况下就只能一辆先过，等到头儿后另一辆再开，这个例子就形象的说明了半双工的原理。早期的对讲机、以及早期集线器等设备都是实行半双工的产品。随着技术的不断进步，半双工会逐渐退出历史舞台。</li>
+<li>全双工：指交换机在发送数据的同时也能够接收数据，两者同步进行，这好像我们平时打电话一样，说话的同时也能够听到对方的声音。目前的交换机都支持全双工。</li>
+</ul>
+<h1 id="IP地址"><a href="#IP地址" class="headerlink" title="IP地址"></a>IP地址</h1><p><strong>IP地址</strong></p>
+<p>IP地址:&lt;网络号&gt;&lt;主机号&gt;.</p>
+<ul>
+<li>A类地址：以0开头，第一个字节范围：0~127（1.0.0.0 - 126.255.255.255）；</li>
+<li>B类地址：以10开头，第一个字节范围：128~191（128.0.0.0 - 191.255.255.255）；</li>
+<li>C类地址：以110开头，第一个字节范围：192~223（192.0.0.0 - 223.255.255.255）；</li>
+</ul>
+<p><strong>私有（保留）地址</strong></p>
+<ul>
+<li>A类：10.0.0.0——10.255.255.255</li>
+<li>B类：172.16.0.0——172.31.255.255</li>
+<li>C类：192.168.0.0——192.168.255.255</li>
+</ul>
+<p><strong>子网划分</strong></p>
+<p>三级ip地址：&lt;网络号&gt;&lt;子网号&gt;&lt;主机号&gt;</p>
+<h1 id="TCP-amp-UDP-传输层"><a href="#TCP-amp-UDP-传输层" class="headerlink" title="TCP&amp;UDP(传输层)"></a>TCP&amp;UDP(传输层)</h1><p><strong>TCP三次握手与四次挥手</strong></p>
+<p>主要因为这是一次全双工的，双方都需要证明自己有发送和接收的能力。握手只需要三次是因为服务端的SYN和ACK可以一次发送给客户端。</p>
+<p><img src="TCP%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B.png"></p>
+<p>为什么TCP客户端最后还要发一次确认呢？</p>
+<p>防止已经失效的连接请求报文突然又传送到了服务器，从而产生错误。如果使用的是两次握手建立连接，假设有这样一种场景，客户端发送了第一个请求连接并且没有丢失，只是因为在网络结点中滞留的时间太长了，由于TCP的客户端迟迟没有收到确认报文，以为服务器没有收到，此时重新向服务器发送这条报文，此后客户端和服务器经过两次握手完成连接，传输数据，然后关闭连接。此时此前滞留的那一次请求连接，网络通畅了到达了服务器，这个报文本该是失效的，但是，两次握手的机制将会让客户端和服务器再次建立连接，这将导致不必要的错误和资源的浪费。</p>
+<p>如果采用的是三次握手，就算是那一次失效的报文传送过来了，服务端接受到了那条失效报文并且回复了确认报文，但是客户端不会再次发出确认。由于服务器收不到确认，就知道客户端并没有请求连接。</p>
+<p><img src="TCP%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B.png"></p>
+<ol>
+<li>客户端进程发出连接释放报文，并且停止发送数据。</li>
+<li>服务器收到连接释放报文，发出确认报文，服务端就进入了CLOSE-WAIT（关闭等待）状态。</li>
+<li>客户端收到服务器的确认请求后，此时，客户端就进入FIN-WAIT-2（终止等待2）状态，等待服务器发送连接释放报文（在这之前还需要接受服务器发送的最后的数据）。</li>
+<li>服务器将最后的数据发送完毕后，就向客户端发送连接释放报文。</li>
+<li>客户端收到服务器的连接释放报文后，必须发出确认。此时，客户端就进入了TIME-WAIT（时间等待）状态。注意此时TCP连接还没有释放，必须经过2∗ *∗MSL（最长报文段寿命）的时间后，当客户端撤销相应的TCB后，才进入CLOSED状态。</li>
+<li>服务器只要收到了客户端发出的确认，立即进入CLOSED状态。</li>
+</ol>
+<p>为什么客户端最后还要等待2MSL？</p>
+<ol>
+<li>保证客户端发送的最后一个ACK报文能够到达服务器，因为这个ACK报文可能丢失，站在服务器的角度看来，我已经发送了FIN+ACK报文请求断开了，客户端还没有给我回应，应该是我发送的请求断开报文它没有收到，于是服务器又会重新发送一次，而客户端就能在这个2MSL时间段内收到这个重传的报文，接着给出回应报文，并且会重启2MSL计时器。</li>
+<li>防止类似与“三次握手”中提到了的“已经失效的连接请求报文段”出现在本连接中。客户端发送完最后一个确认报文后，在这个2MSL时间中，就可以使本连接持续的时间内所产生的所有报文段都从网络中消失。这样新的连接中不会出现旧连接的请求报文。</li>
+</ol>
+<p>为什么建立连接是三次握手，关闭连接确是四次挥手呢？</p>
+<ol>
+<li>当主机甲想要释放连接时会发FIN给主机B。</li>
+<li>主机乙收到甲发送的FIN，表示收到了，就会发送ACK回复。</li>
+<li>但这是乙可能还在发送数据，没有想要关闭数据口的意思，所以FIN与ACK不是同时发送的，而是等到乙数据发送完了，才会发送FIN给主机A.</li>
+<li>A收到B发来的FIN，知道B的数据也发送完了，回复ACK，A等待2MSL以后，没有收到B传来的任何消息，知道B已经收到自己的ACK了，A就关闭链接，B也关闭链接了。</li>
+</ol>
+<p><strong>TCP和UDP</strong></p>
+<p><em>UDP</em></p>
+<ul>
+<li>面向无连接</li>
+<li>有单播，多播，广播的功能：支持一对一，一对多，多对多，多对一的方式。</li>
+<li>面向报文：发送方对应用程序的报文添加首部后就向下交付IP层，既不合并，也不拆分，因此应用程序必须选择合适大小的报文。</li>
+<li>不可靠性：不需建立连接，不关心接收端是否接收到信息。适合实时性要求高的场景（比如电话会议）。</li>
+<li>头部开销小，传输数据报文时是很高效的。</li>
+</ul>
+<p><em>TCP</em></p>
+<ul>
+<li>面向连接：三次握手四次挥手。</li>
+<li>仅支持单播传输：点对点。</li>
+<li>面向字节流</li>
+<li>可靠传输：给每个包一个序列号，接收端按序接收，然后发送确认ACK，发送端决定是否重传。</li>
+<li>拥塞控制</li>
+</ul>
+<p><strong>TCP流量控制</strong></p>
+<p>所谓流量控制就是让发送方的发送速率不要太快，要让接收方来得及接收。利用滑动窗口实现流量控制。</p>
+<p>发送窗口在连接建立时由双方商定。但在通信的过程中，接收端可根据自己的资源情况，随时动态地调整对方的发送窗口上限值(可增大或减小)。</p>
+<p><strong>TCP拥塞控制</strong></p>
+<p>所谓拥塞控制就是防止过多的数据注入到网络中，这样可以使网络中的路由器或链路不致过载。</p>
+<p><em>慢开始和拥塞避免</em></p>
+<ol>
+<li>在主机刚刚开始发送报文段时可先将拥塞窗口 cwnd 设置为一个最大报文段 MSS 的数值。</li>
+<li>在每收到一个对新的报文段的确认后，将拥塞窗口增加至多一个 MSS 的数值。</li>
+<li>用这样的方法逐步增大发送端的拥塞窗口 cwnd，可以使分组注入到网络的速率更加合理。</li>
+</ol>
+<p><em>快重传和快恢复</em></p>
+<ul>
+<li>快重传：发送端只要一连收到三个重复的 ACK 即可断定有分组丢失了，就应立即重传丢失的报文段而不必继续等待为该报文段设置的重传计时器的超时</li>
+<li>快恢复：<ol>
+<li>当发送端收到连续三个重复的 ACK 时，就重新设置慢开始门限 ssthresh。</li>
+<li>与慢开始不同之处是 swnd 不是设置为 1，而是设置为 ssthresh + 3 * MSS。</li>
+<li>若收到的重复的 ACK 为 n 个（n &gt; 3），则将 cwnd 设置为 ssthresh + n * MSS。</li>
+<li>若发送窗口值还容许发送报文段，就按拥塞避免算法继续发送报文段。</li>
+<li>若收到了确认新的报文段的 ACK，就将 swnd 缩小到 ssthresh。</li>
+</ol>
+</li>
+</ul>
+<h1 id="http-amp-https"><a href="#http-amp-https" class="headerlink" title="http&amp;https"></a>http&amp;https</h1><p><strong>Http码</strong></p>
+<ul>
+<li>1xx （临时响应）请求正在处理，可能需要请求者执行某些操作。</li>
+<li>2xx （成功）表示成功处理了请求的状态代码。</li>
+<li>3xx （重定向） 表示要完成请求，需要进一步操作。 通常，这些状态代码用来重定向。</li>
+<li>4xx （客户端错误） 这些状态代码表示客户端请求可能出错，服务器无法处理。</li>
+<li>5xx （服务器错误）这些状态代码表示服务器在尝试处理请求时发生内部错误。这些错误可能是服务器本身的错误，而不是请求出错。</li>
+</ul>
+<p><strong>http和https的区别与联系</strong></p>
+<p>HTTP协议传输的数据都是明文，因此使用HTTP协议传输隐私信息非常不安全。为了保证这些隐私数据能加密传输，于是通过 SSL 协议用于对HTTP协议传输的数据进行加密，从而就诞生了HTTPS。</p>
+<p>HTTPS和HTTP的区别主要如下：</p>
+<ol>
+<li>https协议需要到ca申请证书，一般免费证书较少，因而需要一定费用。</li>
+<li>http是超文本传输协议，信息是明文传输，https则是具有安全性的ssl加密传输协议。</li>
+<li>http和https使用的是完全不同的连接方式，用的端口也不一样，前者是80，后者是443。</li>
+<li>http是无状态(每个请求都是完全独立的，每个请求包含了处理这个请求所需的完整的数据，发送请求不涉及到状态变更，也不依赖之前的状态)的；HTTPS协议是由SSL+HTTP协议构建的，http是无状态的，ssl/tls是有状态的。</li>
+</ol>
+<p><img src="HTTPS%E8%BF%9E%E6%8E%A5%E8%BF%87%E7%A8%8B.jpg" alt="https"></p>
+<p><strong>Http1.0, 1.1, 2.0</strong></p>
+<ul>
+<li>HTTP 1.1支持长连接，使用长连接的情况下，连接成功后客户端和服务器之间用于的TCP连接不会关闭，一段时间内如果客户端再次访问这个服务器，会继续使用这一条已经建立的连接(Connection:keep-alive)。HTTP 1.0规定浏览器与服务器只保持短暂的连接，每次请求都需要与服务器建立TCP连接，完成处理后立即断开TCP连接。</li>
+<li>HTTP 1.0认为每台服务器都绑定一个唯一的IP地址，虚拟主机发展后一台物理服务器上可以存在多个虚拟主机，它们共享一个IP地址，因此添加了主机host参数。</li>
+<li>HTTP 1.1在1.0的基础上加入了一些cache的新特性。HTTP 1.0使用Expires头标识缓存的有效期，其值是一个绝对时间，依赖客户端的本地时间。从HTTP 1.1 开始使用Cache-Control头表示缓存状态。</li>
+<li>新增了24个状态响应码，如 410 表示服务器上的某个资源被永久性的删除。</li>
+<li>http 1.1在请求头引入了range头，支持断点续传。</li>
+</ul>
+<p>HTTP 2.0:</p>
+<ul>
+<li>HTTP 1.x的解析基于文本，HTTP 2.0在应用层和传输层之间增加一个二进制分帧层，它把原来 HTTP 1.x的header和body用二进制重新封装了一层。</li>
+<li>HTTP 2.0多路复用基于二进制分帧，在同一域名下所有访问都从同一个tcp连接中走，http消息被分解为独立的帧，乱序发送，服务端根据帧id重新组装起来。</li>
+<li>头部压缩：HTTP1.x的header带有大量信息，而且每次都要重复发送，HTTP2.0要求客户端和服务器同时维护和更新一个包含之前见过的头字段的索引列表(cache)，之后传输的头信息会基于此表编码和解码。</li>
+<li>服务器推送：服务器可以额外的向客户端推送资源，而无需客户端明确的请求</li>
+</ul>
+<p><strong>HTTP是不保存状态的协议，如何保存用户状态?</strong></p>
+<p>HTTP 协议自身不对请求和响应之间的通信状态进行保存，使用Session可以服务端记录用户的状态。服务端给特定的用户创建特定的 Session 之后就可以标识这个用户并且跟踪这个用户了（一般情况下，服务器会在一定时间内保存这个 Session，过了时间限制，就会销毁这个Session）。</p>
+<ul>
+<li>Cookie: 浏览器的一种数据存储方式。</li>
+<li>Session: 会话。服务器使用Session把用户的信息临时保存在服务器上，用户离开网站后Session会被销毁。客户端得到这个Session Id后可以存储在Cookie里。这里有个缺陷，如果Web服务器有许多台，那么下次请求如果请求到了另一个服务器上的时候就验证不了Session了。</li>
+<li>Token: 也用来做身份验证，但是服务器不需要存储Token信息，服务器会在用户登录成功后返回一个签名后的Token回来，下次请求带上，服务器再解密验证即可。</li>
+</ul>
+<h1 id="浏览器访问http网址"><a href="#浏览器访问http网址" class="headerlink" title="浏览器访问http网址"></a>浏览器访问http网址</h1><ol>
+<li>客户端浏览器输入URL后，检查本地是否有DNS缓存，缓存的查找顺序为：浏览器缓存–&gt;系统缓存–&gt;路由器缓存，缓存中没有则查找系统的hosts文件中是否有记录，如果没有则查询DNS服务器。</li>
+<li>应用层客户端浏览器根据ip及相应的端口号，构造一个http请求，包括请求头和请求体，封装在TCP包里。</li>
+<li>然后传输层TCP通过三次握手建立连接(SYN–&gt;ACK/SYN–&gt;ACK)，TCP进行分割数据包，输入到网络层。</li>
+<li>网络层ip协议通过查找路由表决定通过哪个路径到达服务器，把数据包发送给服务器。</li>
+<li>数据到达数据链路层，将数据发送给指定mac地址的服务器。</li>
+</ol>
+<h1 id="交换机、路由器、网关"><a href="#交换机、路由器、网关" class="headerlink" title="交换机、路由器、网关"></a>交换机、路由器、网关</h1><p><strong>交换机</strong></p>
+<p>交换机工作于数据链路层。交换机内部的CPU会在每个端口成功连接时，通过ARP协议学习它的MAC地址，保存成一张ARP表。在今后的通讯中，发往该MAC地址的数据包将仅送往其对应的端口，而不是所有的端口。因此，交换机可用于划分数据链路层广播，即冲突域；但它不能划分网络层广播，即广播域。</p>
+<p>交换机被广泛应用于二层网络交换，俗称“二层交换机”。</p>
+<p>交换机的种类有：二层交换机、三层交换机、四层交换机、七层交换机分别工作在OSI七层模型中的第二层、第三层、第四层和第七层，并因此而得名。</p>
+<p><strong>路由器</strong></p>
+<p>路由器（Router）是一种计算机网络设备，提供了路由与转送两种重要机制，可以决定数据包从来源端到目的端所经过的路由路径（host到host之间的传输路径），这个过程称为由；将路由器输入端的数据包移送至适当的路由器输出端(在路由器内部进行)，这称为转 送。路由工作在OSI模型的第三层——即网络层，例如网际协议。</p>
+<p>路由器的一个作用是连通不同的网络，另一个作用是选择信息传送的线路。</p>
+<p>路由器与交换器的差别，路由器是属于OSI第三层(网络层)的产品，交换器是OSI第二层的产品(这里特指二层交换机)。</p>
+<p><strong>网关</strong></p>
+<p>网关（Gateway），网关顾名思义就是连接两个网络的设备，区别于路由器（由于历史的原因，许多有关TCP/IP 的文献曾经把网络层使用的路由器（Router）称为网关，在今天很多局域网采用都是路由来接入网络，因此现在通常指的网关就是路由器的IP），经常在家 庭中或者小型企业网络中使用，用于连接局域网和Internet。 网关也经常指把一种协议转成另一种协议的设备，比如语音网关。</p>
+<p>在现代网络术语中，网关（gateway）与路由器（router）的定义不同。网关（gateway）能在不同协议间移动数据，而路由器（router）是在不同网络间移动数据，相当于传统所说的IP网关（IP gateway）。</p>
+<p>网关是连接两个网络的设备，对于语音网关来说，他可以连接PSTN网络和以太网，这就相当于VOIP，把不同电话中的模拟信号通过网关而转换成数字信号，而且加入协议再去传输。在到了接收端的时候再通过网关还原成模拟的电话信号，最后才能在电话机上听到。</p>
+<p>对于以太网中的网关只能转发三层以上数据包，这一点和路由是一样的。而不同的是网关中并没有路由表，他只能按照预先设定的不同网段来进行转发。网关最重要的一点就是端口映射，子网内用户在外网看来只是外网的IP地址对应着不同的端口，这样看来就会保护子网内的用户。</p>
+<p><strong>网桥</strong></p>
+<p>简单的说网桥就是个硬件网络协议翻译器，假设你有2台电脑，一台兼容机安装windows，一台是Apple安装OS2，那么两台电脑之间是默认网络协议是不同的，兼容机可能只会说TCP/IP，苹果机只会说Apple talk，就好象两个外国人都不会说对方的语言，怎么办？找个翻译，网桥就是翻译。</p>
+<p>在386、486时代网桥可能是一台安装了协议转换程序的电脑，如今交换机也包含这个功能。今天的操作系统之间为了互相交流，支持更多的协议，操作系统自己就可以是网桥，现在网桥这个概念已经淡出了。更多是所谓的桥接、转发、协议二次封装。</p>
+<p>网桥也可以说相当一个端口少的二层交换机，再者网桥主要由软件实现，交换机主要由硬件实现！</p>
+<p><strong>网络接口卡（网卡）</strong></p>
+<ol>
+<li>进行串行/并行转换。</li>
+<li>对数据进行缓存。</li>
+<li>在计算机的操作系统安装设备驱动程序。</li>
+<li>实现以太网协议。</li>
+</ol>
+<p><strong>路由表</strong></p>
+<p>路由表是用来决定如何将一个数据包从一个子网传送到另一个子网的，换句话说就是用来决定从一个网卡接收到的包应该送到哪一个网卡上去。</p>
+<p>路由表的每一行至少有目标网络号、子网掩码、到这个子网应该使用的网卡这三条信息。当路由器从一个网卡接收到一个包时，它扫描路由表的每一行，用里面的子网掩码与数据包中的目标IP地址做逻辑与运算（&amp;）找出目标网络号。如果得出的结果网络号与这一行的网络号相同，就将这条路由表六下来作为备用路由。如果已经有备用路由了，就载这两条路由里将网络号最长的留下来，另一条丢掉（这是用无分类编址CIDR的情况才是匹配网络号最长的，其他的情况是找到第一条匹配的行时就可以进行转发了）。如此接着扫描下一行直到结束。如果扫描结束仍没有找到任何路由，就用默认路由。确定路由后，直接将数据包送到对应的网卡上去。在具体的实现中，路由表可能包含更多的信息为选路由算法的细节所用。</p>
+<h1 id="ssh"><a href="#ssh" class="headerlink" title="ssh"></a>ssh</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>SSH的英文全称为Secure Shell，是IETF（Internet Engineering Task Force）的Network Working Group所制定的一族协议，其目的是要在非安全网络上提供安全的远程登录和其他安全网络服务。用于在主机之间建立起安全连接, 并加密传输内容, 以达到安全的远程访问, 操作以及数据传输的目的。它只是一种协议，存在多种实现，既有商业实现，也有开源实现。比较常用的是OpenSSH，它是自由软件，应用非常广泛。</p>
+<p>SSH协议目前有SSH1和SSH2两个主流版本，SSH2协议兼容SSH1，强烈建议使用SSH2版本。目前实现SSH1和SSH2协议的主要软件有OpenSSH 和SSH Communications Security Corporation　公司的SSH Communications 软件。前者是OpenBSD组织开发的一款免费的SSH软件，后者是商业软件，因此在linux、FreeBSD、OpenBSD 、NetBSD等免费类UNIX系统种，通常都使用OpenSSH作为SSH协议的实现软件。</p>
+<p>SSH主要有两个特点: 1. 安全性 2. 传输速度快。与FTP、POP 和 Telnet 等传统网络服务使用明文传输数据、命令和口令不同，SSH可以对所有传输的数据进行加密，能够防止 DNS 欺骗和 IP 欺骗。</p>
+<p>如果一个用户从本地计算机，使用SSH协议登录另一台远程计算机，我们就可以认为，这种登录是安全的，即使被中途截获，密码也不会泄露。</p>
+<p>SSH支持两种认证方式：密码认证和密钥认证。</p>
+<h2 id="中间人攻击"><a href="#中间人攻击" class="headerlink" title="中间人攻击"></a>中间人攻击</h2><p>SSH之所以能够保证安全，原因在于它采用了公钥加密。</p>
+<p>整个过程是这样的：（1）远程主机收到用户的登录请求，把自己的公钥发给用户。（2）用户使用这个公钥，将登录密码加密后，发送回来。（3）远程主机用自己的私钥，解密登录密码，如果密码正确，就同意用户登录。</p>
+<p>这个过程本身是安全的，但是实施的时候存在一个风险：如果有人截获了登录请求，然后冒充远程主机，将伪造的公钥发给用户，那么用户很难辨别真伪。因为不像https协议，SSH协议的公钥是没有证书中心（CA）公证的，也就是说，都是自己签发的。</p>
+<p>可以设想，如果攻击者插在用户与远程主机之间（比如在公共的wifi区域），用伪造的公钥，获取用户的登录密码。再用这个密码登录远程主机，那么SSH的安全机制就荡然无存了。这种风险就是著名的”中间人攻击”（Man-in-the-middle attack）。</p>
+<h2 id="密码认证"><a href="#密码认证" class="headerlink" title="密码认证"></a>密码认证</h2><ol>
+<li>客户端向服务端发起登录请求，服务端将自己的公钥返回给客户端</li>
+<li>客户端输入登录口令，口令经服务端公钥加密后发送到服务端</li>
+<li>服务端接收到加密口令后使用私钥解密，如果密码正确则登录成功</li>
+</ol>
+<p>第一次登录对方主机时，系统会出现下面的提示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh user@host</span></span><br><span class="line">The authenticity of host &#x27;host (12.18.429.21)&#x27; can&#x27;t be established.</span><br><span class="line">RSA key fingerprint is 98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d.</span><br><span class="line">Are you sure you want to continue connecting (yes/no)?</span><br></pre></td></tr></table></figure>
+
+<p>这段话的意思是，无法确认host主机的真实性，只知道它的公钥指纹，问你还想继续连接吗？</p>
+<p>所谓”公钥指纹”，是指公钥长度较长（这里采用RSA算法，长达1024位），很难比对，所以对其进行MD5计算，将它变成一个128位的指纹。上例中是98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d，再进行比较，就容易多了。</p>
+<p>远程主机必须在自己的网站上贴出公钥指纹，以便用户自行核对。</p>
+<p>当远程主机的公钥被接受以后，它就会被保存在文件$HOME/.ssh/known_hosts之中。下次再连接这台主机，系统就会认出它的公钥已经保存在本地了，从而跳过警告部分，直接提示输入密码。</p>
+<p>每个SSH用户都有自己的known_hosts文件，此外系统也有一个这样的文件，通常是/etc/ssh/ssh_known_hosts，保存一些对所有用户都可信赖的远程主机的公钥。</p>
+<h2 id="密钥认证"><a href="#密钥认证" class="headerlink" title="密钥认证"></a>密钥认证</h2><ol>
+<li>客户端发起密钥连接请求，并上传身份信息</li>
+<li>服务端收到请求后，在可信列表中查询客户端，若无此客户端则断开连接，否则发送一串随机问询码，该问询码使用此客户端公钥加密处理</li>
+<li>客户端收到加密问询码后，使用私钥解密出问询码再用通信session对问询码加密并传送给服务端</li>
+<li>服务端解密问询码并判定客户端身份安全与否，安全则建立连接</li>
+</ol>
+<p>登录的时候，远程主机会向用户发送一段随机字符串，用户用自己的私钥加密后，再发回来。远程主机用事先储存的公钥进行解密，如果成功，就证明用户是可信的，直接允许登录shell，不再要求密码。</p>
+<p>因此，密钥认证首要要将客户端的公钥放置在服务端的授权登录列表中。密钥认证一般不需要密码，但客户端可在生成密钥时指定密钥加密密码，这样在与服务端建立连接时需要输入加密密码来解密私钥，防止因私钥泄露带来的安全问题。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 生成密钥对</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ssh-keygen</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 将公钥传送到远程主机host</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> ssh-copy-id user@host</span></span><br></pre></td></tr></table></figure>
+
+<p>以后再登录，就不需要输入密码了。</p>
+<p>如果还是不行，就打开远程主机的/etc/ssh/sshd_config这个文件，检查下面几行前面”#”注释是否取掉。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">RSAAuthentication yes</span><br><span class="line">PubkeyAuthentication yes</span><br><span class="line">AuthorizedKeysFile .ssh/authorized_keys</span><br></pre></td></tr></table></figure>
+
+<p>然后，重启远程主机的ssh服务。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> ubuntu系统</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> service ssh restart</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> debian系统</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> /etc/init.d/ssh restart</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="authorized-keys文件"><a href="#authorized-keys文件" class="headerlink" title="authorized_keys文件"></a>authorized_keys文件</h2><p>远程主机将用户的公钥，保存在登录后的用户主目录的$HOME/.ssh/authorized_keys文件中。公钥就是一段字符串，只要把它追加在authorized_keys文件的末尾就行了。</p>
+<p>这里不使用上面的ssh-copy-id命令，改用下面的命令，解释公钥的保存过程：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ssh user@host <span class="string">&#x27;mkdir -p .ssh &amp;&amp; cat &gt;&gt; .ssh/authorized_keys&#x27;</span> &lt; ~/.ssh/id_rsa.pub</span></span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><code>$ ssh user@host</code>表示登录远程主机；</li>
+<li><code>mkdir .ssh &amp;&amp; cat &gt;&gt; .ssh/authorized_keys</code>表示登录后在远程shell上执行的命令：</li>
+<li><code>$ mkdir -p .ssh</code>的作用是，如果用户主目录中的.ssh目录不存在，就创建一个；</li>
+<li><code>cat &gt;&gt; .ssh/authorized_keys&#39; &lt; ~/.ssh/id_rsa.pub</code>的作用是，将本地的公钥文件~/.ssh/id_rsa.pub，重定向追加到远程文件authorized_keys的末尾。</li>
+</ol>
+<p>写入authorized_keys文件后，公钥登录的设置就完成了。</p>
+<h1 id="SSL、TLS、SSH-amp-HTTPS"><a href="#SSL、TLS、SSH-amp-HTTPS" class="headerlink" title="SSL、TLS、SSH&amp;HTTPS"></a>SSL、TLS、SSH&amp;HTTPS</h1><h2 id="SSL（Secure-Socket-Layer）"><a href="#SSL（Secure-Socket-Layer）" class="headerlink" title="SSL（Secure Socket Layer）"></a>SSL（Secure Socket Layer）</h2><ul>
+<li>SSL是传输层之上，对Socket连接的加密协议。</li>
+<li>SSL多用于Internet上，在浏览器和服务器之间的安全传输。</li>
+<li>OpenSSL是SSL/TLS的开源实现。</li>
+</ul>
+<h2 id="TLS（Transport-Layer-Security）"><a href="#TLS（Transport-Layer-Security）" class="headerlink" title="TLS（Transport Layer Security）"></a>TLS（Transport Layer Security）</h2><ul>
+<li>TLS也是传输层之上的加密协议。</li>
+<li>TLS可用于任何两个应用程序之间的安全传输。</li>
+<li>OpenSSL是SSL/TLS的开源实现。</li>
+</ul>
+<h2 id="SSH（Secure-Shell）"><a href="#SSH（Secure-Shell）" class="headerlink" title="SSH（Secure Shell）"></a>SSH（Secure Shell）</h2><ul>
+<li>SSH是应用层的通信加密协议，往往用于远程登录的会话。</li>
+<li>OpenSSH是SSH的开源实现。</li>
+</ul>
+<h2 id="HTTPS"><a href="#HTTPS" class="headerlink" title="HTTPS"></a>HTTPS</h2><ul>
+<li>在传输层使用SSL/TLS加密的HTTP</li>
+<li>与HTTP类似，HTTPS本身是应用层的协议。</li>
+<li>同一台Web服务器，往往同时支持HTTP和HTTPS，这是分别通过80端口和443端口实现的。</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2018/06/16/Nginx%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/06/16/Nginx%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">Nginx学习笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-06-16 11:30:31" itemprop="dateCreated datePublished" datetime="2018-06-16T11:30:31+08:00">2018-06-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%90%8E%E5%8F%B0/" itemprop="url" rel="index"><span itemprop="name">后台</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%90%8E%E5%8F%B0/Nginx/" itemprop="url" rel="index"><span itemprop="name">Nginx</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2018/06/16/Nginx%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Nginx学习笔记" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/06/16/Nginx%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/06/16/Nginx%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h1><ol>
+<li>安装gcc g++的依赖库</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apt-get install build-essential</span><br><span class="line">apt-get install libtool</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>安装pcre依赖库</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install libpcre3 libpcre3-dev</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>安装zlib依赖库</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install zlib1g-dev</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>安装ssl依赖库</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">apt-get install openssl</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>安装nginx</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">./configure --prefix=/usr/local/nginx</span><br><span class="line">make</span><br><span class="line"><span class="meta">#</span><span class="bash"> 注意：这里可能会报错，提示“pcre.h No such file or directory”,具体详见：http://stackoverflow.com/questions/22555561/error-building-fatal-error-pcre-h-no-such-file-or-directory</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> 需要安装 libpcre3-dev,命令为：sudo apt-get install libpcre3-dev</span></span><br><span class="line">sudo make install</span><br><span class="line"><span class="meta">#</span><span class="bash">启动nginx：</span></span><br><span class="line">sudo /usr/local/nginx/sbin/nginx -c /usr/local/nginx/conf/nginx.conf</span><br><span class="line"><span class="meta">#</span><span class="bash"> 注意：-c 指定配置文件的路径，不加的话，nginx会自动加载默认路径的配置文件，可以通过 -h查看帮助命令。</span></span><br><span class="line"><span class="meta">#</span><span class="bash">查看nginx进程：</span></span><br><span class="line">ps -ef|grep nginx</span><br><span class="line"><span class="meta">#</span><span class="bash">重启</span></span><br><span class="line">sudo ./sbin/nginx -s reload</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li>配置</li>
+</ol>
+<p>在conf目录下新建一个ihasy.conf文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">upstream ihasy  &#123;</span><br><span class="line">    server 127.0.0.1:9001; #Tornado</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">## Start www.ihasy.com ##</span><br><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name  www.ihasy.com ihasy.com;</span><br><span class="line"></span><br><span class="line">    #root   html;</span><br><span class="line">    #index  index.html index.htm index.py index;</span><br><span class="line"></span><br><span class="line">    ## send request back to Tornado ##</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        proxy_pass  http:&#x2F;&#x2F;ihasy;</span><br><span class="line"></span><br><span class="line">        #Proxy Settings</span><br><span class="line">        proxy_redirect     off;</span><br><span class="line">        proxy_set_header   Host             $host;</span><br><span class="line">        proxy_set_header   X-Real-IP        $remote_addr;</span><br><span class="line">        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;</span><br><span class="line">        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;</span><br><span class="line">        proxy_max_temp_file_size 0;</span><br><span class="line">        proxy_connect_timeout      90;</span><br><span class="line">        proxy_send_timeout         90;</span><br><span class="line">        proxy_read_timeout         90;</span><br><span class="line">        proxy_buffer_size          4k;</span><br><span class="line">        proxy_buffers              4 32k;</span><br><span class="line">        proxy_busy_buffers_size    64k;</span><br><span class="line">        proxy_temp_file_write_size 64k;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line">## End www.ihasy.com ##</span><br></pre></td></tr></table></figure>
+
+<p>在nginx.conf中添加<code>include ihasy.conf</code>,保存，重启nginx,即可实现反向代理。</p>
+<p>nginx.conf中默认配置</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line">user  root;</span><br><span class="line">worker_processes  1;</span><br><span class="line"></span><br><span class="line">#error_log  logs&#x2F;error.log;</span><br><span class="line">#error_log  logs&#x2F;error.log  notice;</span><br><span class="line">#error_log  logs&#x2F;error.log  info;</span><br><span class="line"></span><br><span class="line">#pid        logs&#x2F;nginx.pid;</span><br><span class="line"></span><br><span class="line">events &#123;</span><br><span class="line">    worker_connections  1024;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">http &#123;</span><br><span class="line">    include       mime.types;</span><br><span class="line">    default_type  application&#x2F;octet-stream;</span><br><span class="line"></span><br><span class="line">    #log_format  main  &#39;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &#39;</span><br><span class="line">    #                  &#39;$status $body_bytes_sent &quot;$http_referer&quot; &#39;</span><br><span class="line">    #                  &#39;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&#39;;</span><br><span class="line"></span><br><span class="line">    #access_log  logs&#x2F;access.log  main;</span><br><span class="line"></span><br><span class="line">    sendfile        on;</span><br><span class="line">    #tcp_nopush     on;</span><br><span class="line"></span><br><span class="line">    #keepalive_timeout  0;</span><br><span class="line">    keepalive_timeout  65;</span><br><span class="line"></span><br><span class="line">    #gzip  on;</span><br><span class="line"></span><br><span class="line">    server &#123;</span><br><span class="line">        listen       80;</span><br><span class="line">        server_name  localhost;</span><br><span class="line"></span><br><span class="line">        #charset koi8-r;</span><br><span class="line"></span><br><span class="line">        #access_log  logs&#x2F;host.access.log  main;</span><br><span class="line"></span><br><span class="line">        location &#x2F; &#123;</span><br><span class="line">            root   html;</span><br><span class="line">            index  index.html index.htm;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        #error_page  404              &#x2F;404.html;</span><br><span class="line"></span><br><span class="line">        # redirect server error pages to the static page &#x2F;50x.html</span><br><span class="line">        #</span><br><span class="line">        error_page   500 502 503 504  &#x2F;50x.html;</span><br><span class="line">        location &#x3D; &#x2F;50x.html &#123;</span><br><span class="line">            root   html;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        # proxy the PHP scripts to Apache listening on 127.0.0.1:80</span><br><span class="line">        #</span><br><span class="line">        #location ~ \.php$ &#123;</span><br><span class="line">        #    proxy_pass   http:&#x2F;&#x2F;127.0.0.1;</span><br><span class="line">        #&#125;</span><br><span class="line"></span><br><span class="line">        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000</span><br><span class="line">        #</span><br><span class="line">        #location ~ \.php$ &#123;</span><br><span class="line">        #    root           html;</span><br><span class="line">        #    fastcgi_pass   127.0.0.1:9000;</span><br><span class="line">        #    fastcgi_index  index.php;</span><br><span class="line">        #    fastcgi_param  SCRIPT_FILENAME  &#x2F;scripts$fastcgi_script_name;</span><br><span class="line">        #    include        fastcgi_params;</span><br><span class="line">        #&#125;</span><br><span class="line"></span><br><span class="line">        # deny access to .htaccess files, if Apache&#39;s document root</span><br><span class="line">        # concurs with nginx&#39;s one</span><br><span class="line">        #</span><br><span class="line">        #location ~ &#x2F;\.ht &#123;</span><br><span class="line">        #    deny  all;</span><br><span class="line">        #&#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    # another virtual host using mix of IP-, name-, and port-based configuration</span><br><span class="line">    #</span><br><span class="line">    #server &#123;</span><br><span class="line">    #    listen       8000;</span><br><span class="line">    #    listen       somename:8080;</span><br><span class="line">    #    server_name  somename  alias  another.alias;</span><br><span class="line"></span><br><span class="line">    #    location &#x2F; &#123;</span><br><span class="line">    #        root   html;</span><br><span class="line">    #        index  index.html index.htm;</span><br><span class="line">    #    &#125;</span><br><span class="line">    #&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    # HTTPS server</span><br><span class="line">    #</span><br><span class="line">    #server &#123;</span><br><span class="line">    #    listen       443 ssl;</span><br><span class="line">    #    server_name  localhost;</span><br><span class="line"></span><br><span class="line">    #    ssl_certificate      cert.pem;</span><br><span class="line">    #    ssl_certificate_key  cert.key;</span><br><span class="line"></span><br><span class="line">    #    ssl_session_cache    shared:SSL:1m;</span><br><span class="line">    #    ssl_session_timeout  5m;</span><br><span class="line"></span><br><span class="line">    #    ssl_ciphers  HIGH:!aNULL:!MD5;</span><br><span class="line">    #    ssl_prefer_server_ciphers  on;</span><br><span class="line"></span><br><span class="line">    #    location &#x2F; &#123;</span><br><span class="line">    #        root   html;</span><br><span class="line">    #        index  index.html index.htm;</span><br><span class="line">    #    &#125;</span><br><span class="line">    #&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><h2 id="正向代理和反向代理"><a href="#正向代理和反向代理" class="headerlink" title="正向代理和反向代理"></a>正向代理和反向代理</h2><img src="正向代理和反向代理.png"/>
+
+<p>正向代理:是一个位于客户端和原始服务器(origin server)之间的服务器，为了从原始服务器取得内容，客户端向代理发送一个请求并指定目标(原始服务器)，然后代理向原始服务器转交请求并将获得的内容返回给客户端。客户端必须要进行一些特别的设置才能使用正向代理。</p>
+<p>正向代理的用途：</p>
+<ul>
+<li>访问原来无法访问的资源，如google</li>
+<li>可以做缓存，加速访问资源</li>
+<li>对客户端访问授权，上网进行认证</li>
+<li>代理可以记录用户访问记录（上网行为管理），对外隐藏用户信息</li>
+</ul>
+<p>反向代理（Reverse Proxy）实际运行方式是指以代理服务器来接受internet上的连接请求，然后将请求转发给内部网络上的服务器，并将从服务器上得到的结果返回给internet上请求连接的客户端，此时代理服务器对外就表现为一个服务器。</p>
+<p>反向代理的作用：</p>
+<ul>
+<li>保证内网的安全，可以使用反向代理提供WAF功能，阻止web攻击</li>
+<li>负载均衡，通过反向代理服务器来优化网站的负载</li>
+</ul>
+<h2 id="事件驱动"><a href="#事件驱动" class="headerlink" title="事件驱动"></a>事件驱动</h2><p>Nginx之所以能同时处理大量的请求，原因在于它采用了十分巧妙的事件驱动机制。</p>
+<p>作为一个Web服务器，要同时处理多个请求，不可避免地要面对这么一个问题，如何同时处理像磁盘和网络等等的I/O请求，即如何实现I/O复用。为了解决该问题，操作系统在很久之前就开始提供诸如“select”、“poll”等系统调用。Apache HTTP的多处理模块(MPM，multi-processing module)就会用到这些系统调用。但是，select/poll为了识别出哪些文件或者socket已经准备就绪，必须将所有已注册的文件描述符(fd)一个个地检查一遍。如果注册列表越长，那么每次的扫描所需的时间也越长。而Nginx的I/O复用机制使用的是“epoll”这个基于事件驱动的系统调用。因为epoll会在系统内核管理和监听这些文件描述符(fd)，并自动把就绪的加入到Ready队列当中。所以，程序只需在需要时往Ready队列中取出一个进行处理即可，而不用切换到内核态，然后一个个地检查，然后又切换回用户态。这样，无论需要注册监听的I/O有多少，都不会影响程序的运行效率。为了避免select/poll带来的线性增长的负担，Apache HTTP必须将这些IO分散到各个进程/线程中处理，这样势必会造成占用内存的增长。但是，Nginx可以通过利用“epoll”，保证可以使用一个进程/线程完成所有请求的处理，这样可以大大减少内存的占用，从而使应对上万并发请求成为可能。</p>
+<h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><h2 id="location"><a href="#location" class="headerlink" title="location"></a>location</h2><p>语法规则： location [=|<del>|</del>*|^~] /uri/ { … }</p>
+<ul>
+<li>= 开头表示精确匹配</li>
+<li>^~ 开头表示uri以某个常规字符串开头，理解为匹配 url路径即可。nginx不对url做编码，因此请求为/static/20%/aa，可以被规则^~ /static/ /aa匹配到（注意是空格）。一旦匹配成功，那么 Nginx 就停止去寻找其他的 Location 块进行匹配了(其他可能没有这个特性)</li>
+<li>~ 开头表示区分大小写的正则匹配</li>
+<li>~*  开头表示不区分大小写的正则匹配</li>
+<li>!<del>和!</del>*分别为区分大小写不匹配及不区分大小写不匹配 的正则</li>
+<li>/ 通用匹配，任何请求都会匹配到。</li>
+<li>多个location配置的情况下匹配顺序为：首先匹配 =，其次匹配^~, 其次是按文件中顺序的正则匹配，最后是交给 / 通用匹配。当有匹配成功时候，停止匹配，按当前匹配规则处理请求。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">location &#x3D; &#x2F; &#123;  </span><br><span class="line">   #规则A  </span><br><span class="line">&#125;  </span><br><span class="line">location &#x3D; &#x2F;login &#123;  </span><br><span class="line">   #规则B  </span><br><span class="line">&#125;  </span><br><span class="line">location ^~ &#x2F;static&#x2F; &#123;  </span><br><span class="line">   #规则C  </span><br><span class="line">&#125;  </span><br><span class="line">location ~ \.(gif|jpg|png|js|css)$ &#123;  </span><br><span class="line">   #规则D  </span><br><span class="line">&#125;  </span><br><span class="line">location ~* \.png$ &#123;  </span><br><span class="line">   #规则E  </span><br><span class="line">&#125;  </span><br><span class="line">location !~ \.xhtml$ &#123;  </span><br><span class="line">   #规则F  </span><br><span class="line">&#125;  </span><br><span class="line">location !~* \.xhtml$ &#123;  </span><br><span class="line">   #规则G  </span><br><span class="line">&#125;  </span><br><span class="line">location &#x2F; &#123;  </span><br><span class="line">   #规则H  </span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
+
+<p>那么产生的效果如下：</p>
+<ul>
+<li>访问根目录/， 比如<a target="_blank" rel="noopener" href="http://localhost/">http://localhost/</a> 将匹配规则A</li>
+<li>访问 <a target="_blank" rel="noopener" href="http://localhost/login">http://localhost/login</a> 将匹配规则B，<a target="_blank" rel="noopener" href="http://localhost/register">http://localhost/register</a> 则匹配规则H</li>
+<li>访问 <a target="_blank" rel="noopener" href="http://localhost/static/a.html">http://localhost/static/a.html</a> 将匹配规则C</li>
+<li>访问 <a target="_blank" rel="noopener" href="http://localhost/a.gif">http://localhost/a.gif</a>, <a target="_blank" rel="noopener" href="http://localhost/b.jpg">http://localhost/b.jpg</a> 将匹配规则D和规则E，但是规则D顺序优先，规则E不起作用，而 <a target="_blank" rel="noopener" href="http://localhost/static/c.png">http://localhost/static/c.png</a> 则优先匹配到 规则C</li>
+<li>访问 <a target="_blank" rel="noopener" href="http://localhost/a.PNG">http://localhost/a.PNG</a> 则匹配规则E， 而不会匹配规则D，因为规则E不区分大小写。</li>
+<li>访问 <a target="_blank" rel="noopener" href="http://localhost/a.xhtml">http://localhost/a.xhtml</a> 不会匹配规则F和规则G，<a target="_blank" rel="noopener" href="http://localhost/a.XHTML%E4%B8%8D%E4%BC%9A%E5%8C%B9%E9%85%8D%E8%A7%84%E5%88%99G%EF%BC%8C%E5%9B%A0%E4%B8%BA%E4%B8%8D%E5%8C%BA%E5%88%86%E5%A4%A7%E5%B0%8F%E5%86%99%E3%80%82%E8%A7%84%E5%88%99F%EF%BC%8C%E8%A7%84%E5%88%99G%E5%B1%9E%E4%BA%8E%E6%8E%92%E9%99%A4%E6%B3%95%EF%BC%8C%E7%AC%A6%E5%90%88%E5%8C%B9%E9%85%8D%E8%A7%84%E5%88%99%E4%BD%86%E6%98%AF%E4%B8%8D%E4%BC%9A%E5%8C%B9%E9%85%8D%E5%88%B0%EF%BC%8C%E6%89%80%E4%BB%A5%E6%83%B3%E6%83%B3%E7%9C%8B%E5%AE%9E%E9%99%85%E5%BA%94%E7%94%A8%E4%B8%AD%E5%93%AA%E9%87%8C%E4%BC%9A%E7%94%A8%E5%88%B0%E3%80%82">http://localhost/a.XHTML不会匹配规则G，因为不区分大小写。规则F，规则G属于排除法，符合匹配规则但是不会匹配到，所以想想看实际应用中哪里会用到。</a></li>
+<li>访问 <a target="_blank" rel="noopener" href="http://localhost/category/id/1111">http://localhost/category/id/1111</a> 则最终匹配到规则H，因为以上规则都不匹配，这个时候应该是nginx转发请求给后端应用服务器，比如FastCGI（php），tomcat（jsp），nginx作为方向代理服务器存在。</li>
+<li>所以实际使用中，通常至少有三个匹配规则定义，如下：</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">#直接匹配网站根，通过域名访问网站首页比较频繁，使用这个会加速处理，官网如是说。  </span><br><span class="line">#这里是直接转发给后端应用服务器了，也可以是一个静态首页  </span><br><span class="line"># 第一个必选规则  </span><br><span class="line">location &#x3D; &#x2F; &#123;  </span><br><span class="line">    proxy_pass http:&#x2F;&#x2F;tomcat:8080&#x2F;index  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 第二个必选规则是处理静态文件请求，这是nginx作为http服务器的强项  </span><br><span class="line"># 有两种配置模式，目录匹配或后缀匹配,任选其一或搭配使用  </span><br><span class="line">location ^~ &#x2F;static&#x2F; &#123;  </span><br><span class="line">    root &#x2F;webroot&#x2F;static&#x2F;;  </span><br><span class="line">&#125;  </span><br><span class="line">location ~* \.(gif|jpg|jpeg|png|css|js|ico)$ &#123;  </span><br><span class="line">    root &#x2F;webroot&#x2F;res&#x2F;;  </span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line">#第三个规则就是通用规则，用来转发动态请求到后端应用服务器  </span><br><span class="line">#非静态文件请求就默认是动态请求，自己根据实际把握  </span><br><span class="line">#毕竟目前的一些框架的流行，带.php,.jsp后缀的情况很少了  </span><br><span class="line">location &#x2F; &#123;  </span><br><span class="line">    proxy_pass http:&#x2F;&#x2F;tomcat:8080&#x2F;  </span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
+
+<h2 id="handler"><a href="#handler" class="headerlink" title="handler"></a>handler</h2><h2 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h2><h2 id="upstream"><a href="#upstream" class="headerlink" title="upstream"></a>upstream</h2><h3 id="基本配置"><a href="#基本配置" class="headerlink" title="基本配置"></a>基本配置</h3><p>负载均衡配置:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">upstream linuxidc &#123;</span><br><span class="line">    server 10.0.6.108:7080;</span><br><span class="line">    server 10.0.0.85:8980;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">location &#x2F; &#123;</span><br><span class="line">    root  html;</span><br><span class="line">    index  index.html index.htm;</span><br><span class="line">    proxy_pass http:&#x2F;&#x2F;linuxidc;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="weight（权重）"><a href="#weight（权重）" class="headerlink" title="weight（权重）"></a>weight（权重）</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">upstream linuxidc &#123;</span><br><span class="line">    server 10.0.0.77 weight&#x3D;5;</span><br><span class="line">    server 10.0.0.88 weight&#x3D;10;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="ip-hash（访问ip）"><a href="#ip-hash（访问ip）" class="headerlink" title="ip_hash（访问ip）"></a>ip_hash（访问ip）</h3><p>每一个请求按訪问ip的hash结果分配。这样每一个訪客固定訪问一个后端服务器，能够解决session的问题。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">upstream favresin &#123;</span><br><span class="line">    ip_hash;</span><br><span class="line">    server 10.0.0.10:8080;</span><br><span class="line">    server 10.0.0.11:8080;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="url-hash（第三方）"><a href="#url-hash（第三方）" class="headerlink" title="url_hash（第三方）"></a>url_hash（第三方）</h3><p>按访问url的hash结果来分配请求，使每一个url定向到同一个后端服务器。后端服务器为缓存时比較有效。注意：在upstream中加入hash语句。server语句中不能写入weight等其他的參数，hash_method是使用的hash算法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">upstream resinserver &#123;</span><br><span class="line">    server 10.0.0.10:7777;</span><br><span class="line">    server 10.0.0.11:8888;</span><br><span class="line">    hash $request_uri;</span><br><span class="line">    hash_method crc32;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="fair（第三方）"><a href="#fair（第三方）" class="headerlink" title="fair（第三方）"></a>fair（第三方）</h3><p>按后端服务器的响应时间来分配请求。响应时间短的优先分配,与weight分配策略相似。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">upstream favresin &#123;</span><br><span class="line">    server 10.0.0.10:8080;</span><br><span class="line">    server 10.0.0.11:8080;</span><br><span class="line">    fair;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>upstream还能够为每一个设备设置状态值，这些状态值的含义分别例如以下：</p>
+<ul>
+<li>down 表示单前的server临时不參与负载.</li>
+<li>weight 默觉得1.weight越大，负载的权重就越大。</li>
+<li>max_fails ：同意请求失败的次数默觉得1.当超过最大次数时，返回proxy_next_upstream 模块定义的错误.</li>
+<li>fail_timeout : max_fails次失败后。暂停的时间。</li>
+<li>backup： 其他全部的非backup机器down或者忙的时候，请求backup机器。所以这台机器压力会最轻。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">upstream bakend&#123; #定义负载均衡设备的Ip及设备状态 </span><br><span class="line">      ip_hash; </span><br><span class="line">      server 10.0.0.11:9090 down;</span><br><span class="line">      server 10.0.0.11:8080 weight&#x3D;2;</span><br><span class="line">      server 10.0.0.11:6060;</span><br><span class="line">      server 10.0.0.11:7070 backup;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="虚拟主机配置"><a href="#虚拟主机配置" class="headerlink" title="虚拟主机配置"></a>虚拟主机配置</h1><h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>通常情况下,为了使每个服务器可以供更多用户使用,可以将一个服务器分为很多虚拟的子服务器,每个子服务器是相互独立的.这些服务器是根据虚拟化技术分出来的,这样,一台服务器可以虚拟成很多台子服务器,叫做虚拟主机.nginx下，一个server标签就是一个虚拟主机。</p>
+<p>配置方法:</p>
+<ol>
+<li>基于域名的虚拟主机，通过域名来区分虚拟主机——应用：外部网站</li>
+<li>基于端口的虚拟主机，通过端口来区分虚拟主机——应用：公司内部网站，外部网站的管理后台</li>
+<li>基于ip的虚拟主机，几乎不用。</li>
+</ol>
+<h2 id="基于域名"><a href="#基于域名" class="headerlink" title="基于域名"></a>基于域名</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">   listen 80;</span><br><span class="line">   server_name www.yong.com;</span><br><span class="line">   index index.html;</span><br><span class="line">   root &#x2F;data&#x2F;www;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">   listen 80;</span><br><span class="line">   server_name bbs.yong.com;</span><br><span class="line">   index index.html;</span><br><span class="line">   root &#x2F;data&#x2F;bbs;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="基于端口"><a href="#基于端口" class="headerlink" title="基于端口"></a>基于端口</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 8000;</span><br><span class="line">    server_name www.yong.com;</span><br><span class="line">    root &#x2F;data&#x2F;www;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">    listen 8001;</span><br><span class="line">    server_name www.yong.com;</span><br><span class="line">    root &#x2F;data&#x2F;bbs;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="基于ip地址"><a href="#基于ip地址" class="headerlink" title="基于ip地址"></a>基于ip地址</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen 192.168.20.20:80;</span><br><span class="line">    server_name www.yong.com;</span><br><span class="line">    root &#x2F;data&#x2F;www;</span><br><span class="line">&#125;</span><br><span class="line">server &#123;</span><br><span class="line">    listen 192.168.20.21:80;</span><br><span class="line">    server_name www.yong.com;</span><br><span class="line">    root &#x2F;data&#x2F;bbs;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h1><p>nginx实现代理上网，有三个关键点必须注意，其余的配置跟普通的nginx一样\</p>
+<ol>
+<li>增加dns解析resolver</li>
+<li>增加无server_name名的server</li>
+<li>proxy_pass指令</li>
+<li>电脑配置配置文件中的地址和端口为代理地址和端口</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">user www;</span><br><span class="line">worker_processes 1;</span><br><span class="line">error_log &#x2F;var&#x2F;log&#x2F;nginx&#x2F;error.log debug;</span><br><span class="line"></span><br><span class="line">events &#123;</span><br><span class="line">    use epoll;</span><br><span class="line">    worker_connections 1024;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">http &#123;</span><br><span class="line">    resolver 8.8.8.8;</span><br><span class="line">    server &#123;</span><br><span class="line">        listen 8088;</span><br><span class="line">        location &#x2F; &#123;</span><br><span class="line">            proxy_pass http:&#x2F;&#x2F;$http_host$request_uri;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h1><p>反向代理，外部机器通过网关访问网关后面服务器上的内容，网关起到了反向代理的功能，我们平时通过浏览器访问远程的web服务器大都是这样实现的。</p>
+<p>nginx反向代理的指令不需要新增额外的模块，默认自带proxy_pass指令，只需要修改配置文件就可以实现反向代理。配置前的准备工作:后端run apache服务的ip和端口，确保可以通过<a href="http://ip:port能访问到自己的网站">http://ip:port能访问到自己的网站</a>.</p>
+<p>添加配置文件:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">upstream apachephp  &#123;</span><br><span class="line">    server ip:8080; #Apache</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">    listen 80;</span><br><span class="line">    server_name  www.quancha.cn;</span><br><span class="line"></span><br><span class="line">    access_log  logs&#x2F;quancha.access.log  main;</span><br><span class="line">    error_log  logs&#x2F;quancha.error.log;</span><br><span class="line">    root   html;</span><br><span class="line">    index  index.html index.htm index.php;</span><br><span class="line"></span><br><span class="line">    ## send request back to apache ##</span><br><span class="line">    location &#x2F; &#123;</span><br><span class="line">        proxy_pass  http:&#x2F;&#x2F;apachephp;</span><br><span class="line"></span><br><span class="line">        #Proxy Settings</span><br><span class="line">        proxy_redirect     off;</span><br><span class="line">        proxy_set_header   Host             $host;</span><br><span class="line">        proxy_set_header   X-Real-IP        $remote_addr;</span><br><span class="line">        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;</span><br><span class="line">        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;</span><br><span class="line">        proxy_max_temp_file_size 0;</span><br><span class="line">        proxy_connect_timeout      90;</span><br><span class="line">        proxy_send_timeout         90;</span><br><span class="line">        proxy_read_timeout         90;</span><br><span class="line">        proxy_buffer_size          4k;</span><br><span class="line">        proxy_buffers              4 32k;</span><br><span class="line">        proxy_busy_buffers_size    64k;</span><br><span class="line">        proxy_temp_file_write_size 64k;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="部署SpringBoot"><a href="#部署SpringBoot" class="headerlink" title="部署SpringBoot"></a>部署SpringBoot</h1><p>Nginx配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">location &#x2F; &#123;</span><br><span class="line">    proxy_pass http:&#x2F;&#x2F;localhost:8080;</span><br><span class="line">    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">    proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">    proxy_set_header X-Forwarded-Port $server_port;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>SpringBoot的配置文件中配置：</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">tomcat:</span></span><br><span class="line">    <span class="attr">remote-ip-header:</span> <span class="string">x_forwarded_for</span></span><br><span class="line">    <span class="attr">protocol-header:</span> <span class="string">x-forwarded-proto</span></span><br><span class="line">    <span class="attr">port-header:</span> <span class="string">X-Forwarded-Port</span></span><br><span class="line">  <span class="attr">use-forward-headers:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">address:</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>  <span class="comment">#8080端口只能被本机访问</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="其他-1"><a href="#其他-1" class="headerlink" title="其他"></a>其他</h1><h2 id="映射本地文件夹"><a href="#映射本地文件夹" class="headerlink" title="映射本地文件夹"></a>映射本地文件夹</h2><p>配置如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">location &#x2F;hearing &#123;</span><br><span class="line">    autoindex on;</span><br><span class="line">    root &#x2F;home&#x2F;hearing&#x2F;Downloads&#x2F;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过<code>nginx -s reload</code>重新载入配置，可以在<code>localhost:80/hearing/</code>访问到<code>/home/hearing/Downloads/hearing/</code>下的文件。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2018/06/15/%E5%A4%9C%E7%9A%84%E9%9A%8F%E7%AC%94-%E4%BA%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/06/15/%E5%A4%9C%E7%9A%84%E9%9A%8F%E7%AC%94-%E4%BA%8C/" class="post-title-link" itemprop="url">夜的随笔-二</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-06-15 16:15:46" itemprop="dateCreated datePublished" datetime="2018-06-15T16:15:46+08:00">2018-06-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%96%87%E5%AD%97/" itemprop="url" rel="index"><span itemprop="name">文字</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2018/06/15/%E5%A4%9C%E7%9A%84%E9%9A%8F%E7%AC%94-%E4%BA%8C/" class="post-meta-item leancloud_visitors" data-flag-title="夜的随笔-二" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2018/06/15/%E5%A4%9C%E7%9A%84%E9%9A%8F%E7%AC%94-%E4%BA%8C/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2018/06/15/%E5%A4%9C%E7%9A%84%E9%9A%8F%E7%AC%94-%E4%BA%8C/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <center>*文/苍耳*</center>
+
+<p>走在昏黄的路灯下，一步一步地，走过去了，也未曾留下什么脚印。树影斑驳的小路上依旧残留着些许枯叶，无论什么季节，它们始终静静地躺在那里，等待着变腐烂，守候着诗人低吟。死如秋叶，也无人问津。</p>
+<p>回到宿舍忽然很想重温火影，他完结的那天总有种怅然若失的感觉，那个傻乎乎的鸣人，总是有一种让人情不自禁地想要去亲近他的气质。相伴十余年，尚记得曾在小摊上找到一张有好几百集的盗版CD的时候，兴奋地可以看上一整天，如痴如醉，如梦难醒。</p>
+<p>当然自然没看成，明天还要上课吧。躺在床上想听会歌，却循环到了久石让。刹那间便有种难以言明的伤感，所有曾迷恋过宫崎骏的动画和久石让的音乐的人大概都能理解这种感觉吧。当音乐响起，不禁有种恍若隔世的感觉，童年，少年，以及所谓的青春，都被衔接成一段段的旋律，每个音符，都藏着某些不为人知的往事。那曾是所有青春年少的日子里，与我朝夕相伴的挚友，在流金岁月里，如一杯清水，一曲平静。</p>
+<p>如今渐渐少有写东西的时间，很长一段时间里都迷上了小说，大概是觉得自己的生活里缺少了许多的东西吧，说白了是贪心，看过了这么多的故事，我如一个傻子般沉浸在别人的幸福里，却从未想过，我自己的生活，究竟是什么。披着一层伪装，然后戴上一套面具，推开门，都是一天。</p>
+<p>天涯海角的邂逅，陌生人之间亦可相谈甚欢，曾以为相逢即是缘，而今想来，世上哪会有如此多的缘分，许多，大抵都是相逢一笑，擦肩路人而已。</p>
+<p>或许是从小孤独惯了，所以对许多东西都太过在意，结果自是相反的，在人生这条路上，都被我越拉越远。</p>
+<p>成长的代价，便是越来越少的时间去做喜欢的事情，而且必须毫无怨言，因为活着已不仅是为了自己。如今也只有在夜深人静难以入眠的时候，或者是独自一人找个地方独饮的时候，久违地矫情一把，当一个破落诗人，举杯饮酒，附庸风雅，好好地犒劳一下自己心中潜藏已久的小情绪，清一下往事，倒一碗矫情，一饮而尽。</p>
+<p>想起一个朋友，和两杯酒，许是人声鼎沸的小店，或者静若可闻的深夜，一碟小菜，久饮不散。杯中那倒影，荡漾着，击碎了流光。</p>
+<p>一曲循环，也终有尽时。爱深了这些音乐，半随忧伤，半入流年。这一路走来，虽然不长，却也都有故事。一直不擅长说话，也讲不清故事，即便相识，也总是重复着相逢又陌路的遗憾，随着汹涌的浪潮，消失在时间海里。</p>
+<p>但你的故事，我都听着。</p>
+<p>一直都喜欢这句话:”不困于心，不乱于情。不畏将来，不念过往。”</p>
+<p>如此，安好。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2018/06/15/%E5%90%8E%E5%8F%B0%E5%BC%80%E5%8F%91%E7%90%86%E8%AE%BA%E7%AC%94%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1838,7 +2624,7 @@ socket.close();</code></pre>
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">164</span>
+          <span class="site-state-item-count">167</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
