@@ -20,17 +20,17 @@
     var CONFIG = {"hostname":"ljd1996.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="架构是什么对于架构，我自己也有些一知半解，读了一些架构相关的文章，结合实际项目经历，有了自己的一些理解。 关于架构是什么？这点可以顾名思义去看，架构&#x3D;架+构，即整体的一个架子和各个组件之间的组合结构。当然可能不同的程序员对于项目架构的风格和习惯不一样，但是底层的思想应该都是类似的，诸如我们可能听到起了茧子的“关注点分离”，“低耦合高内聚”，“可扩展可复用易维护”等等，听完这些话，感觉自己懂了，又感">
+  <meta name="description" content="架构是什么架构学习之路系列 这是架构学习系列的第一篇，随便讲几句。对于架构，我也有些一知半解，读了一些架构相关的文章，结合实际项目经历，有了自己的一些理解。 关于架构是什么？这点可以顾名思义去看，架构&#x3D;架+构，即整体的一个架子和各个组件之间的组合结构。当然可能不同的程序员对于项目架构的风格和习惯不一样，但是底层的思想应该都是类似的，诸如我们可能听到起了茧子的“关注点分离”，“低耦合高内聚”，“可扩">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Android架构学习之路一-漫谈">
 <meta property="og:url" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%80-%E6%BC%AB%E8%B0%88/index.html">
 <meta property="og:site_name" content="苍耳的博客">
-<meta property="og:description" content="架构是什么对于架构，我自己也有些一知半解，读了一些架构相关的文章，结合实际项目经历，有了自己的一些理解。 关于架构是什么？这点可以顾名思义去看，架构&#x3D;架+构，即整体的一个架子和各个组件之间的组合结构。当然可能不同的程序员对于项目架构的风格和习惯不一样，但是底层的思想应该都是类似的，诸如我们可能听到起了茧子的“关注点分离”，“低耦合高内聚”，“可扩展可复用易维护”等等，听完这些话，感觉自己懂了，又感">
+<meta property="og:description" content="架构是什么架构学习之路系列 这是架构学习系列的第一篇，随便讲几句。对于架构，我也有些一知半解，读了一些架构相关的文章，结合实际项目经历，有了自己的一些理解。 关于架构是什么？这点可以顾名思义去看，架构&#x3D;架+构，即整体的一个架子和各个组件之间的组合结构。当然可能不同的程序员对于项目架构的风格和习惯不一样，但是底层的思想应该都是类似的，诸如我们可能听到起了茧子的“关注点分离”，“低耦合高内聚”，“可扩">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%80-%E6%BC%AB%E8%B0%88/shit1.jpg">
 <meta property="og:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%80-%E6%BC%AB%E8%B0%88/shit2.jpg">
 <meta property="article:published_time" content="2022-01-11T10:41:13.000Z">
-<meta property="article:modified_time" content="2022-01-11T13:08:33.706Z">
+<meta property="article:modified_time" content="2022-01-12T02:49:50.633Z">
 <meta property="article:author" content="苍耳叔叔">
 <meta property="article:tag" content="Android">
 <meta property="article:tag" content="架构">
@@ -221,10 +221,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2022-01-11 18:41:13 / 修改时间：21:08:33" itemprop="dateCreated datePublished" datetime="2022-01-11T18:41:13+08:00">2022-01-11</time>
+              <time title="创建时间：2022-01-11 18:41:13" itemprop="dateCreated datePublished" datetime="2022-01-11T18:41:13+08:00">2022-01-11</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-01-12 10:49:50" itemprop="dateModified" datetime="2022-01-12T10:49:50+08:00">2022-01-12</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -271,7 +277,8 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="架构是什么"><a href="#架构是什么" class="headerlink" title="架构是什么"></a>架构是什么</h1><p>对于架构，我自己也有些一知半解，读了一些架构相关的文章，结合实际项目经历，有了自己的一些理解。</p>
+        <h1 id="架构是什么"><a href="#架构是什么" class="headerlink" title="架构是什么"></a>架构是什么</h1><p><a href="https://ljd1996.github.io/categories/Android/%E6%9E%B6%E6%9E%84/">架构学习之路系列</a></p>
+<p>这是架构学习系列的第一篇，随便讲几句。对于架构，我也有些一知半解，读了一些架构相关的文章，结合实际项目经历，有了自己的一些理解。</p>
 <p>关于架构是什么？这点可以顾名思义去看，<code>架构</code>=<code>架</code>+<code>构</code>，即整体的一个架子和各个组件之间的组合结构。当然可能不同的程序员对于项目架构的风格和习惯不一样，但是底层的思想应该都是类似的，诸如我们可能听到起了茧子的“关注点分离”，“低耦合高内聚”，“可扩展可复用易维护”等等，听完这些话，感觉自己懂了，又感觉啥也不懂，好像有所收获了，准备开始写代码的时候，脑子里想的可能又是“工期太赶了，就这样写吧，反正干完这几票就跑路了”。</p>
 <a id="more"></a>
 
@@ -280,13 +287,13 @@
 
 <div style="float:none;clear:both;"></div>
 
-<p>我想每个程序员在写代码的时候可能都有这些历程(可能有些夸张)：</p>
+<p>我想每个程序员在写代码的时候可能都有这些历程(夸张)：</p>
 <ol>
 <li>这坨代码谁写的，怎么要这样写啊，我这个需求该怎么加代码！</li>
 <li>(尝试在shit山上小心地走，并添加新代码)写的好难受，shit越改越chou了…</li>
-<li>算了，爷来重构一下吧，结束掉一切！</li>
+<li>算了，爷来重构一下，结束掉一切吧！</li>
 <li>重构的一天：我曰，这个地方怎么埋了个雷，我来排一下；哇，怎么这里还有奇怪的逻辑，哼哧哼哧问了之前的同事说是PM改的需求；哎，爱咋地咋地。</li>
-<li>After one day -&gt; git revert -&gt; 下班</li>
+<li>Several days later -&gt; git revert -&gt; 下班</li>
 <li>在原来的shit山上再拉一坨，OK，很稳定，提测。</li>
 </ol>
 <p>新员工整天都想着重构，而经验丰富的老人早就知道能不动别人的代码就不动的(doge)，shit都是互相的，你来我往才能生生不息。写代码嘛，就讲究一个礼尚往来~</p>
@@ -294,7 +301,7 @@
 
 <div style="float:none;clear:both;"></div>
 
-<h1 id="背后的原因"><a href="#背后的原因" class="headerlink" title="背后的原因"></a>背后的原因</h1><p>吐槽不是针对某个人，这种现象其实也挺正常的，因为技术在发展和迭代，业务也在丰富和重构，所以在当时看起来，这块代码是很优秀的，只不过由于一步一步的发展，以及一些历史包袱，慢慢的原先的架构可能就跟不上业务需求了，毕竟，架构不是一成不变的，业务在发展，技术在迭代，熵增很正常。到了一定的地步，评估好成本和收入，老老实实提需求重构吧。</p>
+<h1 id="背后的原因"><a href="#背后的原因" class="headerlink" title="背后的原因"></a>背后的原因</h1><p>吐槽不是针对某个人，这种现象其实也挺正常的，因为技术在发展和迭代，业务也在丰富和重构，所以在当时看起来，这块代码是很优秀的，只不过由于一步一步的发展，以及一些历史包袱(PM: ??)，慢慢的原先的架构可能就跟不上业务需求了，毕竟，架构不是一成不变的，业务在发展，技术在迭代，熵增很正常。到了一定的地步，评估好成本和收入，老老实实提需求重构吧。</p>
 <p>当然，虽说随着业务的发展，熵增是必然情况，但是也得注意自己的代码质量呀，毕竟大家应该都不想被后面的同事接手的时候偷偷吐槽你的shit太chou了吧，除非真的抱着干完这一票就溜溜球的想法(doge)。</p>
 <p>简而言之原因可以分为两种：</p>
 <ul>
@@ -315,7 +322,7 @@
 <p>接着就是那些常用的面向对象设计模式了，讲道理这些设计模式是很有用的，另外还有面向对象的六大设计原则，这些网上应该很多很多的文章都会讲。</p>
 <h2 id="设计架构"><a href="#设计架构" class="headerlink" title="设计架构"></a>设计架构</h2><p>前面已经提过随着技术和业务的发展，架构也在一步一步迭代，比如说一开始的单体架构，把用户界面，业务逻辑，数据管理都糅合到一起，到后面根据业务和技术拆分结构，如 MVC, MVP, MVVM, MVI 这些，以及模块化和组件化，服务注册和发现等等，另外还有比较复杂的 Clean 架构，Android 版的 Redux 架构之类的等等。多的一批，哎，好卷。</p>
 <p>有时候会产生疑问，这么多新的东西冒出来到底是技术必需的迭代还是由于 OKR, KPI 太卷了(doge)。但能怎么着哦，还是得哼哧哼哧学习。这些文章计划在后面慢慢整理，就当给我年初补充的flag <a target="_blank" rel="noopener" href="https://juejin.cn/post/7047710396462923806">两年半，加油Android|2021年终总结</a> 吧！</p>
-<p>不过架构再多，也都是为业务服务的，没有什么完美的架构，合适当前需求的才是最好的。</p>
+<p>不过架构再多，也都是为业务服务的，没有什么完美的架构，适合当前需求的才是最好的。</p>
 <h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>写代码的时候，记得三思而后行，想一想你写的代码是不是在它该在的位置，是不是以该有的形式存在的。</p>
 <p><strong>架构不是一蹴而就的，希望我们有一天的时候，能够从自己写的代码中找到架构的成就感，而不是干几票就跑路的想法，这个系列应该会一直更新，记录我在架构之路上学习的脚印儿，一件一件扒开架构神秘的面纱</strong>。</p>
 
