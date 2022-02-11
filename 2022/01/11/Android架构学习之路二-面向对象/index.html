@@ -27,6 +27,7 @@
 <meta property="og:site_name" content="苍耳的博客">
 <meta property="og:description" content="前言架构学习之路系列 这是架构学习系列的第二篇，主要介绍一下 UML 图，设计原则以及设计模式。这些名词大家估计都耳熟能详了，它们对于架构而言非常重要，只有理论结合实际，以后才会越来越娴熟。在开始做需求的时候，先别急着写代码，思考一下这个需求的本质是干嘛，用面向对象的思想去抽象这个过程，不是直接搞几个类就可以了的。">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%BA%8C-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E7%B1%BB%E5%9B%BE%E5%85%B3%E7%B3%BB.png">
 <meta property="og:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%BA%8C-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E7%B1%BB%E7%BB%93%E6%9E%84.png">
 <meta property="og:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%BA%8C-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E6%B3%9B%E5%8C%96.jpg">
 <meta property="og:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%BA%8C-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E5%AE%9E%E7%8E%B0.jpg">
@@ -35,14 +36,13 @@
 <meta property="og:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%BA%8C-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E8%81%9A%E5%90%88.jpg">
 <meta property="og:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%BA%8C-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E7%BB%84%E5%90%88.jpg">
 <meta property="og:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%BA%8C-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/UML%E7%A4%BA%E4%BE%8B.jpg">
-<meta property="og:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%BA%8C-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E7%B1%BB%E5%9B%BE%E5%85%B3%E7%B3%BB.png">
 <meta property="article:published_time" content="2022-01-11T10:48:04.000Z">
-<meta property="article:modified_time" content="2022-02-11T10:28:47.879Z">
+<meta property="article:modified_time" content="2022-02-11T12:14:50.566Z">
 <meta property="article:author" content="苍耳叔叔">
 <meta property="article:tag" content="Android">
 <meta property="article:tag" content="架构">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%BA%8C-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E7%B1%BB%E7%BB%93%E6%9E%84.png">
+<meta name="twitter:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%BA%8C-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/%E7%B1%BB%E5%9B%BE%E5%85%B3%E7%B3%BB.png">
 
 <link rel="canonical" href="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%BA%8C-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/">
 
@@ -236,7 +236,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-11 18:28:47" itemprop="dateModified" datetime="2022-02-11T18:28:47+08:00">2022-02-11</time>
+                <time title="修改时间：2022-02-11 20:14:50" itemprop="dateModified" datetime="2022-02-11T20:14:50+08:00">2022-02-11</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -302,6 +302,8 @@
 <p>类之间的关系：<code>继承/泛化、实现、组合、聚合、关联、依赖</code>。继承/泛化、实现关系体现的是一种类与类、或者类与接口间的纵向关系；其他关系则体现的是类与类、或者类与接口间的引用，是横向关系。有时候比较难以区分，不过很多事物间的关系想要定位清晰本身就是很难的，这几种关系都是语义级别的，所以从代码层面并不能完全区分。</p>
 <p>总的来说，后几种关系所表现的强弱程度依次为: <code>组合 &gt; 聚合 &gt; 关联 &gt; 依赖</code>。</p>
 <p>关于下面这些关系图用的是箭头还是菱形，是空心还是实心，一般 UML 类图工具都会有提示，用多了就熟了。</p>
+<p>上述六种关系表示如下：</p>
+<p><img src="%E7%B1%BB%E5%9B%BE%E5%85%B3%E7%B3%BB.png" alt="类图关系"></p>
 <h2 id="类结构"><a href="#类结构" class="headerlink" title="类结构"></a>类结构</h2><p>一般来说：</p>
 <ul>
 <li>一般类名：正常字体粗体</li>
@@ -329,11 +331,12 @@
 <p><img src="%E8%81%9A%E5%90%88.jpg" alt="聚合"></p>
 <h2 id="组合"><a href="#组合" class="headerlink" title="组合"></a>组合</h2><p>组合属于关联关系，比聚合更强，也称为强聚合，它体现的是 contains-a 的关系，同样是整体与部分间的关系，但此时整体与部分是不可分离的，整体的生命周期结束也就意味着部分的生命周期结束。比如你和你的脑子，在代码层面和关联关系是一致的，只能从语义级别来区分。</p>
 <p><img src="%E7%BB%84%E5%90%88.jpg" alt="组合"></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>示例参考网上的一张图：</p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>示例参考网上的一张图：</p>
 <p><img src="UML%E7%A4%BA%E4%BE%8B.jpg" alt="UML示例"></p>
-<p>上述六种关系表示如下：</p>
-<p><img src="%E7%B1%BB%E5%9B%BE%E5%85%B3%E7%B3%BB.png" alt="类图关系"></p>
 <h1 id="六大设计原则"><a href="#六大设计原则" class="headerlink" title="六大设计原则"></a>六大设计原则</h1><p>这里简单介绍一下六大设计原则(内容来自网络，由于很多文章写的都差不多，就不贴链接了)：面向对象设计原则是 OOPS(Object-Oriented Programming System, 面向对象程序设计系统) 编程的核心。</p>
+<blockquote>
+<p><strong>在实际的架构设计中，很难满足所有的设计原则，需要根据实际业务来决定如何取舍</strong></p>
+</blockquote>
 <h2 id="单一责任原则"><a href="#单一责任原则" class="headerlink" title="单一责任原则"></a>单一责任原则</h2><p>单一责任原则：让一个类只做一种类型责任，当这个类需要承当其他类型的责任的时候，就需要分解这个类，强调<strong>高内聚</strong>。</p>
 <p>即便是经验丰富的程序员写出的程序，也可能会违背这一原则，因为有职责扩散，即因为某种原因，职责 P 被分化为粒度更细的职责 P1 和 P2。所以使用面向对象语言开发时，不要急着写代码，优先考虑下模块、类、函数等的设计是否足够单一。</p>
 <h2 id="开闭原则"><a href="#开闭原则" class="headerlink" title="开闭原则"></a>开闭原则</h2><p>开闭原则：对扩展开放，对修改关闭。充分诠释 <code>抽象、多态</code> 特性，又是多数行为型设计模式的基础，遍布于各大优秀框架之中，是最重要的一条设计原则。比如说对于数据库操作，可以抽象出一个 CRUD 接口，后续如果切换 ORM 框架如 ROOM 的话，只需重新实现该接口，而外部业务层无感知，也不需要改动。</p>
@@ -438,7 +441,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#UML%E5%9B%BE"><span class="nav-number">2.</span> <span class="nav-text">UML图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B1%BB%E7%BB%93%E6%9E%84"><span class="nav-number">2.1.</span> <span class="nav-text">类结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%9B%E5%8C%96-%E7%BB%A7%E6%89%BF"><span class="nav-number">2.2.</span> <span class="nav-text">泛化&#x2F;继承</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.3.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96"><span class="nav-number">2.4.</span> <span class="nav-text">依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E8%81%94"><span class="nav-number">2.5.</span> <span class="nav-text">关联</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%81%9A%E5%90%88"><span class="nav-number">2.6.</span> <span class="nav-text">聚合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E5%90%88"><span class="nav-number">2.7.</span> <span class="nav-text">组合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.8.</span> <span class="nav-text">总结</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E5%A4%A7%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99"><span class="nav-number">3.</span> <span class="nav-text">六大设计原则</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E4%B8%80%E8%B4%A3%E4%BB%BB%E5%8E%9F%E5%88%99"><span class="nav-number">3.1.</span> <span class="nav-text">单一责任原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E9%97%AD%E5%8E%9F%E5%88%99"><span class="nav-number">3.2.</span> <span class="nav-text">开闭原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%AA%E7%B1%B3%E7%89%B9%E6%B3%95%E5%88%99"><span class="nav-number">3.3.</span> <span class="nav-text">迪米特法则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E9%9A%94%E7%A6%BB%E5%8E%9F%E5%88%99"><span class="nav-number">3.4.</span> <span class="nav-text">接口隔离原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8C%E6%B0%8F%E6%9B%BF%E6%8D%A2%E5%8E%9F%E5%88%99"><span class="nav-number">3.5.</span> <span class="nav-text">里氏替换原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E5%80%92%E7%BD%AE%E5%8E%9F%E5%88%99"><span class="nav-number">3.6.</span> <span class="nav-text">依赖倒置原则</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">设计模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="nav-number">5.</span> <span class="nav-text">写在最后</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#UML%E5%9B%BE"><span class="nav-number">2.</span> <span class="nav-text">UML图</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%B1%BB%E7%BB%93%E6%9E%84"><span class="nav-number">2.1.</span> <span class="nav-text">类结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%9B%E5%8C%96-%E7%BB%A7%E6%89%BF"><span class="nav-number">2.2.</span> <span class="nav-text">泛化&#x2F;继承</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.3.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96"><span class="nav-number">2.4.</span> <span class="nav-text">依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B3%E8%81%94"><span class="nav-number">2.5.</span> <span class="nav-text">关联</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%81%9A%E5%90%88"><span class="nav-number">2.6.</span> <span class="nav-text">聚合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E5%90%88"><span class="nav-number">2.7.</span> <span class="nav-text">组合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.8.</span> <span class="nav-text">示例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%AD%E5%A4%A7%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99"><span class="nav-number">3.</span> <span class="nav-text">六大设计原则</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E4%B8%80%E8%B4%A3%E4%BB%BB%E5%8E%9F%E5%88%99"><span class="nav-number">3.1.</span> <span class="nav-text">单一责任原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E9%97%AD%E5%8E%9F%E5%88%99"><span class="nav-number">3.2.</span> <span class="nav-text">开闭原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%AA%E7%B1%B3%E7%89%B9%E6%B3%95%E5%88%99"><span class="nav-number">3.3.</span> <span class="nav-text">迪米特法则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A5%E5%8F%A3%E9%9A%94%E7%A6%BB%E5%8E%9F%E5%88%99"><span class="nav-number">3.4.</span> <span class="nav-text">接口隔离原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%87%8C%E6%B0%8F%E6%9B%BF%E6%8D%A2%E5%8E%9F%E5%88%99"><span class="nav-number">3.5.</span> <span class="nav-text">里氏替换原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E5%80%92%E7%BD%AE%E5%8E%9F%E5%88%99"><span class="nav-number">3.6.</span> <span class="nav-text">依赖倒置原则</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">设计模式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="nav-number">5.</span> <span class="nav-text">写在最后</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
