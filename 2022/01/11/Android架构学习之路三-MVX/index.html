@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/MVP.png">
 <meta property="og:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/MVVM.png">
 <meta property="article:published_time" content="2022-01-11T10:50:40.000Z">
-<meta property="article:modified_time" content="2022-02-22T12:08:01.505Z">
+<meta property="article:modified_time" content="2022-02-22T12:32:05.790Z">
 <meta property="article:author" content="苍耳叔叔">
 <meta property="article:tag" content="Android">
 <meta property="article:tag" content="架构">
@@ -231,7 +231,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-22 20:08:01" itemprop="dateModified" datetime="2022-02-22T20:08:01+08:00">2022-02-22</time>
+                <time title="修改时间：2022-02-22 20:32:05" itemprop="dateModified" datetime="2022-02-22T20:32:05+08:00">2022-02-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -302,7 +302,7 @@
 <p>我们在这里可以看下 Model 和 View 的理解：</p>
 <ul>
 <li>View: 视图，向用户呈现的界面，与用户直接交互的一层。</li>
-<li>Model: Model 通常应包括数据和一些业务逻辑，即数据的结构定义，以及存储和获取。而针对外部组件而言, Model 往往表示向其提供的数据，毕竟它们不关心数据是咋来的，咋走的，它们只关心它们自己。</li>
+<li>Model: Model 通常应包括数据和一些业务逻辑，即数据的结构定义，以及存储和获取等。而针对外部组件而言, Model 往往表示向其提供的数据，毕竟它们不关心数据是咋来的，咋走的，它们只关心它们自己。</li>
 </ul>
 <h1 id="MVC"><a href="#MVC" class="headerlink" title="MVC"></a>MVC</h1><p>该架构涉及三个角色: Model-View-Controller。其中 Controller 是 Model 与 View 之间的桥梁，用来控制程序的流程。</p>
 <p>我记得曾经在网上看过不少 MVC 的文章，但是貌似有些文章里面给的模型图不太一样，一度有些费解，其实这些不一样的地方在于 MVC 模型经过发展存在着变体而已。一个版本的 MVC 是这样子的：</p>
@@ -325,12 +325,12 @@
 </ul>
 <h1 id="MVP"><a href="#MVP" class="headerlink" title="MVP"></a>MVP</h1><p>该架构涉及三个角色: Model-View-Presenter。关系图如下：</p>
 <p><img src="MVP.png" alt="MVP"></p>
-<p>这张图跟上面第二个版本的 MVC 结构很像，不一样的地方在于 Controller 换成了 Presenter 层，其职责是类似的，但是实现方式不一样。MVP 之间是通过接口来通信的，三个层都有各自的接口来定义其行为与能力，这样自然就能降低耦合，提高复用性，也方便了单元测试。</p>
-<p>其交互流程依旧是：<strong>用户操作 View 层，产生了一个事件; Presenter 接收事件，并对其作出反应，请求 Model 层; Model 层作出处理后通知给 Presenter, Presenter 进而再通知到 View 层</strong>。</p>
+<p>这张图跟上面第二个版本的 MVC 结构很像，不一样的地方在于 Controller 换成了 Presenter 层，其职责是类似的，但是实现方式不一样。MVP 之间是通过接口来通信的，三个层都有各自的接口来定义其行为与能力，这样可以降低耦合，提高复用性，也方便了单元测试。</p>
+<p>其交互流程依旧是：<strong>用户操作 View 层，产生了一个事件; Presenter 接收事件，并对其作出反应，请求 Model 层; Model 层作出处理后通知给 Presenter, Presenter 进而再通知到 View 层。</strong></p>
 <blockquote>
 <p>通过登录场景举个栗子🌰</p>
 </blockquote>
-<p>1、首先定义各层的接口，一个场景写在一起</p>
+<p>1、首先定义各层的接口，一个场景的接口写在一起</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">ILogin</span> </span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">ILoginView</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">loginLoading</span><span class="params">()</span></span> <span class="comment">// 登陆中</span></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">loginResult</span><span class="params">(result: <span class="type">Boolean</span>)</span></span> <span class="comment">// 登陆结果</span></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">isAvailable</span><span class="params">()</span></span>: <span class="built_in">Boolean</span> <span class="comment">// IView 是否可用</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">ILoginPresenter</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">attachView</span><span class="params">(view: <span class="type">ILoginView</span>)</span></span> <span class="comment">// attach View</span></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">detachView</span><span class="params">()</span></span> <span class="comment">// detach View, 防止内存泄漏</span></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">isViewAvailable</span><span class="params">()</span></span>: <span class="built_in">Boolean</span></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">login</span><span class="params">()</span></span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">ILoginModel</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">login</span><span class="params">(listener: <span class="type">OnLoginListener</span>)</span></span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">OnLoginListener</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">result</span><span class="params">(result: <span class="type">Boolean</span>)</span></span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>2、View 层实现</p>
@@ -342,7 +342,7 @@
 <p>4、Model 层实现</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoginModel</span> : <span class="type">ILogin.ILoginModel &#123;</span></span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">login</span><span class="params">(listener: <span class="type">ILogin</span>.<span class="type">OnLoginListener</span>)</span></span> &#123;</span><br><span class="line">        thread &#123;</span><br><span class="line">            Thread.sleep(<span class="number">1000</span>)</span><br><span class="line">            runOnUIThread &#123;</span><br><span class="line">                <span class="comment">// 返回登录结果</span></span><br><span class="line">                listener.result(Random.nextBoolean())</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><strong>以上只是一个示例，实际开发中当然会把一些基础的重复的逻辑抽成 Base 类</strong>。</p>
+<p><em>以上只是一个示例，实际开发中当然会把一些基础的重复的逻辑抽成 Base 类</em></p>
 <blockquote>
 <p>MVP 架构小结</p>
 </blockquote>
@@ -359,37 +359,31 @@
 </blockquote>
 <p>上面说过 Model 层里包括了一些业务逻辑和业务数据模型，而 ViewModel 层即是视图模型(Model of View)，其内是视图的表示数据和逻辑。比如说 Model 层的业务数据是 1, 2, 3, 4, 而翻译到 View 层，则可能是表示 A, B, C, D 了。ViewModel 除了做这个事情外，还会封装视图的行为动作，如点击某个控件后的行为等。另外注意这里的 ViewModel 和 Jetpack 包里提供的 ViewModel 组件不是一个东西，这里的 ViewModel 是一个概念，而 Jetpack 包则提供了一个比较方便的实现方式。</p>
 <p>很多讲 MVVM 的文章示例都会用 DataBinding, 然而没有 DataBinding 照样可以使用 MVVM 架构，比如说借用 LiveData, RxJava, Flow 等，这些工具都是基于响应式开发的原理，来替代基于接口的通信方式。实际开发中基本没看到过使用 DataBinding 的，另外如果真要使用 DataBinding 的话，尽量避免在 xml 里写代码逻辑，而应替换成变量来表示某个属性，在 Kotlin 代码里赋值。</p>
-<p><strong>这里的响应式开发强调一种基于观察者模式的开发方式: View 订阅 ViewModel 暴露的响应式接口，接收到通知后进行相应逻辑，而 ViewModel 不再持有任何形式的 View 的引用，减少耦合，提高了可复用性</strong></p>
+<p><strong>这里的响应式开发强调一种基于观察者模式的开发方式: View 订阅 ViewModel 暴露的响应式接口，接收到通知后进行相应逻辑，而 ViewModel 不再持有任何形式的 View 的引用，减少耦合，提高了可复用性。</strong></p>
 <p>另外如果使用 LiveData 的话, ViewModel 对 View 层仅暴露 LiveData 接口，在 View 层不允许直接更新 LiveData, 因为一旦 View 层拥有直接更新 LiveData 的能力，就无法约束 View 层进行业务处理的行为：</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoginViewModel</span> : <span class="type">ViewModel</span></span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> _loginResult: MutableLiveData&lt;<span class="built_in">Boolean</span>&gt; = MutableLiveData()</span><br><span class="line">    <span class="keyword">val</span> loginResult: LiveData&lt;<span class="built_in">Boolean</span>&gt; = _loginResult</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>关于 flow 之前有在掘金上写过一篇学习笔记，感兴趣可以看看: <a target="_blank" rel="noopener" href="https://juejin.cn/post/6966047022814232613">Kotlin协程之flow工作原理</a>。</p>
 <blockquote>
-<p>以登录结果为例, MVVM 基于 LiveData 的交互流程: 首先 ViewModel 中有一个 LiveData 属性表示登录结果，对外暴露出 LiveData 而不是 MutableLiveData; View 层点击登录后，调用 VM 的登录接口, VM 然后请求 Model 层的登录能力; Model 完事后通知到 VM, VM 更新 MutableLiveData 登录状态, 而 View 则收到了 LiveData 的变化通知，进而更新 UI。</p>
+<p>以登录结果为例, MVVM 基于 LiveData 的交互流程: 首先 ViewModel 中有一个 LiveData 属性表示登录结果，对外暴露出 LiveData 而不是 MutableLiveData, View 层会订阅这个数据; View 层点击登录后，调用 VM 的登录接口, VM 然后请求 Model 层的登录能力; Model 完事后通知到 VM, VM 更新 MutableLiveData 登录状态, 而 View 则收到了 LiveData 的变化通知，进而更新 UI。</p>
 </blockquote>
-<h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><blockquote>
-<p>Model层</p>
-</blockquote>
+<h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><p>1、Model 层模拟登录，返回登录结果</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoginModel</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 模拟登录</span></span><br><span class="line">    <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">login</span><span class="params">()</span></span>: <span class="built_in">Boolean</span> = withContext(Dispatchers.IO) &#123;</span><br><span class="line">        delay(<span class="number">1000</span>)</span><br><span class="line">        Random.nextBoolean()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>ViewModel层</p>
-</blockquote>
+<p>2、ViewModel 层暴露 login 方法，并提供 LiveData 数据表示登录状态，让 View 层订阅</p>
 <figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoginViewModel</span> : <span class="type">ViewModel</span></span>(), CoroutineScope <span class="keyword">by</span> MainScope() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> loginModel = LoginModel()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> _loginResult: MutableLiveData&lt;<span class="built_in">Int</span>&gt; = MutableLiveData()</span><br><span class="line">    <span class="keyword">val</span> loginResult: LiveData&lt;<span class="built_in">Int</span>&gt; = _loginResult</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">login</span><span class="params">()</span></span> &#123;</span><br><span class="line">        launch &#123;</span><br><span class="line">            _loginResult.value = <span class="number">0</span></span><br><span class="line">            <span class="keyword">val</span> result = loginModel.login()</span><br><span class="line">            _loginResult.value = <span class="keyword">if</span> (result) <span class="number">1</span> <span class="keyword">else</span> -<span class="number">1</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 模拟状态</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">loginProgressText</span><span class="params">(result: <span class="type">Int</span>)</span></span>: String = <span class="keyword">when</span> (result) &#123;</span><br><span class="line">        <span class="number">0</span> -&gt; <span class="string">&quot;登录中&quot;</span></span><br><span class="line">        <span class="number">1</span> -&gt; <span class="string">&quot;登录成功&quot;</span></span><br><span class="line">        <span class="keyword">else</span> -&gt; <span class="string">&quot;登录失败&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>View层</p>
-</blockquote>
+<p>1、View 层处理点击事件，并订阅登录状态</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">class MVVMLoginActivity : AppCompatActivity() &#123;</span><br><span class="line">    <span class="keyword">private</span> val viewModel: LoginViewModel by lazy &#123;</span><br><span class="line">        ViewModelProvider(<span class="keyword">this</span>).get(LoginViewModel::class.java)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">override fun <span class="title">onCreate</span><span class="params">(savedInstanceState: Bundle?)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        setContentView(Button(<span class="keyword">this</span>).apply &#123;</span><br><span class="line">            text = <span class="string">&quot;登录&quot;</span></span><br><span class="line">            setOnClickListener &#123;</span><br><span class="line">                viewModel.login()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">        <span class="comment">// 监听登录状态</span></span><br><span class="line">        viewModel.loginResult.observe(<span class="keyword">this</span>, &#123;</span><br><span class="line">            Toast.makeText(</span><br><span class="line">                <span class="keyword">this</span>,</span><br><span class="line">                <span class="string">&quot;Login result: $&#123;viewModel.loginProgressText(it)&#125;&quot;</span>,</span><br><span class="line">                Toast.LENGTH_SHORT</span><br><span class="line">            ).show()</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h1 id="Repository"><a href="#Repository" class="headerlink" title="Repository"></a>Repository</h1><blockquote>
 <p>Repository 模式的概念来自于领域驱动开发(Domain Driven Design)。主要思想是通过抽象一个 Repository 层，对业务(领域)层屏蔽不同数据源的访问细节，业务层(可能是 ViewModel)无需关注具体的数据访问细节。</p>
 </blockquote>
 <p>Repository 内部实现了对不同数据源(DataSource)的访问，典型的 DataSource 包括远程数据, Cache 缓存, Database 数据库等，可以用不同的 Fetcher 来实现, Repository 持有多个 Fetcher 引用。</p>
-<p>因此上面实例中的 LoginModel 可以换成 LoginRepository 类。</p>
+<p>因此上面实例中的 LoginModel 可以换成 LoginRepository 类, LoginRepository 不暴露具体的数据访问方式，只暴露出这一能力的接口。</p>
 <h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>写代码的时候，记得三思而后行，想一想你写的代码是不是在它该在的位置，是不是以该有的形式存在的。</p>
 <blockquote>
-<p><strong>架构不是一蹴而就的，希望我们有一天的时候，能够从自己写的代码中找到架构的成就感，而不是干几票就跑路。这个系列应该会一直更新，记录我在架构之路上学习的脚印儿，一件一件扒开架构神秘的面纱</strong></p>
+<p><strong>架构不是一蹴而就的，希望我们有一天的时候，能够从自己写的代码中找到架构的成就感，而不是干几票就跑路。这个系列应该会一直更新，记录我在架构之路上学习的脚印儿，一件一件扒开架构神秘的面纱。</strong></p>
 </blockquote>
 
     </div>
