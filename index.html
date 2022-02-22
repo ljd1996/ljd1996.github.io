@@ -299,7 +299,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVVM/">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/head.png">
@@ -313,7 +313,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVVM/" class="post-title-link" itemprop="url">Android架构学习之路三-MVVM</a>
+            <a href="/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/" class="post-title-link" itemprop="url">Android架构学习之路三-MVX</a>
         </h2>
 
         <div class="post-meta">
@@ -330,7 +330,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-12 10:49:31" itemprop="dateModified" datetime="2022-01-12T10:49:31+08:00">2022-01-12</time>
+                <time title="修改时间：2022-02-22 20:08:01" itemprop="dateModified" datetime="2022-02-22T20:08:01+08:00">2022-02-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -347,7 +347,7 @@
             </span>
 
           
-            <span id="/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVVM/" class="post-meta-item leancloud_visitors" data-flag-title="Android架构学习之路三-MVVM" title="阅读次数">
+            <span id="/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/" class="post-meta-item leancloud_visitors" data-flag-title="Android架构学习之路三-MVX" title="阅读次数">
               <span class="post-meta-item-icon">
                 <i class="fa fa-eye"></i>
               </span>
@@ -362,8 +362,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVVM/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVVM/" itemprop="commentCount"></span>
+    <a title="valine" href="/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -378,11 +378,13 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><a href="https://ljd1996.github.io/categories/Android/%E6%9E%B6%E6%9E%84/">架构学习之路系列</a></p>
-<p>这是架构学习系列的第三篇，主要介绍一下 MVC, MVP 以及 MVVM 架构，至于 MVI 后面会单独介绍。</p>
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><blockquote>
+<p><a href="https://ljd1996.github.io/categories/Android/%E6%9E%B6%E6%9E%84/">架构学习之路系列</a></p>
+</blockquote>
+<p>这是架构学习系列的第三篇，主要介绍一下 MVC, MVP 以及 MVVM 架构，至于 MVI 后面会单独介绍。这些 MVX 的目的都是为了将业务和视图分离，松耦合，作为 Android 程序猿，大多不陌生了。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVVM/#more" rel="contents">
+              <a class="btn" href="/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -437,7 +439,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-14 11:47:03" itemprop="dateModified" datetime="2022-02-14T11:47:03+08:00">2022-02-14</time>
+                <time title="修改时间：2022-02-21 20:20:34" itemprop="dateModified" datetime="2022-02-21T20:20:34+08:00">2022-02-21</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -485,7 +487,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><a href="https://ljd1996.github.io/categories/Android/%E6%9E%B6%E6%9E%84/">架构学习之路系列</a></p>
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><blockquote>
+<p><a href="https://ljd1996.github.io/categories/Android/%E6%9E%B6%E6%9E%84/">架构学习之路系列</a></p>
+</blockquote>
 <p>这是架构学习系列的第二篇，主要介绍一下 UML 图，设计原则以及设计模式。这些名词大家估计都耳熟能详了，它们对于架构而言非常重要，只有理论结合实际，以后才会越来越娴熟。在开始做需求的时候，先别急着写代码，思考一下这个需求的本质是干嘛，用面向对象的思想去抽象这个过程，不是直接搞几个类就可以了的。</p>
           <!--noindex-->
             <div class="post-button">
@@ -544,7 +548,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-01-12 10:49:50" itemprop="dateModified" datetime="2022-01-12T10:49:50+08:00">2022-01-12</time>
+                <time title="修改时间：2022-02-21 20:20:20" itemprop="dateModified" datetime="2022-02-21T20:20:20+08:00">2022-02-21</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -592,7 +596,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="架构是什么"><a href="#架构是什么" class="headerlink" title="架构是什么"></a>架构是什么</h1><p><a href="https://ljd1996.github.io/categories/Android/%E6%9E%B6%E6%9E%84/">架构学习之路系列</a></p>
+          <h1 id="架构是什么"><a href="#架构是什么" class="headerlink" title="架构是什么"></a>架构是什么</h1><blockquote>
+<p><a href="https://ljd1996.github.io/categories/Android/%E6%9E%B6%E6%9E%84/">架构学习之路系列</a></p>
+</blockquote>
 <p>这是架构学习系列的第一篇，随便讲几句。对于架构，我也有些一知半解，读了一些架构相关的文章，结合实际项目经历，有了自己的一些理解。</p>
 <p>关于架构是什么？这点可以顾名思义去看，<code>架构</code>=<code>架</code>+<code>构</code>，即整体的一个架子和各个组件之间的组合结构。当然可能不同的程序员对于项目架构的风格和习惯不一样，但是底层的思想应该都是类似的，诸如我们可能听到起了茧子的“关注点分离”，“低耦合高内聚”，“可扩展可复用易维护”等等，听完这些话，感觉自己懂了，又感觉啥也不懂，好像有所收获了，准备开始写代码的时候，脑子里想的可能又是“工期太赶了，就这样写吧，反正干完这几票就跑路了”。</p>
           <!--noindex-->

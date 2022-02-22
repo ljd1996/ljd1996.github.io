@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ljd1996.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言 架构学习之路系列  这是架构学习系列的第三篇，主要介绍一下 MVC, MVP 以及 MVVM 架构，至于 MVI 后面会单独介绍。这些 MVX 的目的都是为了将业务和视图分离，松耦合，作为 Android 程序猿，大多不陌生了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android架构学习之路三-MVX">
+<meta property="og:url" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="前言 架构学习之路系列  这是架构学习系列的第三篇，主要介绍一下 MVC, MVP 以及 MVVM 架构，至于 MVI 后面会单独介绍。这些 MVX 的目的都是为了将业务和视图分离，松耦合，作为 Android 程序猿，大多不陌生了。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/MVC1.png">
+<meta property="og:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/MVC2.png">
+<meta property="og:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/MVP.png">
+<meta property="og:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/MVVM.png">
+<meta property="article:published_time" content="2022-01-11T10:50:40.000Z">
+<meta property="article:modified_time" content="2022-02-22T12:08:01.505Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="架构">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/MVC1.png">
+
+<link rel="canonical" href="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Android架构学习之路三-MVX | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Android架构学习之路三-MVX
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-01-11 18:50:40" itemprop="dateCreated datePublished" datetime="2022-01-11T18:50:40+08:00">2022-01-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-02-22 20:08:01" itemprop="dateModified" datetime="2022-02-22T20:08:01+08:00">2022-02-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E6%9E%B6%E6%9E%84/" itemprop="url" rel="index"><span itemprop="name">架构</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/" class="post-meta-item leancloud_visitors" data-flag-title="Android架构学习之路三-MVX" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><blockquote>
+<p><a href="https://ljd1996.github.io/categories/Android/%E6%9E%B6%E6%9E%84/">架构学习之路系列</a></p>
+</blockquote>
+<p>这是架构学习系列的第三篇，主要介绍一下 MVC, MVP 以及 MVVM 架构，至于 MVI 后面会单独介绍。这些 MVX 的目的都是为了将业务和视图分离，松耦合，作为 Android 程序猿，大多不陌生了。</p>
+<a id="more"></a>
+
+<blockquote>
+<p>一个 App 离不开 Model 和 View 这两个角色, Model 决定了 App 的数据，而 View 决定怎么向用户展示这些数据，大多框架或组件基本上都是用来处理这两者之间的交互关系的。</p>
+</blockquote>
+<p>因此一个 App 的架构需要处理两个任务：</p>
+<ol>
+<li>更新 Model —— 如何处理 View action?</li>
+<li>更新 View  —— 如何将 Model 的数据表现到 View 上?</li>
+</ol>
+<p>基于此，在 Android 上一般有如下三种常用架构(本期不讲 MVI)：</p>
+<ul>
+<li>MVC —— Model-View-Controller: 作为 Controller 层的 Actvity/Fragment 等充当了 View 的角色，代码过于臃肿；同时在 View 层又容易直接操作 Model，导致 View 和 Model 层耦合，无法独立复用。有时候看到一个 Activity 能有几千甚至上万行的代码，简直噩梦。</li>
+<li>MVP —— Model-View-Presenter: Presenter 和 View 层之间通过定义接口实现通信，解耦了 View 和 Model 层。然而当业务场景比较复杂时，接口定义会越来越多，且可能定义模糊，接口一旦变化，对应实现也需要发生变化。</li>
+<li>MVVM —— Model-View-ViewModel: MVVM 解决了 MVP 的问题，使得 ViewModel 和 View 之间不再依赖接口通信，而是通过 LiveData, RxJava, Flow 等响应式开发的方式来通信。</li>
+</ul>
+<p>我们在这里可以看下 Model 和 View 的理解：</p>
+<ul>
+<li>View: 视图，向用户呈现的界面，与用户直接交互的一层。</li>
+<li>Model: Model 通常应包括数据和一些业务逻辑，即数据的结构定义，以及存储和获取。而针对外部组件而言, Model 往往表示向其提供的数据，毕竟它们不关心数据是咋来的，咋走的，它们只关心它们自己。</li>
+</ul>
+<h1 id="MVC"><a href="#MVC" class="headerlink" title="MVC"></a>MVC</h1><p>该架构涉及三个角色: Model-View-Controller。其中 Controller 是 Model 与 View 之间的桥梁，用来控制程序的流程。</p>
+<p>我记得曾经在网上看过不少 MVC 的文章，但是貌似有些文章里面给的模型图不太一样，一度有些费解，其实这些不一样的地方在于 MVC 模型经过发展存在着变体而已。一个版本的 MVC 是这样子的：</p>
+<p><img src="MVC1.png" alt="MVC1"></p>
+<p>该版本一般的交互流程是：</p>
+<ol>
+<li>用户操作 View, 比如说产生了一个点击事件。</li>
+<li>Controller 接收事件，对其作出反应。比如说是点击登录事件，它会校验用户输入是否为空，若为空则直接返回 View 让其提示用户；若不为空则请求 Model 层。</li>
+<li>Model 作出处理后，需要把登录用户的数据通知到相关成员，上图中即是 View 层。View 收到后作出相关展示。</li>
+</ol>
+<p>在上图中 View 层依赖了 Model 层，降低了 View 的可复用性，为了解耦，出现了下图的版本：</p>
+<p><img src="MVC2.png" alt="MVC2"></p>
+<p>这个版本的主要改动就是 View 和 Model 不直接通信了，View 通过 Controller 去更新 Model 层的数据，Model 层完成逻辑后通知 Controller 层，Controller 再去更新 View。</p>
+<blockquote>
+<p>MVC 架构小结</p>
+</blockquote>
+<ul>
+<li>MVC 为视图和业务的分离提供了开创性的思路，解耦了 View 和 Model 层，提高了复用性。</li>
+<li>然而在 Android 的实际应用中, 容易出现一个新的角色 —— ViewController, 比如说 Activity 又当 View 又当 Controller 的，十分臃肿，耦合也随之变得严重了起来，还不方便单元测试。</li>
+</ul>
+<h1 id="MVP"><a href="#MVP" class="headerlink" title="MVP"></a>MVP</h1><p>该架构涉及三个角色: Model-View-Presenter。关系图如下：</p>
+<p><img src="MVP.png" alt="MVP"></p>
+<p>这张图跟上面第二个版本的 MVC 结构很像，不一样的地方在于 Controller 换成了 Presenter 层，其职责是类似的，但是实现方式不一样。MVP 之间是通过接口来通信的，三个层都有各自的接口来定义其行为与能力，这样自然就能降低耦合，提高复用性，也方便了单元测试。</p>
+<p>其交互流程依旧是：<strong>用户操作 View 层，产生了一个事件; Presenter 接收事件，并对其作出反应，请求 Model 层; Model 层作出处理后通知给 Presenter, Presenter 进而再通知到 View 层</strong>。</p>
+<blockquote>
+<p>通过登录场景举个栗子🌰</p>
+</blockquote>
+<p>1、首先定义各层的接口，一个场景写在一起</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">interface</span> <span class="title">ILogin</span> </span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">ILoginView</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">loginLoading</span><span class="params">()</span></span> <span class="comment">// 登陆中</span></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">loginResult</span><span class="params">(result: <span class="type">Boolean</span>)</span></span> <span class="comment">// 登陆结果</span></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">isAvailable</span><span class="params">()</span></span>: <span class="built_in">Boolean</span> <span class="comment">// IView 是否可用</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">ILoginPresenter</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">attachView</span><span class="params">(view: <span class="type">ILoginView</span>)</span></span> <span class="comment">// attach View</span></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">detachView</span><span class="params">()</span></span> <span class="comment">// detach View, 防止内存泄漏</span></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">isViewAvailable</span><span class="params">()</span></span>: <span class="built_in">Boolean</span></span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">login</span><span class="params">()</span></span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">ILoginModel</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">login</span><span class="params">(listener: <span class="type">OnLoginListener</span>)</span></span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">interface</span> <span class="title">OnLoginListener</span> </span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">fun</span> <span class="title">result</span><span class="params">(result: <span class="type">Boolean</span>)</span></span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2、View 层实现</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MVPLoginActivity</span> : <span class="type">AppCompatActivity</span></span>(), ILogin.ILoginView &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> loginPresenter = LoginPresenter()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        setContentView(Button(<span class="keyword">this</span>).apply &#123;</span><br><span class="line">            text = <span class="string">&quot;登录&quot;</span></span><br><span class="line">            setOnClickListener &#123;</span><br><span class="line">                loginPresenter.login()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">        loginPresenter.attachView(<span class="keyword">this</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">loginLoading</span><span class="params">()</span></span> &#123;</span><br><span class="line">        Toast.makeText(<span class="keyword">this</span>, <span class="string">&quot;Login...&quot;</span>, Toast.LENGTH_SHORT).show()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">loginResult</span><span class="params">(result: <span class="type">Boolean</span>)</span></span> &#123;</span><br><span class="line">        Toast.makeText(<span class="keyword">this</span>, <span class="string">&quot;Login result: <span class="variable">$result</span>&quot;</span>, Toast.LENGTH_SHORT).show()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">isAvailable</span><span class="params">()</span></span> = !isDestroyed &amp;&amp; !isFinishing</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onDestroy</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">super</span>.onDestroy()</span><br><span class="line">        loginPresenter.detachView()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3、Presenter 层实现</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoginPresenter</span> : <span class="type">ILogin.ILoginPresenter</span>, <span class="type">ILogin.OnLoginListener &#123;</span></span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> loginModel: ILogin.ILoginModel = LoginModel()</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">var</span> loginView: ILogin.ILoginView? = <span class="literal">null</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">attachView</span><span class="params">(view: <span class="type">ILogin</span>.<span class="type">ILoginView</span>)</span></span> &#123;</span><br><span class="line">        loginView = view</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">detachView</span><span class="params">()</span></span> &#123;</span><br><span class="line">        loginView = <span class="literal">null</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">isViewAvailable</span><span class="params">()</span></span>: <span class="built_in">Boolean</span> = loginView?.isAvailable() ?: <span class="literal">false</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">login</span><span class="params">()</span></span> &#123;</span><br><span class="line">        loginView?.loginLoading()</span><br><span class="line">        loginModel.login(<span class="keyword">this</span>)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">result</span><span class="params">(result: <span class="type">Boolean</span>)</span></span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (isViewAvailable()) &#123;</span><br><span class="line">            loginView?.loginResult(result)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>4、Model 层实现</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoginModel</span> : <span class="type">ILogin.ILoginModel &#123;</span></span></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">login</span><span class="params">(listener: <span class="type">ILogin</span>.<span class="type">OnLoginListener</span>)</span></span> &#123;</span><br><span class="line">        thread &#123;</span><br><span class="line">            Thread.sleep(<span class="number">1000</span>)</span><br><span class="line">            runOnUIThread &#123;</span><br><span class="line">                <span class="comment">// 返回登录结果</span></span><br><span class="line">                listener.result(Random.nextBoolean())</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>以上只是一个示例，实际开发中当然会把一些基础的重复的逻辑抽成 Base 类</strong>。</p>
+<blockquote>
+<p>MVP 架构小结</p>
+</blockquote>
+<ul>
+<li>MVP 模式清晰划分了各个层的职责，避免了 ViewController 的问题，降低了代码的臃肿程度。</li>
+<li>解除 View 与 Model 的耦合，通过接口来交互，提高了可复用性和扩展性，利于单元测试。</li>
+<li>但随着业务的复杂化，接口的定义越来越多，提高了项目的复杂度，对开发的设计能力要求也更高了。</li>
+<li>Presenter 如果持有 Activity 等的引用，容易出现内存泄漏，生命周期不同步等问题。</li>
+</ul>
+<h1 id="MVVM"><a href="#MVVM" class="headerlink" title="MVVM"></a>MVVM</h1><h2 id="MVVM模式"><a href="#MVVM模式" class="headerlink" title="MVVM模式"></a>MVVM模式</h2><p>该架构涉及三个角色: Model-View-ViewModel。关系图如下：</p>
+<p><img src="MVVM.png" alt="MVVM"></p>
+<blockquote>
+<p>它跟 MVP 看起来也是比较类似的，不同之处在于 Presenter 换成了 ViewModel, ViewModel 负责与 Model 层交互，并且将数据以可观察对象的形式提供给 View, ViewModel 与 View 层分离，即 ViewModel 不应该知道与之交互的 View 是什么。</p>
+</blockquote>
+<p>上面说过 Model 层里包括了一些业务逻辑和业务数据模型，而 ViewModel 层即是视图模型(Model of View)，其内是视图的表示数据和逻辑。比如说 Model 层的业务数据是 1, 2, 3, 4, 而翻译到 View 层，则可能是表示 A, B, C, D 了。ViewModel 除了做这个事情外，还会封装视图的行为动作，如点击某个控件后的行为等。另外注意这里的 ViewModel 和 Jetpack 包里提供的 ViewModel 组件不是一个东西，这里的 ViewModel 是一个概念，而 Jetpack 包则提供了一个比较方便的实现方式。</p>
+<p>很多讲 MVVM 的文章示例都会用 DataBinding, 然而没有 DataBinding 照样可以使用 MVVM 架构，比如说借用 LiveData, RxJava, Flow 等，这些工具都是基于响应式开发的原理，来替代基于接口的通信方式。实际开发中基本没看到过使用 DataBinding 的，另外如果真要使用 DataBinding 的话，尽量避免在 xml 里写代码逻辑，而应替换成变量来表示某个属性，在 Kotlin 代码里赋值。</p>
+<p><strong>这里的响应式开发强调一种基于观察者模式的开发方式: View 订阅 ViewModel 暴露的响应式接口，接收到通知后进行相应逻辑，而 ViewModel 不再持有任何形式的 View 的引用，减少耦合，提高了可复用性</strong></p>
+<p>另外如果使用 LiveData 的话, ViewModel 对 View 层仅暴露 LiveData 接口，在 View 层不允许直接更新 LiveData, 因为一旦 View 层拥有直接更新 LiveData 的能力，就无法约束 View 层进行业务处理的行为：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoginViewModel</span> : <span class="type">ViewModel</span></span>() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> _loginResult: MutableLiveData&lt;<span class="built_in">Boolean</span>&gt; = MutableLiveData()</span><br><span class="line">    <span class="keyword">val</span> loginResult: LiveData&lt;<span class="built_in">Boolean</span>&gt; = _loginResult</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>关于 flow 之前有在掘金上写过一篇学习笔记，感兴趣可以看看: <a target="_blank" rel="noopener" href="https://juejin.cn/post/6966047022814232613">Kotlin协程之flow工作原理</a>。</p>
+<blockquote>
+<p>以登录结果为例, MVVM 基于 LiveData 的交互流程: 首先 ViewModel 中有一个 LiveData 属性表示登录结果，对外暴露出 LiveData 而不是 MutableLiveData; View 层点击登录后，调用 VM 的登录接口, VM 然后请求 Model 层的登录能力; Model 完事后通知到 VM, VM 更新 MutableLiveData 登录状态, 而 View 则收到了 LiveData 的变化通知，进而更新 UI。</p>
+</blockquote>
+<h2 id="实例"><a href="#实例" class="headerlink" title="实例"></a>实例</h2><blockquote>
+<p>Model层</p>
+</blockquote>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoginModel</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 模拟登录</span></span><br><span class="line">    <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">login</span><span class="params">()</span></span>: <span class="built_in">Boolean</span> = withContext(Dispatchers.IO) &#123;</span><br><span class="line">        delay(<span class="number">1000</span>)</span><br><span class="line">        Random.nextBoolean()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>ViewModel层</p>
+</blockquote>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LoginViewModel</span> : <span class="type">ViewModel</span></span>(), CoroutineScope <span class="keyword">by</span> MainScope() &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> loginModel = LoginModel()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> _loginResult: MutableLiveData&lt;<span class="built_in">Int</span>&gt; = MutableLiveData()</span><br><span class="line">    <span class="keyword">val</span> loginResult: LiveData&lt;<span class="built_in">Int</span>&gt; = _loginResult</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">login</span><span class="params">()</span></span> &#123;</span><br><span class="line">        launch &#123;</span><br><span class="line">            _loginResult.value = <span class="number">0</span></span><br><span class="line">            <span class="keyword">val</span> result = loginModel.login()</span><br><span class="line">            _loginResult.value = <span class="keyword">if</span> (result) <span class="number">1</span> <span class="keyword">else</span> -<span class="number">1</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 模拟状态</span></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">loginProgressText</span><span class="params">(result: <span class="type">Int</span>)</span></span>: String = <span class="keyword">when</span> (result) &#123;</span><br><span class="line">        <span class="number">0</span> -&gt; <span class="string">&quot;登录中&quot;</span></span><br><span class="line">        <span class="number">1</span> -&gt; <span class="string">&quot;登录成功&quot;</span></span><br><span class="line">        <span class="keyword">else</span> -&gt; <span class="string">&quot;登录失败&quot;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>View层</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">class MVVMLoginActivity : AppCompatActivity() &#123;</span><br><span class="line">    <span class="keyword">private</span> val viewModel: LoginViewModel by lazy &#123;</span><br><span class="line">        ViewModelProvider(<span class="keyword">this</span>).get(LoginViewModel::class.java)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function">override fun <span class="title">onCreate</span><span class="params">(savedInstanceState: Bundle?)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate(savedInstanceState)</span><br><span class="line">        setContentView(Button(<span class="keyword">this</span>).apply &#123;</span><br><span class="line">            text = <span class="string">&quot;登录&quot;</span></span><br><span class="line">            setOnClickListener &#123;</span><br><span class="line">                viewModel.login()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;)</span><br><span class="line">        <span class="comment">// 监听登录状态</span></span><br><span class="line">        viewModel.loginResult.observe(<span class="keyword">this</span>, &#123;</span><br><span class="line">            Toast.makeText(</span><br><span class="line">                <span class="keyword">this</span>,</span><br><span class="line">                <span class="string">&quot;Login result: $&#123;viewModel.loginProgressText(it)&#125;&quot;</span>,</span><br><span class="line">                Toast.LENGTH_SHORT</span><br><span class="line">            ).show()</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Repository"><a href="#Repository" class="headerlink" title="Repository"></a>Repository</h1><blockquote>
+<p>Repository 模式的概念来自于领域驱动开发(Domain Driven Design)。主要思想是通过抽象一个 Repository 层，对业务(领域)层屏蔽不同数据源的访问细节，业务层(可能是 ViewModel)无需关注具体的数据访问细节。</p>
+</blockquote>
+<p>Repository 内部实现了对不同数据源(DataSource)的访问，典型的 DataSource 包括远程数据, Cache 缓存, Database 数据库等，可以用不同的 Fetcher 来实现, Repository 持有多个 Fetcher 引用。</p>
+<p>因此上面实例中的 LoginModel 可以换成 LoginRepository 类。</p>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>写代码的时候，记得三思而后行，想一想你写的代码是不是在它该在的位置，是不是以该有的形式存在的。</p>
+<blockquote>
+<p><strong>架构不是一蹴而就的，希望我们有一天的时候，能够从自己写的代码中找到架构的成就感，而不是干几票就跑路。这个系列应该会一直更新，记录我在架构之路上学习的脚印儿，一件一件扒开架构神秘的面纱</strong></p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"># Android</a>
+              <a href="/tags/%E6%9E%B6%E6%9E%84/" rel="tag"># 架构</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%BA%8C-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1/" rel="prev" title="Android架构学习之路二-面向对象">
+      <i class="fa fa-chevron-left"></i> Android架构学习之路二-面向对象
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF-%E5%BE%85%E7%BB%AD/" rel="next" title="Android架构学习之路-待续">
+      Android架构学习之路-待续 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MVC"><span class="nav-number">2.</span> <span class="nav-text">MVC</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MVP"><span class="nav-number">3.</span> <span class="nav-text">MVP</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MVVM"><span class="nav-number">4.</span> <span class="nav-text">MVVM</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#MVVM%E6%A8%A1%E5%BC%8F"><span class="nav-number">4.1.</span> <span class="nav-text">MVVM模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E4%BE%8B"><span class="nav-number">4.2.</span> <span class="nav-text">实例</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Repository"><span class="nav-number">5.</span> <span class="nav-text">Repository</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="nav-number">6.</span> <span class="nav-text">写在最后</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">166</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">100</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'robohash',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
