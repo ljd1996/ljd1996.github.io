@@ -32,7 +32,7 @@
 <meta property="og:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/MVP.png">
 <meta property="og:image" content="https://ljd1996.github.io/2022/01/11/Android%E6%9E%B6%E6%9E%84%E5%AD%A6%E4%B9%A0%E4%B9%8B%E8%B7%AF%E4%B8%89-MVX/MVVM.png">
 <meta property="article:published_time" content="2022-01-11T10:50:40.000Z">
-<meta property="article:modified_time" content="2022-02-22T12:32:05.790Z">
+<meta property="article:modified_time" content="2022-02-22T12:47:11.578Z">
 <meta property="article:author" content="苍耳叔叔">
 <meta property="article:tag" content="Android">
 <meta property="article:tag" content="架构">
@@ -231,7 +231,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-22 20:32:05" itemprop="dateModified" datetime="2022-02-22T20:32:05+08:00">2022-02-22</time>
+                <time title="修改时间：2022-02-22 20:47:11" itemprop="dateModified" datetime="2022-02-22T20:47:11+08:00">2022-02-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -306,7 +306,8 @@
 </ul>
 <h1 id="MVC"><a href="#MVC" class="headerlink" title="MVC"></a>MVC</h1><p>该架构涉及三个角色: Model-View-Controller。其中 Controller 是 Model 与 View 之间的桥梁，用来控制程序的流程。</p>
 <p>我记得曾经在网上看过不少 MVC 的文章，但是貌似有些文章里面给的模型图不太一样，一度有些费解，其实这些不一样的地方在于 MVC 模型经过发展存在着变体而已。一个版本的 MVC 是这样子的：</p>
-<p><img src="MVC1.png" alt="MVC1"></p>
+<img src="MVC1.png" width=420 />
+
 <p>该版本一般的交互流程是：</p>
 <ol>
 <li>用户操作 View, 比如说产生了一个点击事件。</li>
@@ -314,7 +315,8 @@
 <li>Model 作出处理后，需要把登录用户的数据通知到相关成员，上图中即是 View 层。View 收到后作出相关展示。</li>
 </ol>
 <p>在上图中 View 层依赖了 Model 层，降低了 View 的可复用性，为了解耦，出现了下图的版本：</p>
-<p><img src="MVC2.png" alt="MVC2"></p>
+<img src="MVC2.png" width=420 />
+
 <p>这个版本的主要改动就是 View 和 Model 不直接通信了，View 通过 Controller 去更新 Model 层的数据，Model 层完成逻辑后通知 Controller 层，Controller 再去更新 View。</p>
 <blockquote>
 <p>MVC 架构小结</p>
@@ -324,7 +326,8 @@
 <li>然而在 Android 的实际应用中, 容易出现一个新的角色 —— ViewController, 比如说 Activity 又当 View 又当 Controller 的，十分臃肿，耦合也随之变得严重了起来，还不方便单元测试。</li>
 </ul>
 <h1 id="MVP"><a href="#MVP" class="headerlink" title="MVP"></a>MVP</h1><p>该架构涉及三个角色: Model-View-Presenter。关系图如下：</p>
-<p><img src="MVP.png" alt="MVP"></p>
+<img src="MVP.png" width=420 />
+
 <p>这张图跟上面第二个版本的 MVC 结构很像，不一样的地方在于 Controller 换成了 Presenter 层，其职责是类似的，但是实现方式不一样。MVP 之间是通过接口来通信的，三个层都有各自的接口来定义其行为与能力，这样可以降低耦合，提高复用性，也方便了单元测试。</p>
 <p>其交互流程依旧是：<strong>用户操作 View 层，产生了一个事件; Presenter 接收事件，并对其作出反应，请求 Model 层; Model 层作出处理后通知给 Presenter, Presenter 进而再通知到 View 层。</strong></p>
 <blockquote>
@@ -353,7 +356,8 @@
 <li>Presenter 如果持有 Activity 等的引用，容易出现内存泄漏，生命周期不同步等问题。</li>
 </ul>
 <h1 id="MVVM"><a href="#MVVM" class="headerlink" title="MVVM"></a>MVVM</h1><h2 id="MVVM模式"><a href="#MVVM模式" class="headerlink" title="MVVM模式"></a>MVVM模式</h2><p>该架构涉及三个角色: Model-View-ViewModel。关系图如下：</p>
-<p><img src="MVVM.png" alt="MVVM"></p>
+<img src="MVVM.png" width=420 />
+
 <blockquote>
 <p>它跟 MVP 看起来也是比较类似的，不同之处在于 Presenter 换成了 ViewModel, ViewModel 负责与 Model 层交互，并且将数据以可观察对象的形式提供给 View, ViewModel 与 View 层分离，即 ViewModel 不应该知道与之交互的 View 是什么。</p>
 </blockquote>
