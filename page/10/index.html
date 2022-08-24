@@ -192,6 +192,114 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/11/18/Glide%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/18/Glide%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" class="post-title-link" itemprop="url">Glide源码解析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-11-18 11:17:38" itemprop="dateCreated datePublished" datetime="2019-11-18T11:17:38+08:00">2019-11-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/%E6%A1%86%E6%9E%B6/" itemprop="url" rel="index"><span itemprop="name">框架</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/11/18/Glide%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" class="post-meta-item leancloud_visitors" data-flag-title="Glide源码解析" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/11/18/Glide%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/11/18/Glide%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Glide是一个快速高效的Android图片加载库，提供了易用的API，高性能、可扩展的图片解码管道（decode pipeline），以及自动的资源池技术。</p>
+<p>Glide 支持拉取，解码和展示视频快照，图片，和GIF动画，开发者可以将 Glide 网络请求从 HttpUrlConnection 替换成如 Google Volley 和 Square OkHttp 这样的工具库。Glide 提供了多种图片格式的缓存，可以感知Activity/Fragment的生命周期。能够复用和主动回收Bitmap，以及带有高效的缓存策略，减小了内存的开销。</p>
+<p>本文基于 Glide 4.11.0 版本，参考网上一些解析，结合源码对 Glide 的机制做一个分析。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2019/11/18/Glide%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/11/11/app-process%E4%BD%BF%E7%94%A8/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2379,112 +2487,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/09/12/%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/head.png">
-      <meta itemprop="name" content="苍耳叔叔">
-      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苍耳的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/09/12/%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">敏捷开发基础</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-09-12 11:36:40" itemprop="dateCreated datePublished" datetime="2019-09-12T11:36:40+08:00">2019-09-12</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-14 14:14:58" itemprop="dateModified" datetime="2021-05-14T14:14:58+08:00">2021-05-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%85%B6%E5%AE%83/" itemprop="url" rel="index"><span itemprop="name">其它</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2019/09/12/%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80/" class="post-meta-item leancloud_visitors" data-flag-title="敏捷开发基础" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2019/09/12/%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/09/12/%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E5%9F%BA%E7%A1%80/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="CI：持续集成（CONTINUOUS-INTEGRATION）"><a href="#CI：持续集成（CONTINUOUS-INTEGRATION）" class="headerlink" title="CI：持续集成（CONTINUOUS INTEGRATION）"></a>CI：持续集成（CONTINUOUS INTEGRATION）</h1><p>CI的全称是Continuous Integration，表示持续集成。</p>
-<p>在CI环境中，开发人员将会频繁地向主干提交代码。这些新提交的代码在最终合并到主干前，需要经过编译和自动化测试流进行验证。持续集成过程中很重视自动化测试验证结果，以保障所有的提交在合并主线之后的质量问题，对可能出现的一些问题进行预警。</p>
-<h1 id="CD：持续部署（CONTINUOUS-DEPLOYMENT）"><a href="#CD：持续部署（CONTINUOUS-DEPLOYMENT）" class="headerlink" title="CD：持续部署（CONTINUOUS DEPLOYMENT）"></a>CD：持续部署（CONTINUOUS DEPLOYMENT）</h1><p>CD的全称是Continuous Deployment，表示持续部署。</p>
-<p>在CD环境中，通过自动化的构建、测试和部署循环来快速交付高质量的产品。某种程度上代表了一个开发团队工程化的程度，任何修改通过了所有已有的工作流就会直接和客户见面，只有当一个修改在工作流中构建失败才能阻止它部署到产品线。</p>
-<p>持续部署是一个很优秀的方式，可以加速与客户的反馈循环，但是会给团队带来压力，因为不再有“发布日”了。开发人员可以专注于构建软件，他们看到他们的修改在他们完成工作后几分钟就上线了。</p>
-<p>基本上，当开发人员在主分支中合并一个提交时，这个分支将被构建、测试，如果一切顺利，则部署到生产环境中。</p>
-<h1 id="CD：持续交付（CONTINUOUS-DELIVERY）"><a href="#CD：持续交付（CONTINUOUS-DELIVERY）" class="headerlink" title="CD：持续交付（CONTINUOUS DELIVERY）"></a>CD：持续交付（CONTINUOUS DELIVERY）</h1><p>持续交付的英文全称是：Continuous delivery，缩写也是CD，它是一种软件工程手法。</p>
-<p>它可以让软件产品的产出过程在一个短周期内完成，以保证软件可以稳定、持续的保持在随时可以释出的状况。它的目标在于让软件的建置、测试与释出变得更快以及更频繁。这种方式可以减少软件开发的成本与时间，减少风险。</p>
-<p>有时候，持续交付也与持续部署混淆。持续部署意味着所有的变更都会被自动部署到生产环境中。持续交付意味着所有的变更都可以被部署到生产环境中，但是出于业务考虑，可以选择不部署。如果要实施持续部署，必须先实施持续交付。</p>
-<h1 id="DevOps"><a href="#DevOps" class="headerlink" title="DevOps"></a>DevOps</h1><p>DevOps是Development和Operations的组合，是一种方法论，是一组过程、方法与系统的统称，用于促进应用开发、应用运维和质量保障（QA）部门之间的沟通、协作与整合。以期打破传统开发和运营之间的壁垒和鸿沟。</p>
-<p>DevOps是一种重视“软件开发人员（Dev）”和“IT运维技术人员（Ops）”之间沟通合作的文化、运动或惯例。通过自动化“软件交付”和“架构变更”的流程，来使得构建、测试、发布软件能够更加地快捷、频繁和可靠。具体来说，就是在软件交付和部署过程中提高沟通与协作的效率，旨在更快、更可靠的的发布更高质量的产品。</p>
-<p>也就是说DevOps是一组过程和方法的统称，并不指代某一特定的软件工具或软件工具组合。各种工具软件或软件组合可以实现DevOps的概念方法。其本质是一整套的方法论，而不是指某种或某些工具集合，与软件开发中设计到的OOP、AOP、IOC（或DI）等类似，是一种理论或过程或方法的抽象或代称。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2556,7 +2558,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">166</span>
+          <span class="site-state-item-count">167</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
