@@ -192,6 +192,120 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/04/23/Android-Gradle-Transform%E7%94%A8%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/23/Android-Gradle-Transform%E7%94%A8%E6%B3%95/" class="post-title-link" itemprop="url">Android-Gradle-Transform用法</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-23 15:10:51" itemprop="dateCreated datePublished" datetime="2020-04-23T15:10:51+08:00">2020-04-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/Gradle/" itemprop="url" rel="index"><span itemprop="name">Gradle</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2020/04/23/Android-Gradle-Transform%E7%94%A8%E6%B3%95/" class="post-meta-item leancloud_visitors" data-flag-title="Android-Gradle-Transform用法" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/04/23/Android-Gradle-Transform%E7%94%A8%E6%B3%95/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/04/23/Android-Gradle-Transform%E7%94%A8%E6%B3%95/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>最近在做一个在 Android 工程编译期间动态插入一些随机代码的需求，我选择的是 Gradle Transform 技术，想起好久没有写过博客了，就记录一下这方面的一些基本使用。</p>
+<p>一般来说，在 Android 工程的编译期间可以通过一些技术来动态插入一些代码逻辑甚至生成一些新的 Class 类，具体技术有：</p>
+<ul>
+<li>APT(Annotation Processing Tool): 编译期注解处理技术，通过自定义注解和注解处理器来实现编译期生成代码的功能，并且将生成的代码和源代码一起编译成 class 文件。</li>
+<li>AspectJ: 是一种编译器，在编译期间，将开发者编写的 Aspect 程序织入到目标程序中，扩展目标程序的功能。</li>
+<li>Transform&amp;Javassist: Transform 是 Android Gradle 提供的操作字节码的一种方式。它在 class 编译成 dex 之前通过一系列 Transform 处理来实现代码注入。Javassist 可以方便地修改 .class 文件，关于 Javassist 的用法可以参考 <a href="https://ljd1996.github.io/2020/04/23/Javassist%E7%94%A8%E6%B3%95/">Javassist用法</a>。</li>
+</ul>
+<p>这里还可以看看 AOP 和 IOC 的一些概念，参考 <a href="https://ljd1996.github.io/2020/06/05/Android-AOP-IOC%E6%A6%82%E8%BF%B0/">AOP-IOC概述</a>。</p>
+<p>Android Gradle 工具从 1.5.0-beta1 版本开始提供了 Transform API 工具，它可以在将 .class 文件转换为 dex 文件之前对其进行操作。可以通过自定义 Gradle 插件来注册自定义的 Transform，注册后 Transform 会包装成一个 Gradle Task 任务，这个 Task 在 compile task 执行完毕后运行。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/04/23/Android-Gradle-Transform%E7%94%A8%E6%B3%95/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/04/09/Android%E8%99%9A%E6%8B%9F%E6%9C%BA/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1603,197 +1717,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2020/01/09/Android-SQLite/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/head.png">
-      <meta itemprop="name" content="苍耳叔叔">
-      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苍耳的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/01/09/Android-SQLite/" class="post-title-link" itemprop="url">Android-SQLite</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-01-09 20:25:07" itemprop="dateCreated datePublished" datetime="2020-01-09T20:25:07+08:00">2020-01-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2020/01/09/Android-SQLite/" class="post-meta-item leancloud_visitors" data-flag-title="Android-SQLite" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/01/09/Android-SQLite/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/01/09/Android-SQLite/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Android系统自带一个轻量级的关系型数据库：SQLite，支持基本的CRUD，事务等操作。</p>
-<h1 id="SQLite"><a href="#SQLite" class="headerlink" title="SQLite"></a>SQLite</h1><h2 id="多进程"><a href="#多进程" class="headerlink" title="多进程"></a>多进程</h2><p>可以配合ContentProvider实现多进程读写SQLite的操作。</p>
-<h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><table>
-<thead>
-<tr>
-<th align="center">锁</th>
-<th align="center">概述</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">unlock(未加锁)</td>
-<td align="center">1. 初始状态未加锁，在此状态下，连接还没有存取数据库。当连接到了一个数据库，甚至已经用BEGIN开始了一个事务时，连接都还处于未加锁状态。</td>
-</tr>
-<tr>
-<td align="center">shared(共享锁)</td>
-<td align="center">2. 为了能够从数据库中读(不写)数据，连接必须首先进入共享状态，也就是说首先要获得一个共享锁。多个连接可以同时获得并保持共享锁，也就是说多个连接可以同时从同一个数据库中读数据但，哪怕只有一个共享锁还没有释放，也不允许任何连接写数据库</td>
-</tr>
-<tr>
-<td align="center">reserved(保留锁)</td>
-<td align="center">3.如果一个连接想要写数据库，它必须首先获得一个保留锁。一个数据库上同时只能有一个保留锁。保留锁可以与共享锁共存，保留锁是写数据库的第1阶段。保留锁既不阻止其它拥有共享锁的连接继续读数据库，也不阻止其它连接获得新的共享锁。一旦一个连接获得了保留锁，它就可以开始处理数据库修改操作了，尽管这些修改只能在缓冲区中进行，而不是实际地写到磁盘。对读出内容所做的修改保存在内存缓冲区中。</td>
-</tr>
-<tr>
-<td align="center">pending(未决锁)</td>
-<td align="center">4.当连接想要提交修改(或事务)时，需要将保留锁提升为排它锁。为了得到排它锁，还必须首先将保留锁提升为未决锁。获得未决锁之后，其它连接就不能再获得新的共享锁了，但已经拥有共享锁的连接仍然可以继续正常读数据库。此时，拥有未决锁的连接等待其它拥有共享锁的连接完成工作并释放其共享锁</td>
-</tr>
-<tr>
-<td align="center">exclusive(排它锁)</td>
-<td align="center"></td>
-</tr>
-</tbody></table>
-<p>事务可以开始于：DEFERRED、MMEDIATE或EXCLUSIVE。事务类型在BEGIN命令中指定：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">BEGIN</span> [ <span class="keyword">DEFERRED</span> | <span class="keyword">IMMEDIATE</span> | EXCLUSIVE ] <span class="keyword">TRANSACTION</span>;</span><br></pre></td></tr></table></figure>
-
-<p>一个DEFERRED事务不获取任何锁(直到它需要锁的时候)，BEGIN语句本身也不会做什么事情——它开始于UNLOCK状态。默认情况下就 是这样的，如果仅仅用BEGIN开始一个事务，那么事务就是DEFERRED的，同时它不会获取任何锁；当对数据库进行第一次读操作时，它会获取 SHARED锁；同样，当进行第一次写操作时，它会获取RESERVED锁。</p>
-<p>由BEGIN开始的IMMEDIATE事务会尝试获取RESERVED锁。如果成功，BEGIN IMMEDIATE保证没有别的连接可以写数据库。但是，别的连接可以对数据库进行读操作；但是，RESERVED锁会阻止其它连接的BEGIN IMMEDIATE或者BEGIN EXCLUSIVE命令，当其它连接执行上述命令时，会返回SQLITE_BUSY错误。这时你就可以对数据库进行修改操作了，但是你还不能提交，当你 COMMIT时，会返回SQLITE_BUSY错误，这意味着还有其它的读事务没有完成，得等它们执行完后才能提交事务。</p>
-<p>EXCLUSIVE事务会试着获取对数据库的EXCLUSIVE锁。这与IMMEDIATE类似，但是一旦成功，EXCLUSIVE事务保证没有其它的连接，所以就可对数据库进行读写操作了。</p>
-<p>死锁：</p>
-<img src="SQLite死锁.png"/>
-
-<p>两个连接都在死锁中结束。B首先尝试写数据库，也就拥有了一个未决锁。A再试图写，但当其INSERT语句试图将共享锁提升为保留锁时失败。</p>
-<p>为了讨论的方便，假设连接A和B都一直等待数据库可写。那么此时，其它的连接甚至都不能够再读数据库了，因为B拥有未决锁(它能阻止其它连接获得共享锁)。那么时此，不仅A和B不能工作，其它所有进程都不能再操作此数据库了。</p>
-<p>这个例子的问题在于两个连接最终都想写数据库，但是它们都没有放弃各自原来的锁，最终，SHARED锁导致了问题的出现。如果两个连接都以 BEGIN IMMEDIATE开始事务，那么死锁就不会发生。在这种情况下，在同一时刻只能有一个连接进入BEGIN IMMEDIATE，其它的连接就得等待。BEGIN IMMEDIATE和BEGIN EXCLUSIVE通常被写事务使用。就像同步机制一样，它防止了死锁的产生。</p>
-<p>基本的准则是：如果你正在使用的数据库没有其它的连接，用BEGIN就足够了。但是，如果你使用的数据库有其它的连接也会对数据库进行写操作，就得使用BEGIN IMMEDIATE或BEGIN EXCLUSIVE开始你的事务。</p>
-<p>Android中的事物，有2种，一个是IMMEDIATE,一个是EXCLUSIVE，默认SQLiteDatabase的beginTransaction()是EXCLUSIVE事物，beginTransactionNonExclusive()是IMMEDIATE事务。</p>
-<h1 id="SQLiteOpenHelper"><a href="#SQLiteOpenHelper" class="headerlink" title="SQLiteOpenHelper"></a>SQLiteOpenHelper</h1><h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>SQLiteOpenHelper是一个数据库辅助操作的类，在Android中实现数据库的增删查改以及升级等的控制，在开发中通常会实现一个继承SQLiteOpenHelper的操作类，然后根据业务需求实现数据库的相关操作方法。</p>
-<h2 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyDatabaseHelper</span> <span class="keyword">extends</span> <span class="title">SQLiteOpenHelper</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> String CREATE_BOOK = <span class="string">&quot;create table book (&quot;</span> +</span><br><span class="line">            <span class="string">&quot;id integer primary key autoincrement, &quot;</span> +</span><br><span class="line">            <span class="string">&quot;author text, &quot;</span> +</span><br><span class="line">            <span class="string">&quot;price real,&quot;</span> +</span><br><span class="line">            <span class="string">&quot;pages integer, &quot;</span> +</span><br><span class="line">            <span class="string">&quot;name text)&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Context mContext;</span><br><span class="line">    <span class="keyword">private</span> SQLiteDatabase mWritableDatabase = getWritableDatabase();</span><br><span class="line">    <span class="keyword">private</span> SQLiteDatabase mReadableDatabase = getReadableDatabase();</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">MyDatabaseHelper</span><span class="params">(Context context, String name, SQLiteDatabase.CursorFactory factory, <span class="keyword">int</span> version)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(context, name, factory, version);</span><br><span class="line">        mContext = context;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 数据库已经创建过了，则不会执行，如果不存在数据库则会执行</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> db</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(SQLiteDatabase db)</span> </span>&#123;</span><br><span class="line">        db.execSQL(CREATE_BOOK); <span class="comment">// 执行这句才会创建表</span></span><br><span class="line"></span><br><span class="line">        Toast.makeText(mContext, <span class="string">&quot;create succeeded&quot;</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 创建数据库时不会执行，增大版本号升级时才会执行到</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> db</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> oldVersion</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> newVersion</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onUpgrade</span><span class="params">(SQLiteDatabase db, <span class="keyword">int</span> oldVersion, <span class="keyword">int</span> newVersion)</span> </span>&#123;</span><br><span class="line">        Toast.makeText(mContext, <span class="string">&quot;onUpgrade oldVersion：&quot;</span> + oldVersion + <span class="string">&quot; newVersion:&quot;</span> + newVersion, Toast.LENGTH_SHORT).show();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 根据业务需求编写增删查改等方法</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">insert</span><span class="params">(Bean bean)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// mWritableDatabase.insert(String table, String nullColumnHack, ContentValues values)</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="GreenDAO"><a href="#GreenDAO" class="headerlink" title="GreenDAO"></a>GreenDAO</h1><h2 id="概述-2"><a href="#概述-2" class="headerlink" title="概述"></a>概述</h2><p>GreenDAO 是一款开源的面向 Android 的轻便、快捷的 ORM 框架，它针对 Android 进行了高度优化，使用了最小的内存开销、且依赖体积小，同时还是支持数据库加密。</p>
-<h2 id="核心类"><a href="#核心类" class="headerlink" title="核心类"></a>核心类</h2><h3 id="DaoMaster"><a href="#DaoMaster" class="headerlink" title="DaoMaster"></a>DaoMaster</h3><p>greenDAO 的入口，DaoMaster 负责管理数据库对象(SQLiteDatabase)和 DAO 类(对象)，我们可以通过它的内部类 OpenHelper 和 DevOpenHelper 创建不同模式的 SQLite 数据库。</p>
-<h3 id="DaoSession"><a href="#DaoSession" class="headerlink" title="DaoSession"></a>DaoSession</h3><p>管理指定模式下的所有 DAO 对象，DaoSession提供了一些通用的持久性方法比如插入、负载、更新、更新和删除实体。</p>
-<h3 id="XxxDAO"><a href="#XxxDAO" class="headerlink" title="XxxDAO"></a>XxxDAO</h3><p>对于每个实体类，greenDAO 会生成一个与之对应DAO对象。</p>
-<h3 id="Entity"><a href="#Entity" class="headerlink" title="Entity"></a>Entity</h3><p>可持久化对象。通常，实体对象代表一个数据库行使用标准 Java 属性(如一个POJO 或 JavaBean)。</p>
-<h2 id="注解"><a href="#注解" class="headerlink" title="注解"></a>注解</h2><h3 id="Entity-1"><a href="#Entity-1" class="headerlink" title="@Entity"></a>@Entity</h3><p>表明这个实体类会在数据库中生成一个与之相对应的表，属性如下：</p>
-<ul>
-<li>schema：告知GreenDao当前实体属于哪个schema</li>
-<li>schema active：标记一个实体处于活跃状态，活动实体有更新、删除和刷新方法</li>
-<li>nameInDb：在数据库中使用的别名，默认使用的是实体的类名</li>
-<li>indexes：定义索引，可以跨越多个列</li>
-<li>createInDb：标记创建数据库表（默认：true）</li>
-<li>generateConstructors 自动创建全参构造方法（同时会生成一个无参构造方法）（默认：true）</li>
-<li>generateGettersSetters 自动生成 getters and setters 方法（默认：true）</li>
-</ul>
-<p>实例如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Entity(</span></span><br><span class="line"><span class="meta">        schema = &quot;myschema&quot;,</span></span><br><span class="line"><span class="meta">        active = true,</span></span><br><span class="line"><span class="meta">        nameInDb = &quot;AWESOME_USERS&quot;，</span></span><br><span class="line"><span class="meta">        indexes = &#123;</span></span><br><span class="line"><span class="meta">                @Index(value = &quot;name DESC&quot;, unique = true)</span></span><br><span class="line"><span class="meta">        &#125;,</span></span><br><span class="line"><span class="meta">        createInDb = true,</span></span><br><span class="line"><span class="meta">        generateConstructors = false,</span></span><br><span class="line"><span class="meta">        generateGettersSetters = true</span></span><br><span class="line"><span class="meta">)</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="Id"><a href="#Id" class="headerlink" title="@Id"></a>@Id</h3><p>对应数据表中的 Id 字段。</p>
-<h3 id="Index"><a href="#Index" class="headerlink" title="@Index"></a>@Index</h3><p>使用@Index作为一个属性来创建一个索引，默认是使用字段名。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Id</span> </span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Index(unique = true)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="Property"><a href="#Property" class="headerlink" title="@Property"></a>@Property</h3><p>设置一个非默认关系映射所对应的列名，默认是使用字段名，例如：@Property(nameInDb = “userName”)。</p>
-<h3 id="NotNull"><a href="#NotNull" class="headerlink" title="@NotNull"></a>@NotNull</h3><p>设置数据库表当前列不能为空。</p>
-<h3 id="Transient"><a href="#Transient" class="headerlink" title="@Transient"></a>@Transient</h3><p>添加此标记后不会生成数据库表的列。</p>
-<h3 id="Unique"><a href="#Unique" class="headerlink" title="@Unique"></a>@Unique</h3><p>表名该属性在数据库中只能有唯一值。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Id</span> </span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line">    <span class="meta">@Unique</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="ToOne"><a href="#ToOne" class="headerlink" title="@ToOne"></a>@ToOne</h3><p>表示一对一关系。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Order</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Id</span> <span class="keyword">private</span> Long id;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> customerId;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ToOne(joinProperty = &quot;customerId&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> Customer customer;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Customer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Id</span> </span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="OrderBy"><a href="#OrderBy" class="headerlink" title="@OrderBy"></a>@OrderBy</h3><p>更加某一字段排序，例如：@OrderBy(“date ASC”)。</p>
-<h3 id="ToMany"><a href="#ToMany" class="headerlink" title="@ToMany"></a>@ToMany</h3><p>定义一对多个实体对象的关系。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Customer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Id</span> <span class="keyword">private</span> Long id;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ToMany(referencedJoinProperty = &quot;customerId&quot;)</span></span><br><span class="line">    <span class="meta">@OrderBy(&quot;date ASC&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;Order&gt; orders;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Order</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Id</span> <span class="keyword">private</span> Long id;</span><br><span class="line">    <span class="keyword">private</span> Date date;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> customerId;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="集成GreenDAO"><a href="#集成GreenDAO" class="headerlink" title="集成GreenDAO"></a>集成GreenDAO</h2><h3 id="配置仓库-插件"><a href="#配置仓库-插件" class="headerlink" title="配置仓库/插件"></a>配置仓库/插件</h3><p>在Project下的build.gradle中配置：</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">buildscript &#123;</span><br><span class="line">    repositories &#123;</span><br><span class="line">        google()</span><br><span class="line">        jcenter()</span><br><span class="line">    &#125;</span><br><span class="line">    dependencies &#123;</span><br><span class="line">        classpath <span class="string">&#x27;com.android.tools.build:gradle:3.5.3&#x27;</span></span><br><span class="line">        classpath <span class="string">&#x27;org.greenrobot:greendao-gradle-plugin:3.2.2&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="添加依赖"><a href="#添加依赖" class="headerlink" title="添加依赖"></a>添加依赖</h3><p>在Module的build.gradle中配置：</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">apply <span class="attr">plugin:</span> <span class="string">&#x27;org.greenrobot.greendao&#x27;</span></span><br><span class="line"></span><br><span class="line">greendao &#123;</span><br><span class="line">    <span class="comment">//数据库版本</span></span><br><span class="line">    schemaVersion <span class="number">1</span></span><br><span class="line">    daoPackage <span class="string">&#x27;com.hearing.dao.gen&#x27;</span></span><br><span class="line">    targetGenDir <span class="string">&#x27;src/main/java&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">dependencies &#123;</span><br><span class="line">    compile <span class="string">&#x27;org.greenrobot:greendao:3.2.2&#x27;</span></span><br><span class="line">    compile <span class="string">&#x27;org.greenrobot:greendao-generator:3.2.2&#x27;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="Entity-2"><a href="#Entity-2" class="headerlink" title="Entity"></a>Entity</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ContractVideo</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Transient</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">1404519421023545593L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Id(autoincrement = true)</span></span><br><span class="line">    <span class="keyword">private</span> Long id;</span><br><span class="line">    <span class="keyword">private</span> String number;</span><br><span class="line">    <span class="keyword">private</span> String videoPath;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Generated(hash = 1570774131)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ContractVideo</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Generated(hash = 776974923)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ContractVideo</span><span class="params">(Long id, String number, String videoPath)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.id = id;</span><br><span class="line">        <span class="keyword">this</span>.number = number;</span><br><span class="line">        <span class="keyword">this</span>.videoPath = videoPath;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Long <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(Long id)</span> </span>&#123;</span><br><span class="line">        id = id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getNumber</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> number;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setNumber</span><span class="params">(String number)</span> </span>&#123;</span><br><span class="line">        number = number;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getVideoPath</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> videoPath;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setVideoPath</span><span class="params">(String videoPath)</span> </span>&#123;</span><br><span class="line">        videoPath = videoPath;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Long <span class="title">getId</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setId</span><span class="params">(Long id)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.id = id;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getNumber</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.number;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setNumber</span><span class="params">(String number)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.number = number;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getVideoPath</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.videoPath;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setVideoPath</span><span class="params">(String videoPath)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.videoPath = videoPath;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在build工程后，会在指定包下生成管理类DaoMaster，DaoSession，BeanDao。</p>
-<h2 id="初始化GreenDAO"><a href="#初始化GreenDAO" class="headerlink" title="初始化GreenDAO"></a>初始化GreenDAO</h2><p>初始化通常在Application下进行，代码如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CallApplication</span> <span class="keyword">extends</span> <span class="title">Application</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String DB_NAME = <span class="string">&quot;call.db&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> DaoSession mDaoSession;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.onCreate();</span><br><span class="line">        initDao();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">initDao</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        DaoMaster.DevOpenHelper helper = <span class="keyword">new</span> DaoMaster.DevOpenHelper(<span class="keyword">this</span>, DB_NAME);</span><br><span class="line">        SQLiteDatabase db = helper.getWritableDatabase();</span><br><span class="line">        DaoMaster daoMaster = <span class="keyword">new</span> DaoMaster(db);</span><br><span class="line">        mDaoSession = daoMaster.newSession();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> DaoSession <span class="title">getDaoSession</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> mDaoSession;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="获取BeanDao"><a href="#获取BeanDao" class="headerlink" title="获取BeanDao"></a>获取BeanDao</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CallApplication myApp = (CallApplication) getApplication();</span><br><span class="line">DaoSession daoSession =  myApp.getDaoSession();</span><br><span class="line">ContractVideoDao contractVideoDao = daoSession.getContractVideoDao();</span><br></pre></td></tr></table></figure>
-
-<h2 id="增删查改"><a href="#增删查改" class="headerlink" title="增删查改"></a>增删查改</h2><p>通过操作ContractVideoDao来进行记录的增删查改，其具体接口可参考ContractVideoDao类中的方法。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1865,7 +1788,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">167</span>
+          <span class="site-state-item-count">168</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

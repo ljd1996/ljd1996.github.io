@@ -192,6 +192,328 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/11/27/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%AE%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/11/27/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%AE%BA/" class="post-title-link" itemprop="url">操作系统-概论</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-11-27 11:03:32" itemprop="dateCreated datePublished" datetime="2019-11-27T11:03:32+08:00">2019-11-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/OS/" itemprop="url" rel="index"><span itemprop="name">OS</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/11/27/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%AE%BA/" class="post-meta-item leancloud_visitors" data-flag-title="操作系统-概论" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/11/27/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%AE%BA/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/11/27/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F-%E6%A6%82%E8%AE%BA/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="什么是操作系统"><a href="#什么是操作系统" class="headerlink" title="什么是操作系统"></a>什么是操作系统</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>现代计算机系统是一个复杂的系统，为了管理这些设备，为用户程序提供一个更清晰，更简便的计算机模型，计算机安装了一层软件：<strong>操作系统</strong>。</p>
+<p>用户与操作系统交互的程序有两种（用户接口程序并不属于操作系统的一部分）：</p>
+<ul>
+<li>Shell：基于文本；</li>
+<li>GUI（Graphical User Interface）：基于图形。</li>
+</ul>
+<p>在计算机系统中操作系统所处的位置如下图：</p>
+<p><img src="%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E4%BD%8D%E7%BD%AE.jpg" alt="操作系统位置"></p>
+<ul>
+<li>内核态的操作系统拥有对所有硬件的完全访问权，可以执行机器能够运行的任何指令；</li>
+<li>用户态只使用了机器指令的一个子集。</li>
+</ul>
+<p>用户接口程序（Shell，GUI）允许用户运行其他程序。</p>
+<h2 id="扩展机器"><a href="#扩展机器" class="headerlink" title="扩展机器"></a>扩展机器</h2><p>抽象是管理复杂性的一个关键。以SATA硬盘为例，在硬件层面其接口及其复杂，而且经过不停地修改，因此提供了一个叫做<strong>硬盘驱动</strong>的软件来与硬盘交互，这类软件提供了读写硬盘的接口，而不需要深入细节。即使在这个层面，对大多数应用来说还是太底层了，因此，所有的操作系统都提供了使用硬盘的另一层抽象：<strong>文件</strong>。</p>
+<h2 id="资源管理"><a href="#资源管理" class="headerlink" title="资源管理"></a>资源管理</h2><p>从这个角度看，操作系统的任务是在相互竞争的程序之间有序地控制对硬件设备资源的分配。它记录着哪个程序在使用什么资源，对资源请求进行分配，评估使用代价，并且为不同的程序和用户调解互相冲突的资源请求。</p>
+<h1 id="计算机硬件"><a href="#计算机硬件" class="headerlink" title="计算机硬件"></a>计算机硬件</h1><h2 id="CPU"><a href="#CPU" class="headerlink" title="CPU"></a>CPU</h2><p>CPU是“Center Process Unit”缩写，CPU与电路进行电信号交换，而且对于电信号，只能识别ON和OFF两种状态。</p>
+<p>如果把电信号的开（ON）/关（OFF）与数字0和1对应起来，就能将二进制数转换为电信号，同时电信号也可以转换回二进制数。因为我们可以把十进制数转换成二进制数，也能把二进制数还原成十进制数，所以人们发明了普通的计算机。</p>
+<p>当给每个文字编码，将之与二进制数字对应起来，就可以把文字也转换成电信号，让CPU来处理文字。依此类推，人们接着又找到了将图像、音乐等等转换成电信号的方法，使CPU的应用范围越来越广。不过CPU还是一如既往，只能处理电信号。</p>
+<p>CPU能处理的并不仅仅只有数据，还可以用电信号向CPU发出指令。我们所编写的程序最终都要转换成所谓的机器语言，这些机器语言就是以电信号的形式发送给CPU的。这些机器语言不过就是一连串的指令代码，实际上也就是一串0和1的组合而已。</p>
+<p>CPU从内存中取出指令并执行，在每个CPU的周期中，计算机首先从内存中取出指令，解码以确定其类型和操作数，然后执行，然后取指，解码并执行下一条指令。</p>
+<p>每种CPU都有一套专用的可执行的指令集。由于用来访问内存以得到指令的或数据的时间要比执行指令花费的时间长得多，因此CPU都有用于保存关键变量的临时数据的通用寄存器。</p>
+<p>此外还有一些专用寄存器：</p>
+<ul>
+<li>程序计数器：指向下一条指令的地址；</li>
+<li>堆栈指针：指向内存中当前栈的顶端；</li>
+<li>程序状态字（Program Status Word，PSW）：包含条件码位，CPU优先级，模式（用户态/内核态），以及其他的控制位。</li>
+</ul>
+<h2 id="存储器"><a href="#存储器" class="headerlink" title="存储器"></a>存储器</h2><table>
+<thead>
+<tr>
+<th align="center">分类</th>
+<th align="center">典型访问时间</th>
+<th align="center">典型容量</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">寄存器</td>
+<td align="center">1ns</td>
+<td align="center">&lt;1KB</td>
+</tr>
+<tr>
+<td align="center">高速缓存</td>
+<td align="center">2ns</td>
+<td align="center">4MB</td>
+</tr>
+<tr>
+<td align="center">主存</td>
+<td align="center">10ns</td>
+<td align="center">1-16GB</td>
+</tr>
+<tr>
+<td align="center">磁盘</td>
+<td align="center">10ms</td>
+<td align="center">1-nT</td>
+</tr>
+</tbody></table>
+<h2 id="磁盘"><a href="#磁盘" class="headerlink" title="磁盘"></a>磁盘</h2><h2 id="I-O设备"><a href="#I-O设备" class="headerlink" title="I/O设备"></a>I/O设备</h2><h2 id="总线"><a href="#总线" class="headerlink" title="总线"></a>总线</h2><h1 id="计算机启动"><a href="#计算机启动" class="headerlink" title="计算机启动"></a>计算机启动</h1><h2 id="主引导扇区"><a href="#主引导扇区" class="headerlink" title="主引导扇区"></a>主引导扇区</h2><ul>
+<li>主引导扇区是硬盘0号柱面，0号磁道的第一个扇区，大小为512字节。</li>
+<li>主引导记录（MBR），占用主引导扇区的前446字节，紧随其后的64字节是磁盘分区表DPT，最后还剩两个字节则恒为55AA，表示结束符号（Magic Number）。</li>
+</ul>
+<p>MBR，全称为Master Boot Record，即硬盘的主引导记录。MBR，共446字节，一般在操作系统安装时写入，但它并不属于操作系统。MBR就是一段引导程序，用于检测磁盘的分区合法性和加载操作系统，它的重要作用就是识别活动分区，并引导操作系统。它不依赖任何操作系统，而且启动代码也是可以改变的，从而能够实现多系统引导。</p>
+<p>分区表DPT，共64字节，记录了硬盘有多少分区以及分区的各种属性。由于一个分区的信息要占用16字节，所以分区表只能定义4个分区，这就是为什么我们说硬盘一般最多只能分为4个主分区。</p>
+<h2 id="主分区、扩展分区、逻辑分区"><a href="#主分区、扩展分区、逻辑分区" class="headerlink" title="主分区、扩展分区、逻辑分区"></a>主分区、扩展分区、逻辑分区</h2><p>主分区是由主引导扇区中64字节的分区表所定义的，最多只能有4个。但为了满足更多分区的需求，便产生了扩展分区。形式上，如果拥有扩展分区，就必须牺牲一个主分区，而且最多有一个扩展分区，也就是说：主分区+扩展分区&lt;=4 &amp;&amp; 扩展分区&lt;=1。因此扩展分区也可以看成一种特殊的主分区。</p>
+<p>但扩展分区并不可以直接使用，扩展分区又必须以逻辑分区的形式出现，可以这样认为：扩展分区包含着若干逻辑分区，而且至少包含一个。</p>
+<p>扩展分区中的逻辑分区是以链式存在的。即每一个逻辑分区都记录着下一个逻辑分区的位置信息，依次串联。事实上每一个逻辑分区都有一个和主引导扇区类似的引导扇区，引导扇区里有类似的分区表。该分区表记录了该分区的信息和一个指针，指向下一个逻辑分区的引导扇区。</p>
+<p>因此，逻辑分区是借鉴了主分区的方法，相当于在一个主分区下面建立了若干级“主分区”。一个可以预测的现象是：一旦某一个逻辑分区损害，跟在它后面的所有逻辑分区都将丢失，而前面的逻辑分区去可以保留。这也是链式结果的特点。</p>
+<h2 id="固件接口标准"><a href="#固件接口标准" class="headerlink" title="固件接口标准"></a>固件接口标准</h2><h3 id="BIOS"><a href="#BIOS" class="headerlink" title="BIOS"></a>BIOS</h3><p>IBM推出的业界标准的固件接口，存储于主板的ROM/EEPROM/flash中，提供的功能包括：</p>
+<ul>
+<li>开机自检</li>
+<li>加载引导程序（MBR中的，通常是bootloader的第一级）</li>
+<li>向OS提供抽象的硬件接口</li>
+</ul>
+<p>PS：CMOS是PC上的另一个重要的存储器，用于保存BIOS的设置结果，CMOS是RAM。</p>
+<p>在每台计算机上有一块“双亲板”，其上有一个称为BIOS（Basic Input Output System）的程序。</p>
+<p>在计算机启动时，BIOS开始运行。它首先检查所安装的RAM数量，键盘和其他设备是否已安装且正常响应。接着它开始扫描PCIe和PCI总线并找出连在上面的所有设备。</p>
+<p>然后BIOS通过存储在CMOS存储器中的设备清单决定启动设备。用户可以在系统刚刚启动的时候进入一个BIOS配置程序，对设备清单进行修改。</p>
+<p>然后操作系统询问BIOS，以获取配置信息。对于每种设备，系统检查对应的设备驱动程序是否存在。如果没有，系统要求用户插入含有该设备驱动程序的CD-ROM（由设备供应商提供）或者从网络上下载驱动程序。一旦拥有全部的设备驱动程序，操作系统将它们调入内核，然后初始化有关表格，创建需要的任何背景进程，并在每个终端上启动登录程序或者GUI。</p>
+<h3 id="EFI-UEFI"><a href="#EFI-UEFI" class="headerlink" title="EFI/UEFI"></a>EFI/UEFI</h3><p>Unified Extensible Firmware Interface，架设在系统固件之上的软件接口，用于替代BIOS接口，EFI是UEFI的前称。</p>
+<p>一般认为，UEFI由以下几个部分组成：</p>
+<ul>
+<li>Pre-EFI初始化模块</li>
+<li>EFI驱动程序执行环境（DXE）</li>
+<li>EFI驱动程序</li>
+<li>兼容性支持模块（CSM）</li>
+<li>EFI高层应用</li>
+<li>GUID磁盘分区表（GPT）</li>
+</ul>
+<p>通常初始化模块和DXE被集成在一个ROM中；EFI驱动程序一般在设备的ROM中，或者ESP中；EFI高层应用一般在ESP中。CSM用于给不具备UEFI引导能力的操作系统提供类似于传统BIOS的系统服务。</p>
+<h2 id="启动方式"><a href="#启动方式" class="headerlink" title="启动方式"></a>启动方式</h2><h3 id="Legacy-mode"><a href="#Legacy-mode" class="headerlink" title="Legacy mode"></a>Legacy mode</h3><p>即通过MBR/BIOS进行引导的传统模式，流程如下：</p>
+<ol>
+<li>BIOS加电自检（Power On Self Test – POST）。</li>
+<li>读取主引导记录（MBR）。BIOS根据CMOS中的设置依次检查启动设备：将相应启动设备的第一个扇区（也就是MBR扇区）读入内存。</li>
+<li>检查MBR的结束标志位是否等于55AA，若不等于则转去尝试其他启动设备，如果没有启动设备满足要求则显示”NO ROM BASIC”然后死机。</li>
+<li>当检测到有启动设备满足要求后，BIOS将控制权交给相应启动设备的MBR。</li>
+<li>根据MBR中的引导代码启动引导程序。</li>
+</ol>
+<h3 id="UEFI-mode"><a href="#UEFI-mode" class="headerlink" title="UEFI mode"></a>UEFI mode</h3><p>UEFI启动不依赖于Boot Sector（比如MBR），大致流程如下：</p>
+<ol>
+<li>Pre-EFI初始化模块运行，自检</li>
+<li>加载DXE（EFI驱动程序执行环境），枚举并加载EFI驱动程序（设备ROM或ESP中）</li>
+<li>找到ESP中的引导程序，通过其引导操作系统。</li>
+</ol>
+<h3 id="CSM-mode"><a href="#CSM-mode" class="headerlink" title="CSM mode"></a>CSM mode</h3><p>UEFI中的兼容性支持模块（Compatible Support Module）提供了引导UEFI固件的PC上的传统磁盘（MBR格式）的方法。</p>
+<h2 id="分区表"><a href="#分区表" class="headerlink" title="分区表"></a>分区表</h2><h3 id="MBR分区表"><a href="#MBR分区表" class="headerlink" title="MBR分区表"></a>MBR分区表</h3><p>指的是512字节的Master Boot Record（主引导记录）中的分区表，由于大小限制，其中只能存有最多四个分区的描述（亦即4个主分区）。</p>
+<h3 id="EBR分区表"><a href="#EBR分区表" class="headerlink" title="EBR分区表"></a>EBR分区表</h3><p>位于Extended Boot Record（扩展引导纪录）中的分区表，该分区表所描述的分区即扩展分区。每个EBR仅表示了一个扩展分区，该扩展分区紧接在它的EBR后。EBR中的四个分区描述符中的第一个表示其描述的分你去，第二个描述符则表示下一个扩展分区（如果是最后一个则为空），也就是说，各个EBR串接成了一个EBR链表。</p>
+<h3 id="GPT分区表"><a href="#GPT分区表" class="headerlink" title="GPT分区表"></a>GPT分区表</h3><p>GUID Partition Table，是EFI标准的一部分，用于替代MBR分区表，相较起来有分区更大，数量更多（没有4个主分区的限制）等优势，GPT格式的硬盘结构如下，可以看到首部MBR的位置有个保护MBR（用于防止不识别GPT的硬盘工具错误识别并破坏硬盘中的数据），这个MBR中只有一个类型为0xEE的分区。</p>
+<h2 id="Bootloader"><a href="#Bootloader" class="headerlink" title="Bootloader"></a>Bootloader</h2><p>Bootloader即引导程序，用于启动操作系统或者其它引导程序（比如Grub启动Windows Bootmgr）</p>
+<h3 id="Grub"><a href="#Grub" class="headerlink" title="Grub"></a>Grub</h3><p>GNU的开源引导程序，可以用于引导Linux等操作系统，或者用于链式引导其它引导程序（比如Windows Boot Manager），分为三个部分，分别称为步骤1、1.5、2，看名字就可以知道，步骤1.5是可有可没有的，这三个步骤对应的文件分别是：</p>
+<ul>
+<li>Boot.img：步骤1对应的文件，446个字节大小，步骤1可以引导步骤1.5也可以引导步骤2。MBR分区格式的磁盘中，放在MBR里（446也是为了符合MBR的启动代码区大小）；GPT分区格式的磁盘中，放在Protective MBR中。</li>
+<li>Core.img：步骤1.5对应的文件，32256字节大小。MBR分区格式的磁盘中，放在紧邻MBR的若干扇区中；GPT分区格式的磁盘中，则放在34号扇区开始的位置（第一个分区所处的位置），而对应的GPT分区表中的第一个分区的entry被置空。通常其中包含文件系统驱动以便load步骤2的文件。</li>
+<li>/boot/grub：步骤2对应的文件目录，放在系统分区或者单独的Boot分区中</li>
+</ul>
+<h3 id="Windows-Boot-Manager"><a href="#Windows-Boot-Manager" class="headerlink" title="Windows Boot Manager"></a>Windows Boot Manager</h3><p>是从Windows Vista开始引进的新一代开机管理程序，用以取代NTLDR。</p>
+<p>当电脑运行完开机自检后，传统型BIOS会根据引导扇区查找开机硬盘中标记”引导”分区下的BOOTMGR文件；若是UEFI则是Bootmgfw.efi文件和Bootmgr.efi文件，接着管理程序会读取开机配置数据库（BCD, Boot Configuration Database）下的引导数据，接着根据其中的数据加载与默认或用户所选择的操作系统。</p>
+<h1 id="操作系统大观"><a href="#操作系统大观" class="headerlink" title="操作系统大观"></a>操作系统大观</h1><ul>
+<li>大型机操作系统</li>
+<li>服务器操作系统</li>
+<li>多处理器操作系统</li>
+<li>个人计算机操作系统</li>
+<li>掌上计算机操作系统</li>
+<li>嵌入式操作系统</li>
+<li>传感器节点操作系统</li>
+<li>实时操作系统</li>
+<li>智能卡操作系统</li>
+</ul>
+<h1 id="操作系统结构"><a href="#操作系统结构" class="headerlink" title="操作系统结构"></a>操作系统结构</h1><h2 id="单体系统"><a href="#单体系统" class="headerlink" title="单体系统"></a>单体系统</h2><p>整个操作系统在内核态以单一程序的方式运行，整个操作系统以过程集合的方式编写，首先编译单个过程，然后链接成一个大型可执行二进制程序。使用这种技术，系统中的每个过程可以自由调用其他过程，但无数个不受限制地彼此调用的过程显得过于笨拙，而且任何一个过程的崩溃都会连累整个接口。</p>
+<p>许多操作系统支持可装载的扩展，在UNIX中称为<strong>共享库（Shared Library，so）</strong>，在Windows中称为<strong>动态链接库（Dynamic Link Library，dll）</strong>。</p>
+<p>在单体系统中也可能有一些结构存在。</p>
+<h2 id="层次系统"><a href="#层次系统" class="headerlink" title="层次系统"></a>层次系统</h2><p>将单体系统中的结构进一步通用化，就变成一个层次式的系统。THE操作系统结构如下：</p>
+<p><img src="THE%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%BB%93%E6%9E%84.jpg" alt="THE操作系统结构"></p>
+<h2 id="微内核"><a href="#微内核" class="headerlink" title="微内核"></a>微内核</h2><p>微内核的设计思想：为了实现高可靠性，将操作系统划分为小的，定义良好的模块，只有其中一个模块——微内核，运行在内核态，其余的模块作为普通用户进程运行。</p>
+<p>由于把每个设备驱动和文件系统分别作为普通用户进程，当这些模块发生错误时不会造成整个系统的崩溃。</p>
+<p>当然，微内核由于增加了许多系统调用，因此性能上可能会有所下降。</p>
+<h2 id="客户端-服务器模式"><a href="#客户端-服务器模式" class="headerlink" title="客户端-服务器模式"></a>客户端-服务器模式</h2><p>这个模式可以看成是微内核的变体。</p>
+<h2 id="虚拟机"><a href="#虚拟机" class="headerlink" title="虚拟机"></a>虚拟机</h2><p>分层系统可延伸为虚拟机概念，虚拟机的基本思想是单个计算机的硬件抽象为几个不同的执行部件从而使得仿佛每个独立的执行环境都在自己的计算机运行一样。通过cpu调度和虚拟内存技术，操作系统能带来一种幻觉，即进程认为有自己的处理器和自己的（虚拟）内存。</p>
+<ul>
+<li>非虚拟机：进程→内核-硬件</li>
+<li>虚拟机：进程→内核→虚拟机实现→硬件</li>
+</ul>
+<p>创建虚拟机的原因：最根本的是，在并行运行几个不同的执行环境（即不同的操作系统）能共享相同的硬件。</p>
+<p>虚拟机方法的主要困难在于磁盘系统。解决方法是提供虚拟磁盘。</p>
+<p>底层机器有两种模式：用户模式和内核模式。</p>
+<p>虚拟机软件可以运行在内核模式，因为它就是操作系统，虚拟机本身只能运行在用户模式，但他必须有虚拟用户模式和虚拟内核模式。这两种模式都运行在物理用户模式。</p>
+<p>虚拟模式的转换可按下述方法实现。例如，当以一个虚拟用户模式而在虚拟机上运行的程序执行系统调用时，他会在真正机器上引起一个到虚拟机监控器的转换。当虚拟机监控器获得控制，他能改变虚拟机的寄存器内容和程序计数器以模拟系统调用的效果。接着他能重新启动虚拟机，注意他现在是在虚拟机内核模式下执行。</p>
+<p>实例：VMWare，Java VM</p>
+<h1 id="操作系统和内核"><a href="#操作系统和内核" class="headerlink" title="操作系统和内核"></a>操作系统和内核</h1><h2 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h2><ul>
+<li>操作系统：管理计算机硬件与软件资源的系统软件，同时也是计算机系统的内核与基石。操作系统需要处理如管理与配置内存、决定系统资源供需的优先次序、控制输入与输出设备、操作网络与管理文件系统等基本事务。操作系统也提供一个让用户与系统交互的操作界面。对我们来说，操作系统最直观的感受就是桌面系统，以及上层的应用程序，而后面的资源处理等等就是操作系统背后的黑盒。</li>
+<li>内核：一个提供硬件抽象层、磁盘及文件系统控制、多任务等功能的系统软件。内核是操作系统最基本的部分。它是为众多应用程序提供对计算机硬件的安全访问的一部分软件，这种访问是有限的，并且内核决定一个程序在什么时候对某部分硬件操作多长时间。直接对硬件操作是非常复杂的，所以内核通常提供一种硬件抽象的方法来完成这些操作。硬件抽象隐藏了复杂性，为应用软件和硬件提供了一套简洁，统一的接口，使程序设计更为简单。简单来说，内核是一个操作系统的核心。它负责管理系统的进程、内存、设备驱动程序、文件和网络系统等等，决定着系统的性能和稳定性。是连接应用程序和硬件的桥梁。内核就是操作系统背后黑盒的核心。</li>
+</ul>
+<p>它们的关系如下图：</p>
+<p><img src="%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%92%8C%E5%86%85%E6%A0%B8.jpg" alt="操作系统和内核"></p>
+<h2 id="内核的分类"><a href="#内核的分类" class="headerlink" title="内核的分类"></a>内核的分类</h2><h3 id="宏内核（单内核）"><a href="#宏内核（单内核）" class="headerlink" title="宏内核（单内核）"></a>宏内核（单内核）</h3><p>内核管理着操作系统的内存，文件，IO，网络等等，每个功能可以看做一个模块，在宏内核中，这些模块都是集成在一起的，运行在内核进程中，模块之间的交互直接通过方法调用。如下图：</p>
+<p><img src="%E5%AE%8F%E5%86%85%E6%A0%B8.jpg" alt="宏内核"></p>
+<h3 id="微内核-1"><a href="#微内核-1" class="headerlink" title="微内核"></a>微内核</h3><p>在微内核中，内核只提供最核心的功能，比如任务调度，内存管理等等，其他模块被移出内核，运行在不同的进程中，这样即使某一个模块出现问题，只要重启这个模块的进程即可，不会影响到其他模块，稳定性大大增加。甚至可以在系统运行过程中替换现有模块的实现。而且由于模块独立的性质，可以做到模块的按需加载。但是模块间的相互调用需要通过进程间通信，通信效率相对较低。如下图：</p>
+<p><img src="%E5%BE%AE%E5%86%85%E6%A0%B8.jpg" alt="微内核"></p>
+<h3 id="混合内核"><a href="#混合内核" class="headerlink" title="混合内核"></a>混合内核</h3><p>宏内核和微内核各有千秋，也各有缺点，所以混合内核就是集中了两者的特点，让微内核中的一些核心模块运行在内核中，从而使内核效率更高一些。</p>
+<h3 id="外内核"><a href="#外内核" class="headerlink" title="外内核"></a>外内核</h3><p>外内核是把硬件暴露给应用程序，应用程序可以直接访问硬件，外内核对系统提供保护。目前还在研究阶段。</p>
+<h2 id="宏内核-微内核对比"><a href="#宏内核-微内核对比" class="headerlink" title="宏内核/微内核对比"></a>宏内核/微内核对比</h2><table>
+<thead>
+<tr>
+<th align="center">-</th>
+<th align="center">宏内核</th>
+<th align="center">微内核</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">通信效率</td>
+<td align="center">高（函数调用）</td>
+<td align="center">低（进程间通信）</td>
+</tr>
+<tr>
+<td align="center">稳定性</td>
+<td align="center">低（模块集成在一起）</td>
+<td align="center">高（模块间互不影响）</td>
+</tr>
+<tr>
+<td align="center">扩展性</td>
+<td align="center">低（模块集成在一起）</td>
+<td align="center">高（模块间互不影响）</td>
+</tr>
+<tr>
+<td align="center">代码量</td>
+<td align="center">多（需要实现所有模块）</td>
+<td align="center">少（只需要实现核心功能）</td>
+</tr>
+</tbody></table>
+<h2 id="主流操作系统内核"><a href="#主流操作系统内核" class="headerlink" title="主流操作系统内核"></a>主流操作系统内核</h2><p>宏内核：</p>
+<ul>
+<li>Linux</li>
+<li>Windows 9X 系列</li>
+<li>MacOS 8.6 版本之前</li>
+</ul>
+<p>微内核：</p>
+<ul>
+<li>Fuchsia</li>
+<li>鸿蒙</li>
+<li>Minix</li>
+</ul>
+<p>混合内核：</p>
+<ul>
+<li>Windows XP</li>
+<li>Windows 7</li>
+<li>Mac OS X</li>
+<li>XNU</li>
+</ul>
+<p>外内核：</p>
+<ul>
+<li>Nemesis</li>
+</ul>
+<h1 id="用户态和内核态"><a href="#用户态和内核态" class="headerlink" title="用户态和内核态"></a>用户态和内核态</h1><h2 id="特权级"><a href="#特权级" class="headerlink" title="特权级"></a>特权级</h2><p>熟悉Unix/Linux系统的人都知道，fork的工作实际上是以系统调用的方式完成相应功能的，具体的工作是由sys_fork负责实施。其实无论是不是Unix或者Linux，对于任何操作系统来说，创建一个新的进程都是属于内核功能，因为它要做很多底层的工作，消耗系统的物理资源，比如分配物理内存，从父进程拷贝相关信息，拷贝设置页目录页表等等，这些显然不能随便让哪个程序就能去做，于是就自然引出特权级别的概念，显然，最关键性的权力必须由高特权级的程序来执行，这样才可以做到集中管理，减少有限资源的访问和使用冲突。</p>
+<p>特权级显然是非常有效的管理和控制程序执行的手段，因此在硬件上对特权级做了很多支持，就Intel x86架构的CPU来说一共有0~3四个特权级，0级最高，3级最低，硬件上在执行每条指令时都会对指令所具有的特权级做相应的检查。硬件已经提供了一套特权级使用的相关机制，软件自然就是好好利用的问题，这属于操作系统要做的事情，对于 Unix/Linux来说，只使用了0级特权级和3级特权级。也就是说在Unix/Linux系统中，一条工作在0级特权级的指令具有了CPU能提供的最高权力，而一条工作在3级特权级的指令具有CPU提供的最低或者说最基本权力。</p>
+<h2 id="用户态和内核态-1"><a href="#用户态和内核态-1" class="headerlink" title="用户态和内核态"></a>用户态和内核态</h2><p>现在我们从特权级的调度来理解用户态和内核态就比较好理解了，当程序运行在3级特权级上时，就可以称之为运行在用户态，因为这是最低特权级，是普通的用户进程运行的特权级，大部分用户直接面对的程序都是运行在用户态；反之，当程序运行在0级特权级上时，就可以称之为运行在内核态。</p>
+<p>虽然用户态下和内核态下工作的程序有很多差别，但最重要的差别就在于特权级的不同，即权力的不同。运行在用户态下的程序不能直接访问操作系统内核数据结构和程序，比如上面例子中的testfork()就不能直接调用 sys_fork()，因为前者是工作在用户态，属于用户态程序，而sys_fork()是工作在内核态，属于内核态程序。</p>
+<p>当我们在系统中执行一个程序时，大部分时间是运行在用户态下的，在其需要操作系统帮助完成某些它没有权力和能力完成的工作时就会切换到内核态，比如testfork()最初运行在用户态进程下，当它调用fork()最终触发 sys_fork()的执行时，就切换到了内核态。</p>
+<h1 id="同步-异步和阻塞-非阻塞"><a href="#同步-异步和阻塞-非阻塞" class="headerlink" title="同步/异步和阻塞/非阻塞"></a>同步/异步和阻塞/非阻塞</h1><ul>
+<li>同步、异步：涉及到IO通知机制。所谓同步，就是发起调用后，被调用者处理消息，必须等处理完才直接返回结果，没处理完之前是不返回的，调用者主动等待结果；所谓异步，就是发起调用后，被调用者直接返回，但是并没有返回结果，等处理完消息后，通过状态、通知或者回调函数来通知调用者，调用者被动接收结果。</li>
+<li>阻塞、非阻塞：涉及到CPU线程调度。所谓阻塞，就是调用结果返回之前，该执行线程会被挂起，不释放CPU执行权，线程不能做其它事情，只能等待，只有等到调用结果返回了，才能接着往下执行；所谓非阻塞，就是在没有获取调用结果时，不是一直等待，线程可以往下执行，如果是同步的，通过轮询的方式检查有没有调用结果返回，如果是异步的，会通知回调。</li>
+<li>同步阻塞：老张在厨房用普通水壶烧水，一直在厨房等着（阻塞），盯到水烧开（同步）；</li>
+<li>异步阻塞：老张在厨房用响水壶烧水，一直在厨房中等着（阻塞），直到水壶发出响声（异步），老张知道水烧开了；</li>
+<li>同步非阻塞：老张在厨房用普通水壶烧水，在烧水过程中，就到客厅去看电视（非阻塞），然后时不时去厨房看看水烧开了没（轮询检查同步结果）；</li>
+<li>异步非阻塞：老张在厨房用响水壶烧水，在烧水过程中，就到客厅去看电视（非阻塞），当水壶发出响声（异步），老张就知道水烧开了。</li>
+</ul>
+<h1 id="POSIX"><a href="#POSIX" class="headerlink" title="POSIX"></a>POSIX</h1><p>POSIX，<code>Portable Operating System Interface</code>（可移植操作系统接口）。是UNIX系统的一个设计标准，很多类UNIX系统也在支持兼容这个标准，如Linux，遵循这个标准的好处是软件可以跨平台。</p>
+<p>从Unix之后出现了许多独立开发的与Unix类似但又不完全兼容的OS，通称Unix-like OS。局面非常混乱，为了提高兼容性和应用程序的可移植性，标准化Unix-like OS，提出了大家都应该遵守的POSIX标准。后来，Unix这个名字成为了商标，只有花钱进行POSIX标准兼容性测试并通过了的OS，才能称为Unix，其余的OS，最多称为Unix-like OS。</p>
+<p>Windows从WinNT开始就有兼容POSIX的考虑，因为当年在要求严格的领域，Unix地位比Windows高。</p>
+<p>一般情况下，应用程序通过应用编程接口(API)而不是直接通过系统调用来编程，因为应用程序使用的这种编程接口实际上并不需要和内核提供的系统调用对应。一个API定义了一组应用程序使用的编程接口，它们可以实现成一个系统调用，也可以通过调用多个系统调用来实现，也可以完全不使用任何系统调用。实际上，API可以在各种不同的操作系统上实现，给应用程序提供完全相同的接口，而它们本身在这些系统上的实现却可能迥异。</p>
+<p>完成同一功能，不同内核提供的系统调用（也就是一个函数）是不同的，例如创建进程，linux下是fork函数，windows下是creatprocess函数。为了解决跨平台的问题，linux和windows等都要实现基本的posix标准，linux把fork函数以及windows把creatprocess函数封装成同一个函数，都声明在unistd.h里。这样，程序员编写普通应用时候，只用包含unistd.h，然后调用这个封装后的函数，程序就在源代码级别可移植了。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/11/18/Glide%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2234,259 +2556,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/09/16/CMake%E7%AC%94%E8%AE%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/head.png">
-      <meta itemprop="name" content="苍耳叔叔">
-      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苍耳的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/09/16/CMake%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">CMake笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-09-16 12:57:58" itemprop="dateCreated datePublished" datetime="2019-09-16T12:57:58+08:00">2019-09-16</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E5%B7%A5%E5%85%B7/" itemprop="url" rel="index"><span itemprop="name">工具</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2019/09/16/CMake%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="CMake笔记" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2019/09/16/CMake%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/09/16/CMake%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="gcc，make，CMake"><a href="#gcc，make，CMake" class="headerlink" title="gcc，make，CMake"></a>gcc，make，CMake</h1><ol>
-<li>gcc是GNU Compiler Collection（就是GNU编译器套件），也可以简单认为是编译器，它可以编译很多种编程语言（括C、C++、Objective-C、Fortran、Java等等）。</li>
-<li>程序只有一个源文件时，可以直接用gcc命令编译它。</li>
-<li>当程序包含很多个源文件时，用gcc命令逐个去编译时，很容易混乱而且工作量大。</li>
-<li>make工具可以看成是一个智能的批处理工具，它本身并没有编译和链接的功能，而是用类似于批处理的方式：通过调用makefile文件中用户指定的命令来进行编译和链接的。</li>
-<li>makefile就像一首歌的乐谱，make工具就像指挥家，指挥家根据乐谱指挥整个乐团怎么样演奏，make工具就根据makefile中的命令进行编译和链接的。makefile命令中就包含了调用gcc（也可以是别的编译器）去编译某个源文件的命令。</li>
-<li>makefile在一些简单的工程中可以人工编写，但是当工程非常大的时候，手写makefile也是非常麻烦的，如果换了个平台makefile又要重新修改。</li>
-<li>cmake 是一个跨平台、开源的构建系统。它是一个集软件构建、测试、打包于一身的软件。它使用与平台和编译器独立的配置文件来对软件编译过程进行控制。cmake可以生成makefile文件，并且可以跨平台生成对应平台能用的makefile。</li>
-<li>cmake根据CMakeLists.txt文件去生成makefile。</li>
-</ol>
-<h1 id="CMakeLists-txt语法"><a href="#CMakeLists-txt语法" class="headerlink" title="CMakeLists.txt语法"></a>CMakeLists.txt语法</h1><h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><h3 id="指定-cmake-的最小版本"><a href="#指定-cmake-的最小版本" class="headerlink" title="指定 cmake 的最小版本"></a>指定 cmake 的最小版本</h3><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required(VERSION 3.4.1)</span><br></pre></td></tr></table></figure>
-
-<p>这行命令是可选的，在有些情况下，如果 CMakeLists.txt 文件中使用了一些高版本 cmake 特有的一些命令的时候，就需要加上这样一行，提醒用户升级到该版本之后再执行 cmake。</p>
-<h3 id="设置项目名称"><a href="#设置项目名称" class="headerlink" title="设置项目名称"></a>设置项目名称</h3><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">project(demo)</span><br></pre></td></tr></table></figure>
-
-<p>这个命令不是强制性的，但最好都加上。它会引入两个变量 demo_BINARY_DIR 和 demo_SOURCE_DIR，同时，cmake 自动定义了两个等价的变量 PROJECT_BINARY_DIR 和 PROJECT_SOURCE_DIR。</p>
-<h3 id="设置编译类型"><a href="#设置编译类型" class="headerlink" title="设置编译类型"></a>设置编译类型</h3><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">add_executable(demo demo.cpp) <span class="comment"># 生成可执行文件</span></span><br><span class="line">add_library(common STATIC util.cpp) <span class="comment"># 生成静态库</span></span><br><span class="line">add_library(common SHARED util.cpp) <span class="comment"># 生成动态库或共享库</span></span><br></pre></td></tr></table></figure>
-
-<p>add_library 默认生成是静态库，通过以上命令生成文件名字，在 Linux 下是：</p>
-<ul>
-<li>demo</li>
-<li>libcommon.a</li>
-<li>libcommon.so</li>
-</ul>
-<p>在 Windows 下是：</p>
-<ul>
-<li>demo.exe</li>
-<li>common.lib</li>
-<li>common.dll</li>
-</ul>
-<h3 id="指定编译包含的源文件"><a href="#指定编译包含的源文件" class="headerlink" title="指定编译包含的源文件"></a>指定编译包含的源文件</h3><h4 id="明确指定包含哪些源文件"><a href="#明确指定包含哪些源文件" class="headerlink" title="明确指定包含哪些源文件"></a>明确指定包含哪些源文件</h4><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">add_library(demo demo.cpp test.cpp util.cpp)</span><br></pre></td></tr></table></figure>
-
-<h4 id="搜索所有的-cpp-文件"><a href="#搜索所有的-cpp-文件" class="headerlink" title="搜索所有的 cpp 文件"></a>搜索所有的 cpp 文件</h4><p>aux_source_directory(dir VAR) 发现一个目录下所有的源代码文件并将列表存储在一个变量中。</p>
-<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">aux_source_directory(. SRC_LIST) <span class="comment"># 搜索当前目录下的所有.cpp文件</span></span><br><span class="line">add_library(demo $&#123;SRC_LIST&#125;)</span><br></pre></td></tr></table></figure>
-
-<h4 id="自定义搜索规则"><a href="#自定义搜索规则" class="headerlink" title="自定义搜索规则"></a>自定义搜索规则</h4><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">file(GLOB SRC_LIST <span class="string">&quot;*.cpp&quot;</span> <span class="string">&quot;protocol/*.cpp&quot;</span>)</span><br><span class="line">add_library(demo $&#123;SRC_LIST&#125;)</span><br><span class="line"><span class="comment"># 或者</span></span><br><span class="line">file(GLOB SRC_LIST <span class="string">&quot;*.cpp&quot;</span>)</span><br><span class="line">file(GLOB SRC_PROTOCOL_LIST <span class="string">&quot;protocol/*.cpp&quot;</span>)</span><br><span class="line">add_library(demo $&#123;SRC_LIST&#125; $&#123;SRC_PROTOCOL_LIST&#125;)</span><br><span class="line"><span class="comment"># 或者</span></span><br><span class="line">aux_source_directory(. SRC_LIST)</span><br><span class="line">aux_source_directory(protocol SRC_PROTOCOL_LIST)</span><br><span class="line">add_library(demo $&#123;SRC_LIST&#125; $&#123;SRC_PROTOCOL_LIST&#125;)</span><br></pre></td></tr></table></figure>
-
-<h3 id="查找指定的库文件"><a href="#查找指定的库文件" class="headerlink" title="查找指定的库文件"></a>查找指定的库文件</h3><p>find_library(VAR name path)查找到指定的预编译库，并将它的路径存储在变量中。默认的搜索路径为 cmake 包含的系统库，因此如果是 NDK 的公共库只需要指定库的 name 即可。</p>
-<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">find_library( <span class="comment"># Sets the name of the path variable.</span></span><br><span class="line">              log-lib</span><br><span class="line"> </span><br><span class="line">              <span class="comment"># Specifies the name of the NDK library that</span></span><br><span class="line">              <span class="comment"># you want CMake to locate.</span></span><br><span class="line">              log )</span><br></pre></td></tr></table></figure>
-
-<p>类似的命令还有 find_file()、find_path()、find_program()、find_package()。</p>
-<h3 id="设置包含的目录"><a href="#设置包含的目录" class="headerlink" title="设置包含的目录"></a>设置包含的目录</h3><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">include_directories(</span><br><span class="line">    $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;</span><br><span class="line">    $&#123;CMAKE_CURRENT_BINARY_DIR&#125;</span><br><span class="line">    $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/<span class="keyword">include</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-<p>Linux 下还可以通过如下方式设置包含的目录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set(CMAKE_CXX_FLAGS &quot;$&#123;CMAKE_CXX_FLAGS&#125; -I$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;&quot;)</span><br></pre></td></tr></table></figure>
-
-<h3 id="设置链接库搜索目录"><a href="#设置链接库搜索目录" class="headerlink" title="设置链接库搜索目录"></a>设置链接库搜索目录</h3><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">link_directories(</span><br><span class="line">    $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/libs</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-
-<p>Linux 下还可以通过如下方式设置包含的目录</p>
-<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set(CMAKE_CXX_FLAGS <span class="string">&quot;$&#123;CMAKE_CXX_FLAGS&#125; -L$&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/libs&quot;</span>)</span><br></pre></td></tr></table></figure>
-
-<h3 id="设置-target-需要链接的库"><a href="#设置-target-需要链接的库" class="headerlink" title="设置 target 需要链接的库"></a>设置 target 需要链接的库</h3><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">target_link_libraries( <span class="comment"># 目标库</span></span><br><span class="line">                       demo</span><br><span class="line"> </span><br><span class="line">                       <span class="comment"># 目标库需要链接的库</span></span><br><span class="line">                       <span class="comment"># log-lib 是上面 find_library 指定的变量名</span></span><br><span class="line">                       $&#123;log-lib&#125; )</span><br></pre></td></tr></table></figure>
-
-<p>在 Windows 下，系统会根据链接库目录，搜索xxx.lib 文件，Linux 下会搜索 xxx.so 或者 xxx.a 文件，如果都存在会优先链接动态库（so 后缀）。</p>
-<h4 id="指定链接动态库或静态库"><a href="#指定链接动态库或静态库" class="headerlink" title="指定链接动态库或静态库"></a>指定链接动态库或静态库</h4><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">target_link_libraries(demo libface.a) <span class="comment"># 链接libface.a</span></span><br><span class="line">target_link_libraries(demo libface.so) <span class="comment"># 链接libface.so</span></span><br></pre></td></tr></table></figure>
-
-<h4 id="指定全路径"><a href="#指定全路径" class="headerlink" title="指定全路径"></a>指定全路径</h4><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">target_link_libraries(demo $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/libs/libface.a)</span><br><span class="line">target_link_libraries(demo $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/libs/libface.so)</span><br></pre></td></tr></table></figure>
-
-<h4 id="指定链接多个库"><a href="#指定链接多个库" class="headerlink" title="指定链接多个库"></a>指定链接多个库</h4><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">target_link_libraries(demo</span><br><span class="line">    $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/libs/libface.a</span><br><span class="line">    boost_system.a</span><br><span class="line">    boost_thread</span><br><span class="line">    pthread)</span><br></pre></td></tr></table></figure>
-
-<h3 id="设置变量"><a href="#设置变量" class="headerlink" title="设置变量"></a>设置变量</h3><h4 id="set-直接设置变量的值"><a href="#set-直接设置变量的值" class="headerlink" title="set 直接设置变量的值"></a>set 直接设置变量的值</h4><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">set(SRC_LIST main.cpp test.cpp)</span><br><span class="line">add_executable(demo $&#123;SRC_LIST&#125;)</span><br></pre></td></tr></table></figure>
-
-<h4 id="set-追加设置变量的值"><a href="#set-追加设置变量的值" class="headerlink" title="set 追加设置变量的值"></a>set 追加设置变量的值</h4><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">set(SRC_LIST main.cpp)</span><br><span class="line">set(SRC_LIST $&#123;SRC_LIST&#125; test.cpp)</span><br><span class="line">add_executable(demo $&#123;SRC_LIST&#125;)</span><br></pre></td></tr></table></figure>
-
-<h4 id="list-追加或者删除变量的值"><a href="#list-追加或者删除变量的值" class="headerlink" title="list 追加或者删除变量的值"></a>list 追加或者删除变量的值</h4><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">set(SRC_LIST main.cpp)</span><br><span class="line">list(APPEND SRC_LIST test.cpp)</span><br><span class="line">list(REMOVE_ITEM SRC_LIST main.cpp)</span><br><span class="line">add_executable(demo $&#123;SRC_LIST&#125;)</span><br></pre></td></tr></table></figure>
-
-<h3 id="条件控制"><a href="#条件控制" class="headerlink" title="条件控制"></a>条件控制</h3><h4 id="if…elseif…else…endif"><a href="#if…elseif…else…endif" class="headerlink" title="if…elseif…else…endif"></a>if…elseif…else…endif</h4><p>逻辑判断和比较：</p>
-<ul>
-<li>if (expression)：expression 不为空（0,N,NO,OFF,FALSE,NOTFOUND）时为真</li>
-<li>if (not exp)：与上面相反</li>
-<li>if (var1 AND var2)</li>
-<li>if (var1 OR var2)</li>
-<li>if (COMMAND cmd)：如果 cmd 确实是命令并可调用为真</li>
-<li>if (EXISTS dir) if (EXISTS file)：如果目录或文件存在为真</li>
-<li>if (file1 IS_NEWER_THAN file2)：当 file1 比 file2 新，或 file1/file2 中有一个不存在时为真，文件名需使用全路径</li>
-<li>if (IS_DIRECTORY dir)：当 dir 是目录时为真</li>
-<li>if (DEFINED var)：如果变量被定义为真</li>
-<li>if (var MATCHES regex)：给定的变量或者字符串能够匹配正则表达式 regex 时为真，此处 var 可以用 var 名，也可以用 ${var}</li>
-<li>if (string MATCHES regex)</li>
-</ul>
-<p>数字比较：</p>
-<ul>
-<li>if (variable LESS number)：LESS 小于</li>
-<li>if (string LESS number)</li>
-<li>if (variable GREATER number)：GREATER 大于</li>
-<li>if (string GREATER number)</li>
-<li>if (variable EQUAL number)：EQUAL 等于</li>
-<li>if (string EQUAL number)</li>
-</ul>
-<p>字母表顺序比较：</p>
-<ul>
-<li>if (variable STRLESS string)</li>
-<li>if (string STRLESS string)</li>
-<li>if (variable STRGREATER string)</li>
-<li>if (string STRGREATER string)</li>
-<li>if (variable STREQUAL string)</li>
-<li>if (string STREQUAL string)</li>
-</ul>
-<p>示例：</p>
-<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">if(MSVC)</span><br><span class="line">    set(LINK_LIBS common)</span><br><span class="line"><span class="keyword">else</span>()</span><br><span class="line">    set(boost_thread boost_log.a boost_system.a)</span><br><span class="line"><span class="keyword">endif</span>()</span><br><span class="line">target_link_libraries(demo $&#123;LINK_LIBS&#125;)</span><br><span class="line"><span class="comment"># 或者</span></span><br><span class="line">if(UNIX)</span><br><span class="line">    set(CMAKE_CXX_FLAGS <span class="string">&quot;$&#123;CMAKE_CXX_FLAGS&#125; -std=c++11 -fpermissive -g&quot;</span>)</span><br><span class="line"><span class="keyword">else</span>()</span><br><span class="line">    add_definitions(-D_SCL_SECURE_NO_WARNINGS</span><br><span class="line">    D_CRT_SECURE_NO_WARNINGS</span><br><span class="line">    -D_WIN32_WINNT=0x601</span><br><span class="line">    -D_WINSOCK_DEPRECATED_NO_WARNINGS)</span><br><span class="line"><span class="keyword">endif</span>()</span><br><span class="line"> </span><br><span class="line">if($&#123;CMAKE_BUILD_TYPE&#125; MATCHES <span class="string">&quot;debug&quot;</span>)</span><br><span class="line">    ...</span><br><span class="line"><span class="keyword">else</span>()</span><br><span class="line">    ...</span><br><span class="line"><span class="keyword">endif</span>()</span><br></pre></td></tr></table></figure>
-
-<h4 id="while…endwhile"><a href="#while…endwhile" class="headerlink" title="while…endwhile"></a>while…endwhile</h4><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">while(condition)</span><br><span class="line">    ...</span><br><span class="line">endwhile()</span><br></pre></td></tr></table></figure>
-
-<h4 id="foreach…endforeach"><a href="#foreach…endforeach" class="headerlink" title="foreach…endforeach"></a>foreach…endforeach</h4><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">foreach(loop_var RANGE start stop [step])</span><br><span class="line">    ...</span><br><span class="line">endforeach(loop_var)</span><br></pre></td></tr></table></figure>
-
-<p>start 表示起始数，stop 表示终止数，step 表示步长，示例：</p>
-<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">foreach(i RANGE 1 9 2)</span><br><span class="line">    message($&#123;i&#125;)</span><br><span class="line">endforeach(i)</span><br><span class="line"><span class="comment"># 输出：13579</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="打印信息"><a href="#打印信息" class="headerlink" title="打印信息"></a>打印信息</h3><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">message($&#123;PROJECT_SOURCE_DIR&#125;)</span><br><span class="line">message(<span class="string">&quot;build with debug mode&quot;</span>)</span><br><span class="line">message(WARNING <span class="string">&quot;this is warnning message&quot;</span>)</span><br><span class="line">message(FATAL_ERROR <span class="string">&quot;this build has many error&quot;</span>) <span class="comment"># FATAL_ERROR 会导致编译失败</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="包含其它-cmake-文件"><a href="#包含其它-cmake-文件" class="headerlink" title="包含其它 cmake 文件"></a>包含其它 cmake 文件</h3><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">include</span>(./common.cmake) <span class="comment"># 指定包含文件的全路径</span></span><br><span class="line"><span class="keyword">include</span>(def) <span class="comment"># 在搜索路径中搜索def.cmake文件</span></span><br><span class="line">set(CMAKE_MODULE_PATH $&#123;CMAKE_CURRENT_SOURCE_DIR&#125;/cmake) <span class="comment"># 设置include的搜索路径</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="常用变量"><a href="#常用变量" class="headerlink" title="常用变量"></a>常用变量</h2><h3 id="预定义变量"><a href="#预定义变量" class="headerlink" title="预定义变量"></a>预定义变量</h3><ul>
-<li>PROJECT_SOURCE_DIR：工程的根目录</li>
-<li>PROJECT_BINARY_DIR：运行 cmake 命令的目录，通常是 ${PROJECT_SOURCE_DIR}/build</li>
-<li>PROJECT_NAME：返回通过 project 命令定义的项目名称</li>
-<li>CMAKE_CURRENT_SOURCE_DIR：当前处理的 CMakeLists.txt 所在的路径</li>
-<li>CMAKE_CURRENT_BINARY_DIR：target 编译目录</li>
-<li>CMAKE_CURRENT_LIST_DIR：CMakeLists.txt 的完整路径</li>
-<li>CMAKE_CURRENT_LIST_LINE：当前所在的行</li>
-<li>CMAKE_MODULE_PATH：定义自己的 cmake 模块所在的路径，SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)，然后可以用INCLUDE命令来调用自己的模块</li>
-<li>EXECUTABLE_OUTPUT_PATH：重新定义目标二进制可执行文件的存放位置</li>
-<li>LIBRARY_OUTPUT_PATH：重新定义目标链接库文件的存放位置</li>
-</ul>
-<h3 id="环境变量"><a href="#环境变量" class="headerlink" title="环境变量"></a>环境变量</h3><ul>
-<li>使用环境变量: <code>$ENV&#123;Name&#125;</code></li>
-<li>写入环境变量: <code>set(ENV&#123;Name&#125; value)</code>(这里没有“$”符号)</li>
-</ul>
-<h3 id="系统信息"><a href="#系统信息" class="headerlink" title="系统信息"></a>系统信息</h3><ul>
-<li>CMAKE_MAJOR_VERSION：cmake 主版本号，比如 3.4.1 中的 3</li>
-<li>CMAKE_MINOR_VERSION：cmake 次版本号，比如 3.4.1 中的 4</li>
-<li>CMAKE_PATCH_VERSION：cmake 补丁等级，比如 3.4.1 中的 1</li>
-<li>CMAKE_SYSTEM：系统名称，比如 Linux-­2.6.22</li>
-<li>CMAKE_SYSTEM_NAME：不包含版本的系统名，比如 Linux</li>
-<li>CMAKE_SYSTEM_VERSION：系统版本，比如 2.6.22</li>
-<li>CMAKE_SYSTEM_PROCESSOR：处理器名称，比如 i686</li>
-<li>UNIX：在所有的类 UNIX 平台下该值为 TRUE，包括 OS X 和 cygwin</li>
-<li>WIN32：在所有的 win32 平台下该值为 TRUE，包括 cygwin</li>
-</ul>
-<h3 id="主要开关选项"><a href="#主要开关选项" class="headerlink" title="主要开关选项"></a>主要开关选项</h3><ul>
-<li>BUILD_SHARED_LIBS：这个开关用来控制默认的库编译方式，如果不进行设置，使用 add_library 又没有指定库类型的情况下，默认编译生成的库都是静态库。如果 set(BUILD_SHARED_LIBS ON) 后，默认生成的为动态库</li>
-<li>CMAKE_C_FLAGS：设置 C 编译选项，也可以通过指令 add_definitions() 添加</li>
-<li>CMAKE_CXX_FLAGS：设置 C++ 编译选项，也可以通过指令 add_definitions() 添加</li>
-<li>add_definitions(-DENABLE_DEBUG -DABC) 参数之间用空格分隔</li>
-</ul>
-<h2 id="项目示例"><a href="#项目示例" class="headerlink" title="项目示例"></a>项目示例</h2><h3 id="简单项目（单个源文件）"><a href="#简单项目（单个源文件）" class="headerlink" title="简单项目（单个源文件）"></a>简单项目（单个源文件）</h3><h4 id="新建cpp文件main-cpp"><a href="#新建cpp文件main-cpp" class="headerlink" title="新建cpp文件main.cpp"></a>新建cpp文件main.cpp</h4><h4 id="新建CMakeList-txt"><a href="#新建CMakeList-txt" class="headerlink" title="新建CMakeList.txt"></a>新建CMakeList.txt</h4><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">project(HELLO)</span><br><span class="line">add_executable(hello main.c)</span><br></pre></td></tr></table></figure>
-
-<h4 id="编译运行"><a href="#编译运行" class="headerlink" title="编译运行"></a>编译运行</h4><p>一般采用 cmake 的 out-of-source 方式来构建（即生成的中间产物和源代码分离），这样做可以让生成的文件和源文件不会弄混，且目录结构看起来也会清晰明了。所以推荐使用这种方式，至于这个文件夹的命名并无限制，习惯命名为 build。在build目录下依次执行以下命令：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd build</span><br><span class="line">cmake ..</span><br></pre></td></tr></table></figure>
-
-<p>然后执行make命令即可生成可执行文件。</p>
-<h3 id="复杂项目"><a href="#复杂项目" class="headerlink" title="复杂项目"></a>复杂项目</h3><p>目录结构如下：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── build</span><br><span class="line">├── CMakeLists.txt</span><br><span class="line">├── main.cpp</span><br><span class="line">└── util</span><br><span class="line">    ├── CMakeLists.txt</span><br><span class="line">    ├── util.cpp</span><br><span class="line">    └── util.hpp</span><br></pre></td></tr></table></figure>
-
-<p>demo 根目录下的 CMakeLists.txt 文件如下：</p>
-<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cmake_minimum_required (VERSION 2.8)</span><br><span class="line">project(demo)</span><br><span class="line">aux_source_directory(. DIR_SRCS)</span><br><span class="line"><span class="comment"># 添加math子目录</span></span><br><span class="line">add_subdirectory(util)</span><br><span class="line"><span class="comment"># 指定生成目标</span></span><br><span class="line">add_executable(demo $&#123;DIR_SRCS&#125;)</span><br><span class="line"><span class="comment"># 添加链接库</span></span><br><span class="line">target_link_libraries(demo Util)</span><br></pre></td></tr></table></figure>
-
-<p>math 目录下的 CMakeLists.txt 文件如下：</p>
-<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">aux_source_directory(. DIR_LIB_SRCS)</span><br><span class="line"><span class="comment"># 生成链接库</span></span><br><span class="line">add_library(Util $&#123;DIR_LIB_SRCS&#125;)</span><br></pre></td></tr></table></figure>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2558,7 +2627,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">167</span>
+          <span class="site-state-item-count">168</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
