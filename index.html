@@ -192,6 +192,121 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2022/11/23/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BStateFlow%E5%92%8CSharedFlow/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/11/23/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BStateFlow%E5%92%8CSharedFlow/" class="post-title-link" itemprop="url">Kotlin笔记之StateFlow和SharedFlow</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-11-23 10:53:12" itemprop="dateCreated datePublished" datetime="2022-11-23T10:53:12+08:00">2022-11-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-11-25 12:01:56" itemprop="dateModified" datetime="2022-11-25T12:01:56+08:00">2022-11-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">语言</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%AD%E8%A8%80/Kotlin/" itemprop="url" rel="index"><span itemprop="name">Kotlin</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2022/11/23/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BStateFlow%E5%92%8CSharedFlow/" class="post-meta-item leancloud_visitors" data-flag-title="Kotlin笔记之StateFlow和SharedFlow" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/11/23/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BStateFlow%E5%92%8CSharedFlow/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/11/23/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BStateFlow%E5%92%8CSharedFlow/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Flow 需要在协程中使用, 分析 flow 工作流程离不开协程的工作原理，关于 Kotlin 协程的解析可以参考下列文章：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6901956626324914184">Kotlin协程之基础使用</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6890348438873964551">Kotlin协程之深入理解协程工作原理</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6909276222895685640">Kotlin协程之协程取消与异常处理</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7137905800504148004">Kotlin协程之再次读懂协程工作原理</a></li>
+</ul>
+<blockquote>
+<p>个人觉得 <a target="_blank" rel="noopener" href="https://juejin.cn/post/7137905800504148004">Kotlin协程之再次读懂协程工作原理</a> 分析比较易懂，有需要的同学可以移步看看。</p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/11/23/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BStateFlow%E5%92%8CSharedFlow/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2022/08/31/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%86%8D%E7%9C%8B%E5%8D%8F%E7%A8%8B%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -530,7 +645,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2022-02-22 21:00:04" itemprop="dateModified" datetime="2022-02-22T21:00:04+08:00">2022-02-22</time>
+                <time title="修改时间：2022-11-18 11:16:04" itemprop="dateModified" datetime="2022-11-18T11:16:04+08:00">2022-11-18</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1143,117 +1258,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2021/08/10/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%8F%AF%E9%AB%98%E4%BA%AE%E6%BB%9A%E5%8A%A8%E6%96%87%E6%9C%AC/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/head.png">
-      <meta itemprop="name" content="苍耳叔叔">
-      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苍耳的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2021/08/10/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%8F%AF%E9%AB%98%E4%BA%AE%E6%BB%9A%E5%8A%A8%E6%96%87%E6%9C%AC/" class="post-title-link" itemprop="url">Android自定义View-可高亮滚动文本</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-08-10 16:53:16" itemprop="dateCreated datePublished" datetime="2021-08-10T16:53:16+08:00">2021-08-10</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-08-13 11:27:09" itemprop="dateModified" datetime="2021-08-13T11:27:09+08:00">2021-08-13</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/Framework/" itemprop="url" rel="index"><span itemprop="name">Framework</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2021/08/10/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%8F%AF%E9%AB%98%E4%BA%AE%E6%BB%9A%E5%8A%A8%E6%96%87%E6%9C%AC/" class="post-meta-item leancloud_visitors" data-flag-title="Android自定义View-可高亮滚动文本" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2021/08/10/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%8F%AF%E9%AB%98%E4%BA%AE%E6%BB%9A%E5%8A%A8%E6%96%87%E6%9C%AC/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2021/08/10/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%8F%AF%E9%AB%98%E4%BA%AE%E6%BB%9A%E5%8A%A8%E6%96%87%E6%9C%AC/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>实现效果如下图：</p>
-<ul>
-<li>能够显示指定的文本(如果是 String 列表呢)，超出的内容可滚动(自动或手动)显示</li>
-<li>高亮固定的行</li>
-<li>能够调节字体大小，高亮字体颜色，滚动速度</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/08/10/Android%E8%87%AA%E5%AE%9A%E4%B9%89View-%E5%8F%AF%E9%AB%98%E4%BA%AE%E6%BB%9A%E5%8A%A8%E6%96%87%E6%9C%AC/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1325,7 +1329,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">168</span>
+          <span class="site-state-item-count">169</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>

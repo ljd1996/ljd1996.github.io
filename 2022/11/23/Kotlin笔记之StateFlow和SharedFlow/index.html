@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ljd1996.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述Flow 需要在协程中使用, 分析 flow 工作流程离不开协程的工作原理，关于 Kotlin 协程的解析可以参考下列文章：  Kotlin协程之基础使用 Kotlin协程之深入理解协程工作原理 Kotlin协程之协程取消与异常处理 Kotlin协程之再次读懂协程工作原理   个人觉得 Kotlin协程之再次读懂协程工作原理 分析比较易懂，有需要的同学可以移步看看。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kotlin笔记之StateFlow和SharedFlow">
+<meta property="og:url" content="https://ljd1996.github.io/2022/11/23/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BStateFlow%E5%92%8CSharedFlow/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述Flow 需要在协程中使用, 分析 flow 工作流程离不开协程的工作原理，关于 Kotlin 协程的解析可以参考下列文章：  Kotlin协程之基础使用 Kotlin协程之深入理解协程工作原理 Kotlin协程之协程取消与异常处理 Kotlin协程之再次读懂协程工作原理   个人觉得 Kotlin协程之再次读懂协程工作原理 分析比较易懂，有需要的同学可以移步看看。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ljd1996.github.io/2022/11/23/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BStateFlow%E5%92%8CSharedFlow/android_arch.png">
+<meta property="og:image" content="https://ljd1996.github.io/2022/11/23/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BStateFlow%E5%92%8CSharedFlow/flow.gif">
+<meta property="og:image" content="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2eeedfc27a9d4df9a8f1b879a80accad~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp">
+<meta property="article:published_time" content="2022-11-23T02:53:12.000Z">
+<meta property="article:modified_time" content="2022-11-25T04:01:56.058Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Kotlin">
+<meta property="article:tag" content="协程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ljd1996.github.io/2022/11/23/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BStateFlow%E5%92%8CSharedFlow/android_arch.png">
+
+<link rel="canonical" href="https://ljd1996.github.io/2022/11/23/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BStateFlow%E5%92%8CSharedFlow/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Kotlin笔记之StateFlow和SharedFlow | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2022/11/23/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BStateFlow%E5%92%8CSharedFlow/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Kotlin笔记之StateFlow和SharedFlow
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-11-23 10:53:12" itemprop="dateCreated datePublished" datetime="2022-11-23T10:53:12+08:00">2022-11-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-11-25 12:01:56" itemprop="dateModified" datetime="2022-11-25T12:01:56+08:00">2022-11-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">语言</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%AD%E8%A8%80/Kotlin/" itemprop="url" rel="index"><span itemprop="name">Kotlin</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2022/11/23/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BStateFlow%E5%92%8CSharedFlow/" class="post-meta-item leancloud_visitors" data-flag-title="Kotlin笔记之StateFlow和SharedFlow" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/11/23/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BStateFlow%E5%92%8CSharedFlow/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/11/23/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BStateFlow%E5%92%8CSharedFlow/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>Flow 需要在协程中使用, 分析 flow 工作流程离不开协程的工作原理，关于 Kotlin 协程的解析可以参考下列文章：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6901956626324914184">Kotlin协程之基础使用</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6890348438873964551">Kotlin协程之深入理解协程工作原理</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6909276222895685640">Kotlin协程之协程取消与异常处理</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7137905800504148004">Kotlin协程之再次读懂协程工作原理</a></li>
+</ul>
+<blockquote>
+<p>个人觉得 <a target="_blank" rel="noopener" href="https://juejin.cn/post/7137905800504148004">Kotlin协程之再次读懂协程工作原理</a> 分析比较易懂，有需要的同学可以移步看看。</p>
+</blockquote>
+<a id="more"></a>
+
+<p>言归正传，Android 架构经过多年的发展和迭代，目前最常用的应该是 MVVM 了，至于 MVI 架构，在实际开发中我看到的比较少，但无论是哪一款，都是使用分层的架构思想，引用一张官网的推荐架构图：</p>
+<p><img src="android_arch.png" alt="Android架构"></p>
+<blockquote>
+<p>题外话：架构是一个持续学习的过程，加上在实际开发中反复地使用(搬砖)，慢慢熟悉起来，并有自己的理解。我也在持续学习中，并且把这个过程记录在 <a target="_blank" rel="noopener" href="https://juejin.cn/column/7051923621182341127">Android 架构学习之路</a> 专栏中，工作太忙，更新比较慢，大家有兴趣的话可以一起学习。</p>
+</blockquote>
+<p>对于 <code>UI Layer</code>, 我们一般有两个组件：</p>
+<ul>
+<li>View: 处理 UI 展现，用户事件监听，页面跳转等，比如说 Activity 和 Fragment</li>
+<li>ViewModel: 向 View 提供数据</li>
+</ul>
+<p>这二者通常通过响应式编程来处理它们之间的交互，View 订阅 ViewModel 暴露的响应式接口，接收到通知后进行相应逻辑，而 ViewModel 不再持有任何形式的 View 的引用。常用的响应式组件有 LiveData, RxJava, Flow 等：</p>
+<ul>
+<li>RxJava: 个人很少使用，倒不是因为它不好，而是…一直傻傻不太会用 RxJava 的操作符，看不太懂，又一直没花时间(懒惰)去研究它那些操作符的原理，就不怎么敢用。</li>
+<li>LiveData: 在很长一段时间里，这个组件简直是我(们大家)的宝贝，简单，上手快，又能满足大多数场景的需求，感恩。</li>
+<li>Flow: 流传它想要取代 LiveData, 网上也有一些从 LiveData 迁移到 Flow 的文章。</li>
+</ul>
+<blockquote>
+<p>个人看来，LiveData 不至于真的被替换掉，因为它有很多优势，比如说使用简单，轻量级，可感知生命周期，可观察，粘性(优缺视使用场景而定)等；所以一般而言，对于 View 和 ViewModel 之间简单的响应式开发，使用 LiveData 就足够了，毕竟合适的才是最好的，而对于 <code>UI Layer</code> 之外的复杂场景，可以考虑使用 Flow 用来处理异步数据流。</p>
+</blockquote>
+<p>之前有分析过基础的 <a target="_blank" rel="noopener" href="https://juejin.cn/post/6966047022814232613">Flow 工作原理</a>，这篇文章我们再看看 StateFlow 和 SharedFlow。</p>
+<h1 id="Flow的三个角色"><a href="#Flow的三个角色" class="headerlink" title="Flow的三个角色"></a>Flow的三个角色</h1><p>Flow 数据流中有三个角色：</p>
+<ul>
+<li>生产者(Producer): 生产添加到数据流中的数据</li>
+<li>消费者(Consumer): 消费数据流中的数据</li>
+<li>中介(Intermediaries 可选): 可以修改发送到数据流的值，或修正数据流本身</li>
+</ul>
+<p>参考官方中的一段视频动画，可以很好地理解这个过程：</p>
+<p><img src="flow.gif"></p>
+<p>不得不说，这些新知识点的学习，官方文档或者视频往往更直观易懂，网上很多文章写得也挺好的，可以用来加深理解，但还是建议官方文档也可以多看看。</p>
+<h1 id="冷流与热流"><a href="#冷流与热流" class="headerlink" title="冷流与热流"></a>冷流与热流</h1><p>在前一篇文章 <a target="_blank" rel="noopener" href="https://juejin.cn/post/6966047022814232613">Flow 工作原理</a> 中也有解析过 Flow 为什么是<strong>冷流</strong>，参考这个流程图：</p>
+<p><img src="https://p3-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/2eeedfc27a9d4df9a8f1b879a80accad~tplv-k3u1fbpfcp-zoom-in-crop-mark:3024:0:0:0.awebp"></p>
+<p><code>flow &#123;&#125;</code> 方式(或flowOf, asFlow)创建的 Flow 实例是 SafeFlow 类型，当调用其 collect(FlowCollector) 方法时，首先会执行该 Flow 对象传入的 block 代码块，代码块中一般会有 emit 方法发射值，这个 emit 会调用到 collect 方法传入的 action 代码块。因为它在每次调用 collect 时才去触发发送数据的动作，所以说 Flow 是<strong>冷流</strong>。</p>
+<blockquote>
+<p>即 Flow 是在消费者消费时才会生产数据，且冷流和消费者是一对一的关系，即当有多个消费者消费时，生产者是重新生产发送数据的。</p>
+</blockquote>
+<p>与之对应的是<strong>热流</strong>，Flow 有提供相关实现: StateFlow 和 SharedFlow 。</p>
+<blockquote>
+<p>StateFlow 和 SharedFlow 是热流，生产数据不依赖消费者消费，热流与消费者是一对多的关系，当有多个消费者时，它们之间的数据都是同一份。</p>
+</blockquote>
+<h1 id="StateFlow"><a href="#StateFlow" class="headerlink" title="StateFlow"></a>StateFlow</h1><p>类似 LiveData, StateFlow 也提供了 <code>可读写</code> 和 <code>只读</code> 两个版本：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">StateFlow</span>&lt;<span class="type">out T</span>&gt; : <span class="type">SharedFlow</span>&lt;<span class="type">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// StateFlow 当前的数据</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">val</span> value: T</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MutableStateFlow</span>&lt;<span class="type">T</span>&gt; : <span class="type">StateFlow</span>&lt;<span class="type">T</span>&gt;, <span class="type">MutableSharedFlow</span>&lt;<span class="type">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">var</span> value: T</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="title">compareAndSet</span><span class="params">(<span class="keyword">expect</span>: <span class="type">T</span>, update: <span class="type">T</span>)</span></span>: <span class="built_in">Boolean</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>StateFlow 与 LiveData 的定位比较类似，官方可能是想用它来取代 LiveData, 其共同点：</p>
+<ul>
+<li>都提供了 <code>可读写</code> 和 <code>只读</code> 两个版本。</li>
+<li>值唯一，会把最新值重现给订阅者，即粘性。</li>
+<li>可被多个订阅者订阅(共享数据流)。</li>
+<li>子线程中多次发送数据可能会丢失数据。</li>
+</ul>
+<p>不同点：</p>
+<ul>
+<li>StateFlow 必须传入初始值，保证值的空安全，永远有值。</li>
+<li>StateFlow 可以防抖，即多次传入相同值，不会有响应(Setting a value that is [equal][Any.equals] to the previous one does nothing) 。</li>
+<li>当 View 进入 STOPPED 状态时，<code>LiveData.observe()</code> 会停止接收数据，而从 StateFlow 或其他 Flow collect 数据的操作并不会自动停止。如需实现相同的行为，需要从 <code>Lifecycle.repeatOnLifecycle</code> 块 collect 数据流。</li>
+</ul>
+<h1 id="SharedFlow"><a href="#SharedFlow" class="headerlink" title="SharedFlow"></a>SharedFlow</h1><p>SharedFlow 也提供了 <code>可读写</code> 和 <code>只读</code> 两个版本：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">SharedFlow</span>&lt;<span class="type">out T</span>&gt; : <span class="type">Flow</span>&lt;<span class="type">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">val</span> replayCache: List&lt;T&gt;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">MutableSharedFlow</span>&lt;<span class="type">T</span>&gt; : <span class="type">SharedFlow</span>&lt;<span class="type">T</span>&gt;, <span class="type">FlowCollector</span>&lt;<span class="type">T</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">emit</span><span class="params">(value: <span class="type">T</span>)</span></span></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="title">tryEmit</span><span class="params">(value: <span class="type">T</span>)</span></span>: <span class="built_in">Boolean</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">val</span> subscriptionCount: StateFlow&lt;<span class="built_in">Int</span>&gt;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="title">resetReplayCache</span><span class="params">()</span></span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>与 StateFlow 的区别：</p>
+<ul>
+<li>SharedFlow 没有初始值，StateFlow 必须传初始值。</li>
+<li>SharedFlow 可以保留历史数据，新订阅者可以获取到之前发射过的一系列数据，StateFlow 只保留最新数据。</li>
+<li>SharedFlow 可以传入一个 replay 参数，它表示可以对新订阅者重新发送 replay 个历史数据，默认值为 0, 即非粘性。</li>
+<li>StateFlow 可以看成是一个 replay = 1 且没有缓冲区的 SharedFlow 。</li>
+<li>SharedFlow 在子线程中多次 emit() 不会丢失数据。</li>
+</ul>
+<h1 id="State-和-Event"><a href="#State-和-Event" class="headerlink" title="State 和 Event"></a>State 和 Event</h1><p>根据 Android developers 上的官方示例，可以看出 StateFlow 和 SharedFlow 分别是用来处理 <code>状态(state)</code> 和 <code>事件(event)</code> 的，它称呼 StateFlow 是 <code>a state-holder observable</code>：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> uiState: StateFlow&lt;LatestNewsUiState&gt;</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> tickFlow: SharedFlow&lt;Event&lt;String&gt;&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>对 UI 而言，state 是 UI 组件的状态，它应当始终都有一个值来表示其状态，且当有新的订阅者加入时，它也应知道当前的状态，即 StateFlow 的粘性。</li>
+<li>而 event 事件只有在发生某些动作后才会触发，不需要有初始值。SharedFlow 默认非粘性的，当新的订阅者加入时，它不会重复发生已经发生过的事件。</li>
+<li>对于状态而言，即使多次发送，我们只关注最新的状态；对于事件而言，如果多次发送，我们不想丢失任何一个前台的事件。</li>
+</ul>
+<h1 id="SharedFlow-使用"><a href="#SharedFlow-使用" class="headerlink" title="SharedFlow 使用"></a>SharedFlow 使用</h1><h2 id="创建-SharedFlow"><a href="#创建-SharedFlow" class="headerlink" title="创建 SharedFlow"></a>创建 SharedFlow</h2><p>看看 SharedFlow 的构造函数：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> <span class="title">MutableSharedFlow</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    replay: <span class="type">Int</span> = <span class="number">0</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">    extraBufferCapacity: <span class="type">Int</span> = <span class="number">0</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">    onBufferOverflow: <span class="type">BufferOverflow</span> = BufferOverflow.SUSPEND</span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>: MutableSharedFlow&lt;T&gt;</span><br></pre></td></tr></table></figure>
+
+<p>主要有三个参数：</p>
+<ul>
+<li>replay: 新订阅者 collect 时，发送 replay 个历史数据给它，默认新订阅者不会获取以前的数据。</li>
+<li>extraBufferCapacity: MutableSharedFlow 缓存的数据个数为 replay + extraBufferCapacity; 缓存一方面用于粘性事件的发送，另一方面也为了处理背压问题，既下游的消费者的消费速度低于上游生产者的生产速度时，数据会被放在缓存中。</li>
+<li>onBufferOverflow: 背压处理策略，缓存区满后怎么处理(挂起或丢弃数据)，默认挂起。注意，当没有订阅者时，只有最近 replay 个数的数据会存入缓存区，不会触发缓存区满的场景。</li>
+</ul>
+<p>下面演示一下 MutableSharedFlow 的创建及其参数的作用。</p>
+<p>在 ViewModel 中发射数据：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainViewModel</span></span>(): CoroutineScope <span class="keyword">by</span> CoroutineScope(Dispatchers.IO + SupervisorJob()) &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> _data1: MutableSharedFlow&lt;<span class="built_in">Int</span>&gt; = MutableSharedFlow(</span><br><span class="line">        replay = <span class="number">10</span></span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">val</span> data1: SharedFlow&lt;<span class="built_in">Int</span>&gt; = _data1</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">refresh</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">var</span> cur = <span class="number">1</span></span><br><span class="line">        launch &#123;</span><br><span class="line">            repeat(<span class="number">200</span>) &#123;</span><br><span class="line">                delay(<span class="number">20</span>)</span><br><span class="line">                _data1.emit(cur)</span><br><span class="line">                println(<span class="string">&quot;emit data: <span class="subst">$&#123;cur++&#125;</span>&quot;</span>)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>订阅数据：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainActivity</span> : <span class="type">BaseActivity</span></span>(), CoroutineScope <span class="keyword">by</span> MainScope() &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">fun</span> <span class="title">onCreate</span><span class="params">(savedInstanceState: <span class="type">Bundle</span>?)</span></span> &#123;</span><br><span class="line">        job = launch &#123; <span class="comment">// 订阅 data1</span></span><br><span class="line">            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) &#123;</span><br><span class="line">                viewModel.data1.collect &#123;</span><br><span class="line">                    delay(<span class="number">100</span>) <span class="comment">// 消费速度慢于生产速度</span></span><br><span class="line">                    println(<span class="string">&quot;data: <span class="variable">$it</span>&quot;</span>)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">click</span><span class="params">(view: <span class="type">View</span>)</span></span> &#123;</span><br><span class="line">        launch &#123;</span><br><span class="line">            viewModel.refresh() <span class="comment">// 触发数据生产</span></span><br><span class="line">            delay(<span class="number">2000</span>)</span><br><span class="line">            job?.cancel() <span class="comment">// 2s 后停止订阅</span></span><br><span class="line">            delay(<span class="number">2000</span>)</span><br><span class="line">            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) &#123;</span><br><span class="line">                viewModel.data1.collect &#123; <span class="comment">// 2s 后继续订阅</span></span><br><span class="line">                    delay(<span class="number">100</span>)</span><br><span class="line">                    println(<span class="string">&quot;data again: <span class="variable">$it</span>&quot;</span>)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>看看输出：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 首先消费速度慢于生产速度</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">1</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">2</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">3</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">4</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">5</span></span><br><span class="line">System.<span class="keyword">out</span>: <span class="keyword">data</span>: <span class="number">1</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">6</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">7</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">8</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">9</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">10</span></span><br><span class="line">System.<span class="keyword">out</span>: <span class="keyword">data</span>: <span class="number">2</span></span><br><span class="line"><span class="comment">// 接着缓存区满了</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">11</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">12</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">13</span></span><br><span class="line">System.<span class="keyword">out</span>: <span class="keyword">data</span>: <span class="number">3</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">14</span></span><br><span class="line">System.<span class="keyword">out</span>: <span class="keyword">data</span>: <span class="number">4</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">15</span></span><br><span class="line"><span class="comment">// 2s 后取消了订阅，生产者发送数据就不受 onBufferOverflow 影响了，只会把最新的 10 条数据存入缓存区</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">29</span></span><br><span class="line">System.<span class="keyword">out</span>: <span class="keyword">data</span>: <span class="number">19</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">30</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">31</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">32</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">33</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">34</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">35</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">36</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">37</span></span><br><span class="line"><span class="comment">// 接着 2s 后又继续订阅，订阅者消费的第一条数据是 113, 可以看到恰好是生产者生产的前 10 条数据</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">121</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">122</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">123</span></span><br><span class="line">System.<span class="keyword">out</span>: <span class="keyword">data</span> again: <span class="number">113</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">124</span></span><br><span class="line">System.<span class="keyword">out</span>: <span class="keyword">data</span> again: <span class="number">114</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">125</span></span><br><span class="line">System.<span class="keyword">out</span>: <span class="keyword">data</span> again: <span class="number">115</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">126</span></span><br><span class="line">System.<span class="keyword">out</span>: <span class="keyword">data</span> again: <span class="number">116</span></span><br><span class="line">System.<span class="keyword">out</span>: emit <span class="keyword">data</span>: <span class="number">127</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="shareIn-转换"><a href="#shareIn-转换" class="headerlink" title="shareIn 转换"></a>shareIn 转换</h2><p>可以使用 shareIn 方法把普通 flow 冷流转化成 SharedFlow 热流。通过 shareIn 创建的 SharedFlow 会把数据供给 View 订阅，同时也会订阅上游的数据流：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> Flow<span class="type">&lt;T&gt;</span>.<span class="title">shareIn</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    scope: <span class="type">CoroutineScope</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">    started: <span class="type">SharingStarted</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">    replay: <span class="type">Int</span> = <span class="number">0</span></span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>: SharedFlow&lt;T&gt;</span><br></pre></td></tr></table></figure>
+
+<p>有三个参数：</p>
+<ul>
+<li>scope: 用于共享数据流的 CoroutineScope, 此作用域函数的生命周期应长于任何使用方，使共享数据流在足够长的时间内保持活跃状态。</li>
+<li>started: 启动策略</li>
+<li>replay: 同上 replay 含义</li>
+</ul>
+<p>started 有三种取值：</p>
+<ul>
+<li>Eagerly: 立即启动，到 scope 作用域被结束时停止</li>
+<li>Lazily: 当存在首个订阅者时启动，到 scope 作用域被结束时停止</li>
+<li>WhileSubscribed: 在没有订阅者的情况下取消订阅上游数据流，避免不必要的资源浪费</li>
+</ul>
+<p>对于只执行一次的操作，可以使用 Lazily 或 Eagerly, 否则可以使用 WhileSubscribed 来实现一些优化。</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="title">WhileSubscribed</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    stopTimeoutMillis: <span class="type">Long</span> = <span class="number">0</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">    replayExpirationMillis: <span class="type">Long</span> = <span class="built_in">Long</span>.MAX_VALUE</span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>: SharingStarted</span><br></pre></td></tr></table></figure>
+
+<p>它支持两个参数：</p>
+<ul>
+<li>stopTimeoutMillis: 最后一个订阅者结束订阅后多久停止上游流</li>
+<li>replayExpirationMillis: 数据 replay 的过时时间，超出时间后，新订阅者不会收到历史数据</li>
+</ul>
+<h1 id="StateFlow-使用"><a href="#StateFlow-使用" class="headerlink" title="StateFlow 使用"></a>StateFlow 使用</h1><h2 id="创建-StateFlow"><a href="#创建-StateFlow" class="headerlink" title="创建 StateFlow"></a>创建 StateFlow</h2><p>看看 StateFlow 的构造函数：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> <span class="title">MutableStateFlow</span><span class="params">(value: <span class="type">T</span>)</span></span>: MutableStateFlow&lt;T&gt;</span><br></pre></td></tr></table></figure>
+
+<p>构造函数只需传入一个初始值，它本质上是一个 replay = 1 且没有缓冲区的 SharedFlow, 因此在第一次订阅时会先获取到初始值。</p>
+<h2 id="stateIn-转换"><a href="#stateIn-转换" class="headerlink" title="stateIn 转换"></a>stateIn 转换</h2><p>和 SharedFlow 类似，也可以用 stateIn 将普通流转化成 StateFlow:</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;T&gt;</span> Flow<span class="type">&lt;T&gt;</span>.<span class="title">stateIn</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    scope: <span class="type">CoroutineScope</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">    started: <span class="type">SharingStarted</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">    initialValue: <span class="type">T</span></span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>: StateFlow&lt;T&gt;</span><br></pre></td></tr></table></figure>
+
+<p>跟 shareIn 不同的是需要传入一个初始值。</p>
+<h1 id="使用示例"><a href="#使用示例" class="headerlink" title="使用示例"></a>使用示例</h1><p>Repository 层：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainRepository</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> _data: MutableSharedFlow&lt;<span class="built_in">Int</span>&gt; = MutableSharedFlow()</span><br><span class="line">    <span class="keyword">val</span> <span class="keyword">data</span>: SharedFlow&lt;<span class="built_in">Int</span>&gt; = _data</span><br><span class="line"></span><br><span class="line">    <span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">request</span><span class="params">()</span></span> &#123;</span><br><span class="line">        <span class="keyword">var</span> cur = <span class="number">1</span></span><br><span class="line">        repeat(<span class="number">100</span>) &#123;</span><br><span class="line">            delay(<span class="number">100</span>)</span><br><span class="line">            _data.emit(cur)</span><br><span class="line">            println(<span class="string">&quot;emit data: <span class="subst">$&#123;cur++&#125;</span>&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ViewModel 层：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MainViewModel</span></span>(</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> repository: MainRepository</span><br><span class="line">) : CoroutineScope <span class="keyword">by</span> CoroutineScope(Dispatchers.IO + SupervisorJob()) &#123;</span><br><span class="line">    <span class="keyword">val</span> <span class="keyword">data</span> <span class="keyword">by</span> lazy &#123;</span><br><span class="line">        repository.<span class="keyword">data</span>.shareIn(</span><br><span class="line">            scope = <span class="keyword">this</span>,</span><br><span class="line">            started = SharingStarted.WhileSubscribed(<span class="number">5000</span>)</span><br><span class="line">        ).onEach &#123;</span><br><span class="line">            println(<span class="string">&quot;repository data: <span class="variable">$it</span>&quot;</span>)</span><br><span class="line">        &#125;.map &#123;</span><br><span class="line">            <span class="string">&quot;UI Data-<span class="variable">$it</span>&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">val</span> _state = MutableStateFlow(MainState.INIT)</span><br><span class="line">    <span class="keyword">val</span> state: StateFlow&lt;MainState&gt; = _state</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">fun</span> <span class="title">refresh</span><span class="params">()</span></span> &#123;</span><br><span class="line">        launch &#123;</span><br><span class="line">            _state.value = MainState.LOADING</span><br><span class="line">            repository.request()</span><br><span class="line">            _state.value = MainState.INIT</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>View 层：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">jobData = launch &#123;</span><br><span class="line">    lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) &#123;</span><br><span class="line">        viewModel.<span class="keyword">data</span>.collect &#123;</span><br><span class="line">            println(<span class="string">&quot;data: <span class="variable">$it</span>&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">jobState = launch &#123;</span><br><span class="line">    lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) &#123;</span><br><span class="line">        viewModel.state.collect &#123;</span><br><span class="line">            println(<span class="string">&quot;state: <span class="variable">$it</span>&quot;</span>)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>个人看来，LiveData 不至于真的被替换掉，因为它有很多优势，比如说使用简单，轻量级，可感知生命周期，可观察等。简单的组件可能功能不够强大，强大的组件用起来一般都比较复杂，二者不可兼得，然而无论是组件还是架构，合适的才是最好的，我们在选择某个组件或者某种架构的时候，需要结合自身项目和需求的特点，选择合适的即可。</p>
+<p>一般而言，对于 View 和 ViewModel 之间简单的响应式开发，使用 LiveData 就足够了，而对于一些复杂场景(切换线程，数据流变换等)，可以考虑使用 Flow 来处理异步数据流。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kotlin/" rel="tag"># Kotlin</a>
+              <a href="/tags/%E5%8D%8F%E7%A8%8B/" rel="tag"># 协程</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/08/31/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8B%E5%86%8D%E7%9C%8B%E5%8D%8F%E7%A8%8B%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86/" rel="prev" title="Kotlin笔记之再看协程工作原理">
+      <i class="fa fa-chevron-left"></i> Kotlin笔记之再看协程工作原理
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Flow%E7%9A%84%E4%B8%89%E4%B8%AA%E8%A7%92%E8%89%B2"><span class="nav-number">2.</span> <span class="nav-text">Flow的三个角色</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%B7%E6%B5%81%E4%B8%8E%E7%83%AD%E6%B5%81"><span class="nav-number">3.</span> <span class="nav-text">冷流与热流</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#StateFlow"><span class="nav-number">4.</span> <span class="nav-text">StateFlow</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SharedFlow"><span class="nav-number">5.</span> <span class="nav-text">SharedFlow</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#State-%E5%92%8C-Event"><span class="nav-number">6.</span> <span class="nav-text">State 和 Event</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#SharedFlow-%E4%BD%BF%E7%94%A8"><span class="nav-number">7.</span> <span class="nav-text">SharedFlow 使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA-SharedFlow"><span class="nav-number">7.1.</span> <span class="nav-text">创建 SharedFlow</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#shareIn-%E8%BD%AC%E6%8D%A2"><span class="nav-number">7.2.</span> <span class="nav-text">shareIn 转换</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#StateFlow-%E4%BD%BF%E7%94%A8"><span class="nav-number">8.</span> <span class="nav-text">StateFlow 使用</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA-StateFlow"><span class="nav-number">8.1.</span> <span class="nav-text">创建 StateFlow</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#stateIn-%E8%BD%AC%E6%8D%A2"><span class="nav-number">8.2.</span> <span class="nav-text">stateIn 转换</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B"><span class="nav-number">9.</span> <span class="nav-text">使用示例</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">10.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">169</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">100</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'robohash',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
