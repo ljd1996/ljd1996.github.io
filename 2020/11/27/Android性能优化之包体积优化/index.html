@@ -27,16 +27,15 @@
 <meta property="og:site_name" content="苍耳的博客">
 <meta property="og:description" content="概述一个APK实际上就是一个压缩文件，解压后可以看到通常包含如下几种类型的文件或文件夹：  classes.dex源码； 编译生成的二进制资源文件resources.arsc； res资源文件夹； assets文件夹； lib库文件夹； AndroidManifest.xml清单文件； 依赖关系配置文件project.properties； 代码混淆配置文件proguard.cfg； 签名信息文件">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://ljd1996.github.io/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/aab.gif">
 <meta property="og:image" content="https://ljd1996.github.io/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/apk_splits_tree-2x.png">
 <meta property="og:image" content="https://ljd1996.github.io/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/bundletool.png">
 <meta property="article:published_time" content="2020-11-27T09:41:20.000Z">
-<meta property="article:modified_time" content="2021-05-14T06:14:57.809Z">
+<meta property="article:modified_time" content="2022-11-25T07:49:50.189Z">
 <meta property="article:author" content="苍耳叔叔">
 <meta property="article:tag" content="Android">
 <meta property="article:tag" content="性能优化">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://ljd1996.github.io/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/aab.gif">
+<meta name="twitter:image" content="https://ljd1996.github.io/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/apk_splits_tree-2x.png">
 
 <link rel="canonical" href="https://ljd1996.github.io/2020/11/27/Android%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E4%B9%8B%E5%8C%85%E4%BD%93%E7%A7%AF%E4%BC%98%E5%8C%96/">
 
@@ -230,7 +229,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+                <time title="修改时间：2022-11-25 15:49:50" itemprop="dateModified" datetime="2022-11-25T15:49:50+08:00">2022-11-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -366,7 +365,6 @@
 </ul>
 <h1 id="Android-App-Bundle"><a href="#Android-App-Bundle" class="headerlink" title="Android App Bundle"></a>Android App Bundle</h1><h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>详细文章参考官网: <a target="_blank" rel="noopener" href="https://developer.android.com/guide/app-bundle">Android App Bundles</a></p>
 <p>Android App Bundle是Google推出的Apk动态打包，动态组件化的技术，与Instant App不同，AAB是借助Split Apk完成动态加载，使用AAB动态下发方式，可以大幅度减少应用体积。只须在 Android Studio 中构建一个应用 (app bundle)，就可以将应用所需的全部内容 (适用于所有设备) 都涵盖在内：所有语言、所有设备屏幕大小、所有硬件架构。它本身并不支持动态化，只是动态化的一个载体文件，真正实现逻辑并不是它。</p>
-<p><img src="aab.gif" alt="aab"></p>
 <p>Split APK是Google为解决65536上限，以及APK安装包越来越大等问题，在Android L中引入的机制。它可以将一个庞大的APK，按屏幕密度，ABI等形式拆分成多个独立的APK，在应用程序更新时，不必下载整个APK，只需单独下载某个模块即可安装更新。Split APK将原来一个APK中多个模块共享同一份资源的模型分离成多个APK使用各自的资源，并且可以继承Base APK中的资源，多个APK有相同的data，cache目录，多个dex文件，相同的进程，在Settings.apk中只显示一个APK，并且使用相同的包名。</p>
 <h2 id="Dynamic-Delivery"><a href="#Dynamic-Delivery" class="headerlink" title="Dynamic Delivery"></a>Dynamic Delivery</h2><p>只考虑 Android 4.4 以上版本。Dynamic Delivery 的一个基本组件就是 Android 5.0（API 级别 21）及更高版本上提供的 Split APK 机制，Split APK 与常规 APK 非常相似，其中包含经过编译的 DEX 字节码、资源和 Android 清单。但是，Android 平台能够将已安装的多个Split APK 视为一个应用，我们可以安装多个共用代码和资源的Split APK，使它们在设备上看起来同属于安装的一个应用。</p>
 <p>Split APK 的好处是能够将单体式 APK 拆分为更小的独立软件包，这些软件包可“按需”安装在用户设备上。单体式 APK 是指一个 APK 中包含应用所支持的全部功能和设备配置对应的代码和资源。例如，一个Split APK 可能包含只有少数用户需要的附加功能所对应的代码和资源，而另一个Split APK 则只包含特定语言或屏幕密度所对应的资源。这些Split APK 可以根据用户的请求或设备的需要单独下载和安装。</p>

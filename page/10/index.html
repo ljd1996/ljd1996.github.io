@@ -1397,7 +1397,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+                <time title="修改时间：2022-11-25 16:19:35" itemprop="dateModified" datetime="2022-11-25T16:19:35+08:00">2022-11-25</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1476,7 +1476,7 @@
 <li><a href="https://ljd1996.github.io/2019/08/08/termux-app%E4%BF%AE%E6%94%B9%E5%8C%85%E5%90%8D">Termux修改包名</a></li>
 </ul>
 <h2 id="源码解读"><a href="#源码解读" class="headerlink" title="源码解读"></a>源码解读</h2><p>流程图:</p>
-<p><img src="Termux%E6%BA%90%E7%A0%81%E6%B5%81%E7%A8%8B.jpg" alt="Termux流程图"></p>
+<p><img src="https://ljd1996.github.io/2019/08/27/Termux%E8%A7%A3%E6%9E%90/Termux%E6%BA%90%E7%A0%81%E6%B5%81%E7%A8%8B.jpg" alt="Termux流程图"></p>
 <h3 id="setupIfNeeded"><a href="#setupIfNeeded" class="headerlink" title="setupIfNeeded"></a>setupIfNeeded</h3><p>bootstraps.zip目录结构：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">bootstrap-aarch64</span><br><span class="line">    ├── SYMLINKS.txt</span><br><span class="line">    ├── bin</span><br><span class="line">    ├── etc</span><br><span class="line">    ├── include</span><br><span class="line">    ├── lib</span><br><span class="line">    ├── libexec</span><br><span class="line">    ├── repo.asc</span><br><span class="line">    ├── share</span><br><span class="line">    ├── tmp</span><br><span class="line">    └── var</span><br></pre></td></tr></table></figure>
 
@@ -1501,8 +1501,6 @@
 <li>由于dpkg按照python.deb的方式需要手动解决依赖包的问题，需要手动下载许多的deb依赖包，因此最后直接在打包bootstrap.zip的时候，去掉dpkg，直接加上python的依赖，将其打包进bootstrap.zip，在客户端下载配置完bootstrap.zip后，即可直接使用python的pip下载youtube-dl，操作上方便了许多，并且避免了不同Android系统可能存在的兼容性问题。</li>
 </ul>
 <h1 id="Android-App-Bundle"><a href="#Android-App-Bundle" class="headerlink" title="Android App Bundle"></a>Android App Bundle</h1><h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>Android App Bundle是Google推出的Apk动态打包，动态组件化的技术，与Instant App不同，AAB是借助Split Apk完成动态加载，使用AAB动态下发方式，可以大幅度减少应用体积。只须在 Android Studio 中构建一个应用 (app bundle)，就可以将应用所需的全部内容 (适用于所有设备) 都涵盖在内：所有语言、所有设备屏幕大小、所有硬件架构。它本身并不支持动态化，只是动态化的一个载体文件，真正实现逻辑并不是它。</p>
-<img src="aab.gif"/>
-
 <h2 id="Split-APK"><a href="#Split-APK" class="headerlink" title="Split APK"></a>Split APK</h2><p>Split APK是Google为解决65536上限，以及APK安装包越来越大等问题，在Android L中引入的机制。它可以将一个庞大的APK，按屏幕密度，ABI等形式拆分成多个独立的APK，在应用程序更新时，不必下载整个APK，只需单独下载某个模块即可安装更新。Split APK将原来一个APK中多个模块共享同一份资源的模型分离成多个APK使用各自的资源，并且可以继承Base APK中的资源，多个APK有相同的data，cache目录，多个dex文件，相同的进程，在Settings.apk中只显示一个APK，并且使用相同的包名。</p>
 <h2 id="Building-App-Bundles"><a href="#Building-App-Bundles" class="headerlink" title="Building App Bundles"></a>Building App Bundles</h2><p>在gradle中配置Split的维度：</p>
 <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    bundle &#123;</span><br><span class="line">        language &#123;</span><br><span class="line">            enableSplit = <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">        density &#123;</span><br><span class="line">            enableSplit = <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">        abi &#123;</span><br><span class="line">            enableSplit = <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
