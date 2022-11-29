@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ljd1996.github.io","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="概述协程系列文章：  Kotlin协程之基础使用 Kotlin协程之深入理解协程工作原理 Kotlin协程之协程取消与异常处理 Kotlin协程之再次读懂协程工作原理-推荐 Kotlin协程之Flow工作原理 Kotlin协程之一文看懂StateFlow和SharedFlow  Channel 类似于 Java 的 BlockingQueue 阻塞队列，不同之处在于 Channel 提供了挂起的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kotlin笔记之Channel管道">
+<meta property="og:url" content="https://ljd1996.github.io/2022/11/28/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BChannel%E7%AE%A1%E9%81%93/index.html">
+<meta property="og:site_name" content="苍耳的博客">
+<meta property="og:description" content="概述协程系列文章：  Kotlin协程之基础使用 Kotlin协程之深入理解协程工作原理 Kotlin协程之协程取消与异常处理 Kotlin协程之再次读懂协程工作原理-推荐 Kotlin协程之Flow工作原理 Kotlin协程之一文看懂StateFlow和SharedFlow  Channel 类似于 Java 的 BlockingQueue 阻塞队列，不同之处在于 Channel 提供了挂起的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ljd1996.github.io/2022/11/28/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BChannel%E7%AE%A1%E9%81%93/Channel%E7%B1%BB%E5%9B%BE.png">
+<meta property="article:published_time" content="2022-11-28T06:50:08.000Z">
+<meta property="article:modified_time" content="2022-11-29T02:36:21.054Z">
+<meta property="article:author" content="苍耳叔叔">
+<meta property="article:tag" content="Kotlin">
+<meta property="article:tag" content="协程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ljd1996.github.io/2022/11/28/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BChannel%E7%AE%A1%E9%81%93/Channel%E7%B1%BB%E5%9B%BE.png">
+
+<link rel="canonical" href="https://ljd1996.github.io/2022/11/28/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BChannel%E7%AE%A1%E9%81%93/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Kotlin笔记之Channel管道 | 苍耳的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">苍耳的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">细水长流</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2022/11/28/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BChannel%E7%AE%A1%E9%81%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Kotlin笔记之Channel管道
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-11-28 14:50:08" itemprop="dateCreated datePublished" datetime="2022-11-28T14:50:08+08:00">2022-11-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2022-11-29 10:36:21" itemprop="dateModified" datetime="2022-11-29T10:36:21+08:00">2022-11-29</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">语言</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%AD%E8%A8%80/Kotlin/" itemprop="url" rel="index"><span itemprop="name">Kotlin</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2022/11/28/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BChannel%E7%AE%A1%E9%81%93/" class="post-meta-item leancloud_visitors" data-flag-title="Kotlin笔记之Channel管道" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2022/11/28/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BChannel%E7%AE%A1%E9%81%93/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/11/28/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BChannel%E7%AE%A1%E9%81%93/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><p>协程系列文章：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6901956626324914184">Kotlin协程之基础使用</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6890348438873964551">Kotlin协程之深入理解协程工作原理</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6909276222895685640">Kotlin协程之协程取消与异常处理</a></li>
+<li><strong><a target="_blank" rel="noopener" href="https://juejin.cn/post/7137905800504148004">Kotlin协程之再次读懂协程工作原理-推荐</a></strong></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/6966047022814232613">Kotlin协程之Flow工作原理</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7169843775240405022">Kotlin协程之一文看懂StateFlow和SharedFlow</a></li>
+</ul>
+<p>Channel 类似于 Java 的 BlockingQueue 阻塞队列，不同之处在于 Channel 提供了挂起的 send() 和 receive() 方法。另外，通道 Channel 可以被关闭表明不再有数据会进入 Channel, 而接收端可以通过 for 循环取出数据。</p>
+<p>Channel 也是生产-消费者模式，这个设计模式在协程中很常见。</p>
+<a id="more"></a>
+
+<h1 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h1><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> channel = Channel&lt;<span class="built_in">Int</span>&gt;()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 发送</span></span><br><span class="line">launch &#123;</span><br><span class="line">    repeat(<span class="number">10</span>) &#123;</span><br><span class="line">        channel.send(it)</span><br><span class="line">        delay(<span class="number">200</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 关闭</span></span><br><span class="line">    channel.close()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 接收</span></span><br><span class="line">launch &#123;</span><br><span class="line">    <span class="keyword">for</span> (i <span class="keyword">in</span> channel) &#123;</span><br><span class="line">        println(<span class="string">&quot;receive: <span class="variable">$i</span>&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="produce-和-actor"><a href="#produce-和-actor" class="headerlink" title="produce 和 actor"></a>produce 和 actor</h1><p>produce 和 actor 是 Kotlin 提供的构造生产者与消费者的便捷方法。</p>
+<p>其中 produce 方法用来启动一个生产者协程，并返回一个 ReceiveChannel 在其他协程中接收数据：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// produce 生产协程</span></span><br><span class="line"><span class="keyword">val</span> receiveChannel = CoroutineScope(Dispatchers.IO).produce &#123;</span><br><span class="line">    repeat(<span class="number">10</span>) &#123;</span><br><span class="line">        send(it)</span><br><span class="line">        delay(<span class="number">200</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 接收</span></span><br><span class="line">launch &#123;</span><br><span class="line">    <span class="keyword">for</span> (i <span class="keyword">in</span> receiveChannel) &#123;</span><br><span class="line">        println(<span class="string">&quot;receive: <span class="variable">$i</span>&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>反之也可以用 actor 来启动一个消费协程：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// actor 消费协程</span></span><br><span class="line"><span class="keyword">val</span> sendChannel = CoroutineScope(Dispatchers.IO).actor&lt;<span class="built_in">Int</span>&gt; &#123;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">        println(<span class="string">&quot;receive: <span class="subst">$&#123;receive()&#125;</span>&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 发送</span></span><br><span class="line">launch &#123;</span><br><span class="line">    repeat(<span class="number">10</span>) &#123;</span><br><span class="line">        sendChannel.send(it)</span><br><span class="line">        delay(<span class="number">200</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看出 produce 创建的是一个<code>单生产者——多消费者</code>的模型，而 actor 创建的是一个<code>单消费者--多生产者</code>的模型。</p>
+<p><strong>不过这些相关的 API 要不就是 ExperimentalCoroutinesApi 实验性标记的，要不就是 ObsoleteCoroutinesApi 废弃标记的，个人感觉暂时没必要使用它们</strong>。</p>
+<h1 id="Channel-是公平的"><a href="#Channel-是公平的" class="headerlink" title="Channel 是公平的"></a>Channel 是公平的</h1><p><strong>发送和接收操作是<code>公平的</code>，它们遵守先进先出原则</strong>。官方也给了一个例子：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">data</span> <span class="class"><span class="keyword">class</span> <span class="title">Ball</span></span>(<span class="keyword">var</span> hits: <span class="built_in">Int</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">fun</span> <span class="title">main</span><span class="params">()</span></span> = runBlocking &#123;</span><br><span class="line">    <span class="keyword">val</span> table = Channel&lt;Ball&gt;() <span class="comment">// 一个共享的 table（桌子）</span></span><br><span class="line">    launch &#123; player(<span class="string">&quot;ping&quot;</span>, table) &#125;</span><br><span class="line">    launch &#123; player(<span class="string">&quot;pong&quot;</span>, table) &#125;</span><br><span class="line">    table.send(Ball(<span class="number">0</span>)) <span class="comment">// 率先打出第一个球</span></span><br><span class="line">    delay(<span class="number">1000</span>) <span class="comment">// 延迟 1 秒钟</span></span><br><span class="line">    coroutineContext.cancelChildren() <span class="comment">// 游戏结束，取消它们</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">suspend</span> <span class="function"><span class="keyword">fun</span> <span class="title">player</span><span class="params">(name: <span class="type">String</span>, table: <span class="type">Channel</span>&lt;<span class="type">Ball</span>&gt;)</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (ball <span class="keyword">in</span> table) &#123; <span class="comment">// 在循环中接收球</span></span><br><span class="line">        ball.hits++</span><br><span class="line">        println(<span class="string">&quot;<span class="variable">$name</span> <span class="variable">$ball</span>&quot;</span>)</span><br><span class="line">        delay(<span class="number">300</span>) <span class="comment">// 等待一段时间</span></span><br><span class="line">        table.send(ball) <span class="comment">// 将球发送回去</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于 <code>ping</code> 协程首先被启动，所以它首先接收到了球，接着即使 <code>ping</code> 协程在将球发送后会立即开始接收，但是球还是被 <code>pong</code> 协程接收了，因为它一直在等待着接收球：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ping Ball(hits=<span class="number">1</span>)</span><br><span class="line">pong Ball(hits=<span class="number">2</span>)</span><br><span class="line">ping Ball(hits=<span class="number">3</span>)</span><br><span class="line">pong Ball(hits=<span class="number">4</span>)</span><br></pre></td></tr></table></figure>
+
+<h1 id="带缓冲的-Channel"><a href="#带缓冲的-Channel" class="headerlink" title="带缓冲的 Channel"></a>带缓冲的 Channel</h1><p>前面已经说过 Channel 实际上是一个队列，那它当然也存在一个缓存区以及缓存满后的策略(处理背压之类的问题)，在创建 Channel 时可以指定两个相关的参数：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;E&gt;</span> <span class="title">Channel</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    capacity: <span class="type">Int</span> = RENDEZVOUS,</span></span></span><br><span class="line"><span class="function"><span class="params">    onBufferOverflow: <span class="type">BufferOverflow</span> = BufferOverflow.SUSPEND,</span></span></span><br><span class="line"><span class="function"><span class="params">    onUndeliveredElement: ((<span class="type">E</span>) -&gt; <span class="type">Unit</span>)? = <span class="literal">null</span></span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>: Channel&lt;E&gt;</span><br></pre></td></tr></table></figure>
+
+<p>这里的 Channel() 其实并不是构造函数，而是一个顶层函数，它内部会根据不同的入参来创建不同类型的 Channel 实例。其参数含义如下：</p>
+<ul>
+<li>capacity: Channel 缓存区的容量，默认为 <code>RENDEZVOUS = 0</code></li>
+<li>onBufferOverflow: 缓冲区满后发送端的处理策略，默认挂起。当消费者处理数据比生产者生产数据慢时，新生产的数据会存入缓存区，当缓存区满后，生产者再调用 send() 方法会挂起，等待消费者处理数据。</li>
+</ul>
+<p>看个小栗子：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建缓存区大小为 4 的 Channel</span></span><br><span class="line"><span class="keyword">val</span> channel = Channel&lt;<span class="built_in">Int</span>&gt;(<span class="number">4</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 发送</span></span><br><span class="line">launch &#123;</span><br><span class="line">    repeat(<span class="number">10</span>) &#123;</span><br><span class="line">        channel.send(it)</span><br><span class="line">        println(<span class="string">&quot;send: <span class="variable">$it</span>&quot;</span>)</span><br><span class="line">        delay(<span class="number">200</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 接收</span></span><br><span class="line">launch &#123;</span><br><span class="line">    <span class="keyword">val</span> channel = viewModel.channel</span><br><span class="line">    <span class="keyword">for</span> (i <span class="keyword">in</span> channel) &#123;</span><br><span class="line">        println(<span class="string">&quot;receive: <span class="variable">$i</span>&quot;</span>)</span><br><span class="line">        delay(<span class="number">1000</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2022</span>-<span class="number">11</span>-<span class="number">28</span> <span class="number">17</span>:<span class="number">16</span>:<span class="number">47.905</span> I/System.<span class="keyword">out</span>: send: <span class="number">0</span></span><br><span class="line"><span class="number">2022</span>-<span class="number">11</span>-<span class="number">28</span> <span class="number">17</span>:<span class="number">16</span>:<span class="number">47.907</span> I/System.<span class="keyword">out</span>: receive: <span class="number">0</span></span><br><span class="line"><span class="number">2022</span>-<span class="number">11</span>-<span class="number">28</span> <span class="number">17</span>:<span class="number">16</span>:<span class="number">48.107</span> I/System.<span class="keyword">out</span>: send: <span class="number">1</span></span><br><span class="line"><span class="number">2022</span>-<span class="number">11</span>-<span class="number">28</span> <span class="number">17</span>:<span class="number">16</span>:<span class="number">48.310</span> I/System.<span class="keyword">out</span>: send: <span class="number">2</span></span><br><span class="line"><span class="number">2022</span>-<span class="number">11</span>-<span class="number">28</span> <span class="number">17</span>:<span class="number">16</span>:<span class="number">48.512</span> I/System.<span class="keyword">out</span>: send: <span class="number">3</span></span><br><span class="line"><span class="number">2022</span>-<span class="number">11</span>-<span class="number">28</span> <span class="number">17</span>:<span class="number">16</span>:<span class="number">48.715</span> I/System.<span class="keyword">out</span>: send: <span class="number">4</span></span><br><span class="line"><span class="number">2022</span>-<span class="number">11</span>-<span class="number">28</span> <span class="number">17</span>:<span class="number">16</span>:<span class="number">48.910</span> I/System.<span class="keyword">out</span>: receive: <span class="number">1</span></span><br><span class="line"><span class="number">2022</span>-<span class="number">11</span>-<span class="number">28</span> <span class="number">17</span>:<span class="number">16</span>:<span class="number">48.916</span> I/System.<span class="keyword">out</span>: send: <span class="number">5</span> <span class="comment">// 缓存区满了, receive 后才能继续发送</span></span><br><span class="line"><span class="number">2022</span>-<span class="number">11</span>-<span class="number">28</span> <span class="number">17</span>:<span class="number">16</span>:<span class="number">49.913</span> I/System.<span class="keyword">out</span>: receive: <span class="number">2</span></span><br><span class="line"><span class="number">2022</span>-<span class="number">11</span>-<span class="number">28</span> <span class="number">17</span>:<span class="number">16</span>:<span class="number">49.914</span> I/System.<span class="keyword">out</span>: send: <span class="number">6</span></span><br><span class="line"><span class="number">2022</span>-<span class="number">11</span>-<span class="number">28</span> <span class="number">17</span>:<span class="number">16</span>:<span class="number">50.917</span> I/System.<span class="keyword">out</span>: receive: <span class="number">3</span></span><br><span class="line"><span class="number">2022</span>-<span class="number">11</span>-<span class="number">28</span> <span class="number">17</span>:<span class="number">16</span>:<span class="number">50.917</span> I/System.<span class="keyword">out</span>: send: <span class="number">7</span></span><br><span class="line"><span class="number">2022</span>-<span class="number">11</span>-<span class="number">28</span> <span class="number">17</span>:<span class="number">16</span>:<span class="number">51.920</span> I/System.<span class="keyword">out</span>: receive: <span class="number">4</span></span><br><span class="line"><span class="number">2022</span>-<span class="number">11</span>-<span class="number">28</span> <span class="number">17</span>:<span class="number">16</span>:<span class="number">51.920</span> I/System.<span class="keyword">out</span>: send: <span class="number">8</span></span><br><span class="line"><span class="number">2022</span>-<span class="number">11</span>-<span class="number">28</span> <span class="number">17</span>:<span class="number">16</span>:<span class="number">52.923</span> I/System.<span class="keyword">out</span>: receive: <span class="number">5</span></span><br><span class="line"><span class="number">2022</span>-<span class="number">11</span>-<span class="number">28</span> <span class="number">17</span>:<span class="number">16</span>:<span class="number">52.923</span> I/System.<span class="keyword">out</span>: send: <span class="number">9</span></span><br><span class="line"><span class="number">2022</span>-<span class="number">11</span>-<span class="number">28</span> <span class="number">17</span>:<span class="number">16</span>:<span class="number">53.925</span> I/System.<span class="keyword">out</span>: receive: <span class="number">6</span></span><br><span class="line"><span class="number">2022</span>-<span class="number">11</span>-<span class="number">28</span> <span class="number">17</span>:<span class="number">16</span>:<span class="number">54.928</span> I/System.<span class="keyword">out</span>: receive: <span class="number">7</span></span><br><span class="line"><span class="number">2022</span>-<span class="number">11</span>-<span class="number">28</span> <span class="number">17</span>:<span class="number">16</span>:<span class="number">55.932</span> I/System.<span class="keyword">out</span>: receive: <span class="number">8</span></span><br><span class="line"><span class="number">2022</span>-<span class="number">11</span>-<span class="number">28</span> <span class="number">17</span>:<span class="number">16</span>:<span class="number">56.935</span> I/System.<span class="keyword">out</span>: receive: <span class="number">9</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="Channel-构造类型"><a href="#Channel-构造类型" class="headerlink" title="Channel 构造类型"></a>Channel 构造类型</h1><p>这一节来简单看看 Channel 构造的几种类型，为防止内容过于枯燥，就不深入剖析一些源码细节了。</p>
+<h2 id="Channel-构造"><a href="#Channel-构造" class="headerlink" title="Channel 构造"></a>Channel 构造</h2><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">fun</span> <span class="type">&lt;E&gt;</span> <span class="title">Channel</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    capacity: <span class="type">Int</span> = RENDEZVOUS,</span></span></span><br><span class="line"><span class="function"><span class="params">    onBufferOverflow: <span class="type">BufferOverflow</span> = BufferOverflow.SUSPEND,</span></span></span><br><span class="line"><span class="function"><span class="params">    onUndeliveredElement: ((<span class="type">E</span>) -&gt; <span class="type">Unit</span>)? = <span class="literal">null</span></span></span></span><br><span class="line"><span class="function"><span class="params">)</span></span>: Channel&lt;E&gt; =</span><br><span class="line">    <span class="keyword">when</span> (capacity) &#123;</span><br><span class="line">        RENDEZVOUS -&gt; &#123;</span><br><span class="line">            <span class="keyword">if</span> (onBufferOverflow == BufferOverflow.SUSPEND)</span><br><span class="line">                RendezvousChannel(onUndeliveredElement)</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                ArrayChannel(<span class="number">1</span>, onBufferOverflow, onUndeliveredElement)</span><br><span class="line">        &#125;</span><br><span class="line">        CONFLATED -&gt; &#123;</span><br><span class="line">            require(onBufferOverflow == BufferOverflow.SUSPEND) &#123;</span><br><span class="line">                <span class="string">&quot;CONFLATED capacity cannot be used with non-default onBufferOverflow&quot;</span></span><br><span class="line">            &#125;</span><br><span class="line">            ConflatedChannel(onUndeliveredElement)</span><br><span class="line">        &#125;</span><br><span class="line">        UNLIMITED -&gt; LinkedListChannel(onUndeliveredElement) <span class="comment">// ignores onBufferOverflow: it has buffer, but it never overflows</span></span><br><span class="line">        BUFFERED -&gt; ArrayChannel( <span class="comment">// uses default capacity with SUSPEND</span></span><br><span class="line">            <span class="keyword">if</span> (onBufferOverflow == BufferOverflow.SUSPEND) CHANNEL_DEFAULT_CAPACITY <span class="keyword">else</span> <span class="number">1</span>,</span><br><span class="line">            onBufferOverflow, onUndeliveredElement</span><br><span class="line">        )</span><br><span class="line">        <span class="keyword">else</span> -&gt; &#123;</span><br><span class="line">            <span class="keyword">if</span> (capacity == <span class="number">1</span> &amp;&amp; onBufferOverflow == BufferOverflow.DROP_OLDEST)</span><br><span class="line">                ConflatedChannel(onUndeliveredElement)</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                ArrayChannel(capacity, onBufferOverflow, onUndeliveredElement)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>前面我们说了 <code>Channel()</code> 并不是构造函数，而是一个顶层函数，它内部会根据不同的入参来创建不同类型的 Channel 实例。我们看看入参可取的值：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">const</span> <span class="keyword">val</span> UNLIMITED: <span class="built_in">Int</span> = <span class="built_in">Int</span>.MAX_VALUE</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">const</span> <span class="keyword">val</span> RENDEZVOUS: <span class="built_in">Int</span> = <span class="number">0</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">const</span> <span class="keyword">val</span> CONFLATED: <span class="built_in">Int</span> = -<span class="number">1</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">const</span> <span class="keyword">val</span> BUFFERED: <span class="built_in">Int</span> = -<span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="class"><span class="keyword">class</span> <span class="title">BufferOverflow</span> </span>&#123;</span><br><span class="line">    SUSPEND, DROP_OLDEST, DROP_LATEST</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其实光看这个构造的过程，以及两个入参的取值，我们基本上就能知道生成的这个 Channel 实例的表现了。</p>
+<p>比如说 UNLIMITED 表示缓存区无限大的管道，它所创建的 Channel 叫 LinkedListChannel; 而 BUFFERED 或指定 capacity 大小的入参，创建的则是 ArrayChannel 实例，这也正是命名为 LinkedList(链表) 和 Array(数组) 的数据结构一个区别。</p>
+<p>比如说 <code>SUSPEND</code> 表示缓存区满后挂起, <code>DROP_OLDEST</code> 表示缓存区满后会删除缓存区里最旧的那个元素且把当前 send 的数据存入缓存区, <code>DROP_LATEST</code> 表示缓存区满后会删除缓存区里最新的那个元素且把当前 send 的数据存入缓存区。</p>
+<h2 id="Channel-类型"><a href="#Channel-类型" class="headerlink" title="Channel 类型"></a>Channel 类型</h2><p>上面创建的这四种 Channel 都有一个共同的基类——<code>AbstractChannel</code>，简单看看他们的继承关系：</p>
+<p><img src="Channel%E7%B1%BB%E5%9B%BE.png" alt="Channel类图.png"></p>
+<p>在 AbstractSendChannel 中有个重要的成员变量：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="keyword">val</span> queue = LockFreeLinkedListHead()</span><br></pre></td></tr></table></figure>
+
+<p>它是一个循环双向链表，因此形成了一个队列 queue 结构，<code>send()</code> 数据时存入链表尾部，<code>receive()</code> 数据时就从链表头第一个节点取。至于具体的挂起，恢复等具体流程，感兴趣的可以自己看看源码。</p>
+<p>值得一提的是, queue 中的节点类型可以大体分为三种：</p>
+<ul>
+<li>Send</li>
+<li>Receive</li>
+<li>Closed: 当调用 <code>Channel.close()</code> 方法时，会往 queue 队列中加入 Closed 节点，这样当 <code>send or receive</code> 时就知道 Channel 已经关闭了。</li>
+</ul>
+<p>另外，对于 ArrayChannel 管道，它有一个成员变量：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">var</span> buffer: Array&lt;Any?&gt; = arrayOfNulls&lt;Any?&gt;(min(capacity, <span class="number">8</span>)).apply &#123; fill(EMPTY) &#125;</span><br></pre></td></tr></table></figure>
+
+<p>这是一个数组类型，用来实现指定 capacity 的缓存区。但是它的初始大小不是 capacity, 主要是用来防止一些不必要的内存分配。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>Channel 类似于 BlockingQueue 阻塞队列，其不同之处是默认把阻塞行为换成了挂起，这也是协程的一大特性。它的思想是生产-消费模式(观察者模式)。</p>
+<p>简单比较一下四种 Channel 类型：</p>
+<ul>
+<li>RendezvousChannel: 翻译成约会类型，缓存区大小为0，且指定为 SUSPEND 挂起策略。发送者和接收者一对一出现，接收者没出现，则发送者 send 会被挂起；发送者没出现，则接收者 receive 会被挂起。</li>
+<li>ConflatedChannel: 混合类型。发送者不会挂起，它只有一个 value 值，会被新的值覆盖掉，如果没有数据，则接收者会被挂起。</li>
+<li>LinkedListChannel: 不限缓存区大小的类型。发送者不会挂起，能一直往队列里存数据，队列无数据时接收者会被挂起。</li>
+<li>ArrayChannel: 指定缓存区大小的类型。当缓存区满时，发送者根据 BufferOverflow 策略来处理(是否挂起)，当缓存区空时，接收者会被挂起。</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kotlin/" rel="tag"># Kotlin</a>
+              <a href="/tags/%E5%8D%8F%E7%A8%8B/" rel="tag"># 协程</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/11/23/Kotlin%E7%AC%94%E8%AE%B0%E4%B9%8BStateFlow%E5%92%8CSharedFlow/" rel="prev" title="Kotlin笔记之StateFlow和SharedFlow">
+      <i class="fa fa-chevron-left"></i> Kotlin笔记之StateFlow和SharedFlow
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="nav-number">2.</span> <span class="nav-text">基本使用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#produce-%E5%92%8C-actor"><span class="nav-number">3.</span> <span class="nav-text">produce 和 actor</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Channel-%E6%98%AF%E5%85%AC%E5%B9%B3%E7%9A%84"><span class="nav-number">4.</span> <span class="nav-text">Channel 是公平的</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B8%A6%E7%BC%93%E5%86%B2%E7%9A%84-Channel"><span class="nav-number">5.</span> <span class="nav-text">带缓冲的 Channel</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Channel-%E6%9E%84%E9%80%A0%E7%B1%BB%E5%9E%8B"><span class="nav-number">6.</span> <span class="nav-text">Channel 构造类型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Channel-%E6%9E%84%E9%80%A0"><span class="nav-number">6.1.</span> <span class="nav-text">Channel 构造</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Channel-%E7%B1%BB%E5%9E%8B"><span class="nav-number">6.2.</span> <span class="nav-text">Channel 类型</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="苍耳叔叔"
+      src="/images/head.png">
+  <p class="site-author-name" itemprop="name">苍耳叔叔</p>
+  <div class="site-description" itemprop="description">梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">170</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">100</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ljd1996" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ljd1996" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:hearing1996@gmail.com" title="E-Mail → mailto:hearing1996@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">苍耳叔叔</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : true,
+      notify     : true,
+      appId      : 'pCnIlzs46HJGpubm7D3TnrBC-gzGzoHsz',
+      appKey     : '7LzW4wBI9lY5DtVFNkFWcjs0',
+      placeholder: "欢迎评论交流！",
+      avatar     : 'robohash',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : true,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

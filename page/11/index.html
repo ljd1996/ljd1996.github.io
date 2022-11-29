@@ -192,6 +192,402 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/10/21/Java-Android-Collection/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/head.png">
+      <meta itemprop="name" content="苍耳叔叔">
+      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="苍耳的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/10/21/Java-Android-Collection/" class="post-title-link" itemprop="url">Java-Android-Collection</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-10-21 15:25:48" itemprop="dateCreated datePublished" datetime="2019-10-21T15:25:48+08:00">2019-10-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%AD%E8%A8%80/" itemprop="url" rel="index"><span itemprop="name">语言</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AF%AD%E8%A8%80/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+            <span id="/2019/10/21/Java-Android-Collection/" class="post-meta-item leancloud_visitors" data-flag-title="Java-Android-Collection" title="阅读次数">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span class="leancloud-visitors-count"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2019/10/21/Java-Android-Collection/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2019/10/21/Java-Android-Collection/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="继承图"><a href="#继承图" class="headerlink" title="继承图"></a>继承图</h1><p><img src="Collections.png" alt="Collections"></p>
+<h1 id="Map"><a href="#Map" class="headerlink" title="Map"></a>Map</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><table>
+<thead>
+<tr>
+<th align="center">Map类型</th>
+<th align="center">插入是否有序</th>
+<th align="center">顺序特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">HashMap</td>
+<td align="center">无序</td>
+<td align="center">-</td>
+</tr>
+<tr>
+<td align="center">LinkedHashMap</td>
+<td align="center">有序</td>
+<td align="center">记录插入顺序</td>
+</tr>
+<tr>
+<td align="center">TreeMap</td>
+<td align="center">有序</td>
+<td align="center">默认升序</td>
+</tr>
+</tbody></table>
+<h2 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h2><h2 id="HashMap"><a href="#HashMap" class="headerlink" title="HashMap"></a>HashMap</h2><p><img src="Map%E7%BB%93%E6%9E%84.png" alt="Map结构"></p>
+<ul>
+<li>HashMap 是一个最常用的Map，它根据键的HashCode值存储数据，根据键可以直接获取它的值，具有很快的访问速度。HashMap最多只允许一条记录的键为Null。在JDK1.8中，链表⻓度⼤于8的时候，链表会转成红⿊树。</li>
+<li>DEFAULT_INITIAL_CAPACITY: Table数组的初始化长度 = 16。</li>
+<li>DEFAULT_LOAD_FACTOR: 负载因子默认值为 0.75。当 <code>元素的总个数&gt;当前数组的长度 * 负载因子</code> 时数组会扩容为原来的两倍。</li>
+<li>TREEIFY_THRESHOLD: 链表树化阙值默认值为 8 。表示在一个node（Table）节点下的值的个数大于8时候，会将链表转换成为红黑树。</li>
+<li>UNTREEIFY_THRESHOLD: 红黑树链化阙值：默认值为 6 。表示在进行扩容期间，单个Node节点下的红黑树节点的个数小于6时候，会将红黑树转化成为链表。</li>
+<li>MIN_TREEIFY_CAPACITY: 64 最小树化阈值，当Table所有元素超过该值时才会进行树化（为了防止前期阶段频繁扩容和树化过程冲突）。</li>
+<li>HashMap中存储的是泛型，因此不能是基础类型，可能会产生自动装箱的消耗，创建新的装箱对象。</li>
+</ul>
+<p><strong>为什么是2次幂的初始容量，为什么扩容也是2倍？</strong></p>
+<p>因为计算下标时采用的是 (n - 1) &amp; hash 方式，位运算特别高效，按位与 <code>&amp;</code> 的计算方法是，只有当对应位置的数据都为1时，运算结果也为1，当 HashMap 的容量是 2 的 n 次幂时，(n-1) 的 2 进制也就是 <code>1111111***111</code> 这样形式的，这样与添加元素的 hash 值进行位运算时，能够充分的散列，使得添加的元素均匀分布在 HashMap 的每个位置上，减少hash碰撞，避免形成链表的结构，使得查询效率降低！</p>
+<p><strong>为什么使用链表+数组？⽤ LinkedList/ArrayList 代替数组结构可以吗？</strong></p>
+<p>在对key值进行散列取到下标以后，放入到数组中时，难免出现两个key值不同，但是却放入到下标相同的格子中，此时我们就可以使用链表来对其进行链式的存放。数组的查找效率比 LinkedList 大，所以使用数组。另外 ArrayList 底层虽然也是数组，但它是 1.5 倍扩容机制。</p>
+<p><strong>put方法</strong></p>
+<ol>
+<li>对 key 做 hash 运算，计算 index；</li>
+<li>如果没碰撞直接放到数组⾥；如果碰撞了则以链表的形式存在数组后；</li>
+<li>如果碰撞导致链表过⻓(⼤于等于TREEIFY_THRESHOLD)，就把链表转换成红⿊树(JDK1.8中的改动)；</li>
+<li>如果节点已经存在就替换 old value(保证key的唯⼀性)；</li>
+<li>如果达到了扩容条件则扩容。</li>
+</ol>
+<p><strong>resise方法</strong></p>
+<p>HashMap 的扩容实现机制是将原 table 数组中所有的 Entry 取出来，重新对其 Hashcode 做 Hash 散列到扩容后新的 Table 中。</p>
+<p><strong>get方法</strong></p>
+<ol>
+<li>对 key 做 hash 运算，计算 index；</li>
+<li>如果与数组⾥的第⼀个节点直接命中，则直接返回；</li>
+<li>如果有冲突，则去查找对应的 Entry；若为树则为 O(logn)；若为链表则为 O(n)。</li>
+</ol>
+<h2 id="ArrayMap"><a href="#ArrayMap" class="headerlink" title="ArrayMap"></a>ArrayMap</h2><p>ArrayMap是一个通用的key-value映射数据结构，它相比HashMap会占用更少的内存空间。</p>
+<p><strong>数据结构</strong></p>
+<p>在ArrayMap内部有两个比较重要的数组，一个是mHashes,另一个是mArray。</p>
+<ul>
+<li>mHashes用来存放key的hashcode值</li>
+<li>mArray用来存储key与value的值，它是一个Object数组。依旧存在自动装箱的消耗。</li>
+</ul>
+<p>其中这两个数组的索引对应关系是：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span>[] mHashes;</span><br><span class="line">Object[] mArray;</span><br><span class="line"></span><br><span class="line">mHashes[index] = hash;</span><br><span class="line">mArray[index&lt;&lt;<span class="number">1</span>] = key;  <span class="comment">//等同于 mArray[index * 2] = key;</span></span><br><span class="line">mArray[(index&lt;&lt;<span class="number">1</span>)+<span class="number">1</span>] = value; <span class="comment">//等同于 mArray[index * 2 + 1] = value;</span></span><br></pre></td></tr></table></figure>
+
+<p>注：向左移一位的效率要比 乘以2倍 高一些。</p>
+<p><strong>查找数据</strong></p>
+<p>查找数据分成两步：</p>
+<ul>
+<li>根据key的hashcode找到在mHashes数组中的索引值</li>
+<li>根据上一步的索引值去查找key所对应的value值</li>
+</ul>
+<p>mHashes是一个有序数组，查找元素的时候使用的是二分查找。</p>
+<p><strong>插入数据</strong></p>
+<ol>
+<li>新数据位置确定<ul>
+<li>根据key的hashcode在mHashes表中二分查找确定合适的位置。</li>
+<li>如果新添加的数据的索引不是最后位置，在需要对这个索引之后的全部数据向后移动</li>
+</ul>
+</li>
+<li>当key为null时，其实和其他正常的key差不多，只是对应的hashcode会默认成0来处理。</li>
+<li>数组扩容问题<ul>
+<li>首先数组的容量会扩充到BASE_SIZE</li>
+<li>如果BASE_SIZE无法容纳，则扩大到2 * BASE_SIZE</li>
+<li>如果2 * BASE_SIZE仍然无法容纳，则每次扩容为当前容量的1.5倍。</li>
+</ul>
+</li>
+</ol>
+<p><strong>删除数据</strong></p>
+<ul>
+<li>如果当前ArrayMap只有一项数据，则删除操作将mHashes，mArray置为空数组，mSize置为0.</li>
+<li>如果当前ArrayMap容量过大（大于BASE_SIZE*2）并且持有的数据量过小（不足1/3）则降低ArrayMap容量，减少内存占用</li>
+<li>如果不符合上面的情况，则从mHashes删除对应的值，将mArray中对应的索引置为null</li>
+</ul>
+<p><strong>ArrayMap的缓存优化</strong></p>
+<p>在元素的新增和删除过程中，会频繁出现多个容量为BASE_SIZE和2 * BASE_SIZE的int数组和Object数组(put方法增加数据，扩大容量；remove方法删除数据，减小容量)。ArrayMap设计者为了避免创建不必要的对象，减少GC的压力，采用了类似对象池的优化设计。</p>
+<h2 id="SparseArray"><a href="#SparseArray" class="headerlink" title="SparseArray"></a>SparseArray</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">int</span>[] mKeys;</span><br><span class="line"><span class="keyword">private</span> Object[] mValues;</span><br></pre></td></tr></table></figure>
+
+<p>SparseArray 比 HashMap 更省内存，某些条件下性能更好，因为它避免了对key的自动装箱。ArrayMap 与 SparseArray 最大的一点不同就是 ArrayMap 的 key 可以为任意的类型，而 SparseAraay 的 key 只能是整型。它也对 key 使用二分法进行排序。</p>
+<h2 id="ConcurrentHashMap"><a href="#ConcurrentHashMap" class="headerlink" title="ConcurrentHashMap"></a>ConcurrentHashMap</h2><ul>
+<li>通过把整个Map分为N个Segment,可以提供相同的线程安全,但是效率提升N倍,默认提升16倍。(读操作不加锁,由于HashEntry的value变量是 volatile的,也能保证读取到最新的值。)</li>
+<li>有些方法需要跨段,比如size()和containsValue(),它们可能需要锁定整个表而而不仅仅是某个段,这需要按顺序锁定所有段,操作完毕后,又按顺序释放所有段的锁</li>
+<li>扩容:段内扩容(段内元素超过该段对应Entry数组长度的75%触发扩容,不会对整个Map进行扩容),插入前检测需不需要扩容,有效避免无效扩容</li>
+</ul>
+<h2 id="ConcurrentSkipListMap"><a href="#ConcurrentSkipListMap" class="headerlink" title="ConcurrentSkipListMap"></a>ConcurrentSkipListMap</h2><ul>
+<li>它是一个有序的Map，相当于TreeMap。</li>
+<li>TreeMap采用红黑树实现排序，而ConcurrentHashMap采用跳表实现有序。</li>
+</ul>
+<h2 id="HashTable"><a href="#HashTable" class="headerlink" title="HashTable"></a>HashTable</h2><p>HashTable与 HashMap类似，它继承自Dictionary类，不同的是：</p>
+<ul>
+<li>它不允许记录的键或者值为空。</li>
+<li>它支持线程的同步，实现线程安全的方式是在修改数据时锁住整个HashTable，因此也导致了 HashTable在写入时会比较慢。</li>
+<li>初始size为11,扩容:newsize = olesize*2+1</li>
+</ul>
+<h2 id="LinkedHashMap"><a href="#LinkedHashMap" class="headerlink" title="LinkedHashMap"></a>LinkedHashMap</h2><p>LinkedHashMap 直接继承自 HashMap, 内部维护了一个 LinkedList 双向链表。LinkedHashMap 保存了记录的插入顺序，在用 Iterator 遍历 LinkedHashMap 时，先得到的记录是先插入的，它还可以在此基础上再根据访问顺序(get,put)来排序，可以用来实现 Lru 算法。</p>
+<p>在遍历的时候会比HashMap慢，不过有种情况例外，当HashMap容量很大，实际数据较少时，遍历起来可能会比LinkedHashMap慢，因为LinkedHashMap的遍历速度只和实际数据有关，和容量无关，而HashMap的遍历速度和容量有关。</p>
+<p><strong>初始化</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LinkedHashMap</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">HashMap</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LinkedHashMap</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">float</span> loadFactor, <span class="keyword">boolean</span> accessOrder)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(initialCapacity, loadFactor);</span><br><span class="line">        <span class="keyword">this</span>.accessOrder = accessOrder; <span class="comment">// 是否按照访问顺序排序</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>LinkedHashMapEntry</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">LinkedHashMapEntry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">HashMap</span>.<span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    LinkedHashMapEntry&lt;K,V&gt; before, after;</span><br><span class="line">    LinkedHashMapEntry(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">        <span class="keyword">super</span>(hash, key, value, next);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>LinkedHashMap 的 Entry 新增了 before 和 after 两个指针，before 在每次添加元素的时候将会指向上一次添加的元素，而上一次添加的元素的 after 指针将指向本次添加的元素，来形成双向链表。</p>
+<p><strong>put元素</strong></p>
+<p>LinkedHashMap 没有重写 put 方法，只是重写了 newNode 方法生成新的节点。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Node&lt;K,V&gt; <span class="title">newNode</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, Node&lt;K,V&gt; e)</span> </span>&#123;</span><br><span class="line">    LinkedHashMapEntry&lt;K,V&gt; p = <span class="keyword">new</span> LinkedHashMapEntry&lt;K,V&gt;(hash, key, value, e);</span><br><span class="line">    linkNodeLast(p);</span><br><span class="line">    <span class="keyword">return</span> p;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">transient</span> LinkedHashMapEntry&lt;K,V&gt; head;</span><br><span class="line"><span class="keyword">transient</span> LinkedHashMapEntry&lt;K,V&gt; tail;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将 p 放到链表尾部</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">linkNodeLast</span><span class="params">(LinkedHashMapEntry&lt;K,V&gt; p)</span> </span>&#123;</span><br><span class="line">    LinkedHashMapEntry&lt;K,V&gt; last = tail;</span><br><span class="line">    tail = p;</span><br><span class="line">    <span class="keyword">if</span> (last == <span class="keyword">null</span>) head = p;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        p.before = last;</span><br><span class="line">        last.after = p;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>remove元素</strong></p>
+<p>LinkedHashMap 没有重写 remove 方法，只是重写了 afterNodeRemoval 方法处理删除的节点。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 从双向链表中删除节点 e</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">afterNodeRemoval</span><span class="params">(Node&lt;K,V&gt; e)</span> </span>&#123;</span><br><span class="line">    LinkedHashMapEntry&lt;K,V&gt; p = (LinkedHashMapEntry&lt;K,V&gt;)e, b = p.before, a = p.after;</span><br><span class="line">    p.before = p.after = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (b == <span class="keyword">null</span>) head = a; <span class="keyword">else</span> b.after = a;</span><br><span class="line">    <span class="keyword">if</span> (a == <span class="keyword">null</span>) tail = b; <span class="keyword">else</span> a.before = b;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>维护节点访问顺序</strong></p>
+<p>accessOrder 参数默认为 false, 当设置为 true 时, LinkedHashMap 会维护节点访问顺序。在 putVal/get/repalce 方法最后都调用了 afterNodeAccess 方法，LinkedHashMap 重写了这个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 将被访问节点移动到链表最后</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">afterNodeAccess</span><span class="params">(Node&lt;K,V&gt; e)</span> </span>&#123; <span class="comment">// move node to last</span></span><br><span class="line">    LinkedHashMapEntry&lt;K,V&gt; last;</span><br><span class="line">    <span class="keyword">if</span> (accessOrder &amp;&amp; (last = tail) != e) &#123;</span><br><span class="line">        LinkedHashMapEntry&lt;K,V&gt; p =</span><br><span class="line">            (LinkedHashMapEntry&lt;K,V&gt;)e, b = p.before, a = p.after;</span><br><span class="line">        p.after = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (b == <span class="keyword">null</span>)</span><br><span class="line">            head = a;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            b.after = a;</span><br><span class="line">        <span class="keyword">if</span> (a != <span class="keyword">null</span>)</span><br><span class="line">            a.before = b;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            last = b;</span><br><span class="line">        <span class="keyword">if</span> (last == <span class="keyword">null</span>)</span><br><span class="line">            head = p;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            p.before = last;</span><br><span class="line">            last.after = p;</span><br><span class="line">        &#125;</span><br><span class="line">        tail = p;</span><br><span class="line">        ++modCount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>迭代器</strong></p>
+<p>LinkedHashMap 实现了自己的迭代器，其迭代是通过双向链表实现的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">LinkedHashIterator</span> </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">final</span> LinkedHashMapEntry&lt;K,V&gt; <span class="title">nextNode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        LinkedHashMapEntry&lt;K,V&gt; e = next;</span><br><span class="line">        <span class="keyword">if</span> (modCount != expectedModCount) <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span><br><span class="line">        <span class="keyword">if</span> (e == <span class="keyword">null</span>) <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException();</span><br><span class="line">        current = e;</span><br><span class="line">        next = e.after;</span><br><span class="line">        <span class="keyword">return</span> e;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其 containsValue 方法也是通过遍历双向链表实现的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">containsValue</span><span class="params">(Object value)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (LinkedHashMapEntry&lt;K,V&gt; e = head; e != <span class="keyword">null</span>; e = e.after) &#123;</span><br><span class="line">        V v = e.value;</span><br><span class="line">        <span class="keyword">if</span> (v == value || (value != <span class="keyword">null</span> &amp;&amp; value.equals(v)))</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="TreeMap"><a href="#TreeMap" class="headerlink" title="TreeMap"></a>TreeMap</h2><ul>
+<li>TreeMap实现SortMap接口，内部是红黑树，能够把它保存的记录根据键排序，默认是按键值的升序排序，也可以指定排序的比较器，当用 Iterator 遍历TreeMap时，得到的记录是排过序的。</li>
+</ul>
+<h2 id="比较"><a href="#比较" class="headerlink" title="比较"></a>比较</h2><ul>
+<li>一般情况下，我们用的最多的是HashMap，HashMap里面存入的键值对在取出的时候是随机的，它根据键的HashCode值存储数据，根据键可以直接获取它的值，具有很快的访问速度。在Map中插入、删除和定位元素，HashMap 是最好的选择。 </li>
+<li>TreeMap取出来的是排序后的键值对。但如果要按自然顺序或自定义顺序遍历键，那么TreeMap会更好。 </li>
+<li>LinkedHashMap是HashMap的一个子类，如果需要输出的顺序和输入的相同，那么用LinkedHashMap可以实现，它还可以按读取顺序来排列，像连接池中可以应用。</li>
+<li>HashMap : 内存占用较大，增、删的效率较高，改、查的效率一般</li>
+<li>ThreadLocal.Values :  内存占用一般，当数据量比较小时，增删改查的效率高；数据量大时，增删改查效率一般</li>
+<li>ArrayMap: 内存占用较小，改、查的效率高，增、删的效率较低</li>
+<li>SparseArray : 内存占用较小，改、查的效率高，增、删的效率低，且主键是数字</li>
+</ul>
+<h1 id="List"><a href="#List" class="headerlink" title="List"></a>List</h1><ul>
+<li>有序，可重复。</li>
+</ul>
+<h2 id="Vector"><a href="#Vector" class="headerlink" title="Vector"></a>Vector</h2><ul>
+<li>底层维护一个Object数组。</li>
+<li>查询速度快，增删慢。</li>
+<li>线程安全，操作效率低。</li>
+</ul>
+<h2 id="ArrayList"><a href="#ArrayList" class="headerlink" title="ArrayList"></a>ArrayList</h2><ul>
+<li>底层维护一个Object数组。</li>
+<li>查询速度快，增删慢。</li>
+<li>1.5 倍扩容。</li>
+</ul>
+<h2 id="LinkedList"><a href="#LinkedList" class="headerlink" title="LinkedList"></a>LinkedList</h2><p>LinkedList是List接口的实现类，因此它可以是一个集合，可以根据索引来随机访问集合中的元素。此外，它还是Duque接口的实现类，因此也可以作为一个双端队列，或者栈来使用。</p>
+<ul>
+<li>LinkedList是一个双向链表.</li>
+<li>查询速度慢，增删快</li>
+</ul>
+<h1 id="CopyOnWriteArrayList"><a href="#CopyOnWriteArrayList" class="headerlink" title="CopyOnWriteArrayList"></a>CopyOnWriteArrayList</h1><p>CopyOnWriteArrayList使用了一种叫写时复制的方法，当有新元素添加到CopyOnWriteArrayList时，先从原有的数组中拷贝一份出来，然后在新的数组做写操作，写完之后，再将原来的数组引用指向到新数组。</p>
+<p>CopyOnWriteArrayList的整个add操作都是在锁的保护下进行的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//1、先加锁</span></span><br><span class="line">    <span class="keyword">final</span> ReentrantLock lock = <span class="keyword">this</span>.lock;</span><br><span class="line">    lock.lock();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        Object[] elements = getArray();</span><br><span class="line">        <span class="keyword">int</span> len = elements.length;</span><br><span class="line">        <span class="comment">//2、拷贝数组</span></span><br><span class="line">        Object[] newElements = Arrays.copyOf(elements, len + <span class="number">1</span>);</span><br><span class="line">        <span class="comment">//3、将元素加入到新数组中</span></span><br><span class="line">        newElements[len] = e;</span><br><span class="line">        <span class="comment">//4、将array引用指向到新数组</span></span><br><span class="line">        setArray(newElements);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">       <span class="comment">//5、解锁</span></span><br><span class="line">        lock.unlock();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于所有的写操作都是在新数组进行的，这个时候如果有线程并发的写，则通过锁来控制，如果有线程并发的读，则分几种情况：</p>
+<ol>
+<li>如果写操作未完成，那么直接读取原数组的数据； </li>
+<li>如果写操作完成，但是引用还未指向新数组，那么也是读取原数组数据；</li>
+<li>如果写操作完成，并且引用已经指向了新的数组，那么直接从新数组中读取数据。</li>
+</ol>
+<p>可见，CopyOnWriteArrayList的读操作是可以不用加锁的。</p>
+<p>CopyOnWriteArrayList表达的一些思想：</p>
+<ol>
+<li>读写分离，读和写分开</li>
+<li>最终一致性</li>
+<li>使用另外开辟空间的思路，来解决并发冲突</li>
+</ol>
+<h1 id="Stack"><a href="#Stack" class="headerlink" title="Stack"></a>Stack</h1><p>继承自Vector.</p>
+<ul>
+<li>boolean empty():测试堆栈是否为空。</li>
+<li>Object peek():查看堆栈顶部的对象，但不从堆栈中移除它。</li>
+<li>Object pop():移除堆栈顶部的对象，并作为此函数的值返回该对象。</li>
+<li>Object push(Object element):把项压入堆栈顶部。</li>
+<li>int search(Object element):返回对象在堆栈中的位置,从栈顶往下，以1为基数。</li>
+</ul>
+<h1 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h1><ul>
+<li>无序，不可重复。</li>
+</ul>
+<h2 id="HashSet"><a href="#HashSet" class="headerlink" title="HashSet"></a>HashSet</h2><p>HashSet 底层用的是 HashMap:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HashSet</span>&lt;<span class="title">E</span>&gt; <span class="keyword">extends</span> <span class="title">AbstractSet</span>&lt;<span class="title">E</span>&gt; <span class="keyword">implements</span> <span class="title">Set</span>&lt;<span class="title">E</span>&gt;, <span class="title">Cloneable</span>, <span class="title">java</span>.<span class="title">io</span>.<span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">transient</span> HashMap&lt;E,Object&gt; map;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Object PRESENT = <span class="keyword">new</span> Object();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> map.put(e, PRESENT)==<span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">remove</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> map.remove(o)==PRESENT;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>HashSet导致的内存泄漏：把一个对象存储进hashSet集合后，修改这个对象中参与计算hash的变量的值，这时这个对象的hash值也会随之改变，那么这么对象不可以正常地被删除。</p>
+<h2 id="TreeSet"><a href="#TreeSet" class="headerlink" title="TreeSet"></a>TreeSet</h2><p>TreeSet采用的数据结构是红黑树，我们可以让它按指定规则对其中的元素进行排序。它又是如何判断两个元素是否相同呢？除了用equals方法检查两个元素是否相同外，还要检查compareTo方法是否返回为0。所以如果对象要存放到Tree集合里，需要在重写compareTo时，把相同的对象的比较值定为0，防止相同的元素被重复添加进集合中。</p>
+<h2 id="ConcurrentSkipListSet"><a href="#ConcurrentSkipListSet" class="headerlink" title="ConcurrentSkipListSet"></a>ConcurrentSkipListSet</h2><ul>
+<li>它是一个有序的、线程安全的Set，相当于线程安全的TreeSet。</li>
+<li>它内部拥有ConcurrentSkipListMap实例，本质上就是一个ConcurrentSkipListMap，只不过仅使用了Map中的key。</li>
+</ul>
+<h1 id="Queue"><a href="#Queue" class="headerlink" title="Queue"></a>Queue</h1><ul>
+<li><p>void add(Object e):将指定元素插入到队列的尾部。</p>
+</li>
+<li><p>Object remove():获取队列头部的元素，并删除该元素。</p>
+</li>
+<li><p>object element():获取队列头部的元素，但是不删除该元素。</p>
+</li>
+<li><p>boolean offer(Object e):将指定的元素插入此队列的尾部。当使用容量有限的队列时，此方法通常比add(Object e)有效。　</p>
+</li>
+<li><p>Object poll():返回队列头部的元素，并删除该元素。如果队列为空，则返回null。</p>
+</li>
+<li><p>Object peek():返回队列头部的元素，但是不删除该元素。如果队列为空，则返回null。</p>
+</li>
+</ul>
+<h2 id="Queue-1"><a href="#Queue-1" class="headerlink" title="Queue"></a>Queue</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Queue&lt;T&gt; queue = <span class="keyword">new</span> LinkedList&lt;T&gt;();</span><br></pre></td></tr></table></figure>
+
+<h2 id="PriorityQueue"><a href="#PriorityQueue" class="headerlink" title="PriorityQueue"></a>PriorityQueue</h2><p>PriorityQueue 默认是小根堆，容量没有界限，会在指定的初始容量基础上扩容，默认排序是自然排序，队头元素是最小元素。可以这样实现大根堆：</p>
+<figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> queue = PriorityQueue&lt;<span class="built_in">Int</span>&gt;(<span class="number">10</span>) &#123; o1, o2 -&gt; o2.compareTo(o1) &#125;</span><br><span class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">0</span>..<span class="number">9</span>) &#123;</span><br><span class="line">    queue.add(Random.nextInt(<span class="number">50</span>))</span><br><span class="line">&#125;</span><br><span class="line">println(queue)</span><br><span class="line"><span class="keyword">for</span> (i <span class="keyword">in</span> <span class="number">0</span>..<span class="number">9</span>) &#123;</span><br><span class="line">    println(<span class="string">&quot;<span class="subst">$&#123;queue.remove()&#125;</span> - <span class="variable">$queue</span>&quot;</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">47</span>, <span class="number">41</span>, <span class="number">28</span>, <span class="number">38</span>, <span class="number">25</span>, <span class="number">11</span>, <span class="number">19</span>, <span class="number">11</span>, <span class="number">23</span>, <span class="number">21</span>]</span><br><span class="line"><span class="number">47</span> - [<span class="number">41</span>, <span class="number">38</span>, <span class="number">28</span>, <span class="number">23</span>, <span class="number">25</span>, <span class="number">11</span>, <span class="number">19</span>, <span class="number">11</span>, <span class="number">21</span>]</span><br><span class="line"><span class="number">41</span> - [<span class="number">38</span>, <span class="number">25</span>, <span class="number">28</span>, <span class="number">23</span>, <span class="number">21</span>, <span class="number">11</span>, <span class="number">19</span>, <span class="number">11</span>]</span><br><span class="line"><span class="number">38</span> - [<span class="number">28</span>, <span class="number">25</span>, <span class="number">19</span>, <span class="number">23</span>, <span class="number">21</span>, <span class="number">11</span>, <span class="number">11</span>]</span><br><span class="line"><span class="number">28</span> - [<span class="number">25</span>, <span class="number">23</span>, <span class="number">19</span>, <span class="number">11</span>, <span class="number">21</span>, <span class="number">11</span>]</span><br><span class="line"><span class="number">25</span> - [<span class="number">23</span>, <span class="number">21</span>, <span class="number">19</span>, <span class="number">11</span>, <span class="number">11</span>]</span><br><span class="line"><span class="number">23</span> - [<span class="number">21</span>, <span class="number">11</span>, <span class="number">19</span>, <span class="number">11</span>]</span><br><span class="line"><span class="number">21</span> - [<span class="number">19</span>, <span class="number">11</span>, <span class="number">11</span>]</span><br><span class="line"><span class="number">19</span> - [<span class="number">11</span>, <span class="number">11</span>]</span><br><span class="line"><span class="number">11</span> - [<span class="number">11</span>]</span><br><span class="line"><span class="number">11</span> - []</span><br></pre></td></tr></table></figure>
+
+<h2 id="Deque"><a href="#Deque" class="headerlink" title="Deque"></a>Deque</h2><p>Deque接口是Queue接口的子接口，它代表一个双端队列，Deque定义了一些方法：</p>
+<ul>
+<li>void addFirst(Object e): 　　将指定元素添加到双端队列的头部。</li>
+<li>void addLast(Object e):　　将指定元素添加到双端队列的尾部。</li>
+<li>Iteratord descendingItrator():　　返回该双端队列对应的迭代器，该迭代器以逆向顺序来迭代队列中的元素。</li>
+<li>Object getFirst():　　获取但不删除双端队列的第一个元素。</li>
+<li>Object getLast():　　获取但不删除双端队列的最后一个元素。</li>
+<li>boolean offFirst(Object e):　　将指定元素添加到双端队列的头部。</li>
+<li>boolean offLast(OBject e):　　将指定元素添加到双端队列的尾部。</li>
+<li>Object peekFirst():　　获取但不删除双端队列的第一个元素；如果双端队列为空，则返回null。</li>
+<li>Object PeekLast():　　获取但不删除双端队列的最后一个元素；如果双端队列为空，则返回null。</li>
+<li>Object pollFirst():　　获取并删除双端队列的第一个元素；如果双端队列为空，则返回null。</li>
+<li>Object pollLast():　　获取并删除双端队列的最后一个元素；如果双端队列为空，则返回null。</li>
+<li>Object pop()(栈方法):　　pop出该双端队列所表示的栈的栈顶元素。相当于removeFirst()。</li>
+<li>void push(Object e)(栈方法)：　　将一个元素push进该双端队列所表示的栈的栈顶。相当于addFirst()。</li>
+<li>Object removeFirst():　　获取并删除该双端队列的第一个元素。</li>
+<li>Object removeFirstOccurence(Object o):　　删除该双端队列的第一次出现的元素o。</li>
+<li>Object removeLast():　　获取并删除该双端队列的最后一个元素o。</li>
+<li>Object removeLastOccurence(Object o):　　删除该双端队列的最后一次出现的元素o。</li>
+</ul>
+<h2 id="BlockingQueue"><a href="#BlockingQueue" class="headerlink" title="BlockingQueue"></a>BlockingQueue</h2><table>
+<thead>
+<tr>
+<th align="center">操作</th>
+<th align="center">可能报异常</th>
+<th align="center">返回布尔值</th>
+<th align="center">可能阻塞</th>
+<th align="center">设定等待时间</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">入队</td>
+<td align="center">add(e)</td>
+<td align="center">offer(e)</td>
+<td align="center">put(e)</td>
+<td align="center">offer(e, timeout, unit)</td>
+</tr>
+<tr>
+<td align="center">出队</td>
+<td align="center">remove()</td>
+<td align="center">poll()</td>
+<td align="center">take()</td>
+<td align="center">poll(timeout, unit)</td>
+</tr>
+<tr>
+<td align="center">查看</td>
+<td align="center">element()</td>
+<td align="center">peek()</td>
+<td align="center">无</td>
+<td align="center">无</td>
+</tr>
+</tbody></table>
+<h2 id="ArrayBlockingQueue"><a href="#ArrayBlockingQueue" class="headerlink" title="ArrayBlockingQueue"></a>ArrayBlockingQueue</h2><p>此队列创建时必须指定大小.</p>
+<p>基于数组的阻塞队列实现，在ArrayBlockingQueue内部，维护了一个定长数组，以便缓存队列中的数据对象，这是一个常用的阻塞队列，除了一个定长数组外，ArrayBlockingQueue内部还保存着两个整形变量，分别标识着队列的头部和尾部在数组中的位置。</p>
+<p>ArrayBlockingQueue在生产者放入数据和消费者获取数据，都是共用同一个锁对象，由此也意味着两者无法真正并行运行，这点尤其不同于LinkedBlockingQueue；按照实现原理来分析，ArrayBlockingQueue完全可以采用分离锁，从而实现生产者和消费者操作的完全并行运行。Doug Lea之所以没这样去做，也许是因为ArrayBlockingQueue的数据写入和获取操作已经足够轻巧，以至于引入独立的锁机制，除了给代码带来额外的复杂性外，其在性能上完全占不到任何便宜。 </p>
+<p>ArrayBlockingQueue和LinkedBlockingQueue间还有一个明显的不同之处在于，前者在插入或删除元素时不会产生或销毁任何额外的对象实例，而后者则会生成一个额外的Node对象。这在长时间内需要高效并发地处理大批量数据的系统中，其对于GC的影响还是存在一定的区别。而在创建ArrayBlockingQueue时，我们还可以控制对象的内部锁是否采用公平锁，默认采用非公平锁。</p>
+<h2 id="LinkedBlockingQueue"><a href="#LinkedBlockingQueue" class="headerlink" title="LinkedBlockingQueue"></a>LinkedBlockingQueue</h2><p>基于链表的阻塞队列，同ArrayListBlockingQueue类似，其内部也维持着一个数据缓冲队列（该队列由一个链表构成），当生产者往队列中放入一个数据时，队列会从生产者手中获取数据，并缓存在队列内部，而生产者立即返回；只有当队列缓冲区达到最大值缓存容量时（LinkedBlockingQueue可以通过构造函数指定该值），才会阻塞生产者队列，直到消费者从队列中消费掉一份数据，生产者线程会被唤醒，反之对于消费者这端的处理也基于同样的原理。</p>
+<p>而LinkedBlockingQueue之所以能够高效的处理并发数据，还因为其对于生产者端和消费者端分别采用了独立的锁来控制数据同步，这也意味着在高并发的情况下生产者和消费者可以并行地操作队列中的数据，以此来提高整个队列的并发性能。</p>
+<p>作为开发者，我们需要注意的是，如果构造一个LinkedBlockingQueue对象，而没有指定其容量大小，LinkedBlockingQueue会默认一个类似无限大小的容量（Integer.MAX_VALUE），这样的话，如果生产者的速度一旦大于消费者的速度，也许还没有等到队列满阻塞产生，系统内存就有可能已被消耗殆尽了。</p>
+<h2 id="SynchronousQueue"><a href="#SynchronousQueue" class="headerlink" title="SynchronousQueue"></a>SynchronousQueue</h2><p>SynchronousQueue是一个没有数据缓冲的BlockingQueue(队列只能存储一个元素)，生产者线程对其的插入操作put必须等待消费者的移除操作take，反过来也一样，消费者移除数据操作必须等待生产者的插入。</p>
+<h2 id="ConcurrentLinkedQueue"><a href="#ConcurrentLinkedQueue" class="headerlink" title="ConcurrentLinkedQueue"></a>ConcurrentLinkedQueue</h2><p>ConcurrentLinkedQueue 是非阻塞队列,它是一个基于链接节点的、无界的、线程安全。此队列按照 FIFO（先进先出）原则对元素进行排序。队列的头部是队列中时间最长的元素。队列的尾部是队列中时间最短的元素。新的元素插入到队列的尾部，队列检索操作从队列头部获得元素。当许多线程共享访问一个公共 collection 时，ConcurrentLinkedQueue 是一个恰当的选择。此队列不允许 null 元素。</p>
+<p>使用非阻塞队列，虽然能即时返回结果（消费结果），但必须自行编码解决返回为空的情况处理（以及消费重试等问题）。</p>
+<h1 id="并发容器"><a href="#并发容器" class="headerlink" title="并发容器"></a>并发容器</h1><h2 id="CopyOnWrite容器"><a href="#CopyOnWrite容器" class="headerlink" title="CopyOnWrite容器"></a>CopyOnWrite容器</h2><p>包括:CopyOnWriteArrayList和CopyOnWriteArraySet。</p>
+<ul>
+<li>适用于读操作远远多于写操作，并且数据量较小的情况。</li>
+<li>修改容器的代价是昂贵的，因此建议批量增加addAll、批量删除removeAll。</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/10/21/Java%E6%B3%A8%E8%A7%A3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2187,334 +2583,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://ljd1996.github.io/2019/08/26/Android%E7%AD%BE%E5%90%8D%E7%AC%94%E8%AE%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/head.png">
-      <meta itemprop="name" content="苍耳叔叔">
-      <meta itemprop="description" content="梦里寻她千百度，蓦然回首，那人却在，灯火阑珊处。">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="苍耳的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2019/08/26/Android%E7%AD%BE%E5%90%8D%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">Android签名笔记</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2019-08-26 15:18:11" itemprop="dateCreated datePublished" datetime="2019-08-26T15:18:11+08:00">2019-08-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-05-14 14:14:57" itemprop="dateModified" datetime="2021-05-14T14:14:57+08:00">2021-05-14</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/" itemprop="url" rel="index"><span itemprop="name">Android</span></a>
-                </span>
-                  ，
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Android/%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">系统</span></a>
-                </span>
-            </span>
-
-          
-            <span id="/2019/08/26/Android%E7%AD%BE%E5%90%8D%E7%AC%94%E8%AE%B0/" class="post-meta-item leancloud_visitors" data-flag-title="Android签名笔记" title="阅读次数">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span class="leancloud-visitors-count"></span>
-            </span>
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2019/08/26/Android%E7%AD%BE%E5%90%8D%E7%AC%94%E8%AE%B0/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2019/08/26/Android%E7%AD%BE%E5%90%8D%E7%AC%94%E8%AE%B0/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="应用沙盒"><a href="#应用沙盒" class="headerlink" title="应用沙盒"></a>应用沙盒</h1><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Android 平台利用基于用户的 Linux 保护机制来识别和隔离应用资源，可将不同的应用分离开，并保护应用和系统免受恶意应用的攻击。为此，Android 会为每个 Android 应用分配一个独一无二的用户 ID (UID)，并在自己的进程中运行。</p>
-<p>Android 会使用此 UID 设置一个内核级应用沙盒。内核会在进程级别利用标准的 Linux 机制（例如，分配给应用的用户 ID 和组 ID）实现应用和系统之间的安全防护。 默认情况下，应用不能彼此交互，而且对操作系统的访问权限会受到限制。例如，如果应用 A（一个单独的应用）尝试执行恶意操作，例如在没有权限的情况下读取应用 B 的数据或拨打电话，操作系统会阻止此类行为，因为应用 A 没有适当的用户权限。这一沙盒机制非常简单，可审核，并且基于已有数十年历史的 UNIX 风格的进程用户隔离和文件权限机制。</p>
-<p>由于应用沙盒位于内核层面，因此该安全模型的保护范围扩展到了原生代码和操作系统应用。位于更高层面的所有软件（例如，操作系统库、应用框架、应用运行时环境和所有应用）都会在应用沙盒中运行。在某些平台上，为了执行安全防护机制，会限制开发者只能使用特定的开发框架、API 或语言。在 Android 上，并没有为此而限制开发者必须如何编写应用；在这方面，原生代码与解释型代码一样进行沙盒化。</p>
-<h2 id="保护机制"><a href="#保护机制" class="headerlink" title="保护机制"></a>保护机制</h2><p>通常，要在经过适当配置的设备上攻破应用沙盒这道防线，必须要先攻破 Linux 内核的安全功能。但是，与其他安全功能类似，强制执行应用沙盒的各种保护机制并非无懈可击，因此深度防御对于防止通过单个漏洞入侵操作系统或其他应用非常重要。</p>
-<p>Android 依靠许多保护机制来强制执行应用沙盒。 这些强制措施是随着时间的推移不断引入的，并且显著增强了基于 UID 的原始自主访问控制 (DAC) 沙盒的安全性。 以前的 Android 版本包括以下保护机制：</p>
-<ul>
-<li>在 Android 5.0 中，SELinux 提供了强制访问控制 (MAC) 来将系统和应用分离开。但是，所有第三方应用都在相同的 SELinux 环境中运行，因此应用间的隔离主要由 UID DAC 强制执行。</li>
-<li>在 Android 6.0 中，SELinux 沙盒经过扩展，可以跨各个物理用户边界隔离应用。此外，Android 还为应用数据设置了更安全的默认设置：对于 targetSdkVersion &gt;= 24 的应用，应用主目录上的默认 DAC 权限从 751 更改为 700。这为私有应用数据提供了更安全的默认设置（但应用可能会替换这些默认设置）。</li>
-<li>在 Android 8.0 中，所有应用都设为使用 seccomp-bpf 过滤器运行，该过滤器可限制允许应用使用的系统调用，从而增强应用/内核边界的安全性。</li>
-<li>在 Android 9 中，targetSdkVersion &gt;= 28 的所有非特权应用都必须在不同的 SELinux 沙盒中运行，并针对各个应用提供 MAC。这种保护机制可以提升应用隔离效果，防止替换安全默认设置，并且（最重要的是）防止应用的数据可让所有人访问。</li>
-</ul>
-<h2 id="共享文件指南"><a href="#共享文件指南" class="headerlink" title="共享文件指南"></a>共享文件指南</h2><p>将应用数据设为可供所有人访问从安全方面来讲是一种不好的做法，因为这会为所有人授予访问权限，并且无法限定只让目标受众访问这些数据。这种做法会导致信息披露泄露，让代理漏洞变得混乱，并会成为针对包含敏感数据的应用（例如电子邮件客户端）的恶意软件的首选目标。在 Android 9 及更高版本中，targetSdkVersion&gt;=28 的应用明确禁止以这种方式共享文件。</p>
-<p>在共享文件时，请遵循以下指南，而不是让应用数据可供所有人访问：</p>
-<p>如果您的应用需要与其他应用共享文件，请使用<a target="_blank" rel="noopener" href="https://developer.android.com/guide/topics/providers/content-provider-basics.html">内容提供程序</a>或<a target="_blank" rel="noopener" href="https://developer.android.com/guide/topics/data/data-storage.html#filesExternal">外部存储设备</a>上的共享位置。内容提供程序会以适当的粒度共享数据，并且不会出现使用所有人都可访问的 UNIX 权限会带来的诸多问题（如需了解详情，请参阅<a target="_blank" rel="noopener" href="https://developer.android.com/guide/topics/providers/content-provider-basics.html">内容提供程序基础知识</a>）。<br>如果您的应用包含确实应让所有人访问的文件（例如照片），请使用<a target="_blank" rel="noopener" href="https://developer.android.com/guide/topics/data/data-storage.html#filesExterna[](https://developer.android.com/training/data-storage/files.html#PublicFiles)l">外部存储设备</a>。如需帮助，请参阅<a target="_blank" rel="noopener" href="https://developer.android.com/training/data-storage/files.html#PublicFiles">将文件保存至公共目录</a>。</p>
-<h1 id="应用签名"><a href="#应用签名" class="headerlink" title="应用签名"></a>应用签名</h1><p>在 Android 上，应用签名是将应用放入其应用沙盒的第一步。已签名的应用证书定义了哪个用户 ID 与哪个应用相关联；不同的应用要以不同的用户 ID 运行。应用签名可确保一个应用无法访问任何其他应用的数据，通过明确定义的 IPC 进行访问时除外。</p>
-<p>当应用（APK 文件）安装到 Android 设备上时，软件包管理器会验证 APK 是否已经过适当签名（已使用 APK 中包含的证书签名）。如果该证书（或更准确地说，证书中的公钥）与设备上的任何其他 APK 使用的签名密钥一致，那么这个新 APK 就可以选择在清单中指定它将与其他以类似方式签名的 APK 共用一个 UID。</p>
-<p>应用可以由第三方（OEM、运营商、其他应用市场）签名，也可以自行签名。Android 提供了使用自签名证书进行代码签名的功能，而开发者无需外部协助或许可即可生成自签名证书。应用并非必须由核心机构签名。Android 目前不对应用证书进行 CA 认证。</p>
-<p>应用还可以在“签名”保护级别声明安全权限，以便仅限使用同一个密钥签名的应用访问它们，同时维持单独的 UID 和应用沙盒。通过<a target="_blank" rel="noopener" href="https://developer.android.com/guide/topics/manifest/manifest-element#uid">共用 UID 功能</a>，可以与共用的应用沙盒建立更紧密的联系，这是因为借助该功能，使用同一个开发者密钥签名的两个或更多应用可以在其清单中声明共用的 UID。</p>
-<p>Android 支持以下三种应用签名方案：</p>
-<ul>
-<li>v1 方案：基于 JAR 签名。</li>
-<li>v2 方案：APK 签名方案 v2（在 Android 7.0 中引入）。</li>
-<li>v3 方案：APK 签名方案 v3（在 Android 9 中引入）。</li>
-</ul>
-<p>为了最大限度地提高兼容性，请按照 v1、v2、v3 的先后顺序采用所有方案对应用进行签名。与只通过 v1 方案签名的应用相比，还通过 v2+ 方案签名的应用能够更快速地安装到 Android 7.0 及更高版本的设备上。更低版本的 Android 平台会忽略 v2+ 签名，这就需要应用包含 v1 签名。</p>
-<h2 id="v1方案-jarsinger"><a href="#v1方案-jarsinger" class="headerlink" title="v1方案(jarsinger)"></a>v1方案(jarsinger)</h2><h3 id="签名机制"><a href="#签名机制" class="headerlink" title="签名机制"></a>签名机制</h3><p>v1 签名不保护 APK 的某些部分，例如 ZIP 元数据。APK 验证程序需要处理大量不可信（尚未经过验证）的数据结构，然后会舍弃不受签名保护的数据。这会导致相当大的受攻击面。此外，APK 验证程序必须解压所有已压缩的条目，而这需要花费更多时间和内存。为了解决这些问题，Android 7.0 中引入了 APK 签名方案 v2。</p>
-<p>APK文件本质上是一个ZIP压缩包，而ZIP格式是固定的，主要由三部分构成：</p>
-<ul>
-<li>第一部分是内容块，所有的压缩文件都在这部分。每个压缩文件都有一个local file header，主要记录了文件名、压缩算法、压缩前后的文件大小、修改时间、CRC32值等。</li>
-<li>第二部分称为中央目录，包含了多个central directory file header（和第一部分的local file header一一对应），每个中央目录文件头主要记录了压缩算法、注释信息、对应local file header的偏移量等，方便快速定位数据。</li>
-<li>最后一部分是EOCD，主要记录了中央目录大小、偏移量和ZIP注释信息等</li>
-</ul>
-<p>V1签名只会检验第一部分的所有压缩文件，而不理会后两部分内容。</p>
-<p>解压APK后，在META-INF目录下，可以看到三个文件：MANIFEST.MF、CERT.SF、CERT.RSA。它们都是V1签名的产物。</p>
-<p>其中，MANIFEST.MF文件内容如下所示：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">Manifest-Version: 1.0   // 用来定义manifest文件的版本</span><br><span class="line">Built-By: Generated-by-ADT  // 声明该文件的构建者</span><br><span class="line">Created-By: Android Gradle 3.4.2  // 声明该文件的生成者</span><br><span class="line"></span><br><span class="line">Name: AndroidManifest.xml</span><br><span class="line">SHA-256-Digest: 2ukv+j6Xu2UEEelZaKeZ+63IpYQ5FqCbIfA6QKk7fgM=</span><br><span class="line"></span><br><span class="line">Name: META-INF/androidx.appcompat_appcompat.version</span><br><span class="line">SHA-256-Digest: n9KGQtOsoZHlx/wjg8/W+rsqrIdD8Cnau4mJrFhOMbw=</span><br><span class="line"></span><br><span class="line">Name: META-INF/androidx.arch.core_core-runtime.version</span><br><span class="line">SHA-256-Digest: wo/MpTY3vIjhJK8XJd8Ty5jGne3v1i+zzb4c22t2BiQ=</span><br><span class="line"></span><br><span class="line">// ...</span><br><span class="line"></span><br><span class="line">Name: res/drawable-nodpi-v4/filter_48.jpg</span><br><span class="line">SHA-256-Digest: FfpvAStgPFXWDjVvs/N2H+XULiIwwwfqGtp1fPg0YYo=</span><br><span class="line"></span><br><span class="line">// ...</span><br><span class="line"></span><br><span class="line">Name: res/xml/file_paths.xml</span><br><span class="line">SHA-256-Digest: 9s07yeSRLkE3+iYROBVOBmGlmApgGVDUeGsZQ9HYPfo=</span><br><span class="line"></span><br><span class="line">Name: resources.arsc</span><br><span class="line">SHA-256-Digest: uGEAbvopf67Kasj8mPZE7R1NpI9jzuaL26usC1mXVsE=</span><br></pre></td></tr></table></figure>
-
-<p>它记录了APK中所有原始文件的数据摘要的Base64编码,而数据摘要算法就是SHA256（或SHA1）。</p>
-<p>CERT.SF文件内容如下所示：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Signature-Version: 1.0</span><br><span class="line">Created-By: 1.0 (Android)</span><br><span class="line">SHA-256-Digest-Manifest: qXt5WBCgJuQFdkZK1ZpHd5KnGllF0FNY/yx++rgsdDc=</span><br><span class="line">X-Android-APK-Signed: 2</span><br><span class="line"></span><br><span class="line">Name: AndroidManifest.xml</span><br><span class="line">SHA-256-Digest: 9SF8sMBwuyZm25vpoYk4VZImaK37o4rXpIGKPWWDj9M=</span><br><span class="line"></span><br><span class="line">Name: META-INF/androidx.appcompat_appcompat.version</span><br><span class="line">SHA-256-Digest: ABbgKP0s08CVeuJ5ZMlIZx/AvJtb1QhNA0ffeXfCaHk=</span><br><span class="line"></span><br><span class="line">Name: META-INF/androidx.arch.core_core-runtime.version</span><br><span class="line">SHA-256-Digest: PjygIQMN5T6nIKT/hi5PFaxVcEB+W20fr4f0g2n7jrg=</span><br><span class="line"></span><br><span class="line">//...</span><br><span class="line"></span><br><span class="line">Name: res/xml/file_paths.xml</span><br><span class="line">SHA-256-Digest: aDSRY140t8cYqDFleCi9Gc4NTFo0EfbEY/Mr3vlfx1o=</span><br><span class="line"></span><br><span class="line">Name: resources.arsc</span><br><span class="line">SHA-256-Digest: KNGXNZ4K5DU+sdJIblO/zwEug24++hvcQxp7fbaf6Gk=</span><br></pre></td></tr></table></figure>
-
-<p>SHA-256-Digest-Manifest记录了整个MANIFEST.MF文件的数据摘要的Base64编码。其余的普通属性则和MANIFEST.MF中的属性一一对应，分别记录了对应数据块的数据摘要的Base64编码。这里要注意的是：最后一行的换行符是必不可少，需要参与计算的。</p>
-<p>CERT.RSA文件包含了对CERT.SF文件的数字签名和开发者的数字证书。RSA就是计算数字签名使用的非对称加密算法。</p>
-<p>整个签名机制的最终产物就是MANIFEST.MF、CERT.SF、CERT.RSA三个文件。</p>
-<p>除了CERT.RSA文件，其余两个签名文件其实跟keystore没什么关系，主要是文件自身的摘要及二次摘要，用不同的keystore进行签名，生成的MANIFEST.MF与CERT.SF都是一样的，不同的只有CERT.RSA签名文件。也就是说前两者主要保证各个文件的完整性，CERT.RSA从整体上保证APK的来源及完整性，不过META_INF中的文件不在校验范围中，这也是V1的一个缺点。</p>
-<p>签名流程可查看源码：<a target="_blank" rel="noopener" href="https://android.googlesource.com/platform/build/+/7e447ed/tools/signapk/SignApk.java">SignApk.java</a></p>
-<h3 id="校验流程"><a href="#校验流程" class="headerlink" title="校验流程"></a>校验流程</h3><p>V1签名是怎么保证APK文件不被篡改的？ </p>
-<ul>
-<li>首先，如果破坏者修改了APK中的任何文件，那么被篡改文件的数据摘要的Base64编码就和MANIFEST.MF文件的记录值不一致，导致校验失败。</li>
-<li>其次，如果破坏者同时修改了对应文件在MANIFEST.MF文件中的Base64值，那么MANIFEST.MF中对应数据块的Base64值就和CERT.SF文件中的记录值不一致，导致校验失败。</li>
-<li>最后，如果破坏者更进一步，同时修改了对应文件在CERT.SF文件中的Base64值，那么CERT.SF的数字签名就和CERT.RSA记录的签名不一致，也会校验失败。</li>
-<li>理论上不可能继续伪造CERT.SF的数字签名，因为破坏者没有开发者的私钥，但是可以重新签名。</li>
-</ul>
-<h2 id="v2方案-apksigner"><a href="#v2方案-apksigner" class="headerlink" title="v2方案(apksigner)"></a>v2方案(apksigner)</h2><h3 id="签名机制-1"><a href="#签名机制-1" class="headerlink" title="签名机制"></a>签名机制</h3><p>APK 签名方案 v2 是一种全文件签名方案，该方案能够发现对 APK 的受保护部分进行的所有更改，从而有助于加快验证速度并增强完整性保证。为了保持与 v1 APK 格式向后兼容，v2 及更高版本的 APK 签名会存储在“APK 签名分块”内，该分块是为了支持 APK 签名方案 v2 而引入的一个新容器。在 APK 文件中，“APK 签名分块”位于“ZIP 中央目录”（位于文件末尾）之前并紧邻该部分。</p>
-<img src="签名前和签名后的APK.png"/>
-
-<p>APK 签名方案 v2 是在 Android 7.0 (Nougat) 中引入的。为了使 APK 可在 Android 6.0 (Marshmallow) 及更低版本的设备上安装，应先使用 JAR 签名功能对 APK 进行签名，然后再使用 v2 方案对其进行签名。</p>
-<p>为了保护 APK 内容，APK 包含以下 4 个部分：</p>
-<ol>
-<li>ZIP 条目的内容（从偏移量 0 处开始一直到“APK 签名分块”的起始位置）</li>
-<li>APK 签名分块</li>
-<li>ZIP 中央目录</li>
-<li>ZIP 中央目录结尾</li>
-</ol>
-<p>V2签名同时修改了EOCD中的中央目录的偏移量，使签名后的APK还符合ZIP结构。</p>
-<p>V2签名块的生成可参考<a target="_blank" rel="noopener" href="https://android.googlesource.com/platform/build/+/dd910c5/tools/signapk/src/com/android/signapk/ApkSignerV2.java">ApkSignerV2</a></p>
-<ol>
-<li>首先，根据多个签名算法，计算出整个APK的数据摘要，组成APK数据摘要集；</li>
-<li>接着，把数据摘要、数字证书和额外属性组装起来，形成类似于V1签名的“MF”文件；</li>
-<li>其次，再用相同的私钥，不同的签名算法，计算出“MF”文件的数字签名，形成类似于V1签名的“SF”文件；</li>
-<li>然后，把第二列的类似MF文件、类似SF文件和开发者公钥一起组装成通过单个keystore签名后的v2签名块；</li>
-<li>最后，把多个keystore签名后的签名块组装起来，就是完整的V2签名块了（Android中允许使用多个keystore对apk进行签名）。</li>
-</ol>
-<h3 id="验证流程"><a href="#验证流程" class="headerlink" title="验证流程"></a>验证流程</h3><p>APK 签名方案 v2 负责保护第 1、3、4 部分的完整性，以及第 2 部分包含的“APK 签名方案 v2 分块”中的 signed data 分块的完整性。第 1、3 和 4 部分的完整性通过其内容的一个或多个摘要来保护，这些摘要存储在 signed data 分块中，而这些分块则通过一个或多个签名来保护。</p>
-<p>V1签名是怎么保证APK文件不被篡改的？ </p>
-<ul>
-<li>首先，如果破坏者修改了APK文件的任何部分（签名块本身除外），那么APK的数据摘要就和“MF”数据块中记录的数据摘要不一致，导致校验失败。</li>
-<li>其次，如果破坏者同时修改了“MF”数据块中的数据摘要，那么“MF”数据块的数字签名就和“SF”数据块中记录的数字签名不一致，导致校验失败。</li>
-<li>然后，如果破坏者使用自己的私钥去加密生成“SF”数据块，那么使用开发者的公钥去解密“SF”数据块中的数字签名就会失败。</li>
-<li>最后，更进一步，若破坏者甚至替换了开发者公钥，那么使用数字证书中的公钥校验签名块中的公钥就会失败，这也正是数字证书的作用。</li>
-</ul>
-<h2 id="v3方案-apksigner"><a href="#v3方案-apksigner" class="headerlink" title="v3方案(apksigner)"></a>v3方案(apksigner)</h2><p>Android 9 新增了对 APK Signature Scheme v3 的支持。该架构提供的选择可以在其签名块中为每个签名证书加入一条轮转证据记录。 利用此功能，应用可以通过将 APK 文件过去的签名证书链接到现在签署应用时使用的证书，从而使用新签名证书来签署应用。</p>
-<p>Android 9 支持 APK 密钥轮转，这使应用能够在 APK 更新过程中更改其签名密钥。为了实现轮转，APK 必须指示新旧签名密钥之间的信任级别。为了支持密钥轮转，我们将 APK 签名方案从 v2 更新为 v3，以允许使用新旧密钥。v3 在 APK 签名分块中添加了有关受支持的 SDK 版本和 proof-of-rotation 结构的信息。</p>
-<p>为了保持与 v1 APK 格式向后兼容，v2 和 v3 APK 签名存储在“APK 签名分块”内紧邻 ZIP Central Directory 前面。v3 APK 签名分块的格式与 v2 相同。</p>
-<h2 id="配置调试的Debug包apk可安装"><a href="#配置调试的Debug包apk可安装" class="headerlink" title="配置调试的Debug包apk可安装"></a>配置调试的Debug包apk可安装</h2><p>Android Studio 3.0会在debug apk的配置文件application标签里自动添加 android:testOnly=”true”属性，导致IDE中run跑出的apk无法安装，只能用于as测试安装。</p>
-<p>解决办法：在gradle.properties(项目根目录或者gradle全局配置目录 ~/.gradle/)文件中添加<code>android.injected.testOnly=false</code> 之后就可以安装了。</p>
-<h1 id="证书和密钥库"><a href="#证书和密钥库" class="headerlink" title="证书和密钥库"></a>证书和密钥库</h1><p>Keystore 称为密钥库，一个keystore里面可以放多组秘钥，每组密钥都有有效期、地址、公司等信息，可以通过别名来进行区分拿取。开发者将录入自己信息的秘钥（而非秘钥库Keystore）存入APP中，以认证此APP为自己开发。</p>
-<p>Eclipse或Android Studio在Debug时,对App签名都会使用一个默认的密钥库:~/.android/debug.keystore</p>
-<ul>
-<li>密钥库名:   debug.keystore</li>
-<li>密钥别名:   androiddebugkey</li>
-<li>密钥库密码: android</li>
-</ul>
-<p>由于调试证书是由构建工具创建并且设计上不安全，因此大多数应用商店（包括 Google Play 商店）都不接受使用调试证书签署发布的 APK 或应用软件包。</p>
-<h1 id="数据摘要、数字签名和数字证书"><a href="#数据摘要、数字签名和数字证书" class="headerlink" title="数据摘要、数字签名和数字证书"></a>数据摘要、数字签名和数字证书</h1><h2 id="数据摘要"><a href="#数据摘要" class="headerlink" title="数据摘要"></a>数据摘要</h2><p>数据摘要算法是一种能产生特定输出格式的算法，其原理是根据一定的运算规则对原始数据进行某种形式的信息提取，被提取出的信息就是原始数据的消息摘要，也称为数据指纹。 一般情况下，数据摘要算法具有以下特点：</p>
-<ol>
-<li>无论输入数据有多大（长），计算出来的数据摘要的长度总是固定的。例如：MD5算法计算出的数据摘要有128Bit。</li>
-<li>一般情况下（不考虑碰撞的情况下），只要原始数据不同，那么其对应的数据摘要就不会相同。同时，只要原始数据有任何改动，那么其数据摘要也会完全不同。即：相同的原始数据必有相同的数据摘要，不同的原始数据，其数据摘要也必然不同。</li>
-<li>不可逆性，即只能正向提取原始数据的数据摘要，而无法从数据摘要中恢复出原始数据。</li>
-</ol>
-<p>著名的摘要算法有RSA公司的MD5算法和SHA系列算法。</p>
-<h2 id="数字签名和数字证书"><a href="#数字签名和数字证书" class="headerlink" title="数字签名和数字证书"></a>数字签名和数字证书</h2><p>数字签名和数字证书是成对出现的，两者不可分离（数字签名主要用来校验数据的完整性，数字证书主要用来确保公钥的安全发放）。</p>
-<p>要明白数字签名的概念，必须要了解数据的加密、传输和校验流程。一般情况下，要实现数据的可靠通信，需要解决以下两个问题：</p>
-<ol>
-<li>确定数据的来源是其真正的发送者。</li>
-<li>确保数据在传输过程中，没有被篡改，或者若被篡改了，可以及时发现。</li>
-</ol>
-<p>而数字签名，就是为了解决这两个问题而诞生的。 首先，数据的发送者需要先申请一对公私钥对，并将公钥交给数据接收者。 然后，若数据发送者需要发送数据给接收者，则首先要根据原始数据，生成一份数字签名，然后把原始数据和数字签名一起发送给接收者。 数字签名由以下两步计算得来：</p>
-<ol>
-<li>计算发送数据的数据摘要</li>
-<li>用私钥对提取的数据摘要进行加密</li>
-</ol>
-<p>这样，数据接收者拿到的消息就包含了两块内容：</p>
-<ol>
-<li>原始数据内容</li>
-<li>附加的数字签名</li>
-</ol>
-<p>接下来，接收者就会通过以下几步，校验数据的真实性：</p>
-<ol>
-<li>用相同的摘要算法计算出原始数据的数据摘要。</li>
-<li>用预先得到的公钥解密数字签名。</li>
-<li>对比签名得到的数据是否一致，如果一致，则说明数据没有被篡改，否则数据就是脏数据了。</li>
-</ol>
-<p>因为私钥只有发送者才有，所以其他人无法伪造数字签名。这样通过数字签名就确保了数据的可靠传输。 综上所述，数字签名就是只有发送者才能产生的别人无法伪造的一段数字串，这段数字串同时也是对发送者发送数据真实性的一个有效证明。</p>
-<p>想法虽好，但是上面的整个流程，有一个前提，就是数据接收者能够正确拿到发送者的公钥。如果接收者拿到的公钥被篡改了，那么坏人就会被当成好人，而真正的数据发送者发送的数据则会被视作脏数据。那怎么才能保证公钥的安全性那？这就要靠数字证书来解决了。</p>
-<p>数字证书是由有公信力的证书中心（CA）颁发给申请者的证书，主要包含了：证书的发布机构、证书的有效期、申请者的公钥、申请者信息、数字签名使用的算法，以及证书内容的数字签名。</p>
-<p>可见，数字证书也用到了数字签名技术。只不过签名的内容是数据发送方的公钥，以及一些其它证书信息。这样数据发送者发送的消息就包含了三部分内容：</p>
-<ol>
-<li>原始数据内容</li>
-<li>附加的数字签名</li>
-<li>申请的数字证书。</li>
-</ol>
-<p>接收者拿到数据后，首先会根据CA的公钥，解码出发送者的公钥。然后就与上面的校验流程完全相同了。</p>
-<p>所以，数字证书主要解决了公钥的安全发放问题。</p>
-<h1 id="密钥管理"><a href="#密钥管理" class="headerlink" title="密钥管理"></a>密钥管理</h1><p>如果准备自行创建密钥和密钥库，请确保先为密钥库选择一个强密码，然后为密钥库中存储的每个私钥选择一个单独的强密码，且必须为密钥库存放在一个可靠的地方。</p>
-<h1 id="签名步骤"><a href="#签名步骤" class="headerlink" title="签名步骤"></a>签名步骤</h1><h2 id="1-生成密钥对"><a href="#1-生成密钥对" class="headerlink" title="1. 生成密钥对"></a>1. 生成密钥对</h2><ol>
-<li><p>生成密钥对</p>
- <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">keytool -genkeypair -keystore 密钥库名 -alias 密钥别名 -validity 天数 -keyalg RSA</span><br><span class="line"></span><br><span class="line">参数:</span><br><span class="line">-genkeypair  生成一条密钥对(由私钥和公钥组成)</span><br><span class="line">-keystore    密钥库名字以及存储位置(默认当前目录)</span><br><span class="line">-alias       密钥对的别名(密钥库可以存在多个密钥对,用于区分不同密钥对)</span><br><span class="line">-validity    密钥对的有效期(单位: 天)</span><br><span class="line">-keyalg      生成密钥对的算法(常用RSA/DSA,DSA只用于签名,默认采用DSA)</span><br><span class="line">-delete      删除一条密钥</span><br></pre></td></tr></table></figure>
-
-<p> 提示: 可重复使用此条命令,在同一密钥库中创建多条密钥对，例如，在debug.keystore中新增一对密钥,别名是release：</p>
- <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">keytool -genkeypair -keystore debug.keystore -alias release -validity 30000</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>查看密钥库</p>
- <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">keytool -list -v -keystore 密钥库名</span><br><span class="line"></span><br><span class="line">参数:</span><br><span class="line">-list 查看密钥列表</span><br><span class="line">-v    查看密钥详情</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<h2 id="2-签名"><a href="#2-签名" class="headerlink" title="2. 签名"></a>2. 签名</h2><h3 id="zipalign"><a href="#zipalign" class="headerlink" title="zipalign"></a>zipalign</h3><p>位于Android SDK/build-tools/SDK版本/下，zipalign是对zip包对齐的工具,使APK包内未压缩的数据有序排列对齐,从而减少APP运行时内存消耗。</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">zipalign -v 4 in.apk out.apk   # 4字节对齐优化</span><br><span class="line">zipalign -c -v 4 in.apk        # 检查APK是否对齐</span><br></pre></td></tr></table></figure>
-
-<p>zipalign可以在V1签名后执行，但zipalign不能在V2签名后执行,只能在V2签名之前执行。</p>
-<h3 id="jarsigner"><a href="#jarsigner" class="headerlink" title="jarsigner"></a>jarsigner</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jarsigner -keystore 密钥库名 xxx.apk 密钥别名</span><br></pre></td></tr></table></figure>
-
-<p>从JDK7开始, jarsigner默认算法是SHA256, 但Android 4.2以下不支持该算法,所以需要修改算法, 添加参数<code>-digestalg SHA1 -sigalg SHA1withRSA</code>：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">jarsigner -keystore 密钥库名 -digestalg SHA1 -sigalg SHA1withRSA xxx.apk 密钥别名</span><br><span class="line"></span><br><span class="line">参数:</span><br><span class="line">    -digestalg  摘要算法</span><br><span class="line">    -sigalg     签名算法</span><br></pre></td></tr></table></figure>
-
-<h3 id="apksigner"><a href="#apksigner" class="headerlink" title="apksigner"></a>apksigner</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">apksigner sign --ks 密钥库名 --ks-key-alias 密钥别名 xxx.apk</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 若密钥库中有多个密钥对,则必须指定密钥别名</span></span><br><span class="line">apksigner sign --ks 密钥库名 --ks-key-alias 密钥别名 xxx.apk</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash"> 禁用V2签名</span></span><br><span class="line">apksigner sign --v2-signing-enabled false --ks 密钥库名 xxx.apk</span><br><span class="line"></span><br><span class="line">参数:</span><br><span class="line">    --ks-key-alias       密钥别名,若密钥库有一个密钥对,则可省略,反之必选</span><br><span class="line">    --v1-signing-enabled 是否开启V1签名,默认开启</span><br><span class="line">    --v2-signing-enabled 是否开启V2签名,默认开启</span><br></pre></td></tr></table></figure>
-
-<h2 id="3-签名验证"><a href="#3-签名验证" class="headerlink" title="3. 签名验证"></a>3. 签名验证</h2><h3 id="keytool-只支持V1签名校验"><a href="#keytool-只支持V1签名校验" class="headerlink" title="keytool,只支持V1签名校验"></a>keytool,只支持V1签名校验</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">keytool -printcert -jarfile MyApp.apk (显示签名证书信息)</span><br><span class="line"></span><br><span class="line">参数:</span><br><span class="line">    -printcert           打印证书内容</span><br><span class="line">    -jarfile &lt;filename&gt;  已签名的jar文件 或apk文件   </span><br></pre></td></tr></table></figure>
-
-<h3 id="apksigner-支持V1和V2签名校验"><a href="#apksigner-支持V1和V2签名校验" class="headerlink" title="apksigner,支持V1和V2签名校验"></a>apksigner,支持V1和V2签名校验</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">apksigner verify -v --print-certs xxx.apk</span><br><span class="line"></span><br><span class="line">参数:</span><br><span class="line">    -v, --verbose 显示详情(显示是否使用V1和V2签名)</span><br><span class="line">    --print-certs 显示签名证书信息</span><br></pre></td></tr></table></figure>
-
-<h1 id="Gradle签名发布"><a href="#Gradle签名发布" class="headerlink" title="Gradle签名发布"></a>Gradle签名发布</h1><p>可以使用Android Studio工具配置KeyStore相关的配置，会自动在build.gradle文件中生成配置。</p>
-<ol>
-<li><p>通过keytool生成签名文件</p>
-</li>
-<li><p>配置build.gradle</p>
- <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    signingConfigs &#123;</span><br><span class="line">        release &#123;</span><br><span class="line">            storeFile file(<span class="string">&quot;path/release.keystore&quot;</span>)</span><br><span class="line">            storePassword <span class="string">&quot;123456&quot;</span></span><br><span class="line">            keyAlias <span class="string">&quot;release.keystore&quot;</span></span><br><span class="line">            keyPassword <span class="string">&quot;123456&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">        debug &#123;</span><br><span class="line">            storeFile file(<span class="string">&quot;path/test.keystore&quot;</span>)</span><br><span class="line">            storePassword <span class="string">&quot;123456&quot;</span></span><br><span class="line">            keyAlias <span class="string">&quot;test.keystore&quot;</span></span><br><span class="line">            keyPassword <span class="string">&quot;123456&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    buildTypes &#123;</span><br><span class="line">        release &#123;</span><br><span class="line">            minifyEnabled enableProguardInReleaseBuilds</span><br><span class="line">            proguardFiles getDefaultProguardFile(<span class="string">&quot;proguard-android.txt&quot;</span>), <span class="string">&quot;proguard-rules.pro&quot;</span></span><br><span class="line">            signingConfig signingConfigs.release</span><br><span class="line"></span><br><span class="line">            android.applicationVariants.all &#123; variant -&gt;</span><br><span class="line">                variant.outputs.all &#123;</span><br><span class="line">                    <span class="keyword">if</span> (variant.buildType.name.equals(<span class="string">&#x27;release&#x27;</span>)) &#123;</span><br><span class="line">                        outputFileName = <span class="string">&quot;SecureMail$&#123;defaultConfig.versionName&#125;-$&#123;releaseTime()&#125;.apk&quot;</span></span><br><span class="line">                        variant.getPackageApplication().outputDirectory = <span class="keyword">new</span> File(</span><br><span class="line">                            project.rootDir.absolutePath + <span class="string">&quot;/app/release&quot;</span>)</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    flavorDimensions <span class="string">&quot;version&quot;</span></span><br><span class="line">    productFlavors &#123;</span><br><span class="line">        hearing &#123;</span><br><span class="line">            dimension <span class="string">&quot;version&quot;</span></span><br><span class="line">            signingConfig signingConfigs.release</span><br><span class="line">        &#125;</span><br><span class="line">        full &#123;</span><br><span class="line">            dimension <span class="string">&quot;version&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">def</span> releaseTime() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> Date().format(<span class="string">&quot;yyyy-MM-dd&quot;</span>, TimeZone.getTimeZone(<span class="string">&quot;UTC&quot;</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>执行打包命令</p>
- <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./gradlew assemblerelease</span><br></pre></td></tr></table></figure>
-
-</li>
-</ol>
-<p>注意：可以在根目录的gradle.properties文件中配置签名相关的变量，在build.gradle中直接引入即可。</p>
-<h1 id="多渠道打包方案"><a href="#多渠道打包方案" class="headerlink" title="多渠道打包方案"></a>多渠道打包方案</h1><h2 id="Android-Gradle-Plugin"><a href="#Android-Gradle-Plugin" class="headerlink" title="Android Gradle Plugin"></a>Android Gradle Plugin</h2><p>Gradle Plugin本身提供了多渠道的打包策略： 首先，在AndroidManifest.xml中添加渠道信息占位符：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">meta-data</span> <span class="attr">android:name</span>=<span class="string">&quot;InstallChannel&quot;</span> <span class="attr">android:value</span>=<span class="string">&quot;$&#123;InstallChannel&#125;&quot;</span> /&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>然后，通过Gradle Plugin提供的productFlavors标签，添加渠道信息：</p>
-<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">productFlavors&#123;</span><br><span class="line">    <span class="string">&quot;YingYongBao&quot;</span>&#123;</span><br><span class="line">        manifestPlaceholders = [<span class="attr">InstallChannel :</span> <span class="string">&quot;YingYongBao&quot;</span>]</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="string">&quot;360&quot;</span>&#123;</span><br><span class="line">        manifestPlaceholders = [<span class="attr">InstallChannel :</span> <span class="string">&quot;360&quot;</span>]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这样，Gradle编译生成多渠道包时，会用不同的渠道信息替换AndroidManifest.xml中的占位符。我们在代码中，也就可以直接读取AndroidManifest.xml中的渠道信息了。</p>
-<p>但是，这种方式存在一些缺点：</p>
-<ol>
-<li>每生成一个渠道包，都要重新执行一遍构建流程，效率太低，只适用于渠道较少的场景。</li>
-<li>Gradle会为每个渠道包生成一个不同的BuildConfig.java类，记录渠道信息，导致每个渠道包的DEX的CRC值都不同。一般情况下，这是没有影响的。但是如果你使用了微信的Tinker热补丁方案，那么就需要为不同的渠道包打不同的补丁，这完全是不可以接受的。（因为Tinker是通过对比基础包APK和新包APK生成差分补丁，然后再把补丁和基础包APK一起合成新包APK。这就要求用于生成差分补丁的基础包DEX和用于合成新包的基础包DEX是完全一致的，即：每一个基础渠道包的DEX文件是完全一致的，不然就会合成失败）</li>
-</ol>
-<h2 id="ApkTool"><a href="#ApkTool" class="headerlink" title="ApkTool"></a>ApkTool</h2><p>ApkTool是一个逆向分析工具，可以把APK解开，添加代码后，重新打包成APK。因此，基于ApkTool的多渠道打包方案分为以下几步：</p>
-<ol>
-<li>复制一份新的APK</li>
-<li>通过ApkTool工具，解压APK（apktool d origin.apk）</li>
-<li>删除已有签名信息</li>
-<li>添加渠道信息（可以在APK的任何文件添加渠道信息）</li>
-<li>通过ApkTool工具，重新打包生成新APK（apktool b newApkDir）</li>
-<li>重新签名</li>
-</ol>
-<p>优点： 不需要重新构建新渠道包，仅需要复制修改就可以了。并且因为是重新签名，所以同时支持V1和V2签名。</p>
-<p>缺点：</p>
-<ul>
-<li>ApkTool工具不稳定，曾经遇到过升级Gradle Plugin版本后，低版本ApkTool解压APK失败的情况。</li>
-<li>生成新渠道包时，需要重新解包、打包和签名，而这几步操作又是相对比较耗时的。经过测试：生成企鹅电竞10个渠道包需要16分钟左右，虽然比Gradle Plugin方案减少很多耗时。但是若需要同时生成上百个渠道包，则需要几个小时，显然不适合渠道非常多的业务场景。</li>
-</ul>
-<h2 id="VasDolly"><a href="#VasDolly" class="headerlink" title="VasDolly"></a>VasDolly</h2><h1 id="VasDolly实现原理"><a href="#VasDolly实现原理" class="headerlink" title="VasDolly实现原理"></a>VasDolly实现原理</h1><h2 id="概述-1"><a href="#概述-1" class="headerlink" title="概述"></a>概述</h2><p>众所周知，因为国内Android应用分发市场的现状，我们在发布APP时，一般需要生成多个渠道包，上传到不同的应用市场。这些渠道包需要包含不同的渠道信息，在APP和后台交互或者数据上报时，会带上各自的渠道信息。这样，我们就能统计到每个分发市场的下载数、用户数等关键数据。</p>
-<p>项目地址：<a target="_blank" rel="noopener" href="https://github.com/ljd1996/VasDolly">VasDolly</a></p>
-<p>VasDolly是一种快速多渠道打包工具，同时支持基于V1签名和V2签名进行多渠道打包。插件本身会自动检测Apk使用的签名类别，并选择合适的多渠道打包方式，对使用者来说完全透明。</p>
-<h2 id="基于V1签名的多渠道打包方案"><a href="#基于V1签名的多渠道打包方案" class="headerlink" title="基于V1签名的多渠道打包方案"></a>基于V1签名的多渠道打包方案</h2><p>根据之前的V1签名和校验机制可知，V1签名只会检验第一部分的所有压缩文件，而不理会后两部分内容。因此，只要把渠道信息写入到后两块内容就可以通过V1校验，而EOCD的注释字段无疑是最好的选择。</p>
-<p>在APK文件的注释字段，添加渠道信息。 整个方案包括以下几步：</p>
-<ol>
-<li>复制APK</li>
-<li>找到EOCD数据块</li>
-<li>修改注释长度</li>
-<li>添加渠道信息</li>
-<li>添加渠道信息长度</li>
-<li>添加魔数：方便从后向前读取数据，定位渠道信息。</li>
-</ol>
-<p>该方案的最大优点就是：不需要解压缩APK，不需要重新签名，只需要复制APK，在注释字段添加渠道信息。每个渠道包仅需几秒的耗时，非常适合渠道较多的APK。</p>
-<h2 id="基于V2签名的多渠道打包方案"><a href="#基于V2签名的多渠道打包方案" class="headerlink" title="基于V2签名的多渠道打包方案"></a>基于V2签名的多渠道打包方案</h2><p>V2签名块中的数据摘要是针对APK的文件内容块、中央目录和EOCD三块内容计算的。但是在写入签名块后，修改了EOCD中的中央目录偏移量，那么在进行V2签名校验时，理论上在“数据摘要校验”这步应该会校验失败。</p>
-<p>Android系统在校验APK的数据摘要时，首先会把EOCD的中央目录偏移量替换成签名块的偏移量，然后再计算数据摘要。而签名块的偏移量就是v2签名之前的中央目录偏移量，因此，这样计算出的数据摘要就和“MF”数据块中的数据摘要完全一致了。</p>
-<p>Android系统只会关注ID为0x7109871a的V2签名块，并且忽略其他的ID-Value，同时V2签名只会保护APK本身，不包含签名块。因此，基于V2签名的多渠道打包方案就应运而生：在APK签名块中添加一个ID-Value，存储渠道信息。整个方案包括以下几步：</p>
-<ol>
-<li>找到APK的EOCD块</li>
-<li>找到APK签名块</li>
-<li>获取已有的ID-Value Pair</li>
-<li>添加包含渠道信息的ID-Value</li>
-<li>基于所有的ID-Value生成新的签名块</li>
-<li>修改EOCD的中央目录的偏移量（上面已介绍过：修改EOCD的中央目录偏移量，不会导致数据摘要校验失败）</li>
-<li>用新的签名块替代旧的签名块，生成带有渠道信息的APK</li>
-</ol>
-<h2 id="多渠道包的强校验"><a href="#多渠道包的强校验" class="headerlink" title="多渠道包的强校验"></a>多渠道包的强校验</h2><p>那么如何保证通过这些方案生成的渠道包，能够在所有Android平台上正确安装那？</p>
-<p>Google提供了一个同时支持V1和V2签名和校验的工具：apksig。它包括一个apksigner命令行和一个apksig类库。其中前者就是Android SDK build-tools下面的命令行工具。正是借助后面的apksig来进行渠道包强校验，它可以保证渠道包在apk Minsdk ~ 最高版本之间都校验通过。</p>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -2586,7 +2654,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">169</span>
+          <span class="site-state-item-count">170</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
